@@ -26,7 +26,7 @@
             <div class="card-body">
                 <p class="login-box-msg">Sign in to start your session</p>
 
-                <form action="../../index3.html" method="post">
+                <?= form_open('login') ?>
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" placeholder="Username">
                         <div class="input-group-append">
@@ -52,7 +52,7 @@
                         </div>
                         <!-- /.col -->
                     </div>
-                </form>
+                <?= form_close() ?>
             </div>
             <!-- /.card-body -->
         </div>
