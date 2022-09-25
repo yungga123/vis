@@ -23,10 +23,13 @@ class LoginPage extends BaseController
     public function sign_in()
     {
         $validation = \Config\Services::validation();
-        $rules = ([
-            'username' => 'required|max_length[50]',
-            'password' => 'required|max_length[50]',
-            'errors' => [
+
+        $validate = $this->validate(
+            [
+                'username' => 'required|max_length[50]',
+                'password' => 'required|max_length[50]'
+            ],
+            [
                 'username' => [
                     'required' => 'Please enter a username.',
                     'max_length' => 'Username is limited to 50 characters.'
@@ -36,9 +39,9 @@ class LoginPage extends BaseController
                     'max_length' => 'Password is limited to 50 characters.'
                 ]
             ]
-        ]);
+        );
 
-        if($this->validate($rules))
+        if($validate)
         {
             echo "Success";
         }

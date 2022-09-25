@@ -39,6 +39,10 @@ $routes->get('/', 'LoginPage::index');
 $routes->get('/login', 'LoginPage::sign_in');
 $routes->post('/login', 'LoginPage::sign_in');
 
+
+//DASHBOARD ROUTE
+$routes->get('/dashboard','Dashboard::index');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
