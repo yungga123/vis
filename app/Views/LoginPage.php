@@ -24,7 +24,7 @@
             <div class="card-body">
                 <p class="login-box-msg">Sign in to start your session</p>
 
-                <?= form_open('login') ?>
+                <?= form_open('login_validate') ?>
                     <div class="input-group mb-3">
                         <input name="username" type="text" class="form-control" placeholder="Username">
                         <div class="input-group-append">

@@ -14,7 +14,7 @@ class Accounts extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = ["employee_id","username","password","access_level"];
 
     // Dates
     protected $useTimestamps = true;
@@ -39,4 +39,13 @@ class Accounts extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function findUser($user) {
+        return $this->find($user);
+    }
+
+    public function findUsername($user) {
+        return $this->where('username',$user)
+                    ->findAll();
+    }
 }
