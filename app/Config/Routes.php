@@ -40,9 +40,17 @@ $routes->get('/login', 'LoginPage::index');
 $routes->get('/login_validate', 'LoginPage::sign_in');
 $routes->post('/login_validate', 'LoginPage::sign_in');
 
+//LOG OUT
+$routes->get('/logout',"LoginPage::logout");
 
 //DASHBOARD ROUTE
 $routes->get('/dashboard','Dashboard::index');
+
+//SALES DASHBOARD
+$routes->get('/sales-dashboard','SalesDashboard::index');
+
+//ADMIN DASHBOARD
+$routes->get('/admin-dashboard','AdminDashboard::index');
 
 /*
  * --------------------------------------------------------------------
