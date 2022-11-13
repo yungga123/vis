@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/fontawesome-free/css/all.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/toastr/toastr.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="<?= base_url('assets') ?>/dist/css/adminlte.min.css">
 </head>
@@ -24,7 +26,7 @@
             <div class="card-body">
                 <p class="login-box-msg">Sign in to start your session</p>
 
-                <?= form_open('login_validate') ?>
+                <?= form_open('login_validate',["id" => "form_login"]) ?>
                     <div class="input-group mb-3">
                         <input name="username" type="text" class="form-control" placeholder="Username">
                         <div class="input-group-append">
@@ -62,8 +64,58 @@
     <script src="<?= base_url('assets') ?>/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
     <script src="<?= base_url('assets') ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Toastr -->
+    <script src="<?= base_url('assets') ?>/plugins/toastr/toastr.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.min.js"></script>
+
+    <script>
+		$(document).ready(function() {
+			$('#form_login').submit(function(e) {
+				e.preventDefault();
+				var me = $(this);
+
+				toastr.options = {
+					"closeButton": false,
+					"debug": false,
+					"newestOnTop": false,
+					"progressBar": true,
+					"positionClass": "toast-top-center",
+					"preventDuplicates": false,
+					"onclick": null,
+					"showDuration": "300",
+					"hideDuration": "1000",
+					"timeOut": "3000",
+					"extendedTimeOut": "1000",
+					"showEasing": "swing",
+					"hideEasing": "linear",
+					"showMethod": "fadeIn",
+					"hideMethod": "fadeOut"
+				}
+				//ajax
+				$.ajax({
+					url: me.attr('action'),
+					type: 'post',
+					data: me.serialize(),
+					dataType: 'json',
+					success: function(response) {
+						if (response.success == true) {
+                            toastr.success("Login Success!! Logging in...");
+                            window.setTimeout(function() {
+                                window.location = '<?php echo site_url('dashboard') ?>';
+                            }, 3000);
+						} else {
+
+                            $.each(response.errors, function (key, value){
+                                toastr.error(response.errors[key]);
+                            });
+                            
+						}
+					}
+				});
+			});
+		});
+	</script>
 </body>
 
 </html>

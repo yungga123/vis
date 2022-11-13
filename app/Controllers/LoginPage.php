@@ -23,6 +23,12 @@ class LoginPage extends BaseController
 
     public function sign_in()
     {
+        $validate_msg = [
+			'success' => false,
+			'errors' => ''
+
+		];
+
         $validation = \Config\Services::validation();
         $session = session();
         $userModel = new Accounts();
@@ -55,6 +61,8 @@ class LoginPage extends BaseController
             ]
         );
 
+        
+
         if($validate)
         {
             $user_data = [
@@ -65,11 +73,22 @@ class LoginPage extends BaseController
 
             $session->set($user_data);
 
-            return redirect()->to('');
+            $validate_msg['success'] = true;
         }
         else
         {
-            echo $validation->listErrors();
+            $validate_msg['errors'] = $validation->getErrors();
+            
         }
+        echo json_encode($validate_msg);
+    }
+
+    public function logout()
+    {
+        $session = session();
+
+        $session->destroy();
+
+        return redirect()->to('');
     }
 }

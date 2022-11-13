@@ -20,13 +20,34 @@
                 <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 
-                <li class="nav-item">
+                <li class="nav-item menu-open">
                     <a href="#" class="nav-link active">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>
-                            Dashboard
-                        </p>
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        Dashboard
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="<?= site_url('dashboard') ?>" class="nav-link<?php if(url_is('dashboard')){ echo " active";} ?>">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Main Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= site_url("sales-dashboard") ?>" class="nav-link<?php if(url_is('sales-dashboard')){ echo " active";} ?>">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Sales Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= site_url("admin-dashboard") ?>" class="nav-link<?php if(url_is('admin-dashboard')){ echo " active";} ?>">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Admin Dashboard</p>
+                        </a>
+                    </li>
+                    </ul>
                 </li>
             </ul>
         </nav>

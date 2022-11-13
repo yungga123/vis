@@ -18,12 +18,11 @@ class Dashboard extends BaseController
             echo view('templates/sidebar');
             echo view('dashboard/dashboard');
             echo view('templates/footer');
+            echo view('dashboard/script');
         }
         else
         {
             return redirect()->to('login');
         }
-        
-
     }
 }
