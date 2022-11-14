@@ -52,6 +52,9 @@ $routes->get('/sales-dashboard','SalesDashboard::index');
 //ADMIN DASHBOARD
 $routes->get('/admin-dashboard','AdminDashboard::index');
 
+//EXECUTIVE OVERVIEW
+$routes->get('/executive-overview','ExecutiveOverview::index');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
