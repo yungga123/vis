@@ -47,6 +47,12 @@
                         <p>Admin Dashboard</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?= site_url("executive-overview") ?>" class="nav-link<?php if(url_is('executive-overview')){ echo " active";} ?>">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Executive Overview</p>
+                        </a>
+                    </li>
                     </ul>
                 </li>
             </ul>

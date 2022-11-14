@@ -4,20 +4,20 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 
-class AdminDashboard extends BaseController
+class ExecutiveOverview extends BaseController
 {
     public function index()
     {
         if (session('logged_in')==true)
         {
-            $data['title'] = 'Admin Dashboard';
+            $data['title'] = 'Executive Overview Dashboard';
 
             echo view('templates/header',$data);
             echo view('templates/navbar');
             echo view('templates/sidebar');
-            echo view('admin_dashboard/admin_dashboard');
+            echo view('executive_overview/eo_dashboard');
             echo view('templates/footer');
-            echo view('admin_dashboard/script');
+            echo view('executive_overview/script');
         }
         else
         {
