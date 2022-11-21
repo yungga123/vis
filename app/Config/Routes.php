@@ -55,6 +55,9 @@ $routes->get('/admin-dashboard','AdminDashboard::index');
 //EXECUTIVE OVERVIEW
 $routes->get('/executive-overview','ExecutiveOverview::index');
 
+//CUSTOMERS
+$routes->get('/add-customer','Customers::index');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
