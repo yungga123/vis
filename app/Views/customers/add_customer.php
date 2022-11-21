@@ -23,7 +23,7 @@
             <div class="col-sm-6">
 
               <div class="card">
-                <div class="card-header">
+                <div class="card-header text-center">
                   <b>Customer Details</b>
                 </div>
 
@@ -31,19 +31,37 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label>Customer Name</label>
-                      <input type="text" class="form-control" placeholder="Enter ...">
+                      <input type="text" class="form-control" placeholder="JC Amoranto / Vinculum Tech">
                     </div>
                     <div class="form-group">
                       <label>Contact Person</label>
-                      <input type="text" class="form-control" placeholder="Enter ...">
+                      <input type="text" class="form-control" placeholder="Mr. JC">
                     </div>
                     <div class="form-group">
-                      <label>Text</label>
-                      <input type="text" class="form-control" placeholder="Enter ...">
+                      <label>Additional Notes</label>
+                      <input type="text" class="form-control" placeholder="Enter...">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header text-center">
+                  <b>Contact Details</b>
+                </div>
+
+                <div class="card-body row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label>Contact Number</label>
+                      <input type="text" class="form-control" placeholder="0999XXXXXXX / 888X-XXXX">
                     </div>
                     <div class="form-group">
-                      <label>Text</label>
-                      <input type="text" class="form-control" placeholder="Enter ...">
+                      <label>Email Address</label>
+                      <input type="text" class="form-control" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                      <label>Source of Contact</label>
+                      <input type="text" class="form-control" placeholder="Viber, FB, Telegram, Whatsapp, etc...">
                     </div>
                   </div>
                 </div>
@@ -51,31 +69,27 @@
             </div>
             <div class="col-sm-6">
               <div class="card">
-                <div class="card-header">
+                <div class="card-header text-center">
                   <b>Address</b>
                 </div>
 
                 <div class="card-body row">
                   <div class="col-sm-12">
                     <div class="form-group">
-                      <label>Region</label>
-                      <select id="region" class="form-control" placeholder="Enter ..."></select>
-                    </div>
-                    <div class="form-group">
                       <label>Province</label>
-                      <select id="province" class="form-control" placeholder="Enter ..."></select>
+                      <input type="text" id="province" class="form-control" placeholder="NCR">
                     </div>
                     <div class="form-group">
                       <label>City</label>
-                      <select id="city" class="form-control" placeholder="Enter ..."></select>
+                      <input type="text" id="city" class="form-control" placeholder="Muntinlupa City">
                     </div>
                     <div class="form-group">
                       <label>Barangay</label>
-                      <select id="barangay" class="form-control" placeholder="Enter ..."></select>
+                      <input type="text" id="barangay" class="form-control" placeholder="Putatan">
                     </div>
                     <div class="form-group">
-                      <label>Text</label>
-                      <select class="form-control" placeholder="Enter ..."></select>
+                      <label>Detailed Address</label>
+                      <input type="text" class="form-control" placeholder="Soldier's Hills, Blk 35 Lot 14">
                     </div>
                   </div>
 

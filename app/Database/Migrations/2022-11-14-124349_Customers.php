@@ -21,10 +21,6 @@ class Customers extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 500
             ],
-            'address_region' => [
-                'type' => 'VARCHAR',
-                'constraint' => 500
-            ],
             'address_province' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500
@@ -37,15 +33,7 @@ class Customers extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 500
             ],
-            'address_sub' => [
-                'type' => 'VARCHAR',
-                'constraint' => 500
-            ],
-            'address_street' => [
-                'type' => 'VARCHAR',
-                'constraint' => 500
-            ],
-            'address_number' => [
+            'address_other' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500
             ],
