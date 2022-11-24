@@ -33,10 +33,6 @@ class Customers extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 500
             ],
-            'address_other' => [
-                'type' => 'VARCHAR',
-                'constraint' => 500
-            ],
             'contact_number' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500
@@ -48,9 +44,6 @@ class Customers extends Migration
             'source' => [
                 'type' => 'VARCHAR',
                 'constraint' => 100
-            ],
-            'date_added' => [
-                'type' => 'DATE'
             ],
             'notes' => [
                 'type' => 'VARCHAR',

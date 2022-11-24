@@ -36,5 +36,7 @@
 <script src="<?= base_url('assets') ?>/plugins/summernote/summernote-bs4.min.js"></script>
 <!-- overlayScrollbars -->
 <script src="<?= base_url('assets') ?>/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- Toastr -->
+<script src="<?= base_url('assets') ?>/plugins/toastr/toastr.min.js"></script>
 <!-- AdminLTE App -->
 <script src="<?= base_url('assets') ?>/dist/js/adminlte.js"></script>
