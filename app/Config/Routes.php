@@ -57,6 +57,7 @@ $routes->get('/executive-overview','ExecutiveOverview::index');
 
 //CUSTOMERS
 $routes->get('/add-customer','Customers::index');
+$routes->get('/list-customer','Customers::customer_table');
 $routes->post('/add-customers','Customers::add_customers');
 
 

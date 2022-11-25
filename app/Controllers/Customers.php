@@ -55,4 +55,25 @@ class Customers extends BaseController
 
         echo json_encode($validate);
     }
+
+    public function customer_table()
+    {
+        
+
+        if (session('logged_in') == true) {
+
+            $customersModel = new CustomersModel();
+            
+            $data['title'] = 'List of Customers';
+            echo view('templates/header', $data);
+            echo view('customers/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('customers/customer_table');
+            echo view('templates/footer');
+            echo view('customers/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
 }
