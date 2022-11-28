@@ -61,6 +61,10 @@ $routes->get('/list-customer','Customers::customer_table');
 $routes->post('/add-customers','Customers::add_customers');
 $routes->get('/customer-list','Customers::getCustomers');
 
+//TaskLead
+$routes->get('/tasklead','TaskLead::index');
+$routes->get('/tasklead-addproject','TaskLead::add_project');
+$routes->post('/post-addproject','TaskLead::add_project_validate');
 
 /*
  * --------------------------------------------------------------------
