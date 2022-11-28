@@ -81,7 +81,7 @@
 
                     $.each(response.messages, function(key, value) {
                         if (value != '') {
-                            $('#' + key).addClass("is-invalid");
+                            $('#' + key).removeClass("is-valid").addClass("is-invalid");
                             $('#small_' + key).html(value);
                         }
                     });
