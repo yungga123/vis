@@ -33,6 +33,10 @@ class Customers extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 500
             ],
+            'address_sub' => [
+                'type' => 'VARCHAR',
+                'constraint' => 500
+            ],
             'contact_number' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500
