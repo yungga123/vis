@@ -1,21 +1,21 @@
+<!-- DataTables  & Plugins -->
+<script src="<?= base_url('assets') ?>/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/jszip/jszip.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
 
-    <!-- DataTables  & Plugins -->
-    <script src="<?= base_url('assets') ?>/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/jszip/jszip.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="<?= base_url('assets') ?>/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
 
-  <script>
+<script>
     $('#form-addcustomer').submit(function(e) {
         e.preventDefault();
         var me = $(this);
@@ -90,9 +90,43 @@
             }
         });
     });
-  </script>
 
+
+    $(function() {
+        var customer_table = $('#myTable').DataTable({
+            "processing": true,
+            "responsive": true,
+            "autoWidth": false,
+            "buttons": [{
+                extend: "copy",
+                exportOptions: {
+                    columns: [0,1]
+                }
+            }, "csv", {
+                extend: "excel",
+                exportOptions: {
+                    columns: [1,2]
+                }
+            }, "pdf", {
+                extend: "print",
+                exportOptions: {
+                    columns: [0,1]
+                }
+            }, "colvis"],
+            "serverSide": true,
+            "ajax": '<?= site_url('customer-list') ?>',
+            "initComplete": function(settings,json){
+                customer_table.buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
+            }
+        });
+
+
+
+
+    });
+</script>
 
 
 </body>
+
 </html>

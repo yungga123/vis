@@ -2,10 +2,14 @@
 
 namespace App\Controllers;
 use App\Controllers\BaseController;
+use App\Libraries\DataTable;
 use App\Models\CustomersModel;
+use CodeIgniter\API\ResponseTrait;
 
 class Customers extends BaseController
 {
+
+    use ResponseTrait;
     
     public function index()
     {
@@ -76,4 +80,40 @@ class Customers extends BaseController
             return redirect()->to('login');
         }
     }
+
+    public function getCustomers()
+	{
+		$dataTable = new DataTable;
+		$response = $dataTable->process('CustomersModel', [
+			[
+				'name' => 'customer_name'
+			],
+			[
+				'name' => 'contact_person'
+			],
+			[
+				'name' => 'address_province'
+			],
+			[
+				'name' => 'address_city'
+			],
+			[
+				'name' => 'address_brgy'
+			],
+			[
+				'name' => 'address_sub'
+			],
+			[
+				'name' => 'contact_number'
+			],
+			[
+				'name' => 'source'
+			],
+			[
+				'name' => 'notes'
+			]
+		]);
+		
+		return $this->setResponseFormat('json')->respond($response);
+	}
 }
