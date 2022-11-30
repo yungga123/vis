@@ -4,6 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
+
 class TaskLeadModel extends Model
 {
     protected $DBGroup          = 'default';
@@ -17,7 +18,8 @@ class TaskLeadModel extends Model
     protected $allowedFields    = [
         "quarter", 
         "status", 
-        "customer_id", 
+        "customer_id",
+        "project", 
         "project_amount", 
         "quotation_num", 
         "forecast_close_date", 
@@ -40,6 +42,7 @@ class TaskLeadModel extends Model
         "quarter" => 'required',
         "status" => 'required|is_natural_no_zero|max_length[3]|less_than_equal_to[100]',
         "customer_id" => 'required',
+        "project" => 'required|max_length[500]',
         "project_amount" => 'required|decimal|max_length[18]',
         "remark_next_step" => 'required'
     ];
@@ -59,6 +62,10 @@ class TaskLeadModel extends Model
         ],
         "customer_id" => [
             "required" => "This field is required.",
+        ],
+        "project" => [
+            "required" => "This field is required.",
+            "max_length" => "Maximum of 500 characters."
         ],
         "project_amount" => [
             "required" => "This field is required.",
@@ -82,4 +89,28 @@ class TaskLeadModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function noticeTable(){
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tasklead');
+        $builder->select(
+            "tasklead.id as tasklead_id",
+            "tasklead.quarter as quarter",
+            "status as status_percent",
+            "status",
+            "customer_name",
+            "contact_number",
+            "project",
+            "project_amount",
+            "quotation_num",
+            "forecast_close_date",
+            "status as hit",
+            "remark_next_step",
+            "close_deal_date",
+            "project_start_date",
+            "project_finish_date",
+            "project_start_date as project_duration");
+        $builder->join('customers',"tasklead.customer_id=customers.id","left");
+        return $builder;
+    }
 }

@@ -66,7 +66,6 @@ class Customers extends BaseController
 
         if (session('logged_in') == true) {
 
-            $customersModel = new CustomersModel();
             
             $data['title'] = 'List of Customers';
             echo view('templates/header', $data);
@@ -85,6 +84,10 @@ class Customers extends BaseController
 	{
 		$dataTable = new DataTable;
 		$response = $dataTable->process('CustomersModel', [
+            [
+				'name' => 'id',
+                'formatter' => 'customer_id_format',
+			],
 			[
 				'name' => 'customer_name'
 			],

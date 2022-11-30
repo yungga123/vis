@@ -40,6 +40,9 @@ $routes->get('/login', 'LoginPage::index');
 $routes->get('/login_validate', 'LoginPage::sign_in');
 $routes->post('/login_validate', 'LoginPage::sign_in');
 
+//TEST
+$routes->get('/test',"Test::index");
+
 //LOG OUT
 $routes->get('/logout',"LoginPage::logout");
 
@@ -65,6 +68,8 @@ $routes->get('/customer-list','Customers::getCustomers');
 $routes->get('/tasklead','TaskLead::index');
 $routes->get('/tasklead-addproject','TaskLead::add_project');
 $routes->post('/post-addproject','TaskLead::add_project_validate');
+$routes->get('/project-list','TaskLead::project_list');
+$routes->get('/project-table','TaskLead::getProjectList');
 
 /*
  * --------------------------------------------------------------------

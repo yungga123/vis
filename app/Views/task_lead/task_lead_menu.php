@@ -46,7 +46,7 @@
             <div class="icon">
               <i class="fas fa-tasks"></i>
             </div>
-            <a href="#" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('project-list') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
       </div>

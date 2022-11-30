@@ -47,8 +47,16 @@
                     <label>Customer</label>
                     <select class="form-control" name="customer_id" id="customer_id">
                       <option value="">--Please Select--</option>
+                      <?php foreach ($customers as $row) { ?>
+                        <option value="<?= $row['id'] ?>"><?= $row['customer_name'] ?></option>
+                      <?php } ?>
                     </select>
                     <small id="small_customer_id" class="form-text text-muted"></small>
+                  </div>
+                  <div class="form-group">
+                    <label>Project</label>
+                    <input name="project" id="project" type="text" class="form-control" placeholder="Enter Project">
+                    <small id="small_project" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
                     <label>Project Amount</label>
