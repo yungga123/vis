@@ -1,17 +1,62 @@
 <?php
 
-if (! function_exists('set_status'))
+use App\Models\CustomersModel;
+
+
+//Customers ID Format
+if (! function_exists('customer_id_format'))
 {
-	function set_status(string $value, array $row): string
+	function customer_id_format(string $value, array $row): string
 	{
-		return $value === '1' ? 'Active' : 'Inactive';
+		return 'C'.$value;
 	}
 }
 
-if (! function_exists('action_links'))
+//Task Lead Format
+if (! function_exists('status_percent'))
 {
-	function action_links(string $value, array $row): string
+	function status_percent(int $value, array $row): string
 	{
-		return '<a href="'.base_url('customers/'.$value).'">View</a>';
+		$status = "";
+
+		if ($value <= 10) {
+			$status = "Identified";
+		} 
+		elseif($value <= 30)
+		{
+			$status = "Qualified";
+		}
+		elseif($value <= 50)
+		{
+			$status = "Developed Solution";
+		}
+		elseif($value <= 70)
+		{
+			$status = "Evaluation";
+		}
+		elseif($value <= 90)
+		{
+			$status = "Negotiation";
+		}
+		elseif($value <= 100)
+		{
+			$status = "Booked";
+		}
+
+		return $status;
+	}
+} 
+
+
+if (! function_exists('customers_name'))
+{
+	function customers_name(string $value, array $row): string
+	{
+		
+		$customersModel = new CustomersModel();
+		$customerNameFind = $customersModel->find($value);
+		$customerName = $customerNameFind['customer_name'];
+
+		return $customerName;
 	}
 }

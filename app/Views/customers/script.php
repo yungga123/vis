@@ -97,31 +97,13 @@
             "processing": true,
             "responsive": true,
             "autoWidth": false,
-            "buttons": [{
-                extend: "copy",
-                exportOptions: {
-                    columns: [0,1]
-                }
-            }, "csv", {
-                extend: "excel",
-                exportOptions: {
-                    columns: [1,2]
-                }
-            }, "pdf", {
-                extend: "print",
-                exportOptions: {
-                    columns: [0,1]
-                }
-            }, "colvis"],
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
             "serverSide": true,
             "ajax": '<?= site_url('customer-list') ?>',
             "initComplete": function(settings,json){
                 customer_table.buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
             }
         });
-
-
-
 
     });
 </script>
