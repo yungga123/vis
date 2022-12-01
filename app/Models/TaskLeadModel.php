@@ -94,22 +94,22 @@ class TaskLeadModel extends Model
         $db      = \Config\Database::connect();
         $builder = $db->table('tasklead');
         $builder->select(
-            "tasklead.id as tasklead_id",
-            "tasklead.quarter as quarter",
-            "status as status_percent",
-            "status",
-            "customer_name",
-            "contact_number",
-            "project",
-            "project_amount",
-            "quotation_num",
-            "forecast_close_date",
-            "status as hit",
-            "remark_next_step",
-            "close_deal_date",
-            "project_start_date",
-            "project_finish_date",
-            "project_start_date as project_duration");
+            "tasklead.id as id,
+            quarter,
+            status as status_percent,
+            status,
+            customer_name,
+            contact_number,
+            project,
+            project_amount,
+            quotation_num,
+            forecast_close_date,
+            status as hit,
+            remark_next_step,
+            close_deal_date,
+            project_start_date,
+            project_finish_date,
+            project_start_date as project_duration");
         $builder->join('customers',"tasklead.customer_id=customers.id","left");
         return $builder;
     }
