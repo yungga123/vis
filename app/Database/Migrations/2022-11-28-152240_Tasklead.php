@@ -39,10 +39,6 @@ class Tasklead extends Migration
                 'type' => 'DATE',
                 'default' => null
             ],
-            'forecast_close_date' => [
-                'type' => 'DATE',
-                'default' => null
-            ],
             'remark_next_step' => [
                 'type' => 'TEXT'
             ],

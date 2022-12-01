@@ -171,22 +171,28 @@ class TaskLead extends BaseController
 
         $taskleadTable = new TablesIgniter();
         $taskleadTable->setTable($taskleadModel->noticeTable())
-          ->setOutput(["tasklead_id","quarter",
-            "status_percent",
-            "status",
-            "customer_name",
-            "contact_number",
-            "project",
-            "project_amount",
-            "quotation_num",
-            "forecast_close_date",
-            "hit",
-            "remark_next_step",
-            "close_deal_date",
-            "project_start_date",
-            "project_finish_date",
-            "project_duration"
-        ]);
+            ->setSearch([
+                "tasklead.id",
+                "quarter",
+                "tasklead.status"])
+            ->setOutput([
+                "id",
+                "quarter",
+                "status_percent",
+                "status",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "hit",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_duration"
+            ]);
         return $taskleadTable->getDatatable();
 	}
 }
