@@ -34,6 +34,7 @@
                     <th>City</th>
                     <th>Barangay</th>
                     <th>Sub</th>
+                    <th>Email Address</th>
                     <th>Contact Number</th>
                     <th>Source</th>
                     <th>Notes</th>
@@ -49,6 +50,7 @@
                     <th>City</th>
                     <th>Barangay</th>
                     <th>Sub</th>
+                    <th>Email Address</th>
                     <th>Contact Number</th>
                     <th>Source</th>
                     <th>Notes</th>

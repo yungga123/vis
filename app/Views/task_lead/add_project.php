@@ -40,7 +40,15 @@
                   </div>
                   <div class="form-group">
                     <label>Status</label>
-                    <input name="status" id="status" type="text" class="form-control" placeholder="Input 1-100">
+                    <select name="status" id="status" class="form-control">
+                      <option value="">---Please Select---</option>
+                      <option value="10">10%</option>
+                      <option value="30">30%</option>
+                      <option value="50">50%</option>
+                      <option value="70">70%</option>
+                      <option value="90">90%</option>
+                      <option value="100">100%</option>
+                    </select>
                     <small id="small_status" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">

@@ -72,7 +72,11 @@ class TaskLead extends BaseController
             "customer_id" => $this->request->getPost('customer_id'),
             "project" => $this->request->getPost('project'),
             "project_amount" => $this->request->getPost('project_amount'),
-            "remark_next_step" => $this->request->getPost('remark_next_step')
+            "remark_next_step" => $this->request->getPost('remark_next_step'),
+            "forecast_close_date" => $this->request->getPost('forecast_close_date'),
+            "close_deal_date" => $this->request->getPost('close_deal_date'),
+            "project_start_date" => $this->request->getPost('project_start_date'),
+            "project_finish_date" => $this->request->getPost('project_finish_date'),
         ];
 
         if (!$taskleadModel->insert($data)) {
@@ -171,12 +175,9 @@ class TaskLead extends BaseController
 
         $taskleadTable = new TablesIgniter();
         $taskleadTable->setTable($taskleadModel->noticeTable())
-            ->setSearch([
+            ->setDefaultOrder("tasklead.id","DESC")
+            ->setOrder([
                 "tasklead.id",
-                "quarter",
-                "tasklead.status"])
-            ->setOutput([
-                "id",
                 "quarter",
                 "status_percent",
                 "status",
@@ -186,7 +187,35 @@ class TaskLead extends BaseController
                 "project_amount",
                 "quotation_num",
                 "forecast_close_date",
-                "hit",
+                "status",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_start_date"
+            ])
+            ->setSearch([
+                "customer_name",
+                "contact_number",
+                "tasklead.id",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "remark_next_step",
+                "status"
+            ])
+            ->setOutput([
+                "id",
+                "quarter",
+                "status",
+                "status_percent",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "status1",
                 "remark_next_step",
                 "close_deal_date",
                 "project_start_date",
