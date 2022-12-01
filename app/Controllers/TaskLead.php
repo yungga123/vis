@@ -175,9 +175,9 @@ class TaskLead extends BaseController
 
         $taskleadTable = new TablesIgniter();
         $taskleadTable->setTable($taskleadModel->noticeTable())
-            ->setDefaultOrder("tasklead.id","DESC")
+            ->setDefaultOrder("id","DESC")
             ->setOrder([
-                "tasklead.id",
+                "id",
                 "quarter",
                 "status_percent",
                 "status",
@@ -197,12 +197,13 @@ class TaskLead extends BaseController
             ->setSearch([
                 "customer_name",
                 "contact_number",
-                "tasklead.id",
+                "id",
                 "project",
                 "project_amount",
                 "quotation_num",
                 "remark_next_step",
-                "status"
+                "status",
+                "status1"
             ])
             ->setOutput([
                 "id",

@@ -83,56 +83,27 @@ class Customers extends BaseController
 
     public function getCustomers()
 	{
-		// $dataTable = new DataTable;
-		// $response = $dataTable->process('CustomersModel', [
-        //     [
-		// 		'name' => 'id',
-        //         'formatter' => 'customer_id_format',
-		// 	],
-		// 	[
-		// 		'name' => 'customer_name'
-		// 	],
-		// 	[
-		// 		'name' => 'contact_person'
-		// 	],
-		// 	[
-		// 		'name' => 'address_province'
-		// 	],
-		// 	[
-		// 		'name' => 'address_city'
-		// 	],
-		// 	[
-		// 		'name' => 'address_brgy'
-		// 	],
-		// 	[
-		// 		'name' => 'address_sub'
-		// 	],
-		// 	[
-		// 		'name' => 'contact_number'
-		// 	],
-		// 	[
-		// 		'name' => 'source'
-		// 	],
-		// 	[
-		// 		'name' => 'notes'
-		// 	]
-		// ]);
-		
-		// return $this->setResponseFormat('json')->respond($response);
 
         $customersModel = new CustomersModel();
         $customersTable = new TablesIgniter();
 
         $customersTable->setTable($customersModel->noticeTable())
                        ->setDefaultOrder('id', 'DESC')
+                       ->setSearch([
+                            "id",
+                            "customer_name",
+                            "contact_person",
+                            "address",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes"
+                       ])
                        ->setOrder([
                             "id",
                             "customer_name",
                             "contact_person",
-                            "address_province",
-                            "address_city",
-                            "address_brgy",
-                            "address_sub",
+                            "address",
                             "contact_number",
                             "email_address",
                             "source",
@@ -142,10 +113,7 @@ class Customers extends BaseController
                             "id",
                             "customer_name",
                             "contact_person",
-                            "address_province",
-                            "address_city",
-                            "address_brgy",
-                            "address_sub",
+                            "address",
                             "contact_number",
                             "email_address",
                             "source",
