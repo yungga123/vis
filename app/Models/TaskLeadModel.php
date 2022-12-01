@@ -92,26 +92,8 @@ class TaskLeadModel extends Model
 
     public function noticeTable(){
         $db      = \Config\Database::connect();
-        $builder = $db->table('tasklead');
-        $builder->select(
-            "tasklead.id as id,
-            quarter,
-            CONCAT(status,'%') as status,
-            status_percent,
-            customer_name,
-            contact_number,
-            project,
-            project_amount,
-            quotation_num,
-            forecast_close_date,
-            IF(status>90,'YES','NO') as status1,
-            remark_next_step,
-            close_deal_date,
-            project_start_date,
-            project_finish_date,
-            CONCAT(DATEDIFF(project_finish_date,project_start_date),' day/s') as project_duration");
-        $builder->join('customers',"tasklead.customer_id=customers.id","left");
-        $builder->join('tasklead_status','tasklead.status=tasklead_status.percent');
+        $builder = $db->table('task_lead');
+        $builder->select('*');
         return $builder;
     }
 }
