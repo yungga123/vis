@@ -109,6 +109,23 @@ class CustomersModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-
+    public function noticeTable() {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('customers');
+        $builder->select("
+            id,
+            customer_name,
+            contact_person,
+            contact_number,
+            address_province,
+            address_city,
+            address_brgy,
+            address_sub,
+            email_address,
+            source,
+            notes
+        ");
+        return $builder;
+    }
     
 }

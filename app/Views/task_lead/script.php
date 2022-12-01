@@ -29,6 +29,7 @@
                     $('#status').removeClass("is-invalid").addClass('is-valid');
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
                     $('#project').removeClass("is-invalid").addClass('is-valid');
+                    $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
                     $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
                     $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
@@ -41,6 +42,7 @@
                     $('#small_customer_id').html('');
                     $('#small_project').html('');
                     $('#small_project_amount').html('');
+                    $('#small_quotation_num').html('');
                     $('#small_remark_next_step').html('');
                     $('#small_forecast_close_date').html('');
                     $('#small_close_deal_date').html('');
@@ -58,6 +60,7 @@
                     $('#status').removeClass("is-invalid").addClass('is-valid');
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
                     $('#project').removeClass("is-invalid").addClass('is-valid');
+                    $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
                     $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
                     $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
@@ -70,6 +73,7 @@
                     $('#small_customer_id').html('');
                     $('#small_project').html('');
                     $('#small_project_amount').html('');
+                    $('#small_quotation_num').html('');
                     $('#small_remark_next_step').html('');
                     $('#small_forecast_close_date').html('');
                     $('#small_close_deal_date').html('');

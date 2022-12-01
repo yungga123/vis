@@ -5,6 +5,7 @@ use App\Controllers\BaseController;
 use App\Libraries\DataTable;
 use App\Models\CustomersModel;
 use CodeIgniter\API\ResponseTrait;
+use monken\TablesIgniter;
 
 class Customers extends BaseController
 {
@@ -82,41 +83,76 @@ class Customers extends BaseController
 
     public function getCustomers()
 	{
-		$dataTable = new DataTable;
-		$response = $dataTable->process('CustomersModel', [
-            [
-				'name' => 'id',
-                'formatter' => 'customer_id_format',
-			],
-			[
-				'name' => 'customer_name'
-			],
-			[
-				'name' => 'contact_person'
-			],
-			[
-				'name' => 'address_province'
-			],
-			[
-				'name' => 'address_city'
-			],
-			[
-				'name' => 'address_brgy'
-			],
-			[
-				'name' => 'address_sub'
-			],
-			[
-				'name' => 'contact_number'
-			],
-			[
-				'name' => 'source'
-			],
-			[
-				'name' => 'notes'
-			]
-		]);
+		// $dataTable = new DataTable;
+		// $response = $dataTable->process('CustomersModel', [
+        //     [
+		// 		'name' => 'id',
+        //         'formatter' => 'customer_id_format',
+		// 	],
+		// 	[
+		// 		'name' => 'customer_name'
+		// 	],
+		// 	[
+		// 		'name' => 'contact_person'
+		// 	],
+		// 	[
+		// 		'name' => 'address_province'
+		// 	],
+		// 	[
+		// 		'name' => 'address_city'
+		// 	],
+		// 	[
+		// 		'name' => 'address_brgy'
+		// 	],
+		// 	[
+		// 		'name' => 'address_sub'
+		// 	],
+		// 	[
+		// 		'name' => 'contact_number'
+		// 	],
+		// 	[
+		// 		'name' => 'source'
+		// 	],
+		// 	[
+		// 		'name' => 'notes'
+		// 	]
+		// ]);
 		
-		return $this->setResponseFormat('json')->respond($response);
+		// return $this->setResponseFormat('json')->respond($response);
+
+        $customersModel = new CustomersModel();
+        $customersTable = new TablesIgniter();
+
+        $customersTable->setTable($customersModel->noticeTable())
+                       ->setDefaultOrder('id', 'DESC')
+                       ->setOrder([
+                            "id",
+                            "customer_name",
+                            "contact_person",
+                            "address_province",
+                            "address_city",
+                            "address_brgy",
+                            "address_sub",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes"
+                       ])
+                       ->setOutput([
+                            "id",
+                            "customer_name",
+                            "contact_person",
+                            "address_province",
+                            "address_city",
+                            "address_brgy",
+                            "address_sub",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes"
+                       ]);
+        
+        return $customersTable->getDatatable();
+
 	}
 }
