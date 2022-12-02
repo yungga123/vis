@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Database\Migrations;
+namespace App\Database\Seeds;
 
-use CodeIgniter\Database\Migration;
+use CodeIgniter\Database\Seeder;
 
-class TaskleadViewModel extends Migration
+class TaskleadView extends Seeder
 {
-    public function up()
+    public function run()
     {
         $db = \Config\Database::connect();
         $db->query("
@@ -38,12 +38,5 @@ class TaskleadViewModel extends Migration
         ON
         tasklead.status=tasklead_status.percent
         ");
-
-    }
-
-    public function down()
-    {
-        $db = \Config\Database::connect();
-        $db->query("DROP VIEW task_lead");
     }
 }

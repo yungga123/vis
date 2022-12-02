@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Database\Migrations;
+namespace App\Database\Seeds;
 
-use CodeIgniter\Database\Migration;
+use CodeIgniter\Database\Seeder;
 
-
-class CustomerView extends Migration
+class CustomerView extends Seeder
 {
-    public function up()
+    public function run()
     {
         $db = \Config\Database::connect();
         $db->query(
@@ -19,16 +18,13 @@ class CustomerView extends Migration
                 contact_number,
                 email_address,
                 source,
-                notes
+                notes,
+                deleted_at
                 FROM
                 customers
+                WHERE
+                deleted_at IS NULL
             "
         );
-    }
-
-    public function down()
-    {
-        $db = \Config\Database::connect();
-        $db->query("DROP VIEW customer_view");
     }
 }
