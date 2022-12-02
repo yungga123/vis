@@ -13,9 +13,8 @@ class Test extends BaseController
     {
 
         $taskleadModel = new TaskLeadModel();
-        // foreach ($taskleadModel->noticeTable() as $row) {
-        //     var_dump($row['tasklead_id']);
-        // }
-        var_dump($taskleadModel->noticeTable());
+        $customerModel = new CustomersModel();
+        $customerFind = $customerModel->find(1);
+        var_dump($customerFind['customer_name']);
     }
 }

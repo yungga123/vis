@@ -63,6 +63,8 @@ $routes->get('/add-customer','Customers::index');
 $routes->get('/list-customer','Customers::customer_table');
 $routes->post('/add-customers','Customers::add_customers');
 $routes->get('/customer-list','Customers::getCustomers');
+$routes->get('/edit-customer/(:num)','Customers::edit_customers/$1');
+$routes->post('/edit-customer-val','Customers::edit_customers_validate');
 
 //TaskLead
 $routes->get('/tasklead','TaskLead::index');
