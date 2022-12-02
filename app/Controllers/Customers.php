@@ -19,6 +19,7 @@ class Customers extends BaseController
         if (session('logged_in') == true) {
             
             $data['title'] = 'Add Customer';
+            $data['page_title'] = 'Add Customer';
             echo view('templates/header', $data);
             echo view('templates/navbar');
             echo view('templates/sidebar');
@@ -81,14 +82,11 @@ class Customers extends BaseController
         }
     }
 
-    
-
     public function getCustomers()
 	{
 
         $customersModel = new CustomersModel();
         $customersTable = new TablesIgniter();
-        $buttonEdit = "<a href='#' class='btn btn-edit'>EDIT</a>";
 
         $customersTable->setTable($customersModel->noticeTable())
                        ->setDefaultOrder('id', 'DESC')
@@ -118,8 +116,8 @@ class Customers extends BaseController
                             "customer_name",
                             "contact_person",
                             "address",
-                            "contact_number",
                             "email_address",
+                            "contact_number",
                             "source",
                             "notes"
                        ]);
@@ -127,4 +125,60 @@ class Customers extends BaseController
         return $customersTable->getDatatable();
 
 	}
+
+    public function edit_customers($id)
+    {
+        if (session('logged_in') == true) {
+
+            $customersModel = new CustomersModel();
+            
+            $data['title'] = 'Update a customer';
+            $data['page_title'] = 'Update Customer';
+            $data['customer_details'] = $customersModel->find($id);
+            $data['id'] = $id;
+            $data['uri'] = service('uri');
+
+            echo view('templates/header', $data);
+            echo view('customers/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('customers/add_customer');
+            echo view('templates/footer');
+            echo view('customers/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
+    public function edit_customers_validate()
+    {
+        $customersModel = new CustomersModel();
+
+        $validate = [
+            "success" => false,
+            "messages" => ''
+        ];
+
+        $id = $this->request->getPost('id');
+        $data = [
+            "customer_name" => $this->request->getPost('customer_name'),
+            "contact_person" => $this->request->getPost('contact_person'),
+            "notes" => $this->request->getPost('notes'),
+            "contact_number" => $this->request->getPost('contact_number'),
+            "email_address" => $this->request->getPost('email_address'),
+            "source" => $this->request->getPost('source'),
+            "address_province" => $this->request->getPost('address_province'),
+            "address_city" => $this->request->getPost('address_city'),
+            "address_brgy" => $this->request->getPost('address_brgy'),
+            "address_sub" => $this->request->getPost('address_sub')
+        ];
+
+        if (!$customersModel->update($id,$data)) {
+            $validate['messages'] = $customersModel->errors();
+        } else {
+            $validate['success'] = true;
+        }
+
+        echo json_encode($validate);
+    }
 }

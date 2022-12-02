@@ -119,7 +119,7 @@ class CustomersModel extends Model
     public function buttonEdit(){
         $closureFun = function($row){
             return <<<EOF
-                <a href="#" class="btn btn-block btn-warning"><i class="fas fa-edit"></i></a>
+                <a href="edit-customer/{$row['id']}" class="btn btn-block btn-warning" target="_blank"><i class="fas fa-edit"></i></a>
                 <a href="#" class="btn btn-block btn-danger"><i class="fas fa-trash"></i></a>
             EOF;
         };
