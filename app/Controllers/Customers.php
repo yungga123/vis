@@ -81,11 +81,14 @@ class Customers extends BaseController
         }
     }
 
+    
+
     public function getCustomers()
 	{
 
         $customersModel = new CustomersModel();
         $customersTable = new TablesIgniter();
+        $buttonEdit = "<a href='#' class='btn btn-edit'>EDIT</a>";
 
         $customersTable->setTable($customersModel->noticeTable())
                        ->setDefaultOrder('id', 'DESC')
@@ -111,6 +114,7 @@ class Customers extends BaseController
                        ])
                        ->setOutput([
                             "id",
+                            $customersModel->buttonEdit(),
                             "customer_name",
                             "contact_person",
                             "address",

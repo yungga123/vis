@@ -28,6 +28,7 @@
                 <thead>
                   <tr>
                     <th>Customer ID</th>
+                    <th>Action</th>
                     <th>Customer Name</th>
                     <th>Contact Person</th>
                     <th>Address</th>
@@ -41,6 +42,7 @@
                 <tfoot>
                   <tr>
                     <th>Customer ID</th>
+                    <th>Action</th>
                     <th>Customer Name</th>
                     <th>Contact Person</th>
                     <th>Address</th>

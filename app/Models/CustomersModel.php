@@ -115,5 +115,14 @@ class CustomersModel extends Model
         $builder->select("*");
         return $builder;
     }
-    
+
+    public function buttonEdit(){
+        $closureFun = function($row){
+            return <<<EOF
+                <a href="#" class="btn btn-block btn-warning"><i class="fas fa-edit"></i></a>
+                <a href="#" class="btn btn-block btn-danger"><i class="fas fa-trash"></i></a>
+            EOF;
+        };
+        return $closureFun;
+    }
 }
