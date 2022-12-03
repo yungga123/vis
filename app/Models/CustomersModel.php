@@ -113,7 +113,6 @@ class CustomersModel extends Model
         $db      = \Config\Database::connect();
         $builder = $db->table('customer_view');
         $builder->select("*");
-        $builder->where("deleted");
         return $builder;
     }
 
@@ -121,7 +120,7 @@ class CustomersModel extends Model
         $closureFun = function($row){
             return <<<EOF
                 <a href="edit-customer/{$row['id']}" class="btn btn-block btn-warning btn-sm" target="_blank"><i class="fas fa-edit"></i></a>
-                <a href="#" class="btn btn-block btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                <button class="btn btn-block btn-danger btn-sm" data-toggle="modal" data-target="#modal-delete-customer"><i class="fas fa-trash"></i></button>
             EOF;
         };
         return $closureFun;

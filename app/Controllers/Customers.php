@@ -20,6 +20,7 @@ class Customers extends BaseController
             
             $data['title'] = 'Add Customer';
             $data['page_title'] = 'Add Customer';
+            $data['uri'] = service('uri');
             echo view('templates/header', $data);
             echo view('templates/navbar');
             echo view('templates/sidebar');
@@ -102,6 +103,7 @@ class Customers extends BaseController
                        ])
                        ->setOrder([
                             "id",
+                            null,
                             "customer_name",
                             "contact_person",
                             "address",
