@@ -36,6 +36,12 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="branch_name">Branch Name</label>
+                                        <input type="text" class="form-control" name="branch_name" id="branch_name" placeholder="Enter here...">
+                                        <small id="small_branch_name" class="form-text text-muted"></small>
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="contact_person">Contact Person</label>
                                         <input type="text" class="form-control" name="contact_person" id="contact_person" placeholder="Enter here...">
                                         <small id="small_contact_person" class="form-text text-muted"></small>
