@@ -1,6 +1,3 @@
-
-
-
 <!-- DataTables  & Plugins -->
 <script src="<?= base_url('assets') ?>/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?= base_url('assets') ?>/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -98,22 +95,22 @@
         e.preventDefault();
         var me = $(this);
         toastr.options = {
-					"closeButton": false,
-					"debug": false,
-					"newestOnTop": false,
-					"progressBar": true,
-					"positionClass": "toast-top-center",
-					"preventDuplicates": false,
-					"onclick": null,
-					"showDuration": "300",
-					"hideDuration": "1000",
-					"timeOut": "3000",
-					"extendedTimeOut": "1000",
-					"showEasing": "swing",
-					"hideEasing": "linear",
-					"showMethod": "fadeIn",
-					"hideMethod": "fadeOut"
-				}
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "3000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
         $.ajax({
             url: me.attr('action'),
             type: 'post',
@@ -144,8 +141,10 @@
                     $('#small_address_city').html('');
                     $('#small_address_brgy').html('');
                     $('#small_address_sub').html('');
-                    
-                    setTimeout(function() {window.close()}, 3000);
+
+                    setTimeout(function() {
+                        window.close()
+                    }, 3000);
 
 
                 } else {
@@ -194,15 +193,22 @@
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
             "serverSide": true,
             "ajax": '<?= site_url('customer-list') ?>',
-            "initComplete": function(settings,json){
+            "initComplete": function(settings, json) {
                 customer_table.buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
             }
         });
 
     });
 
-    
+    $(document).on("click", ".delete-customer", function() {
+        var customer_id = $(this).data('id');
+        $(".href-customer").prop("href", "<?= site_url('delete-customer') ?>/" + customer_id)
+        // As pointed out in comments, 
+        // it is unnecessary to have to manually call the modal.
+        // $('#addBookDialog').modal('show');
+    });
 
+    
 </script>
 
 
