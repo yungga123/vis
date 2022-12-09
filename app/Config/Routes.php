@@ -67,6 +67,10 @@ $routes->get('/edit-customer/(:num)','Customers::edit_customers/$1');
 $routes->post('/edit-customer-val','Customers::edit_customers_validate');
 $routes->get('/delete-customer/(:num)','Customers::delete_customer/$1');
 
+//CUSTOMERS BRANCH
+$routes->get('/add-customer-branch','CustomerBranch::index');
+$routes->post('/add-customerbranch','CustomerBranch::add_customer_validate');
+
 //TaskLead
 $routes->get('/tasklead','TaskLead::index');
 $routes->get('/tasklead-addproject','TaskLead::add_project');

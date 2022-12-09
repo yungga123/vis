@@ -101,7 +101,34 @@
                 "targets": '_all',
                 "defaultContent": "<i>Not set</i>"
             }],
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+            "buttons": [{
+                extend: 'copy',
+                exportOptions: {
+                    columns: ':visible'
+                }
+                
+            },{
+                extend: "csv",
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },{
+                extend: "excel",
+                exportOptions: {
+                    columns: ":visible"
+                }
+            },{
+                extend: "pdf",
+                exportOptions: {
+                    columns: ":visible"
+                }
+            },{
+                extend: "print",
+                exportOptions: {
+                    columns: ":visible"
+                }
+            }, "colvis"
+        ],
             "serverSide": true,
             "ajax": '<?= site_url('project-table') ?>',
             "initComplete": function(settings, json) {
