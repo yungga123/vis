@@ -39,6 +39,7 @@ class CustomerBranch extends BaseController
 
         $data = [
             "customer_id" => $this->request->getPost('customer_id'),
+            "branch_name" => $this->request->getPost('branch_name'),
             "address_province" => $this->request->getPost('address_province'),
             "address_city" => $this->request->getPost('address_city'),
             "address_brgy" => $this->request->getPost('address_brgy'),

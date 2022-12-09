@@ -16,6 +16,7 @@ class CustomerBranchModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         "customer_id",
+        "branch_name",
         "address_province",
         "address_city",
         "address_brgy",
@@ -36,18 +37,24 @@ class CustomerBranchModel extends Model
     // Validation
     protected $validationRules      = [
         "customer_id" => 'required',
+        "branch_name" => 'required|alpha_numeric_space|max_length[500]',
         "address_province" => 'required|alpha_numeric_space|max_length[500]',
         "address_city" => 'required|alpha_numeric_space|max_length[500]',
         "address_brgy" => 'required|alpha_numeric_space|max_length[500]',
         "address_sub" => 'required|alpha_numeric_space|max_length[500]',
         "contact_number" => 'required|alpha_numeric_space|max_length[500]',
         "contact_person" => 'required|alpha_numeric_space|max_length[500]',
-        "email_address" => 'required|alpha_numeric_space|max_length[500]',
+        "email_address" => 'valid_email|max_length[500]',
         "notes" => 'required|alpha_numeric_space|max_length[500]',
     ];
     protected $validationMessages   = [
         "customer_id" => [
             "required" => "This field is required"
+        ],
+        "branch_name" => [
+            "required" => "This field is required",
+            "alpha_numeric_space" => "Must only contain letters or numbers.",
+            "max_length" => "Max length is 500."
         ],
         "address_province" => [
             "required" => "This field is required",
@@ -80,8 +87,7 @@ class CustomerBranchModel extends Model
             "max_length" => "Max length is 500."
         ],
         "email_address" => [
-            "required" => "This field is required",
-            "alpha_numeric_space" => "Must only contain letters or numbers.",
+            "valid_email" => "Please enter valid email.",
             "max_length" => "Max length is 500."
         ],
         "notes" => [

@@ -12,6 +12,7 @@
                     toastr.success("Successfully Added!");
 
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
+                    $('#branch_name').removeClass("is-invalid").addClass('is-valid');
                     $('#address_province').removeClass("is-invalid").addClass('is-valid');
                     $('#address_city').removeClass("is-invalid").addClass('is-valid');
                     $('#address_brgy').removeClass("is-invalid").addClass('is-valid');
@@ -22,6 +23,7 @@
                     $('#notes').removeClass("is-invalid").addClass('is-valid');
 
                     $('#small_customer_id').html('');
+                    $('#small_branch_name').html('');
                     $('#small_contact_person').html('');
                     $('#small_address_city').html('');
                     $('#small_address_brgy').html('');
@@ -39,6 +41,7 @@
 
                     toastr.error("Errors Occured!");
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
+                    $('#branch_name').removeClass("is-invalid").addClass('is-valid');
                     $('#address_province').removeClass("is-invalid").addClass('is-valid');
                     $('#address_city').removeClass("is-invalid").addClass('is-valid');
                     $('#address_brgy').removeClass("is-invalid").addClass('is-valid');
@@ -49,6 +52,7 @@
                     $('#notes').removeClass("is-invalid").addClass('is-valid');
 
                     $('#small_customer_id').html('');
+                    $('#small_branch_name').html('');
                     $('#small_contact_person').html('');
                     $('#small_address_city').html('');
                     $('#small_address_brgy').html('');
