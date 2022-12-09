@@ -190,7 +190,38 @@
             "processing": true,
             "responsive": true,
             "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+            "columnDefs": [{
+                "targets": '_all',
+                "defaultContent": "<i>Not set</i>"
+            }],
+            "buttons": [{
+                extend: 'copy',
+                exportOptions: {
+                    columns: ':visible'
+                }
+                
+            },{
+                extend: "csv",
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },{
+                extend: "excel",
+                exportOptions: {
+                    columns: ":visible"
+                }
+            },{
+                extend: "pdf",
+                exportOptions: {
+                    columns: ":visible"
+                }
+            },{
+                extend: "print",
+                exportOptions: {
+                    columns: ":visible"
+                }
+            }, "colvis"
+        ],
             "serverSide": true,
             "ajax": '<?= site_url('customer-list') ?>',
             "initComplete": function(settings, json) {
@@ -202,13 +233,8 @@
 
     $(document).on("click", ".delete-customer", function() {
         var customer_id = $(this).data('id');
-        $(".href-customer").prop("href", "<?= site_url('delete-customer') ?>/" + customer_id)
-        // As pointed out in comments, 
-        // it is unnecessary to have to manually call the modal.
-        // $('#addBookDialog').modal('show');
+        $(".href-customer").prop("href", "<?= site_url('delete-customer') ?>/" + customer_id);
     });
-
-    
 </script>
 
 

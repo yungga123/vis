@@ -24,7 +24,7 @@
             </div>
 
             <div class="card-body">
-              <table id="myTable" class="table table-bordered table-striped text-xs table-sm">
+              <table id="myTable" class="table table-bordered table-striped">
                 <thead>
                   <tr>
                     <th>Customer ID</th>
