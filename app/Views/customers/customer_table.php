@@ -24,7 +24,7 @@
             </div>
 
             <div class="card-body">
-              <table id="myTable" class="table table-bordered table-striped">
+              <table id="myTable" class="table table-bordered table-striped text-xs table-sm">
                 <thead>
                   <tr>
                     <th>Customer ID</th>
@@ -77,7 +77,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> NO</button>
-        <button type="button" class="btn btn-success"><i class="fas fa-check"></i> YES</button>
+        <a href="button" class="btn btn-success href-customer"><i class="fas fa-check"></i> YES</a>
       </div>
     </div>
     <!-- /.modal-content -->
