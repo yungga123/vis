@@ -78,6 +78,11 @@ $routes->post('/post-addproject','TaskLead::add_project_validate');
 $routes->get('/project-list','TaskLead::project_list');
 $routes->get('/project-table','TaskLead::getProjectList');
 
+//EMPLOYEES
+$routes->get('/add-employee','Employees::index');
+$routes->get('/employee-menu','Employees::employee_menu');
+$routes->post('/employee-add','Employees::employee_add');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
