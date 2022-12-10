@@ -59,7 +59,7 @@ class EmployeesModel extends Model
 
     // Validation
     protected $validationRules      = [
-        "employee_id"               => "required|alpha_numeric|max_length[20]",
+        "employee_id"               => "required|alpha_numeric|max_length[20]|is_unique[employees.employee_id]",
         "firstname"                 => "required|alpha_numeric_space|max_length[500]",
         "lastname"                  => "required|alpha_numeric_space|max_length[500]",
         "gender"                    => "required",
@@ -94,7 +94,8 @@ class EmployeesModel extends Model
         "employee_id"               => [
             "required" => "This field is required.",
             "alpha_numeric" => "Must be in alpha numeric characters.",
-            "max_length" => "Max length is 20."
+            "max_length" => "Max length is 20.",
+            "is_unique" => "This ID is existing"
         ],        
         "firstname"                 => [ 
             "required" => "This field is required.",
