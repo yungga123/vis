@@ -188,7 +188,7 @@
     $(function() {
         var customer_table = $('#myTable').DataTable({
             "processing": true,
-            "responsive": true,
+            "scrollX": true,
             "autoWidth": false,
             "columnDefs": [{
                 "targets": '_all',

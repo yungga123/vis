@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\EmployeesModel;
+use monken\TablesIgniter;
 
 class Employees extends BaseController
 {
@@ -35,7 +36,7 @@ class Employees extends BaseController
             echo view('employees/header');
             echo view('templates/navbar');
             echo view('templates/sidebar');
-            echo view('employees/employee_menu.php');
+            echo view('employees/employee_menu');
             echo view('templates/footer');
             echo view('employees/script');
         } else {
@@ -96,5 +97,36 @@ class Employees extends BaseController
         }
 
         echo json_encode($validate);
+    }
+
+    public function employees_list()
+    {
+        if (session('logged_in') == true) {
+
+            $data['title'] = 'List of Employees';
+            $data['page_title'] = 'List of Employees';
+            echo view('templates/header', $data);
+            echo view('employees/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('employees/employee_list');
+            echo view('templates/footer');
+            echo view('employees/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
+    public function getEmployees() {
+        $employeesModel = new EmployeesModel();
+        $employeesTable = new TablesIgniter();
+
+        $employeesTable->setTable($employeesModel->noticeTable())
+                       ->setOutput(
+                        [
+                            "employee_id", "employee_name", "address", "gender", "civil_status", "date_of_birth", "place_of_birth", "position", "employment_status", "date_hired", "language", "contact_number", "email_address", "sss_no", "tin_no", "philhealth_no", "pag_ibig_no", "educational_attainment", "course", "emergency_name", "emergency_contact_no", "emergency_address", "name_of_spouse", "spouse_contact_no", "no_of_children", "spouse_address"
+                        ]);
+
+        return $employeesTable->getDatatable();
     }
 }

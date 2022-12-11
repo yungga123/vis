@@ -95,7 +95,7 @@
     $(function() {
         var project_list_table = $('#project_list_table').DataTable({
             "processing": true,
-            "responsive": true,
+            "scrollX": true,
             "autoWidth": false,
             "columnDefs": [{
                 "targets": '_all',

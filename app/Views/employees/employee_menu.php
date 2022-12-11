@@ -38,15 +38,15 @@
                     <!-- small card -->
                     <div class="small-box bg-success">
                         <div class="inner">
-                            <h3>53<sup style="font-size: 20px">%</sup></h3>
+                            <h3>List of Employees</h3>
 
-                            <p>Bounce Rate</p>
+                            <p>Click proceed to view employees.</p>
                         </div>
                         <div class="icon">
-                            <i class="ion ion-stats-bars"></i>
+                            <i class="fas fa-users"></i>
                         </div>
-                        <a href="#" class="small-box-footer">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                        <a href="<?= site_url('employee-list') ?>" class="small-box-footer">
+                            Proceed <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
