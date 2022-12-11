@@ -82,6 +82,8 @@ $routes->get('/project-table','TaskLead::getProjectList');
 $routes->get('/add-employee','Employees::index');
 $routes->get('/employee-menu','Employees::employee_menu');
 $routes->post('/employee-add','Employees::employee_add');
+$routes->get('/employees','Employees::getEmployees');
+$routes->get('/employee-list','Employees::employees_list');
 
 /*
  * --------------------------------------------------------------------

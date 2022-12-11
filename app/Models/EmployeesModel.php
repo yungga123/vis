@@ -235,4 +235,21 @@ class EmployeesModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function noticeTable() {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('employees_view');
+        $builder->select("*");
+        return $builder;
+    }
+
+    public function buttonEdit(){
+        $closureFun = function($row){
+            return <<<EOF
+                <a href="edit-customer/{$row['employee_id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
+                <button class="btn btn-block btn-danger btn-xs delete-customer" data-toggle="modal" data-target="#modal-delete-customer" data-id="{$row['employee_id']}"><i class="fas fa-trash"></i> Delete</button>
+            EOF; 
+        };
+        return $closureFun;
+    }
 }

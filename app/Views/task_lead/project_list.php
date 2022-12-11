@@ -21,7 +21,7 @@
                     <!-- Main Card -->
                     <div class="card">
                         <div class="card-body">
-                            <table id="project_list_table" class="table table-bordered table-striped">
+                            <table id="project_list_table" class="table table-bordered table-striped nowrap">
                                 <thead>
                                     <tr>
                                         <th>Project ID</th>
