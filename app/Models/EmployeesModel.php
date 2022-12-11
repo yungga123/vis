@@ -73,7 +73,7 @@ class EmployeesModel extends Model
         "address_brgy"              => "required|max_length[500]",
         "address_sub"               => "required|max_length[500]",
         "contact_number"            => "required|max_length[500]",
-        "email_address"             => "required|valid_email|max_length[500]",
+        "email_address"             => "permit_empty|valid_email|max_length[500]",
         "sss_no"                    => "required|max_length[500]",
         "tin_no"                    => "required|max_length[500]",
         "philhealth_no"             => "required|max_length[500]",
@@ -152,7 +152,6 @@ class EmployeesModel extends Model
             "max_length" => "Max length is 500."
         ],
         "email_address"             => [ 
-            "required" => "This field is required.",
             "valid_email" => "Enter valid email.",
             "max_length" => "Max length is 500."
         ],
