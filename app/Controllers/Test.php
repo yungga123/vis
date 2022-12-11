@@ -15,6 +15,6 @@ class Test extends BaseController
         $taskleadModel = new TaskLeadModel();
         $customerModel = new CustomersModel();
         $customerFind = $customerModel->find(1);
-        var_dump($customerFind['customer_name']);
+        d($customerFind['customer_name']);
     }
 }
