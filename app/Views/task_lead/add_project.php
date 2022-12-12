@@ -5,7 +5,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0">Add Project</h1>
+          <h1 class="m-0"><?= $page_title ?></h1>
         </div><!-- /.col -->
         <div class="col-sm-6">
         </div><!-- /.col -->
@@ -18,7 +18,8 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
-          <?= form_open("post-addproject",["id" => "post-addproject"]) ?>
+          <?= ($uri->getSegment(1)=='tasklead-addproject') ? form_open("post-addproject",["id" => "post-addproject"]) : form_open("post-editproject",["id" => "post-editproject"]) ?>
+          <?= ($uri->getSegment(1)=="tasklead-editproject") ? "<input type='hidden' name='id' id='id' value='".$id."'>" : "" ?>
           <!-- Main Card -->
           <div class="card">
             <div class="card-header">
@@ -42,12 +43,12 @@
                     <label>Status</label>
                     <select name="status" id="status" class="form-control">
                       <option value="">---Please Select---</option>
-                      <option value="10">10%</option>
-                      <option value="30">30%</option>
-                      <option value="50">50%</option>
-                      <option value="70">70%</option>
-                      <option value="90">90%</option>
-                      <option value="100">100%</option>
+                      <option value="10.00">10%</option>
+                      <option value="30.00">30%</option>
+                      <option value="50.00">50%</option>
+                      <option value="70.00">70%</option>
+                      <option value="90.00">90%</option>
+                      <option value="100.00">100%</option>
                     </select>
                     <small id="small_status" class="form-text text-muted"></small>
                   </div>

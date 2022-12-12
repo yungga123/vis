@@ -25,6 +25,7 @@
                                 <thead>
                                     <tr>
                                         <th>Project ID</th>
+                                        <th>Action</th>
                                         <th>Quarter</th>
                                         <th>Percent</th>
                                         <th>Status</th>
@@ -46,6 +47,7 @@
                                 <tfoot>
                                     <tr>
                                         <th>Project ID</th>
+                                        <th>Action</th>
                                         <th>Quarter</th>
                                         <th>Percent</th>
                                         <th>Status</th>

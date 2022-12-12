@@ -16,60 +16,79 @@
 
   <section class="content">
     <div class="container-fluid">
+
       <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-info"><i class="fas fa-user-friends"></i></span>
+        <div class="col-lg-3 col-6">
+          <!-- small card -->
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h4>Sales Dashboard</h4>
 
-            <div class="info-box-content">
-              <span class="info-box-text"><a href="<?= site_url('employee-menu') ?>">Employees</a></span>
-              <span class="info-box-number">50</span>
+              <p>Click Proceed</p>
             </div>
-            <!-- /.info-box-content -->
+            <div class="icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <a href="<?= site_url('sales-dashboard') ?>" class="small-box-footer">
+              Proceed <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!-- /.info-box -->
         </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small card -->
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h4>Admin Dashboard</h4>
 
-            <div class="info-box-content">
-              <span class="info-box-text">Bookmarks</span>
-              <span class="info-box-number">410</span>
+              <p>Click Proceed</p>
             </div>
-            <!-- /.info-box-content -->
+            <div class="icon">
+              <i class="ion ion-stats-bars"></i>
+            </div>
+            <a href="<?= site_url('admin-dashboard') ?>" class="small-box-footer">
+              Proceed <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!-- /.info-box -->
         </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small card -->
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h4>HR Dashboard</h4>
 
-            <div class="info-box-content">
-              <span class="info-box-text">Uploads</span>
-              <span class="info-box-number">13,648</span>
+              <p>Click Proceed</p>
             </div>
-            <!-- /.info-box-content -->
+            <div class="icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <a href="<?= site_url('employee-menu') ?>" class="small-box-footer">
+              Proceed <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!-- /.info-box -->
         </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small card -->
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h4>Executive Overview</h4>
 
-            <div class="info-box-content">
-              <span class="info-box-text">Likes</span>
-              <span class="info-box-number">93,139</span>
+              <p>Click Proceed</p>
             </div>
-            <!-- /.info-box-content -->
+            <div class="icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <a href="<?= site_url('executive-overview') ?>" class="small-box-footer">
+              Proceed <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!-- /.info-box -->
         </div>
-        <!-- /.col -->
+        <!-- ./col -->
       </div>
+
+
     </div>
   </section>
 

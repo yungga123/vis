@@ -40,7 +40,7 @@ class TaskLeadModel extends Model
     protected $validationRules      = [
         "quotation_num" => "required|max_length[100]",
         "quarter" => 'required',
-        "status" => 'required|is_natural_no_zero|max_length[3]|less_than_equal_to[100]',
+        "status" => 'required',
         "customer_id" => 'required',
         "project" => 'required|max_length[500]',
         "project_amount" => 'required|decimal|max_length[18]',
@@ -55,10 +55,7 @@ class TaskLeadModel extends Model
             "required" => "This field is required.",
         ],
         "status" => [
-            "required" => "This field is required.",
-            "is_natural_no_zero" => "Please input 1-100 only.",
-            "max_length[3]" => "Max of 3 characters.",
-            "less_than_equal_to" => "Please input 1-100 only."
+            "required" => "This field is required."
         ],
         "customer_id" => [
             "required" => "This field is required.",
@@ -95,5 +92,15 @@ class TaskLeadModel extends Model
         $builder = $db->table('task_lead');
         $builder->select('*');
         return $builder;
+    }
+
+    public function buttonEdit(){
+        $closureFun = function($row){
+            return <<<EOF
+                <a href="tasklead-editproject/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
+                <button class="btn btn-block btn-danger btn-xs delete-project" data-toggle="modal" data-target="#modal-delete-project" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
+            EOF; 
+        };
+        return $closureFun;
     }
 }

@@ -74,7 +74,9 @@ $routes->post('/add-customerbranch','CustomerBranch::add_customer_validate');
 //TaskLead
 $routes->get('/tasklead','TaskLead::index');
 $routes->get('/tasklead-addproject','TaskLead::add_project');
+$routes->get('/tasklead-editproject/(:num)','TaskLead::edit_project/$1');
 $routes->post('/post-addproject','TaskLead::add_project_validate');
+$routes->post('/post-editproject','TaskLead::edit_project_validate');
 $routes->get('/project-list','TaskLead::project_list');
 $routes->get('/project-table','TaskLead::getProjectList');
 
