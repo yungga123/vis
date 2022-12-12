@@ -13,7 +13,7 @@ class TaskleadStatus extends Seeder
         $data = [
             [
                 'percent'           => 10,
-                'status_percent'    => 'Booked'
+                'status_percent'    => 'Identified'
             ],
             [  
                 'percent'           => 30,
@@ -33,7 +33,7 @@ class TaskleadStatus extends Seeder
             ],
             [
                 'percent'           => 100,
-                'status_percent'    => 'Identified'
+                'status_percent'    => 'Booked'
             ]
         ];
         $db->table($table)->insertBatch($data);

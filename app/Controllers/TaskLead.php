@@ -3,12 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Libraries\DataTable;
 use App\Models\CustomersModel;
 use App\Models\TaskLeadModel;
 use CodeIgniter\API\ResponseTrait;
 use monken\TablesIgniter;
-
 
 class TaskLead extends BaseController
 {
@@ -19,6 +17,7 @@ class TaskLead extends BaseController
         if (session('logged_in')==true)
         {
             $data['title'] = 'Task/Leads Monitoring';
+            $data['uri'] = service('uri');
 
             echo view('templates/header',$data);
             echo view('task_lead/header');
@@ -40,7 +39,9 @@ class TaskLead extends BaseController
         {   
             $customersModel = new CustomersModel();
             $data['title'] = 'Add Project';
+            $data['page_title'] = 'Add Project';
             $data['customers'] = $customersModel->findAll();
+            $data['uri'] = service('uri');
             
 
             echo view('templates/header',$data);
@@ -88,11 +89,44 @@ class TaskLead extends BaseController
         echo json_encode($validate);
     }
 
+    public function edit_project_validate()
+    {
+        $taskleadModel = new TaskLeadModel();
+        $validate = [
+            "success" => false,
+            "messages" => ''
+        ];
+
+        $id = $this->request->getPost('id');
+        $data = [
+            "quotation_num" => $this->request->getPost('quotation_num'),
+            "quarter" => $this->request->getPost('quarter'),
+            "status" => $this->request->getPost('status'),
+            "customer_id" => $this->request->getPost('customer_id'),
+            "project" => $this->request->getPost('project'),
+            "project_amount" => $this->request->getPost('project_amount'),
+            "remark_next_step" => $this->request->getPost('remark_next_step'),
+            "forecast_close_date" => $this->request->getPost('forecast_close_date'),
+            "close_deal_date" => $this->request->getPost('close_deal_date'),
+            "project_start_date" => $this->request->getPost('project_start_date'),
+            "project_finish_date" => $this->request->getPost('project_finish_date'),
+        ];
+
+        if (!$taskleadModel->update($id,$data)) {
+            $validate['messages'] = $taskleadModel->errors();
+        } else {
+            $validate['success'] = true;
+        }
+
+        echo json_encode($validate);
+    }
+
     public function project_list()
     {
         if (session('logged_in')==true)
         {   
             $data['title'] = 'Project List';
+            $data['uri'] = service('uri');
             
             echo view('templates/header',$data);
             echo view('task_lead/header');
@@ -108,66 +142,6 @@ class TaskLead extends BaseController
         }
     }
 
-    // public function getProjectList()
-	// {
-	// 	$dataTable = new DataTable;
-	// 	$response = $dataTable->process('TaskLeadModel', [
-    //         [
-	// 			'name' => 'id'
-	// 		],
-    //         [
-	// 			'name' => 'quarter'
-	// 		],
-    //         [
-	// 			'name' => 'status'
-	// 		],
-    //         [
-	// 			'name' => 'status',
-    //             'formatter' => 'status_percent'
-	// 		],
-    //         [
-	// 			'name' => 'customer_id',
-    //             'formatter' => 'customers_name'
-	// 		],
-    //         [
-	// 			'name' => 'customer_id',
-    //             'formatter' => 'customers_name'
-	// 		],
-    //         [
-	// 			'name' => 'project'
-	// 		],
-    //         [
-	// 			'name' => 'project_amount'
-	// 		],
-    //         [
-	// 			'name' => 'quotation_num'
-	// 		],
-    //         [
-	// 			'name' => 'forecast_close_date'
-	// 		],
-    //         [
-	// 			'name' => 'status'
-	// 		],
-    //         [
-	// 			'name' => 'remark_next_step'
-	// 		],
-    //         [
-	// 			'name' => 'close_deal_date'
-	// 		],
-    //         [
-	// 			'name' => 'project_start_date'
-	// 		],
-    //         [
-	// 			'name' => 'project_finish_date'
-	// 		],
-    //         [
-	// 			'name' => 'project_start_date'
-	// 		]
-	// 	]);
-
-		
-	// 	return $this->setResponseFormat('json')->respond($response);
-	// }
 
     public function getProjectList()
 	{
@@ -207,6 +181,7 @@ class TaskLead extends BaseController
             ])
             ->setOutput([
                 "id",
+                $taskleadModel->buttonEdit(),
                 "quarter",
                 "status",
                 "status_percent",
@@ -225,4 +200,31 @@ class TaskLead extends BaseController
             ]);
         return $taskleadTable->getDatatable();
 	}
+
+    public function edit_project($id)
+    {
+        if (session('logged_in') == true) {
+
+            $taskleadModel = new TaskLeadModel();
+            $customersModel = new CustomersModel();
+
+            
+            $data['title'] = 'Update a project';
+            $data['page_title'] = 'Update project';
+            $data['customers'] = $customersModel->findAll();
+            $data['project_details'] = $taskleadModel->find($id);
+            $data['id'] = $id;
+            $data['uri'] = service('uri');
+
+            echo view('templates/header', $data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('task_lead/add_project');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
 }
