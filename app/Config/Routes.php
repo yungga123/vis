@@ -2,6 +2,8 @@
 
 namespace Config;
 
+use App\Controllers\Employees;
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -86,6 +88,8 @@ $routes->get('/employee-menu','Employees::employee_menu');
 $routes->post('/employee-add','Employees::employee_add');
 $routes->get('/employees','Employees::getEmployees');
 $routes->get('/employee-list','Employees::employees_list');
+$routes->get('/edit-employee/(:num)','Employees::edit_employee/$1');
+$routes->post('/employee-edit','Employees::employee_edit');
 
 /*
  * --------------------------------------------------------------------

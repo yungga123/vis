@@ -10,7 +10,10 @@ class EmployeesView extends Seeder
     {
         $db = \Config\Database::connect();
         $db->query(
-            "CREATE VIEW employees_view AS SELECT
+            "CREATE VIEW 
+                employees_view 
+            AS SELECT
+                id,
                 employee_id,
                 CONCAT(firstname,' ',middlename,' ',lastname) AS employee_name,
                 CONCAT_WS(', ',address_province,address_city,address_brgy,address_sub,postal_code) as address,
@@ -39,9 +42,9 @@ class EmployeesView extends Seeder
                 no_of_children,
                 spouse_address,
                 deleted_at
-                FROM
+            FROM
                 employees
-                WHERE
+            WHERE
                 deleted_at IS NULL
             "
         );

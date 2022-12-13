@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\Accounts;
+use App\Models\EmployeesModel;
 
 class LoginPage extends BaseController
 {
@@ -32,6 +33,7 @@ class LoginPage extends BaseController
         $validation = \Config\Services::validation();
         $session = session();
         $userModel = new Accounts();
+        $employeesModel = new EmployeesModel();
         $username = $this->request->getPost('username');
         $user_find = $userModel->findUsername($username);
         $password = '';
@@ -40,6 +42,7 @@ class LoginPage extends BaseController
         {
             $username = $user_find[0]['username'];
             $password = $user_find[0]['password'];
+            $employee_id = $user_find[0]['employee_id'];
         }
 
         $validate = $this->validate(
@@ -65,10 +68,12 @@ class LoginPage extends BaseController
 
         if($validate)
         {
+            $employeeFind = $employeesModel->where('employee_id',$employee_id)->findAll();
             $user_data = [
                 'logged_in' => true,
                 'username' => $username,
-                'password' => $password
+                'password' => $password,
+                'name' => $employeeFind[0]['firstname'].' '.$employeeFind[0]['lastname']
             ];
 
             $session->set($user_data);

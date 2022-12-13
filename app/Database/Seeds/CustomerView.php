@@ -10,7 +10,9 @@ class CustomerView extends Seeder
     {
         $db = \Config\Database::connect();
         $db->query(
-            "CREATE VIEW customer_view AS SELECT
+            "CREATE VIEW 
+                customer_view 
+            AS SELECT
                 id,
                 customer_name,
                 contact_person,
@@ -20,9 +22,9 @@ class CustomerView extends Seeder
                 source,
                 notes,
                 deleted_at
-                FROM
+            FROM
                 customers
-                WHERE
+            WHERE
                 deleted_at IS NULL
             "
         );

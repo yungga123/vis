@@ -12,7 +12,7 @@ class Accounts extends Seeder
         $table = 'accounts';
         $data = [
             [
-                'employee_id'   => 1,
+                'employee_id'   => "ITS328942",
                 'username'      => 'yungga',
                 'password'      => 'yunggabells',
                 'access_level'      => 'admin'

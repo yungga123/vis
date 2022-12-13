@@ -22,6 +22,7 @@
                         <thead>
                             <tr>
                                 <th>Employee ID</th>
+                                <th>Action</th>
                                 <th>Employee Name</th>
                                 <th>Address</th>
                                 <th>Gender</th>
@@ -45,7 +46,8 @@
 
                         <tfoot>
                             <tr>
-                            <th>Employee ID</th>
+                                <th>Employee ID</th>
+                                <th>Action</th>
                                 <th>Employee Name</th>
                                 <th>Address</th>
                                 <th>Gender</th>
