@@ -28,15 +28,16 @@ class TaskleadView extends Seeder
             DATE_FORMAT(project_start_date,'%b %d, %Y') as project_start_date,
             DATE_FORMAT(project_finish_date,'%b %d, %Y') as project_finish_date,
             CONCAT(DATEDIFF(project_finish_date,project_start_date),' day/s') as project_duration
-        FROM tasklead
+        FROM 
+            tasklead
         LEFT JOIN
-        customers
+            customers
         ON
-        tasklead.customer_id=customers.id
+            tasklead.customer_id=customers.id
         LEFT JOIN
-        tasklead_status
+            tasklead_status
         ON
-        tasklead.status=tasklead_status.percent
+            tasklead.status=tasklead_status.percent
         ");
     }
 }

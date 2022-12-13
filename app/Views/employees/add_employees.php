@@ -16,7 +16,8 @@
 
     <section class="content">
         <div class="container-fluid">
-            <?= form_open('employee-add',["id" => "form-employee-add"]) ?>
+            <?= ($uri->getSegment(1)=="edit-employee") ? form_open('employee-edit',["id" => "form-employee-edit"]) : form_open('employee-add',["id" => "form-employee-add"]) ?>
+            <?= ($uri->getSegment(1)=="edit-employee") ? "<input type='hidden' name='id' id='id' value='".$id."'>" : "" ?>
             <div class="card">
                 <div class="card-body">
                     <div class="row">
