@@ -454,6 +454,11 @@
         $("#date_hired").val("<?= $employee_details['date_hired'] ?>");
         $("#date_resigned").val("<?= $employee_details['date_resigned'] ?>");
     <?php } ?>
+
+    $(document).on("click", ".delete-employee", function() {
+        var id = $(this).data('id');
+        $(".href-employee").prop("href", "<?= site_url('delete-employee') ?>/" + id);
+    });
 </script>
 
 

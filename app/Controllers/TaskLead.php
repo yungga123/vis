@@ -227,4 +227,27 @@ class TaskLead extends BaseController
             return redirect()->to('login');
         }
     }
+
+    public function delete_tasklead($id) {
+        if (session('logged_in') == true) {
+
+            $taskleadModel = new TaskLeadModel();
+            
+            $data['title'] = 'Delete Task/Lead';
+            $data['page_title'] = 'Delete Task/Lead';
+            $data['uri'] = service('uri');
+            $data['href'] = site_url('project-list');
+            $taskleadModel->delete($id);
+
+            echo view('templates/header', $data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('templates/deletepage');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
 }

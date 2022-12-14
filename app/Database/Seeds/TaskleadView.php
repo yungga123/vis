@@ -11,7 +11,8 @@ class TaskleadView extends Seeder
         $db = \Config\Database::connect();
         $db->query("
         CREATE VIEW 
-        task_lead AS SELECT 
+            task_lead 
+        AS SELECT 
             tasklead.id as id,
             quarter,
             CONCAT(status,'%') as status,
@@ -27,7 +28,8 @@ class TaskleadView extends Seeder
             DATE_FORMAT(close_deal_date,'%b %d, %Y') as close_deal_date,
             DATE_FORMAT(project_start_date,'%b %d, %Y') as project_start_date,
             DATE_FORMAT(project_finish_date,'%b %d, %Y') as project_finish_date,
-            CONCAT(DATEDIFF(project_finish_date,project_start_date),' day/s') as project_duration
+            CONCAT(DATEDIFF(project_finish_date,project_start_date),' day/s') as project_duration,
+            tasklead.deleted_at
         FROM 
             tasklead
         LEFT JOIN
@@ -38,6 +40,8 @@ class TaskleadView extends Seeder
             tasklead_status
         ON
             tasklead.status=tasklead_status.percent
+        WHERE
+            tasklead.deleted_at IS NULL
         ");
     }
 }
