@@ -246,7 +246,7 @@ class EmployeesModel extends Model
         $closureFun = function($row){
             return <<<EOF
                 <a href="edit-employee/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
-                <button class="btn btn-block btn-danger btn-xs edit-employee" data-toggle="modal" data-target="#modal-edit-employee" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-block btn-danger btn-xs delete-employee" data-toggle="modal" data-target="#modal-delete-employee" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
             EOF; 
         };
         return $closureFun;

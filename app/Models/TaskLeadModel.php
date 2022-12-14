@@ -13,7 +13,7 @@ class TaskLeadModel extends Model
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         "quarter", 
@@ -98,7 +98,7 @@ class TaskLeadModel extends Model
         $closureFun = function($row){
             return <<<EOF
                 <a href="tasklead-editproject/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
-                <button class="btn btn-block btn-danger btn-xs delete-project" data-toggle="modal" data-target="#modal-delete-project" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-block btn-danger btn-xs delete-tasklead" data-toggle="modal" data-target="#modal-delete-tasklead" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
             EOF; 
         };
         return $closureFun;

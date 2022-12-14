@@ -253,6 +253,11 @@
         $('#project_start_date').val("<?= $project_details['project_start_date'] ?>");
         $('#project_finish_date').val("<?= $project_details['project_finish_date'] ?>");
     <?php } ?>
+
+    $(document).on("click", ".delete-tasklead", function() {
+        var id = $(this).data('id');
+        $(".href-tasklead").prop("href", "<?= site_url('delete-tasklead') ?>/" + id);
+    });
     
 </script>
 

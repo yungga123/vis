@@ -71,6 +71,7 @@ class Customers extends BaseController
 
             
             $data['title'] = 'List of Customers';
+            $data['uri'] = service('uri');
             echo view('templates/header', $data);
             echo view('customers/header');
             echo view('templates/navbar');
@@ -189,14 +190,17 @@ class Customers extends BaseController
 
             $customersModel = new CustomersModel();
             
-            $data['title'] = 'Update a customer';
+            $data['title'] = 'Delete Customer';
+            $data['page_title'] = 'Delete Customer';
+            $data['uri'] = service('uri');
+            $data['href'] = site_url('list-customer');
             $customersModel->delete($id);
 
             echo view('templates/header', $data);
             echo view('customers/header');
             echo view('templates/navbar');
             echo view('templates/sidebar');
-            echo view('customers/delete_customer');
+            echo view('templates/deletepage');
             echo view('templates/footer');
             echo view('customers/script');
         } else {

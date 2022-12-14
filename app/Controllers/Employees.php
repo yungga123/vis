@@ -291,4 +291,27 @@ class Employees extends BaseController
         echo json_encode($validate);
     }
 
+    public function delete_employee($id) {
+        if (session('logged_in') == true) {
+
+            $employeesModel = new EmployeesModel();
+            
+            $data['title'] = 'Delete employee';
+            $data['page_title'] = 'Delete employee';
+            $data['uri'] = service('uri');
+            $data['href'] = site_url('employee-list');
+            $employeesModel->delete($id);
+
+            echo view('templates/header', $data);
+            echo view('employees/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('templates/deletepage');
+            echo view('templates/footer');
+            echo view('employees/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
 }
