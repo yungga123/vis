@@ -33,6 +33,8 @@
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
                     $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
                     $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#min_forecast_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#max_forecast_date').removeClass("is-invalid").addClass('is-valid');
                     $('#close_deal_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_start_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_finish_date').removeClass("is-invalid").addClass('is-valid');
@@ -45,6 +47,8 @@
                     $('#small_quotation_num').html('');
                     $('#small_remark_next_step').html('');
                     $('#small_forecast_close_date').html('');
+                    $('#small_min_forecast_date').html('');
+                    $('#small_max_forecast_date').html('');
                     $('#small_close_deal_date').html('');
                     $('#small_project_start_date').html('');
                     $('#small_project_finish_date').html('');
@@ -64,6 +68,8 @@
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
                     $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
                     $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#min_forecast_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#max_forecast_date').removeClass("is-invalid").addClass('is-valid');
                     $('#close_deal_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_start_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_finish_date').removeClass("is-invalid").addClass('is-valid');
@@ -76,9 +82,12 @@
                     $('#small_quotation_num').html('');
                     $('#small_remark_next_step').html('');
                     $('#small_forecast_close_date').html('');
+                    $('#small_min_forecast_date').html('');
+                    $('#small_max_forecast_date').html('');
                     $('#small_close_deal_date').html('');
                     $('#small_project_start_date').html('');
                     $('#small_project_finish_date').html('');
+
 
                     $.each(response.messages, function(key, value) {
                         if (value != '') {
@@ -133,6 +142,8 @@
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
                     $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
                     $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#min_forecast_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#max_forecast_date').removeClass("is-invalid").addClass('is-valid');
                     $('#close_deal_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_start_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_finish_date').removeClass("is-invalid").addClass('is-valid');
@@ -145,6 +156,8 @@
                     $('#small_quotation_num').html('');
                     $('#small_remark_next_step').html('');
                     $('#small_forecast_close_date').html('');
+                    $('#small_min_forecast_date').html('');
+                    $('#small_max_forecast_date').html('');
                     $('#small_close_deal_date').html('');
                     $('#small_project_start_date').html('');
                     $('#small_project_finish_date').html('');
@@ -164,6 +177,8 @@
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
                     $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
                     $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#min_forecast_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#max_forecast_date').removeClass("is-invalid").addClass('is-valid');
                     $('#close_deal_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_start_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_finish_date').removeClass("is-invalid").addClass('is-valid');
@@ -176,6 +191,8 @@
                     $('#small_quotation_num').html('');
                     $('#small_remark_next_step').html('');
                     $('#small_forecast_close_date').html('');
+                    $('#small_min_forecast_date').html('');
+                    $('#small_max_forecast_date').html('');
                     $('#small_close_deal_date').html('');
                     $('#small_project_start_date').html('');
                     $('#small_project_finish_date').html('');
@@ -248,6 +265,8 @@
         $('#project_amount').val("<?= $project_details['project_amount'] ?>");
         $('#quotation_num').val("<?= $project_details['quotation_num'] ?>");
         $('#forecast_close_date').val("<?= $project_details['forecast_close_date'] ?>");
+        $('#min_forecast_date').val("<?= $project_details['min_forecast_date'] ?>");
+        $('#max_forecast_date').val("<?= $project_details['max_forecast_date'] ?>");
         $('#remark_next_step').val("<?= $project_details['remark_next_step'] ?>");
         $('#close_deal_date').val("<?= $project_details['close_deal_date'] ?>");
         $('#project_start_date').val("<?= $project_details['project_start_date'] ?>");
