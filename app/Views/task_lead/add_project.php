@@ -85,6 +85,16 @@
                     <small id="small_forecast_close_date" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
+                    <label>Min. Forecast Date</label>
+                    <input name="min_forecast_date" id="min_forecast_date" type="date" class="form-control" placeholder="Input amount in numbers">
+                    <small id="small_min_forecast_date" class="form-text text-muted"></small>
+                  </div>
+                  <div class="form-group">
+                    <label>Max Forecast Date</label>
+                    <input name="max_forecast_date" id="max_forecast_date" type="date" class="form-control" placeholder="Input amount in numbers">
+                    <small id="small_max_forecast_date" class="form-text text-muted"></small>
+                  </div>
+                  <div class="form-group">
                     <label>Remark Next Step</label>
                     <textarea name="remark_next_step" id="remark_next_step" type="text" class="form-control" placeholder="Enter here..."></textarea>
                     <small id="small_remark_next_step" class="form-text text-muted"></small>

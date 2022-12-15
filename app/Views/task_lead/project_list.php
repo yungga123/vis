@@ -35,6 +35,8 @@
                                         <th>Amount</th>
                                         <th>Quotation Number</th>
                                         <th>Forecast Close Date</th>
+                                        <th>Min Forecast Date</th>
+                                        <th>Max Forecast Date</th>
                                         <th>Hit</th>
                                         <th>Remark Next Step</th>
                                         <th>Closed Deal Date</th>
@@ -57,6 +59,8 @@
                                         <th>Amount</th>
                                         <th>Quotation Number</th>
                                         <th>Forecast Close Date</th>
+                                        <th>Min Forecast Date</th>
+                                        <th>Max Forecast Date</th>
                                         <th>Hit</th>
                                         <th>Remark Next Step</th>
                                         <th>Closed Deal Date</th>
