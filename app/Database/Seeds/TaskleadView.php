@@ -14,11 +14,12 @@ class TaskleadView extends Seeder
             task_lead 
         AS SELECT 
             tasklead.id as id,
+            tasklead.employee_id as employee_id,
             quarter,
             CONCAT(status,'%') as status,
             status_percent,
             customer_name,
-            contact_number,
+            customers.contact_number as contact_number,
             project,
             project_amount,
             quotation_num,
@@ -42,6 +43,10 @@ class TaskleadView extends Seeder
             tasklead_status
         ON
             tasklead.status=tasklead_status.percent
+        LEFT JOIN
+            employees
+        ON
+            tasklead.employee_id=employees.employee_id
         WHERE
             tasklead.deleted_at IS NULL
         ");
