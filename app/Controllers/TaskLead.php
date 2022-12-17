@@ -67,6 +67,7 @@ class TaskLead extends BaseController
         ];
 
         $data = [
+            "employee_id" => $this->request->getPost('employee_id'),
             "quotation_num" => $this->request->getPost('quotation_num'),
             "quarter" => $this->request->getPost('quarter'),
             "status" => $this->request->getPost('status'),
@@ -156,7 +157,9 @@ class TaskLead extends BaseController
             ->setDefaultOrder("id","DESC")
             ->setOrder([
                 "id",
+                null,
                 "quarter",
+                "employee_name",
                 "status_percent",
                 "status",
                 "customer_name",
@@ -188,6 +191,7 @@ class TaskLead extends BaseController
             ->setOutput([
                 "id",
                 $taskleadModel->buttonEdit(),
+                "employee_name",
                 "quarter",
                 "status",
                 "status_percent",

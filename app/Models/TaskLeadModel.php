@@ -16,6 +16,7 @@ class TaskLeadModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        "employee_id",
         "quarter", 
         "status", 
         "customer_id",

@@ -14,7 +14,7 @@ class TaskleadView extends Seeder
             task_lead 
         AS SELECT 
             tasklead.id as id,
-            tasklead.employee_id as employee_id,
+            CONCAT(employees.firstname,' ',employees.lastname) as employee_name,
             quarter,
             CONCAT(status,'%') as status,
             status_percent,
