@@ -26,6 +26,7 @@
                                     <tr>
                                         <th>Project ID</th>
                                         <th>Action</th>
+                                        <th>Forecast By</th>
                                         <th>Quarter</th>
                                         <th>Percent</th>
                                         <th>Status</th>
@@ -50,6 +51,7 @@
                                     <tr>
                                         <th>Project ID</th>
                                         <th>Action</th>
+                                        <th>Forecast By</th>
                                         <th>Quarter</th>
                                         <th>Percent</th>
                                         <th>Status</th>

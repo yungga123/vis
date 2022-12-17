@@ -20,6 +20,7 @@
         <div class="col-md-12">
           <?= ($uri->getSegment(1)=='tasklead-addproject') ? form_open("post-addproject",["id" => "post-addproject"]) : form_open("post-editproject",["id" => "post-editproject"]) ?>
           <?= ($uri->getSegment(1)=="tasklead-editproject") ? "<input type='hidden' name='id' id='id' value='".$id."'>" : "" ?>
+          <input type="hidden" name="employee_id" id="employee_id" value="<?= $_SESSION['employee_id'] ?>">
           <!-- Main Card -->
           <div class="card">
             <div class="card-header">

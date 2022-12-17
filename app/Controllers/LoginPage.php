@@ -73,7 +73,8 @@ class LoginPage extends BaseController
                 'logged_in' => true,
                 'username' => $username,
                 'password' => $password,
-                'name' => $employeeFind[0]['firstname'].' '.$employeeFind[0]['lastname']
+                'name' => $employeeFind[0]['firstname'].' '.$employeeFind[0]['lastname'],
+                'employee_id' => $employeeFind[0]['employee_id']
             ];
 
             $session->set($user_data);
