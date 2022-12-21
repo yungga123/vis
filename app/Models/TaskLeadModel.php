@@ -41,17 +41,16 @@ class TaskLeadModel extends Model
 
     // Validation
     protected $validationRules      = [
-        "quotation_num" => "required|max_length[100]",
+        "quotation_num" => "max_length[100]",
         "quarter" => 'required',
         "status" => 'required',
         "customer_id" => 'required',
-        "project" => 'required|max_length[500]',
-        "project_amount" => 'required|decimal|max_length[18]',
+        "project" => 'max_length[500]',
+        "project_amount" => 'permit_empty|decimal|max_length[18]',
         "remark_next_step" => 'required'
     ];
     protected $validationMessages   = [
         "quotation_num" => [
-            "required" => "This field is required.",
             "max_length" => "Max of 100 characters."
         ],
         "quarter" => [
@@ -64,7 +63,6 @@ class TaskLeadModel extends Model
             "required" => "This field is required.",
         ],
         "project" => [
-            "required" => "This field is required.",
             "max_length" => "Maximum of 500 characters."
         ],
         "project_amount" => [
