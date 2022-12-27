@@ -93,6 +93,9 @@ $routes->get('/edit-employee/(:num)','Employees::edit_employee/$1');
 $routes->post('/employee-edit','Employees::employee_edit');
 $routes->get('/delete-employee/(:num)','Employees::delete_employee/$1');
 
+//SALES MANAGER
+$routes->get('/manager-of-sales','SalesManager::index');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing

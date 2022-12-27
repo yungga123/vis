@@ -22,7 +22,7 @@
           <!-- small box -->
           <div class="small-box bg-success">
             <div class="inner">
-              <h3>53<sup style="font-size: 20px">%</sup></h3>
+              <h3><?= $count_tasklead ?></h3>
 
               <p>Task/Leads Monitoring</p>
             </div>
@@ -65,14 +65,14 @@
           <!-- small box -->
           <div class="small-box bg-danger">
             <div class="inner">
-              <h3>65</h3>
+              <h3>999</h3>
 
               <p>Manager of Sales</p>
             </div>
             <div class="icon">
               <i class="ion ion-pie-graph"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('manager-of-sales') ?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
       </div>
@@ -83,7 +83,7 @@
             <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text"><a href="<?= site_url('add-customer') ?>">Add Customer</a></span>
+              <span class="info-box-text"><a href="<?= site_url('add-customer') ?>">Add Customer (Forecast)</a></span>
               <span class="info-box-number">
                 10
                 <small>%</small>
@@ -99,7 +99,7 @@
             <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text"><a href="<?= site_url('add-customer-branch') ?>">Add Customer Branch</a></span>
+              <span class="info-box-text"><a href="<?= site_url('add-customer-branch') ?>">Add Customer Branch (Forecast)</a></span>
               <span class="info-box-number">
                 10
                 <small>%</small>
@@ -115,7 +115,7 @@
             <span class="info-box-icon bg-success elevation-1"><i class="fas fa-table"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text"><a href="<?= site_url('list-customer') ?>">Customers List</a></span>
+              <span class="info-box-text"><a href="<?= site_url('list-customer') ?>">Customers List (Forecast)</a></span>
               <span class="info-box-number">
                 10
                 <small>%</small>
@@ -130,7 +130,7 @@
             <span class="info-box-icon bg-success elevation-1"><i class="fas fa-table"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text"><a href="#">Cust. Branch List</a></span>
+              <span class="info-box-text"><a href="#">Cust. Branch List (Forecast)</a></span>
               <span class="info-box-number">
                 10
                 <small>%</small>

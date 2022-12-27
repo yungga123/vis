@@ -3,23 +3,24 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\TaskLeadModel;
 
-class SalesDashboard extends BaseController
+class SalesManager extends BaseController
 {
     public function index()
     {
         if (session('logged_in')==true)
         {
-            $taskleadModel = new TaskLeadModel();
-            $data['title'] = 'Sales Dashboard';
-            $data['count_tasklead'] = count($taskleadModel->findAll());
+            $data['title'] = 'Manager of Sales';
+            $data['page_title'] = 'Manager of Sales';
+            $data['uri'] = service('uri');
+
             echo view('templates/header',$data);
+            echo view('manager_of_sales/header');
             echo view('templates/navbar');
             echo view('templates/sidebar');
-            echo view('sales_dashboard/sales_dashboard');
+            echo view('manager_of_sales/menu');
             echo view('templates/footer');
-            echo view('sales_dashboard/script');
+            echo view('manager_of_sales/script');
         }
         else
         {
