@@ -122,9 +122,9 @@
             "hideMethod": "fadeOut"
         }
 
-        
 
-        
+
+
         $.ajax({
             url: me.attr('action'),
             type: 'post',
@@ -209,6 +209,7 @@
         });
     });
 
+
     $(function() {
         var project_list_table = $('#project_list_table').DataTable({
             "processing": true,
@@ -223,29 +224,28 @@
                 exportOptions: {
                     columns: ':visible'
                 }
-                
-            },{
+
+            }, {
                 extend: "csv",
                 exportOptions: {
                     columns: ':visible'
                 }
-            },{
+            }, {
                 extend: "excel",
                 exportOptions: {
                     columns: ":visible"
                 }
-            },{
+            }, {
                 extend: "pdf",
                 exportOptions: {
                     columns: ":visible"
                 }
-            },{
+            }, {
                 extend: "print",
                 exportOptions: {
                     columns: ":visible"
                 }
-            }, "colvis"
-        ],
+            }, "colvis"],
             "serverSide": true,
             "ajax": '<?= site_url('project-table') ?>',
             "initComplete": function(settings, json) {
@@ -254,10 +254,10 @@
         });
 
 
+
     });
 
-    <?php if ($uri->getSegment(1) =='tasklead-editproject') { ?>
-
+    <?php if ($uri->getSegment(1) == 'tasklead-editproject') { ?>
         $('#quarter').val("<?= $project_details['quarter'] ?>");
         $('#customer_id').val('<?= $project_details['customer_id'] ?>');
         $('#status').val("<?= $project_details['status'] ?>");
@@ -271,13 +271,43 @@
         $('#close_deal_date').val("<?= $project_details['close_deal_date'] ?>");
         $('#project_start_date').val("<?= $project_details['project_start_date'] ?>");
         $('#project_finish_date').val("<?= $project_details['project_finish_date'] ?>");
+
+        $('#status option[value="10.00"]').attr('disabled',true);
+        $('#status option[value="30.00"]').attr('disabled',true);
+        $('#status option[value="50.00"]').attr('disabled',true);
+        $('#status option[value="70.00"]').attr('disabled',true);
+        $('#status option[value="90.00"]').attr('disabled',true);
+        $('#status option[value="100.00"]').attr('disabled',true);
+
+        $('#status option[value="<?= $project_details['status'] ?>"]').removeAttr('disabled');
+
+
     <?php } ?>
+
+    <?php if ($uri->getSegment(1) == 'tasklead-addproject') { ?>
+        $('#status option[value="30.00"]').attr('disabled',true);
+        $('#status option[value="50.00"]').attr('disabled',true);
+        $('#status option[value="70.00"]').attr('disabled',true);
+        $('#status option[value="90.00"]').attr('disabled',true);
+        $('#status option[value="100.00"]').attr('disabled',true);
+    <?php } ?>
+
+    
 
     $(document).on("click", ".delete-tasklead", function() {
         var id = $(this).data('id');
         $(".href-tasklead").prop("href", "<?= site_url('delete-tasklead') ?>/" + id);
     });
-    
+
+    $(document).on("click", ".update-tasklead", function() {
+        var id = $(this).data('id');
+        $(".href-identified").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/10.00");
+        $(".href-qualified").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/30.00");
+        $(".href-developed").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/50.00");
+        $(".href-evaluation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/70.00");
+        $(".href-negotiation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/90.00");
+        $(".href-booked").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/100.00");
+    });
 </script>
 
 

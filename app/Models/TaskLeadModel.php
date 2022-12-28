@@ -100,6 +100,7 @@ class TaskLeadModel extends Model
             return <<<EOF
                 <a href="tasklead-editproject/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
                 <button class="btn btn-block btn-danger btn-xs delete-tasklead" data-toggle="modal" data-target="#modal-delete-tasklead" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-block btn-success btn-xs update-tasklead" data-toggle="modal" data-target="#modal-update-tasklead" data-id="{$row['id']}"><i class="far fa-arrow-alt-circle-up"></i> Update</button>
             EOF; 
         };
         return $closureFun;
