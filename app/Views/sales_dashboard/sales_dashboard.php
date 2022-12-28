@@ -20,7 +20,7 @@
 
         <div class="col-lg-3 col-6">
           <!-- small box -->
-          <div class="small-box bg-success">
+          <div class="small-box bg-info">
             <div class="inner">
               <h3><?= $count_tasklead ?></h3>
 
@@ -29,117 +29,93 @@
             <div class="icon">
               <i class="fas fa-tasks"></i>
             </div>
-            <a href="<?= site_url('tasklead') ?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('tasklead') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
-        <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h3>44</h3>
 
-              <p>Summary of Reports</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-pager"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
         <div class="col-lg-3 col-6">
           <!-- small box -->
           <div class="small-box bg-info">
-            <div class="inner">
-              <h3>150</h3>
-
-              <p>Sales Revenue</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-coins"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-danger">
             <div class="inner">
               <h3>999</h3>
 
               <p>Manager of Sales</p>
             </div>
             <div class="icon">
-              <i class="ion ion-pie-graph"></i>
+              <i class="fas fa-chart-bar"></i>
             </div>
-            <a href="<?= site_url('manager-of-sales') ?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('manager-of-sales') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
+
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3>150</h3>
+
+              <p>Add Customer (Forecast)</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <a href="<?= site_url('add-customer') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+
+
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3>44</h3>
+
+              <p>Add Customer Branch (Forecast)</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <a href="<?= site_url('add-customer-branch') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+
+
+
       </div>
 
       <div class="row">
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="info-box">
-            <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
 
-            <div class="info-box-content">
-              <span class="info-box-text"><a href="<?= site_url('add-customer') ?>">Add Customer (Forecast)</a></span>
-              <span class="info-box-number">
-                10
-                <small>%</small>
-              </span>
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3>44</h3>
+
+              <p>Customer List (Forecast)</p>
             </div>
-            <!-- /.info-box-content -->
+            <div class="icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <a href="<?= site_url('list-customer') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
-          <!-- /.info-box -->
         </div>
 
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="info-box">
-            <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3>44</h3>
 
-            <div class="info-box-content">
-              <span class="info-box-text"><a href="<?= site_url('add-customer-branch') ?>">Add Customer Branch (Forecast)</a></span>
-              <span class="info-box-number">
-                10
-                <small>%</small>
-              </span>
+              <p>Cust. Branch List (Forcast)</p>
             </div>
-            <!-- /.info-box-content -->
+            <div class="icon">
+              <i class="fas fa-user-friends"></i>
+            </div>
+            <a href="#" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
-          <!-- /.info-box -->
         </div>
 
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="info-box">
-            <span class="info-box-icon bg-success elevation-1"><i class="fas fa-table"></i></span>
 
-            <div class="info-box-content">
-              <span class="info-box-text"><a href="<?= site_url('list-customer') ?>">Customers List (Forecast)</a></span>
-              <span class="info-box-number">
-                10
-                <small>%</small>
-              </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="info-box">
-            <span class="info-box-icon bg-success elevation-1"><i class="fas fa-table"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text"><a href="#">Cust. Branch List (Forecast)</a></span>
-              <span class="info-box-number">
-                10
-                <small>%</small>
-              </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
       </div>
 
     </div>

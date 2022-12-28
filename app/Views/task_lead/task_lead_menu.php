@@ -25,7 +25,7 @@
               <h3>Add Project</h3>
               
               
-              <p>Click Proceed</p>
+              <p>For Existing Customers</p>
             </div>
             <div class="icon">
               <i class="fas fa-tasks"></i>

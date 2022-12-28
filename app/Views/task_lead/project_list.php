@@ -104,3 +104,21 @@
   <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<div class="modal fade" id="modal-update-tasklead">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+        <a href="#" class="btn btn-danger btn-lg btn-block href-identified"><i class="fas fa-search"></i> Identified</a>
+        <a href="#" class="btn btn-secondary btn-lg btn-block href-qualified"><i class="fas fa-door-open"></i> Qualified</a>
+        <a href="#" class="btn btn-warning btn-lg btn-block href-developed"><i class="fas fa-lightbulb"></i> Developed Solution</a>
+        <a href="#" class="btn btn-info btn-lg btn-block href-evaluation"><i class="fas fa-calculator"></i> Evaluation</a>
+        <a href="#" class="btn btn-primary btn-lg btn-block href-negotiation"><i class="fas fa-handshake"></i> Negotiation</a>
+        <a href="#" class="btn btn-success btn-lg btn-block href-booked"><i class="fas fa-calendar-check"></i> Booked</a>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

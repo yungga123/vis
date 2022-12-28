@@ -240,6 +240,68 @@ class TaskLead extends BaseController
         }
     }
 
+    public function update_project_status($id,$status) {
+        if (session('logged_in') == true) {
+            
+            $data_model = [
+                'status' => $status
+            ];
+            
+            
+
+            switch ($status) {
+                case '10.00':
+                    $status_text = "<h1 class='text-danger'>IDENTIFIED (10%)</h1>";
+                    break;
+                
+                case '30.00':
+                    $status_text = "<h1 class='text-secondary'>QUALIFIED (30%)</h1>";
+                    break;
+
+                case '50.00':
+                    $status_text = "<h1 class='text-warning'>DEVELOPED SOLUTION (50%)</h1>";
+                    break;
+
+                case '70.00':
+                    $status_text = "<h1 class='text-info'>EVALUATION (70%)</h1>";
+                    break;
+
+                case '90.00':
+                    $status_text = "<h1 class='text-primary'>NEGOTIATION (90%)</h1>";
+                    break;
+                
+                case '100.00':
+                    $status_text = "<h1 class='text-success'>BOOKED (100%)</h1>";
+                    break;
+                default:
+                    $status_text = "";
+                    break;
+            }
+
+
+            $data['title'] = 'Update Tasklead Status';
+            $data['page_title'] = 'Update Tasklead Status';
+            $data['uri'] = service('uri');
+            $data['href'] = site_url('project-list');
+            $data['status'] = $status_text;
+            $taskleadModel = new TaskLeadModel();
+
+            $taskleadModel->update($id,$data_model);
+
+            echo view('templates/header', $data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('task_lead/update_tasklead_successpage');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+
+            
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
     public function delete_tasklead($id) {
         if (session('logged_in') == true) {
 
