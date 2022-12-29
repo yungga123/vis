@@ -22,6 +22,7 @@
                     The tasklead has been updated to <?= $status ?>
                     <a href="<?= $href ?>">Click here!</a> to return to table.
                 </p>
+                <p><?= ($quotation_num != "")  ? "<h2>".$quotation_num."</h2> is the quotation number. Use this for your project proposal." : "" ?></p>
             </div>
         </div>
         <!-- /.error-page -->
