@@ -147,7 +147,6 @@ class TaskLead extends BaseController
         }
     }
 
-
     public function getProjectList()
 	{
 		$taskleadModel = new TaskLeadModel();
@@ -243,38 +242,73 @@ class TaskLead extends BaseController
     public function update_project_status($id,$status) {
         if (session('logged_in') == true) {
             
+            $taskleadModel = new TaskLeadModel();
+            $taskleadData = $taskleadModel->find($id);
             $data_model = [
                 'status' => $status
             ];
-            
-            
 
             switch ($status) {
                 case '10.00':
                     $status_text = "<h1 class='text-danger'>IDENTIFIED (10%)</h1>";
+                    $quotation_num = "";
                     break;
                 
                 case '30.00':
                     $status_text = "<h1 class='text-secondary'>QUALIFIED (30%)</h1>";
+                    $quotation_num = "";
                     break;
 
                 case '50.00':
                     $status_text = "<h1 class='text-warning'>DEVELOPED SOLUTION (50%)</h1>";
+
+                    if ($taskleadData['quotation_num']=="") {
+                        $quotation_num = "QTN".date('Ymd')."001";
+                        $data_model['quotation_num'] = $quotation_num;
+                    } else {
+                        $quotation_num = "";
+                    }
+
                     break;
 
                 case '70.00':
                     $status_text = "<h1 class='text-info'>EVALUATION (70%)</h1>";
+
+                    if ($taskleadData['quotation_num']=="") {
+                        $quotation_num = "QTN".date('Ymd')."001";
+                        $data_model['quotation_num'] = $quotation_num;
+                    } else {
+                        $quotation_num = "";
+                    }
+
                     break;
 
                 case '90.00':
                     $status_text = "<h1 class='text-primary'>NEGOTIATION (90%)</h1>";
+
+                    if ($taskleadData['quotation_num']=="") {
+                        $quotation_num = "QTN".date('Ymd')."001";
+                        $data_model['quotation_num'] = $quotation_num;
+                    } else {
+                        $quotation_num = "";
+                    }
+
                     break;
                 
                 case '100.00':
                     $status_text = "<h1 class='text-success'>BOOKED (100%)</h1>";
+
+                    if ($taskleadData['quotation_num']=="") {
+                        $quotation_num = "QTN".date('Ymd')."001";
+                        $data_model['quotation_num'] = $quotation_num;
+                    } else {
+                        $quotation_num = "";
+                    }
+
                     break;
                 default:
                     $status_text = "";
+                    $quotation_num = "";
                     break;
             }
 
@@ -284,7 +318,8 @@ class TaskLead extends BaseController
             $data['uri'] = service('uri');
             $data['href'] = site_url('project-list');
             $data['status'] = $status_text;
-            $taskleadModel = new TaskLeadModel();
+            $data['quotation_num'] = $quotation_num;
+            
 
             $taskleadModel->update($id,$data_model);
 
