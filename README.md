@@ -28,3 +28,5 @@
 10. Add upload files to the booked forecast
 
 11. Managers will have access to consolidated forecast
+
+12. Notifications for transaction.
