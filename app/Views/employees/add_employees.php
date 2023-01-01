@@ -287,6 +287,7 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-success float-right"><b><i class="fas fa-check"></i> SUBMIT</b></button>
+                    <a href="<?= site_url('employee-menu') ?>" class="btn btn-secondary"><i class="fas fa-undo"></i> Go to Employee Menu</a>
                 </div>
             </div>
             <?= form_close() ?>

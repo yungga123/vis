@@ -6,9 +6,7 @@
         - User - general use of basic MIS system (user)
         - Sales - general use of sales dashboard (sales)
         - Office Admin - Administrator of Office (ofcadmin)
-
-    
-
+        - HR - HR access such as payroll and employee data (hr)
 
 
 2. Quarter () -> will be auto generated depends on input date.

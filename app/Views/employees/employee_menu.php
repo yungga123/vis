@@ -62,7 +62,24 @@
                         <div class="icon">
                             <i class="far fa-user-circle"></i>
                         </div>
-                        <a href="#" class="small-box-footer">
+                        <a href="<?= site_url('add-account') ?>" class="small-box-footer">
+                            Proceed <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <!-- small card -->
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h4>List of Accounts</h4>
+
+                            <p>Click proceed</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-table"></i>
+                        </div>
+                        <a href="<?= site_url('list-account') ;?>" class="small-box-footer">
                             Proceed <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>

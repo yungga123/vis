@@ -15,35 +15,57 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card">
-                <div class="card-body row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label for="employee_id">Employee Name</label>
-                            <input type="text" name="employee_id" id="employee_id" class="form-control" placeholder="" aria-describedby="helpId">
-                            <small id="small_employee_id" class="text-muted"></small>
-                        </div>
+            <div class="row">
+                
+                <div class="col-sm-6">
+                <?= form_open("post-add-account",["id" => "form-post-add-account"]) ?>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="employee_id">Employee Name</label>
+                                <select name="employee_id" id="employee_id" class="form-control">
+                                    <option value="">---Please Select---</option>
+                                    <?php foreach ($employees as $item) : ?>
+                                        <option value="<?= $item['employee_id'] ;?>"><?= $item['employee_id'].' - '.$item['firstname'].' '.$item['lastname'] ?></option>
+                                    <?php endforeach ?>
+                                </select>
+                                <small id="small_employee_id" class="text-muted"></small>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="username">Username</label>
-                            <input type="text" name="username" id="username" class="form-control" placeholder="Enter here..." aria-describedby="small_">
-                            <small id="small_username" class="text-muted"></small>
-                        </div>
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" name="username" id="username" class="form-control" placeholder="Enter here...">
+                                <small id="small_username" class="text-muted"></small>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="text" name="password" id="password" class="form-control" placeholder="Enter here..." aria-describedby="small_">
-                            <small id="small_password" class="text-muted"></small>
-                        </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="text" name="password" id="password" class="form-control" placeholder="Enter here...">
+                                <small id="small_password" class="text-muted"></small>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="access_level">Access Level</label>
-                            <input type="text" name="access_level" id="access_level" class="form-control" placeholder="" aria-describedby="small_">
-                            <small id="small_access_level" class="text-muted"></small>
+                            <div class="form-group">
+                                <label for="access_level">Access Level</label>
+                                <select name="access_level" id="access_level" class="form-control">
+                                    <option value="">---Please Select---</option>
+                                    <option value="admin">Administrator</option>
+                                    <option value="manager">Managers</option>
+                                    <option value="user">User</option>
+                                    <option value="sales">Sales</option>
+                                    <option value="ofcadmin">Office Admin</option>
+                                    <option value="hr">HR</option>
+                                </select>
+                                <small id="small_access_level" class="text-muted"></small>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-success float-right"><i class="fas fa-plus-circle"></i> Add Account</button>
+                            <a href="<?= site_url('employee-menu') ?>" class="btn btn-secondary"><i class="fas fa-undo"></i> Go to Employee Menu</a>
                         </div>
                     </div>
 
                 </div>
+                <?= form_close() ?>
             </div>
         </div>
     </section>
