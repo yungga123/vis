@@ -50,6 +50,23 @@
                         </a>
                     </div>
                 </div>
+
+                <div class="col-lg-3 col-6">
+                    <!-- small card -->
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h4>Enroll an account</h4>
+
+                            <p>Click proceed</p>
+                        </div>
+                        <div class="icon">
+                            <i class="far fa-user-circle"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            Proceed <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
 
         </div>
