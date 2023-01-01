@@ -14,7 +14,12 @@ class Accounts extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ["employee_id","username","password","access_level"];
+    protected $allowedFields    = [
+        "employee_id",
+        "username",
+        "password",
+        "access_level"
+    ];
 
     // Dates
     protected $useTimestamps = true;
@@ -78,8 +83,8 @@ class Accounts extends Model
     public function buttonEdit(){
         $closureFun = function($row){
             return <<<EOF
-                <a href="edit-account/{$row['employee_id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
-                <button class="btn btn-block btn-danger btn-xs delete-account" data-toggle="modal" data-target="#modal-delete-account" data-id="{$row['employee_id']}"><i class="fas fa-trash"></i> Delete</button>
+                <a href="edit-account/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
+                <button class="btn btn-block btn-danger btn-xs delete-account" data-toggle="modal" data-target="#modal-delete-account" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
             EOF; 
         };
         return $closureFun;

@@ -65,6 +65,77 @@
            });
        });
 
+       $('#form-post-edit-account').submit(function(e) {
+           e.preventDefault();
+           var me = $(this);
+
+           toastr.options = {
+               "closeButton": false,
+               "debug": false,
+               "newestOnTop": false,
+               "progressBar": true,
+               "positionClass": "toast-top-center",
+               "preventDuplicates": false,
+               "onclick": null,
+               "showDuration": "300",
+               "hideDuration": "1000",
+               "timeOut": "3000",
+               "extendedTimeOut": "1000",
+               "showEasing": "swing",
+               "hideEasing": "linear",
+               "showMethod": "fadeIn",
+               "hideMethod": "fadeOut"
+           }
+
+           $.ajax({
+               url: me.attr('action'),
+               type: 'post',
+               data: me.serialize(),
+               dataType: 'json',
+               success: function(response) {
+                   if (response.success == true) {
+                       toastr.success("Successfully Updated! This window will close in 3 seconds");
+
+                       $('#employee_id').removeClass("is-invalid").addClass('is-valid');
+                       $('#username').removeClass("is-invalid").addClass('is-valid');
+                       $('#password').removeClass("is-invalid").addClass('is-valid');
+                       $('#access_level').removeClass("is-invalid").addClass('is-valid');
+
+                       $("#small_employee_id").html('');
+                       $("#small_username").html('');
+                       $("#small_password").html('');
+                       $("#small_access_level").html('');
+
+                       setTimeout(function() {
+                           window.close()
+                       }, 3000);
+
+
+                   } else {
+
+                       toastr.error("Errors Occured!");
+                       $('#employee_id').removeClass("is-invalid").addClass('is-valid');
+                       $('#username').removeClass("is-invalid").addClass('is-valid');
+                       $('#password').removeClass("is-invalid").addClass('is-valid');
+                       $('#access_level').removeClass("is-invalid").addClass('is-valid');
+
+                       $("#small_employee_id").html('');
+                       $("#small_username").html('');
+                       $("#small_password").html('');
+                       $("#small_access_level").html('');
+
+                       $.each(response.messages, function(key, value) {
+                           if (value != '') {
+                               $('#' + key).removeClass("is-valid").addClass("is-invalid");
+                               $('#small_' + key).html(value);
+                           }
+                       });
+                   }
+
+               }
+           });
+       });
+
        $(function() {
            var table = $('#accounts_table').DataTable({
                "processing": true,
@@ -109,6 +180,15 @@
            });
 
        });
+
+       <?php if ($uri->getSegment(1) == 'edit-account') : ?>
+            $("#employee_id").val("<?= $account_data['employee_id'] ?>");
+            $("#username").val("<?= $account_data['username'] ?>");
+            $("#password").val("<?= $account_data['password'] ?>");
+            $("#access_level").val("<?= $account_data['access_level'] ?>");
+
+            $("#employee_id").attr('disabled', true);
+       <?php endif ?>
    </script>
 
    </body>

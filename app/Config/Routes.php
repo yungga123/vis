@@ -102,6 +102,8 @@ $routes->get('/add-account','Accounts::index');
 $routes->post('/post-add-account','Accounts::add_account_validate');
 $routes->get('/list-account','Accounts::list_account');
 $routes->get('/ajax-account','Accounts::get_accounts');
+$routes->get('edit-account/(:num)','Accounts::edit_account/$1');
+$routes->post('/post-edit-account','Accounts::edit_account_validate');
 
 /*
  * --------------------------------------------------------------------
