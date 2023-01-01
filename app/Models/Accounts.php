@@ -12,7 +12,7 @@ class Accounts extends Model
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = ["employee_id","username","password","access_level"];
 
@@ -24,8 +24,27 @@ class Accounts extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        "employee_id"   => "is_unique[accounts.employee_id]|required",
+        "username"      => "alpha_numeric",
+        "password"      => "alpha_numeric",
+        "access_level"  => "required"
+    ];
+    protected $validationMessages   = [
+        "employee_id" => [
+            "is_unique" => "This employee is already added in the accounts.",
+            "required" => "This field is required."
+        ],
+        "username" => [
+            "alpha_numeric" => "Only alpha numeric characters is allowed (A-Z, a-z, 0-9)"
+        ],
+        "password" => [
+            "alpha_numeric" => "Only alpha numeric characters is allowed (A-Z, a-z, 0-9)"
+        ],
+        "access_level" => [
+            "required" => "This field is required."
+        ],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
@@ -47,5 +66,22 @@ class Accounts extends Model
     public function findUsername($user) {
         return $this->where('username',$user)
                     ->findAll();
+    }
+
+    public function noticeTable() {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('accounts_view');
+        $builder->select("*");
+        return $builder;
+    }
+
+    public function buttonEdit(){
+        $closureFun = function($row){
+            return <<<EOF
+                <a href="edit-account/{$row['employee_id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
+                <button class="btn btn-block btn-danger btn-xs delete-account" data-toggle="modal" data-target="#modal-delete-account" data-id="{$row['employee_id']}"><i class="fas fa-trash"></i> Delete</button>
+            EOF; 
+        };
+        return $closureFun;
     }
 }

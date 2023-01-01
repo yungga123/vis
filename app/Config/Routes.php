@@ -97,6 +97,12 @@ $routes->get('/delete-employee/(:num)','Employees::delete_employee/$1');
 //SALES MANAGER
 $routes->get('/manager-of-sales','SalesManager::index');
 
+//ACCOUNTS
+$routes->get('/add-account','Accounts::index');
+$routes->post('/post-add-account','Accounts::add_account_validate');
+$routes->get('/list-account','Accounts::list_account');
+$routes->get('/ajax-account','Accounts::get_accounts');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
