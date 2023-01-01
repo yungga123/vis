@@ -163,4 +163,27 @@ class Accounts extends BaseController
 
         echo json_encode($validate);
     }
+
+    public function delete_account() {
+        if (session('logged_in') == true) {
+
+            $accountsModel = new ModelsAccounts();
+            
+            $data['title'] = 'Delete Account';
+            $data['page_title'] = 'Delete Account';
+            $data['uri'] = service('uri');
+            $data['href'] = site_url('employee-list');
+            $accountsModel->delete($id);
+
+            echo view('templates/header', $data);
+            echo view('employees/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('templates/deletepage');
+            echo view('templates/footer');
+            echo view('employees/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
 }
