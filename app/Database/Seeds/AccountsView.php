@@ -9,10 +9,15 @@ class AccountsView extends Seeder
     public function run()
     {
         $db = \Config\Database::connect();
+        $db->query("
+            DROP VIEW IF EXISTS
+                accounts_view
+        ");
         $db->query(
             "CREATE VIEW 
                 accounts_view 
             AS SELECT
+                accounts.account_id as id,
                 accounts.employee_id as employee_id,
                 CONCAT(employees.firstname,' ',employees.lastname) as employee_name,
                 username,

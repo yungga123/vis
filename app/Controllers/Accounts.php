@@ -111,4 +111,56 @@ class Accounts extends BaseController
 
         return $accountsTable->getDatatable();
     }
+
+    public function edit_account($id)
+    {
+        if (session('logged_in') == true) {
+
+            $employeesModel = new EmployeesModel();
+            $accountsModel = new ModelsAccounts();
+            
+            
+            $data['title'] = 'Add Account';
+            $data['page_title'] = 'Add an account';
+            $data['uri'] = service('uri');
+            $data['employees'] = $employeesModel->findAll();
+            $data['account_data'] = $accountsModel->find($id);
+            $data['id'] = $id;
+
+            echo view('templates/header', $data);
+            echo view('accounts/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('accounts/add_account');
+            echo view('templates/footer');
+            echo view('accounts/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
+    public function edit_account_validate() {
+        $accountsModel = new ModelsAccounts();
+
+        $validate = [
+            "success" => false,
+            "messages" => ''
+        ];
+
+        $id = $this->request->getPost('id');
+
+        $data = [
+            "username" => $this->request->getPost('username'),
+            "password" => $this->request->getPost('password'),
+            "access_level" => $this->request->getPost('access_level')
+        ];
+
+        if (!$accountsModel->update($id,$data)) {
+            $validate['messages'] = $accountsModel->errors();
+        } else {
+            $validate['success'] = true;
+        }
+
+        echo json_encode($validate);
+    }
 }

@@ -18,7 +18,8 @@
             <div class="row">
                 
                 <div class="col-sm-6">
-                <?= form_open("post-add-account",["id" => "form-post-add-account"]) ?>
+                <?= ($uri->getSegment(1)=='edit-account') ? form_open("post-edit-account",["id" => "form-post-edit-account"]) : form_open("post-add-account",["id" => "form-post-edit-account"]) ?>
+                <?= ($uri->getSegment(1)=='edit-account') ? "<input type='hidden' name='id' id='id' value='".$id."'>" : "" ;?>
                     <div class="card">
                         <div class="card-body">
                             <div class="form-group">
