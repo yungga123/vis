@@ -164,7 +164,7 @@ class Accounts extends BaseController
         echo json_encode($validate);
     }
 
-    public function delete_account() {
+    public function delete_account($id) {
         if (session('logged_in') == true) {
 
             $accountsModel = new ModelsAccounts();
@@ -172,7 +172,7 @@ class Accounts extends BaseController
             $data['title'] = 'Delete Account';
             $data['page_title'] = 'Delete Account';
             $data['uri'] = service('uri');
-            $data['href'] = site_url('employee-list');
+            $data['href'] = site_url('list-account');
             $accountsModel->delete($id);
 
             echo view('templates/header', $data);
