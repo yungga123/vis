@@ -18,7 +18,7 @@
             <div class="row">
                 
                 <div class="col-sm-6">
-                <?= ($uri->getSegment(1)=='edit-account') ? form_open("post-edit-account",["id" => "form-post-edit-account"]) : form_open("post-add-account",["id" => "form-post-edit-account"]) ?>
+                <?= ($uri->getSegment(1)=='edit-account') ? form_open("post-edit-account",["id" => "form-post-edit-account"]) : form_open("post-add-account",["id" => "form-post-add-account"]) ?>
                 <?= ($uri->getSegment(1)=='edit-account') ? "<input type='hidden' name='id' id='id' value='".$id."'>" : "" ;?>
                     <div class="card">
                         <div class="card-body">
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <button type="submit" class="btn btn-success float-right"><i class="fas fa-plus-circle"></i> Add Account</button>
+                            <button type="submit" class="btn btn-success float-right"><i class="fas fa-check"></i> CONFIRM</button>
                             <a href="<?= site_url('employee-menu') ?>" class="btn btn-secondary"><i class="fas fa-undo"></i> Go to Employee Menu</a>
                         </div>
                     </div>

@@ -94,7 +94,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> NO</button>
-        <a href="button" class="btn btn-success href-employee"><i class="fas fa-check"></i> YES</a>
+        <a href="#" class="btn btn-success href-employee"><i class="fas fa-check"></i> YES</a>
       </div>
     </div>
     <!-- /.modal-content -->

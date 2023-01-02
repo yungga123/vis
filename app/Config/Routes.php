@@ -104,6 +104,7 @@ $routes->get('/list-account','Accounts::list_account');
 $routes->get('/ajax-account','Accounts::get_accounts');
 $routes->get('edit-account/(:num)','Accounts::edit_account/$1');
 $routes->post('/post-edit-account','Accounts::edit_account_validate');
+$routes->get('delete-account/(:num)','Accounts::delete_account/$1');
 
 /*
  * --------------------------------------------------------------------

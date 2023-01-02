@@ -189,6 +189,11 @@
 
             $("#employee_id").attr('disabled', true);
        <?php endif ?>
+
+       $(document).on("click", ".delete-account", function() {
+        var id = $(this).data('id');
+        $(".href-account").prop("href", "<?= site_url('delete-account') ?>/" + id);
+    });
    </script>
 
    </body>
