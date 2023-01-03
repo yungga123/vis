@@ -47,9 +47,25 @@ class TaskLeadModel extends Model
         "customer_id" => 'required',
         "project" => 'max_length[500]',
         "project_amount" => 'permit_empty|decimal|max_length[18]',
-        "remark_next_step" => 'required'
+        "remark_next_step" => 'required',
+        "forecast_close_date" => 'required',
+        "close_deal_date" => 'required',
+        "project_start_date" => 'required',
+        "project_finish_date" => 'required',
     ];
     protected $validationMessages   = [
+        "forecast_close_date" => [
+            "required" => "This field is required."
+        ],
+        "close_deal_date" => [
+            "required" => "This field is required."
+        ],
+        "project_start_date" => [
+            "required" => "This field is required."
+        ],
+        "project_finish_date" => [
+            "required" => "This field is required."
+        ],
         "quotation_num" => [
             "max_length" => "Max of 100 characters."
         ],

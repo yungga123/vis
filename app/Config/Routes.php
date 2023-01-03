@@ -83,6 +83,8 @@ $routes->get('/project-list','TaskLead::project_list');
 $routes->get('/project-table','TaskLead::getProjectList');
 $routes->get('/delete-tasklead/(:num)','Tasklead::delete_tasklead/$1');
 $routes->get('/update-tasklead/(:num)/(:any)','Tasklead::update_project_status/$1/$2');
+$routes->get('/booked-status/(:num)','TaskLead::booked_status/$1');
+$routes->post('/post-booked-status','TaskLead::booked_status_validate');
 
 //EMPLOYEES
 $routes->get('/add-employee','Employees::index');

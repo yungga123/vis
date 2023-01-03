@@ -132,7 +132,9 @@
               </div>
             </div>
             <div class="card-footer">
-              <button type="submit" class="btn btn-success float-right">Submit</button>
+              <a href="<?= site_url('sales-dashboard') ?>" class="btn btn-success"><i class="fas fa-table"></i> Sales Dashboard</a>
+                <a href="<?= site_url('tasklead') ?>" class="btn btn-secondary"><i class="fas fa-undo-alt"></i> Task Lead Menu</a>
+              <button type="submit" class="btn btn-success float-right"><i class="fas fa-check"></i> Submit</button>
             </div>
           </div>
           <?= form_close() ?>

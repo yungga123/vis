@@ -1,6 +1,6 @@
 # vcmmis
-1. Account(HR will provide accounts for each employee or who will have access to system.)
-    Levels:
+# 1. Account(HR will provide accounts for each employee or who will have access to system.)
+#    Levels:
         - Administrator - all access usually for the system developer. (admin)
         - Managers - all access except development. (manager)
         - User - general use of basic MIS system (user)
@@ -9,11 +9,11 @@
         - HR - HR access such as payroll and employee data (hr)
 
 
-2. Quarter () -> will be auto generated depends on input date.
+# 2. Quarter () -> will be auto generated depends on input date. 
 
-3. Min forecast and max forecast must be 6 days before and after deadline to close the project
+# 3. Min forecast and max forecast must be 6 days before and after deadline to close the project
 
-4. Closed deal date - will be updated once the project is booked.
+# 4. Closed deal date - will be updated once the project is booked.
 
 5. Branches for sub customer
 
