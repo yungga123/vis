@@ -74,6 +74,14 @@
                             </table>
                         </div>
                     </div>
+
+                    <div class="card-footer">
+                      <div class="float-right">
+                        <a href="<?= site_url('sales-dashboard') ?>" class="btn btn-success"><i class="fas fa-table"></i> Sales Dashboard</a>
+                        <a href="<?= site_url('tasklead') ?>" class="btn btn-secondary"><i class="fas fa-undo-alt"></i> Task Lead Menu</a>
+                      </div>
+                      
+                    </div>
                 </div>
             </div>
         </div>

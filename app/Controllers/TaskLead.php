@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\CustomersModel;
 use App\Models\TaskLeadModel;
 use CodeIgniter\API\ResponseTrait;
+use CodeIgniter\I18n\Time;
 use monken\TablesIgniter;
 
 class TaskLead extends BaseController
@@ -37,11 +38,14 @@ class TaskLead extends BaseController
     {
         if (session('logged_in')==true)
         {   
+            $time = new Time('now');
+
             $customersModel = new CustomersModel();
             $data['title'] = 'Add Project';
             $data['page_title'] = 'Add Project';
             $data['customers'] = $customersModel->findAll();
             $data['uri'] = service('uri');
+            $data['date_quarter'] = $time->getQuarter();
             
 
             echo view('templates/header',$data);
@@ -78,9 +82,6 @@ class TaskLead extends BaseController
             "forecast_close_date" => $this->request->getPost('forecast_close_date'),
             "min_forecast_date" => $this->request->getPost('min_forecast_date'),
             "max_forecast_date" => $this->request->getPost('max_forecast_date'),
-            "close_deal_date" => $this->request->getPost('close_deal_date'),
-            "project_start_date" => $this->request->getPost('project_start_date'),
-            "project_finish_date" => $this->request->getPost('project_finish_date'),
         ];
 
         if (!$taskleadModel->insert($data)) {
@@ -112,9 +113,6 @@ class TaskLead extends BaseController
             "forecast_close_date" => $this->request->getPost('forecast_close_date'),
             "min_forecast_date" => $this->request->getPost('min_forecast_date'),
             "max_forecast_date" => $this->request->getPost('max_forecast_date'),
-            "close_deal_date" => $this->request->getPost('close_deal_date'),
-            "project_start_date" => $this->request->getPost('project_start_date'),
-            "project_finish_date" => $this->request->getPost('project_finish_date'),
         ];
 
         if (!$taskleadModel->update($id,$data)) {
@@ -295,17 +293,6 @@ class TaskLead extends BaseController
 
                     break;
                 
-                case '100.00':
-                    $status_text = "<h1 class='text-success'>BOOKED (100%)</h1>";
-
-                    if ($taskleadData['quotation_num']=="") {
-                        $quotation_num = "QTN".date('Ymd')."001";
-                        $data_model['quotation_num'] = $quotation_num;
-                    } else {
-                        $quotation_num = "";
-                    }
-
-                    break;
                 default:
                     $status_text = "";
                     $quotation_num = "";
@@ -335,6 +322,62 @@ class TaskLead extends BaseController
         } else {
             return redirect()->to('login');
         }
+    }
+
+    public function booked_status($id) {
+        if (session('logged_in') == true) {
+
+            $taskleadModel = new TaskLeadModel();
+            $taskleadData = $taskleadModel->find($id);
+
+            if ($taskleadData['quotation_num']=="") {
+                $quotation_num = "QTN".date('Ymd')."001";
+                //$data_model['quotation_num'] = $quotation_num;
+            } else {
+                $quotation_num = "";
+            }
+
+            
+            $data['title'] = 'Booked Task Lead';
+            $data['page_title'] = 'Book a Task Lead';
+            $data['quotation_num'] = $quotation_num;
+            $data['uri'] = service('uri');
+            $data['id'] = $id;
+
+            echo view('templates/header', $data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('task_lead/booked_tasklead');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
+    public function booked_status_validate() {
+        $taskleadModel = new TaskLeadModel();
+        $validate = [
+            "success" => false,
+            "messages" => ''
+        ];
+
+        $id = $this->request->getPost('id');
+        $data = [
+            "status" => $this->request->getPost('status'),
+            "close_deal_date" => $this->request->getPost('close_deal_date'),
+            "project_start_date" => $this->request->getPost('project_start_date'),
+            "project_finish_date" => $this->request->getPost('project_finish_date'),
+        ];
+
+        if (!$taskleadModel->update($id,$data)) {
+            $validate['messages'] = $taskleadModel->errors();
+        } else {
+            $validate['success'] = true;
+        }
+
+        echo json_encode($validate);
     }
 
     public function delete_tasklead($id) {
