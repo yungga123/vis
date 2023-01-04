@@ -49,21 +49,9 @@ class TaskLeadModel extends Model
         "project_amount" => 'permit_empty|decimal|max_length[18]',
         "remark_next_step" => 'required',
         "forecast_close_date" => 'required',
-        "close_deal_date" => 'required',
-        "project_start_date" => 'required',
-        "project_finish_date" => 'required',
     ];
     protected $validationMessages   = [
         "forecast_close_date" => [
-            "required" => "This field is required."
-        ],
-        "close_deal_date" => [
-            "required" => "This field is required."
-        ],
-        "project_start_date" => [
-            "required" => "This field is required."
-        ],
-        "project_finish_date" => [
             "required" => "This field is required."
         ],
         "quotation_num" => [
@@ -107,6 +95,27 @@ class TaskLeadModel extends Model
     public function noticeTable(){
         $db      = \Config\Database::connect();
         $builder = $db->table('task_lead');
+        $builder->select('*');
+        return $builder;
+    }
+
+
+    public function noticeTableWhere($employee_id){
+        $db      = \Config\Database::connect();
+        $builder = $db->table('task_lead')->where('employee_id',$employee_id);
+        $builder->select('*');
+        return $builder;
+    }
+
+    public function noticeTableBooked(){
+        $db      = \Config\Database::connect();
+        $builder = $db->table('task_lead_booked');
+        $builder->select('*');
+        return $builder;
+    }
+    public function noticeTableBookedWhere($employee_id){
+        $db      = \Config\Database::connect();
+        $builder = $db->table('task_lead_booked')->where('employee_id',$employee_id);
         $builder->select('*');
         return $builder;
     }

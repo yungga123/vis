@@ -9,6 +9,11 @@ class EmployeesView extends Seeder
     public function run()
     {
         $db = \Config\Database::connect();
+        $db->query("
+            DROP VIEW IF EXISTS
+                employees_view
+        ");
+
         $db->query(
             "CREATE VIEW 
                 employees_view 

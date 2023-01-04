@@ -292,9 +292,36 @@
                     columns: ":visible"
                 },
                 text: "Export to Excel"
-            },, "colvis"],
+            }, "colvis"],
             "serverSide": true,
-            "ajax": '<?= site_url('project-table') ?>',
+            "ajax": '<?= ($uri->getSegment(1)=='manager-project-list') ? site_url('manager-project-table') : site_url('project-table') ?>',
+            "initComplete": function(settings, json) {
+                project_list_table.buttons().container().appendTo('#project_list_table_wrapper .col-md-6:eq(0)');
+            }
+        });
+
+
+
+    });
+
+    $(function() {
+        var project_list_table = $('#project_list_table_booked').DataTable({
+            "processing": true,
+            "scrollX": true,
+            "autoWidth": false,
+            "columnDefs": [{
+                "targets": '_all',
+                "defaultContent": "<i>Not set</i>"
+            }],
+            "buttons": [{
+                extend: "excel",
+                exportOptions: {
+                    columns: ":visible"
+                },
+                text: "Export to Excel"
+            }, "colvis"],
+            "serverSide": true,
+            "ajax": '<?= ($uri->getSegment(1)=='manager-project-list-booked') ? site_url('manager-project-table-booked') : site_url('project-table-booked') ?>',
             "initComplete": function(settings, json) {
                 project_list_table.buttons().container().appendTo('#project_list_table_wrapper .col-md-6:eq(0)');
             }

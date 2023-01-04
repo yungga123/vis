@@ -9,6 +9,10 @@ class CustomerView extends Seeder
     public function run()
     {
         $db = \Config\Database::connect();
+        $db->query("
+            DROP VIEW IF EXISTS
+                customer_view
+        ");
         $db->query(
             "CREATE VIEW 
                 customer_view 
