@@ -332,7 +332,8 @@ class TaskLead extends BaseController
 
             if ($taskleadData['quotation_num']=="") {
                 $quotation_num = "QTN".date('Ymd')."001";
-                //$data_model['quotation_num'] = $quotation_num;
+                $status["quotation_num"] = $quotation_num; 
+                $taskleadModel->update($id,$status);
             } else {
                 $quotation_num = "";
             }
