@@ -4,18 +4,18 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 
-class TaskleadView extends Seeder
+class TaskleadBookedView extends Seeder
 {
     public function run()
     {
         $db = \Config\Database::connect();
         $db->query("
             DROP VIEW IF EXISTS
-                task_lead
+                task_lead_booked
         ");
         $db->query("
         CREATE VIEW 
-            task_lead 
+            task_lead_booked
         AS SELECT 
             tasklead.id as id,
             tasklead.employee_id,
@@ -53,7 +53,7 @@ class TaskleadView extends Seeder
         ON
             tasklead.employee_id=employees.employee_id
         WHERE
-            tasklead.deleted_at IS NULL AND status <> 100.00
+            tasklead.deleted_at IS NULL AND status = 100.00
         ");
     }
 }

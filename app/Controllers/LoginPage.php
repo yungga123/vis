@@ -37,11 +37,13 @@ class LoginPage extends BaseController
         $username = $this->request->getPost('username');
         $user_find = $userModel->findUsername($username);
         $password = '';
+        $access = '';
 
         if ($user_find)
         {
             $username = $user_find[0]['username'];
             $password = $user_find[0]['password'];
+            $access = $user_find[0]['access_level'];
             $employee_id = $user_find[0]['employee_id'];
         }
 
@@ -74,6 +76,7 @@ class LoginPage extends BaseController
                 'username' => $username,
                 'password' => $password,
                 'name' => $employeeFind[0]['firstname'].' '.$employeeFind[0]['lastname'],
+                'access' => $access,
                 'employee_id' => $employeeFind[0]['employee_id']
             ];
 

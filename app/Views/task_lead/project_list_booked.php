@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Project List</h1>
+                    <h1 class="m-0">Booked Project List</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                 </div><!-- /.col -->
@@ -21,7 +21,7 @@
                     <!-- Main Card -->
                     <div class="card">
                         <div class="card-body">
-                            <table id="project_list_table" class="table table-bordered table-striped nowrap">
+                            <table id="project_list_table_booked" class="table table-bordered table-striped nowrap">
                                 <thead>
                                     <tr>
                                         <th>Project ID</th>

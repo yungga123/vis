@@ -146,31 +146,11 @@
                    "defaultContent": "<i>Not set</i>"
                }],
                "buttons": [{
-                   extend: 'copy',
-                   exportOptions: {
-                       columns: ':visible'
-                   }
-
-               }, {
-                   extend: "csv",
-                   exportOptions: {
-                       columns: ':visible'
-                   }
-               }, {
                    extend: "excel",
                    exportOptions: {
                        columns: ":visible"
-                   }
-               }, {
-                   extend: "pdf",
-                   exportOptions: {
-                       columns: ":visible"
-                   }
-               }, {
-                   extend: "print",
-                   exportOptions: {
-                       columns: ":visible"
-                   }
+                   },
+                   text: "Export to Excel"
                }, "colvis"],
                "serverSide": true,
                "ajax": '<?= site_url('ajax-account') ?>',

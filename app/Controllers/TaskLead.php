@@ -145,12 +145,302 @@ class TaskLead extends BaseController
         }
     }
 
-    public function getProjectList()
+    public function manager_project_list()
+    {
+        
+        if (session('logged_in')==true && (session('access')=='manager' || session('access')=='admin'))
+        {   
+            $data['title'] = 'Managers Project List';
+            $data['uri'] = service('uri');
+            
+            echo view('templates/header',$data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('task_lead/project_list');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        }
+        elseif(session('logged_in')==true)
+        {
+            $data['title'] = 'Invalid Access';
+            $data['page_title'] = 'Invalid Access';
+            $data['href'] = site_url('tasklead');
+            $data['uri'] = service('uri');
+            
+            echo view('templates/header',$data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('templates/offlimits');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        }
+        else
+        {
+            return redirect()->to('login');
+        }
+    }
+
+    public function project_list_booked()
+    {
+        if (session('logged_in')==true)
+        {   
+            $data['title'] = 'Booked Project List';
+            $data['uri'] = service('uri');
+            
+            echo view('templates/header',$data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('task_lead/project_list_booked');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        }
+        else
+        {
+            return redirect()->to('login');
+        }
+    }
+
+    public function manager_project_list_booked()
+    {
+        
+        if (session('logged_in')==true && (session('access')=='manager' || session('access')=='admin'))
+        {   
+            $data['title'] = 'Booked Managers Project List';
+            $data['uri'] = service('uri');
+            
+            echo view('templates/header',$data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('task_lead/project_list_booked');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        }
+        elseif(session('logged_in')==true)
+        {
+            $data['title'] = 'Invalid Access';
+            $data['page_title'] = 'Invalid Access';
+            $data['href'] = site_url('tasklead');
+            $data['uri'] = service('uri');
+            
+            echo view('templates/header',$data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('templates/offlimits');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        }
+        else
+        {
+            return redirect()->to('login');
+        }
+    }
+
+    public function getProjectListManager()
 	{
 		$taskleadModel = new TaskLeadModel();
 
         $taskleadTable = new TablesIgniter();
         $taskleadTable->setTable($taskleadModel->noticeTable())
+            ->setDefaultOrder("id","DESC")
+            ->setOrder([
+                "id",
+                null,
+                "quarter",
+                "employee_name",
+                "status_percent",
+                "status",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_start_date"
+            ])
+            ->setSearch([
+                "customer_name",
+                "contact_number",
+                "id",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "remark_next_step",
+                "status",
+                "status1"
+            ])
+            ->setOutput([
+                "id",
+                $taskleadModel->buttonEdit(),
+                "employee_name",
+                "quarter",
+                "status",
+                "status_percent",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status1",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_duration"
+            ]);
+        return $taskleadTable->getDatatable();
+	}
+
+    public function getProjectList()
+	{
+		$taskleadModel = new TaskLeadModel();
+
+        $taskleadTable = new TablesIgniter();
+        $taskleadTable->setTable($taskleadModel->noticeTableWhere(session('employee_id')))
+            ->setDefaultOrder("id","DESC")
+            ->setOrder([
+                "id",
+                null,
+                "quarter",
+                "employee_name",
+                "status_percent",
+                "status",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_start_date"
+            ])
+            ->setSearch([
+                "customer_name",
+                "contact_number",
+                "id",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "remark_next_step",
+                "status",
+                "status1"
+            ])
+            ->setOutput([
+                "id",
+                $taskleadModel->buttonEdit(),
+                "employee_name",
+                "quarter",
+                "status",
+                "status_percent",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status1",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_duration"
+            ]);
+        return $taskleadTable->getDatatable();
+	}
+
+    public function getProjectListBookedManager()
+	{
+		$taskleadModel = new TaskLeadModel();
+
+        $taskleadTable = new TablesIgniter();
+        $taskleadTable->setTable($taskleadModel->noticeTableBooked())
+            ->setDefaultOrder("id","DESC")
+            ->setOrder([
+                "id",
+                null,
+                "quarter",
+                "employee_name",
+                "status_percent",
+                "status",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_start_date"
+            ])
+            ->setSearch([
+                "customer_name",
+                "contact_number",
+                "id",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "remark_next_step",
+                "status",
+                "status1"
+            ])
+            ->setOutput([
+                "id",
+                $taskleadModel->buttonEdit(),
+                "employee_name",
+                "quarter",
+                "status",
+                "status_percent",
+                "customer_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status1",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_duration"
+            ]);
+        return $taskleadTable->getDatatable();
+	}
+
+    public function getProjectBookedList()
+	{
+		$taskleadModel = new TaskLeadModel();
+
+        $taskleadTable = new TablesIgniter();
+        $taskleadTable->setTable($taskleadModel->noticeTableBookedWhere(session('employee_id')))
             ->setDefaultOrder("id","DESC")
             ->setOrder([
                 "id",
