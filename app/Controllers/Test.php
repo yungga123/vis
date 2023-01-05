@@ -15,6 +15,15 @@ class Test extends BaseController
         $taskleadModel = new TaskLeadModel();
         $customerModel = new CustomersModel();
         $customerFind = $customerModel->find(1);
-        d($customerFind['customer_name']);
+        // d($taskleadModel->booked_projects());
+        // $db      = \Config\Database::connect();
+        // $query = $db->query('SELECT * FROM task_lead_booked');
+        $result = $taskleadModel->booked_projects()->getResult();
+
+        foreach ($result as $row) {
+            echo $row['id'];
+        }
+        
+        
     }
 }

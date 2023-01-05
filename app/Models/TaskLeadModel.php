@@ -130,5 +130,4 @@ class TaskLeadModel extends Model
         };
         return $closureFun;
     }
-
 }

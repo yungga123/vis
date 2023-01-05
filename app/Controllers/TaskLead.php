@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\CustomersModel;
 use App\Models\TaskLeadModel;
+use App\Models\TaskLeadView;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\I18n\Time;
 use monken\TablesIgniter;
@@ -186,8 +187,12 @@ class TaskLead extends BaseController
     {
         if (session('logged_in')==true)
         {   
+            // $taskleadModel = new TaskLeadModel();
+            $taskleadView = new TaskLeadView();
             $data['title'] = 'Booked Project List';
             $data['uri'] = service('uri');
+            $data['booked_projects'] = $taskleadView->paginate(10);
+            $data['pager'] = $taskleadView->pager;
             
             echo view('templates/header',$data);
             echo view('task_lead/header');
@@ -690,6 +695,28 @@ class TaskLead extends BaseController
             echo view('templates/footer');
             echo view('task_lead/script');
         } else {
+            return redirect()->to('login');
+        }
+    }
+
+    public function project_booked_details($id) {
+        if (session('logged_in')==true)
+        {
+            $taskleadView = new TaskLeadView();
+            $data['title'] = 'Project Booked Details';
+            $data['uri'] = service('uri');
+            $data['project_detail'] = $taskleadView->find($id);
+
+            echo view('templates/header',$data);
+            echo view('task_lead/header');
+            echo view('templates/navbar');
+            echo view('templates/sidebar');
+            echo view('task_lead/project_booked_details');
+            echo view('templates/footer');
+            echo view('task_lead/script');
+        }
+        else
+        {
             return redirect()->to('login');
         }
     }
