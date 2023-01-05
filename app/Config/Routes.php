@@ -91,6 +91,7 @@ $routes->get('/delete-tasklead/(:num)','Tasklead::delete_tasklead/$1');
 $routes->get('/update-tasklead/(:num)/(:any)','Tasklead::update_project_status/$1/$2');
 $routes->get('/booked-status/(:num)','TaskLead::booked_status/$1');
 $routes->post('/post-booked-status','TaskLead::booked_status_validate');
+$routes->get('/project-booked-details/(:num)','TaskLead::project_booked_details/$1');
 
 //EMPLOYEES
 $routes->get('/add-employee','Employees::index');
