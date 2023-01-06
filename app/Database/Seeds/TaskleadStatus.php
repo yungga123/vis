@@ -17,19 +17,19 @@ class TaskleadStatus extends Seeder
             ],
             [  
                 'percent'           => 30,
-                'status_percent'    => 'Negotiation'
+                'status_percent'    => 'Qualified'
             ],
             [
                 'percent'           => 50,
-                'status_percent'    => 'Evaluation'
-            ],
-            [
-                'percent'           => 70,
                 'status_percent'    => 'Developed Solution'
             ],
             [
+                'percent'           => 70,
+                'status_percent'    => 'Evaluation'
+            ],
+            [
                 'percent'           => 90,
-                'status_percent'    => 'Qualified'
+                'status_percent'    => 'Negotiation'
             ],
             [
                 'percent'           => 100,
