@@ -25,7 +25,7 @@
 
 # 9. Export to Excel is implemented for each table list.
 
-10. Add upload files to the booked forecast
+# 10. Add upload files to the booked forecast
 
 # 11. Managers will have access to consolidated forecast
 
