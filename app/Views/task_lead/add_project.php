@@ -50,7 +50,6 @@
                       <option value="50.00">50% - Developed Solution</option>
                       <option value="70.00">70% - Evaluation</option>
                       <option value="90.00">90% - Negotiation</option>
-                      <option value="100.00">100% - Booked</option>
                     </select>
                     <small id="small_status" class="form-text text-muted"></small>
                   </div>
