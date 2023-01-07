@@ -689,8 +689,9 @@ class TaskLead extends BaseController
             $data['uri'] = service('uri');
             $data['project_detail'] = $taskleadView->find($id);
             $data['errors'] = [];
+            $data['id'] = $id;
 
-            $path = WRITEPATH . 'uploads/' . $id;
+            $path = '../public/uploads/project-booked/' . $id;
 
             $data['map'] = directory_map($path);
 
@@ -726,7 +727,7 @@ class TaskLead extends BaseController
                 $data['uri'] = service('uri');
                 $data['project_detail'] = $taskleadView->find($id);
 
-                $path = WRITEPATH . 'uploads/' . $id;
+                $path = '../public/uploads/project-booked/' . $id;
 
                 $data['map'] = directory_map($path);
 
@@ -742,13 +743,17 @@ class TaskLead extends BaseController
             $img = $this->request->getFile('project_file');
 
             if (!$img->hasMoved()) {
-                $filepath = WRITEPATH . 'uploads/project-booked/' . $img->store($id,$img->getClientName());
+                //$filepath = WRITEPATH . 'uploads/' . $img->store($id,$img->getClientName());
+                $filename = $img->getClientName();
+                $filepath = '../public/uploads/project-booked/'.$id;
+                $img->move($filepath,$filename);
 
                 $data = ['uploaded_flleinfo' => new File($filepath)];
                 $data['title'] = 'Upload File Success';
                 $data['page_title'] = 'File upload success!';
                 $data['href'] = site_url('project-list-booked');
                 $data['uri'] = service('uri');
+                $data['id'] = $id;
 
                  return view('templates/header', $data)
                  .view('task_lead/header')

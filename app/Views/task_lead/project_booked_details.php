@@ -154,7 +154,7 @@
 
               <?php foreach ($map as $item) : ?>
                 <li>
-                  <a href="#" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> <?= $item ;?></a>
+                  <a href="<?= base_url('uploads/project-booked/' . $id . '/' . $item) ;?>" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> <?= $item ;?></a>
                 </li>
               <?php endforeach ?>
               
