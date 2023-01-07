@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\CustomersModel;
+use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
 use App\Models\TaskLeadView;
 use CodeIgniter\API\ResponseTrait;
@@ -511,91 +512,109 @@ class TaskLead extends BaseController
         }
     }
 
-    public function update_project_status($id, $status)
-    {
-        if (session('logged_in') == true) {
+    // public function update_project_status($id, $status)
+    // {
+    //     if (session('logged_in') == true) {
 
-            $taskleadModel = new TaskLeadModel();
-            $taskleadData = $taskleadModel->find($id);
-            $data_model = [
-                'status' => $status
-            ];
+    //         $taskleadModel = new TaskLeadModel();
+    //         $taskleadHistoryModel = new TaskleadHistoryModel();
+    //         $taskleadData = $taskleadModel->find($id);
+    //         $data_model = [
+    //             'status' => $status
+    //         ];
 
-            switch ($status) {
-                case '10.00':
-                    $status_text = "<h1 class='text-danger'>IDENTIFIED (10%)</h1>";
-                    $quotation_num = "";
-                    break;
+    //         switch ($status) {
+    //             case '10.00':
 
-                case '30.00':
-                    $status_text = "<h1 class='text-secondary'>QUALIFIED (30%)</h1>";
-                    $quotation_num = "";
-                    break;
-
-                case '50.00':
-                    $status_text = "<h1 class='text-warning'>DEVELOPED SOLUTION (50%)</h1>";
-
-                    if ($taskleadData['quotation_num'] == "") {
-                        $quotation_num = "QTN" . date('Ymd') . "001";
-                        $data_model['quotation_num'] = $quotation_num;
-                    } else {
-                        $quotation_num = "";
-                    }
-
-                    break;
-
-                case '70.00':
-                    $status_text = "<h1 class='text-info'>EVALUATION (70%)</h1>";
-
-                    if ($taskleadData['quotation_num'] == "") {
-                        $quotation_num = "QTN" . date('Ymd') . "001";
-                        $data_model['quotation_num'] = $quotation_num;
-                    } else {
-                        $quotation_num = "";
-                    }
-
-                    break;
-
-                case '90.00':
-                    $status_text = "<h1 class='text-primary'>NEGOTIATION (90%)</h1>";
-
-                    if ($taskleadData['quotation_num'] == "") {
-                        $quotation_num = "QTN" . date('Ymd') . "001";
-                        $data_model['quotation_num'] = $quotation_num;
-                    } else {
-                        $quotation_num = "";
-                    }
-
-                    break;
-
-                default:
-                    $status_text = "";
-                    $quotation_num = "";
-                    break;
-            }
+    //                 // $history_add = [
+    //                 //     "tasklead_id" => $id,
+    //                 //     "quarter" => $taskleadData['quarter'],
+    //                 //     "status" => $taskleadData['status'],
+    //                 //     "customer_id" => $taskleadData['customer_id'],
+    //                 //     "project" => $taskleadData['project'],
+    //                 //     "project_amount" => $taskleadData['project_amount'],
+    //                 //     "quotation_num" => $taskleadData['quotation_num'],
+    //                 //     "forecast_close_date" => $taskleadData['forecast_close_date'],
+    //                 //     "remark_next_step" => $taskleadData['remark_next_step'],
+    //                 //     "close_deal_date" => $taskleadData['close_deal_date'],
+    //                 //     "project_start_date" => $taskleadData['project_start_date'],
+    //                 //     "project_finish_date" => $taskleadData['project_finish_date']
+    //                 // ];
 
 
-            $data['title'] = 'Update Tasklead Status';
-            $data['page_title'] = 'Update Tasklead Status';
-            $data['uri'] = service('uri');
-            $data['href'] = site_url('project-list');
-            $data['status'] = $status_text;
-            $data['quotation_num'] = $quotation_num;
+    //                 $status_text = "<h1 class='text-danger'>IDENTIFIED (10%)</h1>";
+    //                 $quotation_num = "";
+    //                 break;
+
+    //             case '30.00':
+    //                 $status_text = "<h1 class='text-secondary'>QUALIFIED (30%)</h1>";
+    //                 $quotation_num = "";
+    //                 break;
+
+    //             case '50.00':
+    //                 $status_text = "<h1 class='text-warning'>DEVELOPED SOLUTION (50%)</h1>";
+
+    //                 if ($taskleadData['quotation_num'] == "") {
+    //                     $quotation_num = "QTN" . date('Ymd') . "001";
+    //                     $data_model['quotation_num'] = $quotation_num;
+    //                 } else {
+    //                     $quotation_num = "";
+    //                 }
+
+    //                 break;
+
+    //             case '70.00':
+    //                 $status_text = "<h1 class='text-info'>EVALUATION (70%)</h1>";
+
+    //                 if ($taskleadData['quotation_num'] == "") {
+    //                     $quotation_num = "QTN" . date('Ymd') . "001";
+    //                     $data_model['quotation_num'] = $quotation_num;
+    //                 } else {
+    //                     $quotation_num = "";
+    //                 }
+
+    //                 break;
+
+    //             case '90.00':
+    //                 $status_text = "<h1 class='text-primary'>NEGOTIATION (90%)</h1>";
+
+    //                 if ($taskleadData['quotation_num'] == "") {
+    //                     $quotation_num = "QTN" . date('Ymd') . "001";
+    //                     $data_model['quotation_num'] = $quotation_num;
+    //                 } else {
+    //                     $quotation_num = "";
+    //                 }
+
+    //                 break;
+
+    //             default:
+    //                 $status_text = "";
+    //                 $quotation_num = "";
+    //                 break;
+    //         }
 
 
-            $taskleadModel->update($id, $data_model);
+    //         $data['title'] = 'Update Tasklead Status';
+    //         $data['page_title'] = 'Update Tasklead Status';
+    //         $data['uri'] = service('uri');
+    //         $data['href'] = site_url('project-list');
+    //         $data['status'] = $status_text;
+    //         $data['quotation_num'] = $quotation_num;
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/update_tasklead_successpage');
-            echo view('templates/footer');
-            echo view('task_lead/script');
-        } else {
-            return redirect()->to('login');
-        }
-    }
+
+    //         $taskleadModel->update($id, $data_model);
+
+    //         echo view('templates/header', $data);
+    //         echo view('task_lead/header');
+    //         echo view('templates/navbar');
+    //         echo view('templates/sidebar');
+    //         echo view('task_lead/update_tasklead_successpage');
+    //         echo view('templates/footer');
+    //         echo view('task_lead/script');
+    //     } else {
+    //         return redirect()->to('login');
+    //     }
+    // }
 
     public function booked_status($id)
     {

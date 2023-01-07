@@ -346,14 +346,6 @@
         $('#project_start_date').val("<?= $project_details['project_start_date'] ?>");
         $('#project_finish_date').val("<?= $project_details['project_finish_date'] ?>");
 
-        $('#status option[value="10.00"]').attr('disabled',true);
-        $('#status option[value="30.00"]').attr('disabled',true);
-        $('#status option[value="50.00"]').attr('disabled',true);
-        $('#status option[value="70.00"]').attr('disabled',true);
-        $('#status option[value="90.00"]').attr('disabled',true);
-        $('#status option[value="100.00"]').attr('disabled',true);
-
-        $('#status option[value="<?= $project_details['status'] ?>"]').removeAttr('disabled');
 
         $('#min_forecast_date').attr('readonly',true);
         $('#max_forecast_date').attr('readonly',true);
