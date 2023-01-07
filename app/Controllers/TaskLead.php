@@ -10,6 +10,7 @@ use App\Models\TaskLeadView;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Files\File;
 use CodeIgniter\I18n\Time;
+use Config\Services;
 use monken\TablesIgniter;
 
 class TaskLead extends BaseController
@@ -784,6 +785,85 @@ class TaskLead extends BaseController
             }
 
 
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
+    // public function add_identified() {
+    //     if (session('logged_in') == true) {
+    //         $data['title'] = 'Add Project';
+    //         $data['page_title'] = 'Add Identified Project';
+    //         $data['uri'] = service('uri');
+    //         $data['validation'] = "";
+
+    //         return view('templates/header', $data)
+    //         . view('task_lead/header')
+    //         . view('templates/navbar')
+    //         . view('templates/sidebar')
+    //         . view('task_lead/add_identified_project')
+    //         . view('templates/footer')
+    //         . view('task_lead/script');
+
+        
+    //     } else {
+    //         return redirect()->to('login');
+    //     }
+    // }
+
+    public function add_identified() {
+        if (session('logged_in') == true) {
+            $time = new Time('now');
+            $taskleadModel = new TaskLeadModel();
+            $customersModel = new CustomersModel();
+            $data['title'] = 'Add Project';
+            $data['page_title'] = 'Add Identified Project';
+            $data['uri'] = service('uri');
+            $data['customers'] = $customersModel->find();
+            $data['date_quarter'] = $time->getQuarter();
+            $data['validation'] = [];
+
+            if ($this->request->getMethod() !== 'post') {
+                
+                return view('templates/header', $data)
+                . view('task_lead/header')
+                . view('templates/navbar')
+                . view('templates/sidebar')
+                . view('task_lead/add_identified_project')
+                . view('templates/footer')
+                . view('task_lead/script')
+                . view('task_lead/script_add_identified_project');
+            }
+
+            $data_input = [
+                'employee_id' => session('employee_id'),
+                'quarter' => $this->request->getPost('quarter'),
+                'status' => $this->request->getPost('status'),
+                'customer_id' => $this->request->getPost('customer_id'),
+                'remark_next_step' => $this->request->getPost('remark_next_step'),
+                'forecast_close_date' => $this->request->getPost('forecast_close_date'),
+                'min_forecast_date' => $this->request->getPost('min_forecast_date'),
+                'max_forecast_date' => $this->request->getPost('max_forecast_date'),
+            ];
+
+            if (!$taskleadModel->insert($data_input)) {
+
+                $data['validation'] = $taskleadModel->errors();
+
+                return view('templates/header', $data)
+                . view('task_lead/header')
+                . view('templates/navbar')
+                . view('templates/sidebar')
+                . view('task_lead/add_identified_project')
+                . view('templates/footer')
+                . view('task_lead/script')
+                . view('task_lead/script_add_identified_project');
+            }
+
+            
+            return redirect()->to('project-list');
+
+        
         } else {
             return redirect()->to('login');
         }
