@@ -30,7 +30,8 @@
             <div class="icon">
               <i class="fas fa-tasks"></i>
             </div>
-            <a href="<?= site_url('tasklead-addproject') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+            <!-- <a href="<?= site_url('tasklead-addproject') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a> -->
+            <a href="<?= site_url('add-project') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
 
         </div>
