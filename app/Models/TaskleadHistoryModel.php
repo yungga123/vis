@@ -14,7 +14,22 @@ class TaskleadHistoryModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        "tasklead_id",
+        "quarter",
+        "status",
+        "customer_id",
+        "project",
+        "project_amount",
+        "quotation_num",
+        "forecast_close_date",
+        "min_forecast_date",
+        "max_forecast_date",
+        "remark_next_step",
+        "close_deal_date",
+        "project_start_date",
+        "project_finish_date"
+    ];
 
     // Dates
     protected $useTimestamps = true;

@@ -21,7 +21,7 @@
       <div class="row">
         <div class="col-md-12">
           <?=($uri->getSegment(1) == 'tasklead-addproject') ? form_open("post-addproject", ["id" => "post-addproject"]) : form_open("post-editproject", ["id" => "post-editproject"]) ?>
-          <?=($uri->getSegment(1) == "tasklead-editproject") ? "<input type='hidden' name='id' id='id' value='" . $id . "'>" : "" ?>
+          <?=($uri->getSegment(1) != "tasklead-addproject") ? "<input type='hidden' name='id' id='id' value='" . $id . "'>" : "" ?>
           <input type="hidden" name="employee_id" id="employee_id" value="<?= $_SESSION['employee_id'] ?>">
           <!-- Main Card -->
           <div class="card">
@@ -32,7 +32,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Quarter</label>
+                    <label for="quarter">Quarter</label>
                     <select class="form-control" name="quarter" id="quarter">
                       <option value="">--Please Select--</option>
                       <option value="1">1st Quarter</option>
@@ -43,7 +43,7 @@
                     <small id="small_quarter" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Status</label>
+                    <label for="status">Status</label>
                     <select name="status" id="status" class="form-control">
                       <option value="10.00">10% - Identified</option>
                       <option value="30.00">30% - Qualified</option>
@@ -54,7 +54,7 @@
                     <small id="small_status" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Customer</label>
+                    <label for="customer_id">Customer</label>
                     <select class="form-control" name="customer_id" id="customer_id">
                       <option value="">--Please Select--</option>
                       <?php foreach ($customers as $row) { ?>
@@ -66,18 +66,18 @@
                     <small id="small_customer_id" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Project</label>
+                    <label for="project">Project</label>
                     <input name="project" id="project" type="text" class="form-control" placeholder="Enter Project">
                     <small id="small_project" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Project Amount</label>
+                    <label for="project_amount">Project Amount</label>
                     <input name="project_amount" id="project_amount" type="text" class="form-control"
                       placeholder="Input amount in numbers">
                     <small id="small_project_amount" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Quotation Number</label>
+                    <label for="quotation_num">Quotation Number</label>
                     <input name="quotation_num" id="quotation_num" type="text" class="form-control"
                       placeholder="Do not put anything here, this is system generated after developed solution"
                       readonly>
@@ -86,43 +86,43 @@
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Forecast Close Date</label>
+                    <label for="forecast_close_date">Forecast Close Date</label>
                     <input name="forecast_close_date" id="forecast_close_date" type="date" class="form-control"
                       placeholder="Input amount in numbers">
                     <small id="small_forecast_close_date" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Min. Forecast Date</label>
+                    <label for="min_forecast_date">Min. Forecast Date</label>
                     <input name="min_forecast_date" id="min_forecast_date" type="date" class="form-control"
                       placeholder="Input amount in numbers">
                     <small id="small_min_forecast_date" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Max Forecast Date</label>
+                    <label for="max_forecast_date">Max Forecast Date</label>
                     <input name="max_forecast_date" id="max_forecast_date" type="date" class="form-control"
                       placeholder="Input amount in numbers">
                     <small id="small_max_forecast_date" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Remark Next Step</label>
+                    <label for="remark_next_step">Remark Next Step</label>
                     <textarea name="remark_next_step" id="remark_next_step" type="text" class="form-control"
                       placeholder="Enter here..."></textarea>
                     <small id="small_remark_next_step" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Closed Deal Date</label>
+                    <label for="close_deal_date">Closed Deal Date</label>
                     <input name="close_deal_date" id="close_deal_date" type="date" class="form-control"
                       placeholder="Input amount in numbers">
                     <small id="small_close_deal_date" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Project Start Date</label>
+                    <label for="project_start_date">Project Start Date</label>
                     <input name="project_start_date" id="project_start_date" type="date" class="form-control"
                       placeholder="Input amount in numbers">
                     <small id="small_project_start_date" class="form-text text-muted"></small>
                   </div>
                   <div class="form-group">
-                    <label>Project Finish Date</label>
+                    <label for="project_finish_date">Project Finish Date</label>
                     <input name="project_finish_date" id="project_finish_date" type="date" class="form-control"
                       placeholder="Input amount in numbers">
                     <small id="small_project_finish_date" class="form-text text-muted"></small>

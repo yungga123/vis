@@ -210,7 +210,7 @@
         });
     });
 
-    $('#post-booked-status').submit(function(e) {
+    $('#post-update-project-status').submit(function(e) {
         e.preventDefault();
         var me = $(this);
         toastr.options = {
@@ -239,15 +239,33 @@
             dataType: 'json',
             success: function(response) {
                 if (response.success == true) {
-                    toastr.success("Successfully BOOKED! You will return to project leads table.");
+                    toastr.success("Successfully Updated! You will return to project leads table.");
 
                     $('#close_deal_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_start_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_finish_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
+                    $('#quarter').removeClass("is-invalid").addClass('is-valid');
+                    $('#status').removeClass("is-invalid").addClass('is-valid');
+                    $('#project').removeClass("is-invalid").addClass('is-valid');
+                    $('#project_amount').removeClass("is-invalid").addClass('is-valid');
+                    $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
+                    $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#min_forecast_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#max_forecast_date').removeClass("is-invalid").addClass('is-valid');
 
                     $('#small_close_deal_date').html('');
                     $('#small_project_start_date').html('');
                     $('#small_project_finish_date').html('');
+                    $('#small_quotation_num').html('');
+                    $('#small_quarter').html('');
+                    $('#small_status').html('');
+                    $('#small_project').html('');
+                    $('#small_project_amount').html('');
+                    $('#small_remark_next_step').html('');
+                    $('#small_forecast_close_date').html('');
+                    $('#small_min_forecast_date').html('');
+                    $('#small_max_forecast_date').html('');
 
                     setTimeout(function() {
                         window.location.href = "<?= site_url('project-list') ?>";
@@ -259,10 +277,28 @@
                     $('#close_deal_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_start_date').removeClass("is-invalid").addClass('is-valid');
                     $('#project_finish_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
+                    $('#quarter').removeClass("is-invalid").addClass('is-valid');
+                    $('#status').removeClass("is-invalid").addClass('is-valid');
+                    $('#project').removeClass("is-invalid").addClass('is-valid');
+                    $('#project_amount').removeClass("is-invalid").addClass('is-valid');
+                    $('#remark_next_step').removeClass("is-invalid").addClass('is-valid');
+                    $('#forecast_close_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#min_forecast_date').removeClass("is-invalid").addClass('is-valid');
+                    $('#max_forecast_date').removeClass("is-invalid").addClass('is-valid');
 
                     $('#small_close_deal_date').html('');
                     $('#small_project_start_date').html('');
                     $('#small_project_finish_date').html('');
+                    $('#small_quotation_num').html('');
+                    $('#small_quarter').html('');
+                    $('#small_status').html('');
+                    $('#small_project').html('');
+                    $('#small_project_amount').html('');
+                    $('#small_remark_next_step').html('');
+                    $('#small_forecast_close_date').html('');
+                    $('#small_min_forecast_date').html('');
+                    $('#small_max_forecast_date').html('');
 
                     $.each(response.messages, function(key, value) {
                         if (value != '') {
@@ -364,6 +400,14 @@
         $('#project_start_date').attr('readonly',true);
         $('#project_finish_date').attr('readonly',true);
 
+        $("#close_deal_date").prop("type", "hidden");
+        $("#project_start_date").prop("type", "hidden");
+        $("#project_finish_date").prop("type", "hidden");
+
+        $('label[for="close_deal_date"]').hide();
+        $('label[for="project_start_date"]').hide();
+        $('label[for="project_finish_date"]').hide();
+
 
     <?php } ?>
 
@@ -393,6 +437,20 @@
             $('#min_forecast_date').val(min_forecast);
             $('#max_forecast_date').val(max_forecast);
         });
+
+        $("#project_amount").prop("type", "hidden");
+        $("#quotation_num").prop("type", "hidden");
+        $("#close_deal_date").prop("type", "hidden");
+        $("#project_start_date").prop("type", "hidden");
+        $("#project_finish_date").prop("type", "hidden");
+        $("#forecast_close_date").prop("type", "hidden");
+
+        $('label[for="project_amount"]').hide();
+        $('label[for="quotation_num"]').hide();
+        $('label[for="close_deal_date"]').hide();
+        $('label[for="project_start_date"]').hide();
+        $('label[for="project_finish_date"]').hide();
+        $('label[for="forecast_close_date"]').hide();
     <?php } ?>
 
     
@@ -409,8 +467,211 @@
         $(".href-developed").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/50.00");
         $(".href-evaluation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/70.00");
         $(".href-negotiation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/90.00");
-        $(".href-booked").prop("href", "<?= site_url('booked-status') ?>/" + id);
+        $(".href-booked").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/100.00");
     });
+
+    <?php if ($uri->setSilent()->getSegment(3) == '30.00') { ?>
+        $('#min_forecast_date').attr('readonly',true);
+        $('#max_forecast_date').attr('readonly',true);
+
+        $("#forecast_close_date").change(function(){
+            min_forecast = moment($('#forecast_close_date').val()).subtract(6,'days').format('YYYY-MM-DD');
+            max_forecast = moment($('#forecast_close_date').val()).add(6,'days').format('YYYY-MM-DD');
+            $('#min_forecast_date').val(min_forecast);
+            $('#max_forecast_date').val(max_forecast);
+        });
+
+        $("#quotation_num").prop("type", "hidden");
+        $("#project_amount").prop("type", "hidden");
+        $("#forecast_close_date").prop("type", "hidden");
+        $("#min_forecast_date").prop("type", "hidden");
+        $("#max_forecast_date").prop("type", "hidden");
+        $("#close_deal_date").prop("type", "hidden");
+        $("#project_start_date").prop("type", "hidden");
+        $("#project_finish_date").prop("type", "hidden");
+
+        $('label[for="quotation_num"]').hide();
+        $('label[for="project_amount"]').hide();
+        $('label[for="forecast_close_date"]').hide();
+        $('label[for="min_forecast_date"]').hide();
+        $('label[for="max_forecast_date"]').hide();
+        $('label[for="close_deal_date"]').hide();
+        $('label[for="project_start_date"]').hide();
+        $('label[for="project_finish_date"]').hide();
+
+        $("#quotation_num").val('<?= $taskleadData['quotation_num'] ?>');
+        $("#project_amount").val('<?= $taskleadData['project_amount'] ?>');
+        $("#forecast_close_date").val('<?= $taskleadData['forecast_close_date'] ?>');
+        $("#min_forecast_date").val('<?= $taskleadData['min_forecast_date'] ?>');
+        $("#max_forecast_date").val('<?= $taskleadData['max_forecast_date'] ?>');
+        $("#close_deal_date").val('<?= $taskleadData['close_deal_date'] ?>');
+        $("#project_start_date").val('<?= $taskleadData['project_start_date'] ?>');
+        $("#project_finish_date").val('<?= $taskleadData['project_finish_date'] ?>');
+        $("#project").val('<?= $taskleadData['project'] ?>');
+
+        $('#project').attr('required',true);
+    <?php } ?>
+
+    <?php if ($uri->setSilent()->getSegment(3) == '50.00') { ?>
+
+        $('#min_forecast_date').attr('readonly',true);
+        $('#max_forecast_date').attr('readonly',true);
+
+        $("#forecast_close_date").change(function(){
+            min_forecast = moment($('#forecast_close_date').val()).subtract(6,'days').format('YYYY-MM-DD');
+            max_forecast = moment($('#forecast_close_date').val()).add(6,'days').format('YYYY-MM-DD');
+            $('#min_forecast_date').val(min_forecast);
+            $('#max_forecast_date').val(max_forecast);
+        });
+
+        $("#project").prop("type", "hidden");
+        $("#close_deal_date").prop("type", "hidden");
+        $("#project_start_date").prop("type", "hidden");
+        $("#project_finish_date").prop("type", "hidden");
+
+        $('label[for="project"]').hide();
+        $('label[for="close_deal_date"]').hide();
+        $('label[for="project_start_date"]').hide();
+        $('label[for="project_finish_date"]').hide();
+
+        $('#project_amount').attr('required',true);
+        $('#forecast_close_date').attr('required',true);
+        $('#quotation_num').val('<?= $quotation_num ?>');
+
+        $("#quotation_num").val('<?= $taskleadData['quotation_num'] ?>');
+        $("#project_amount").val('<?= $taskleadData['project_amount'] ?>');
+        $("#forecast_close_date").val('<?= $taskleadData['forecast_close_date'] ?>');
+        $("#min_forecast_date").val('<?= $taskleadData['min_forecast_date'] ?>');
+        $("#max_forecast_date").val('<?= $taskleadData['max_forecast_date'] ?>');
+        $("#close_deal_date").val('<?= $taskleadData['close_deal_date'] ?>');
+        $("#project_start_date").val('<?= $taskleadData['project_start_date'] ?>');
+        $("#project_finish_date").val('<?= $taskleadData['project_finish_date'] ?>');
+        $("#project").val('<?= $taskleadData['project'] ?>');
+
+    <?php } ?>
+
+    <?php if ($uri->setSilent()->getSegment(3) == '70.00') { ?>
+
+        $('#min_forecast_date').attr('readonly',true);
+        $('#max_forecast_date').attr('readonly',true);
+
+        $("#forecast_close_date").change(function(){
+            min_forecast = moment($('#forecast_close_date').val()).subtract(6,'days').format('YYYY-MM-DD');
+            max_forecast = moment($('#forecast_close_date').val()).add(6,'days').format('YYYY-MM-DD');
+            $('#min_forecast_date').val(min_forecast);
+            $('#max_forecast_date').val(max_forecast);
+        });
+
+        $("#project").prop("type", "hidden");
+        $("#close_deal_date").prop("type", "hidden");
+        $("#project_start_date").prop("type", "hidden");
+        $("#project_finish_date").prop("type", "hidden");
+        $("#project_amount").prop("type", "hidden");
+        $("#forecast_close_date").prop("type", "hidden");
+        $("#min_forecast_date").prop("type", "hidden");
+        $("#max_forecast_date").prop("type", "hidden");
+
+        $('label[for="project"]').hide();
+        $('label[for="close_deal_date"]').hide();
+        $('label[for="project_start_date"]').hide();
+        $('label[for="project_finish_date"]').hide();
+        $('label[for="project_amount"]').hide();
+        $('label[for="forecast_close_date"]').hide();
+        $('label[for="min_forecast_date"]').hide();
+        $('label[for="max_forecast_date"]').hide();
+
+        $("#quotation_num").val('<?= $taskleadData['quotation_num'] ?>');
+        $("#project_amount").val('<?= $taskleadData['project_amount'] ?>');
+        $("#forecast_close_date").val('<?= $taskleadData['forecast_close_date'] ?>');
+        $("#min_forecast_date").val('<?= $taskleadData['min_forecast_date'] ?>');
+        $("#max_forecast_date").val('<?= $taskleadData['max_forecast_date'] ?>');
+        $("#close_deal_date").val('<?= $taskleadData['close_deal_date'] ?>');
+        $("#project_start_date").val('<?= $taskleadData['project_start_date'] ?>');
+        $("#project_finish_date").val('<?= $taskleadData['project_finish_date'] ?>');
+        $("#project").val('<?= $taskleadData['project'] ?>');
+
+
+    <?php } ?>
+
+    <?php if ($uri->setSilent()->getSegment(3) == '90.00') { ?>
+
+        $('#min_forecast_date').attr('readonly',true);
+        $('#max_forecast_date').attr('readonly',true);
+
+        $("#forecast_close_date").change(function(){
+            min_forecast = moment($('#forecast_close_date').val()).subtract(6,'days').format('YYYY-MM-DD');
+            max_forecast = moment($('#forecast_close_date').val()).add(6,'days').format('YYYY-MM-DD');
+            $('#min_forecast_date').val(min_forecast);
+            $('#max_forecast_date').val(max_forecast);
+        });
+
+        $("#project").prop("type", "hidden");
+        $("#close_deal_date").prop("type", "hidden");
+        $("#project_start_date").prop("type", "hidden");
+        $("#project_finish_date").prop("type", "hidden");
+        $("#project_amount").prop("type", "hidden");
+        $("#forecast_close_date").prop("type", "hidden");
+        $("#min_forecast_date").prop("type", "hidden");
+        $("#max_forecast_date").prop("type", "hidden");
+
+        $('label[for="project"]').hide();
+        $('label[for="close_deal_date"]').hide();
+        $('label[for="project_start_date"]').hide();
+        $('label[for="project_finish_date"]').hide();
+        $('label[for="project_amount"]').hide();
+        $('label[for="forecast_close_date"]').hide();
+        $('label[for="min_forecast_date"]').hide();
+        $('label[for="max_forecast_date"]').hide();
+
+        $("#quotation_num").val('<?= $taskleadData['quotation_num'] ?>');
+        $("#project_amount").val('<?= $taskleadData['project_amount'] ?>');
+        $("#forecast_close_date").val('<?= $taskleadData['forecast_close_date'] ?>');
+        $("#min_forecast_date").val('<?= $taskleadData['min_forecast_date'] ?>');
+        $("#max_forecast_date").val('<?= $taskleadData['max_forecast_date'] ?>');
+        $("#close_deal_date").val('<?= $taskleadData['close_deal_date'] ?>');
+        $("#project_start_date").val('<?= $taskleadData['project_start_date'] ?>');
+        $("#project_finish_date").val('<?= $taskleadData['project_finish_date'] ?>');
+        $("#project").val('<?= $taskleadData['project'] ?>');
+
+
+    <?php } ?>
+
+    <?php if ($uri->setSilent()->getSegment(3) == '100.00') { ?>
+
+        $('#min_forecast_date').attr('readonly',true);
+        $('#max_forecast_date').attr('readonly',true);
+
+        $("#forecast_close_date").change(function(){
+            min_forecast = moment($('#forecast_close_date').val()).subtract(6,'days').format('YYYY-MM-DD');
+            max_forecast = moment($('#forecast_close_date').val()).add(6,'days').format('YYYY-MM-DD');
+            $('#min_forecast_date').val(min_forecast);
+            $('#max_forecast_date').val(max_forecast);
+        });
+
+        $("#project").prop("type", "hidden");
+        $("#project_amount").prop("type", "hidden");
+        $("#forecast_close_date").prop("type", "hidden");
+        $("#min_forecast_date").prop("type", "hidden");
+        $("#max_forecast_date").prop("type", "hidden");
+
+        $('label[for="project"]').hide();
+        $('label[for="project_amount"]').hide();
+        $('label[for="forecast_close_date"]').hide();
+        $('label[for="min_forecast_date"]').hide();
+        $('label[for="max_forecast_date"]').hide();
+
+        $("#quotation_num").val('<?= $taskleadData['quotation_num'] ?>');
+        $("#project_amount").val('<?= $taskleadData['project_amount'] ?>');
+        $("#forecast_close_date").val('<?= $taskleadData['forecast_close_date'] ?>');
+        $("#min_forecast_date").val('<?= $taskleadData['min_forecast_date'] ?>');
+        $("#max_forecast_date").val('<?= $taskleadData['max_forecast_date'] ?>');
+        $("#close_deal_date").val('<?= $taskleadData['close_deal_date'] ?>');
+        $("#project_start_date").val('<?= $taskleadData['project_start_date'] ?>');
+        $("#project_finish_date").val('<?= $taskleadData['project_finish_date'] ?>');
+        $("#project").val('<?= $taskleadData['project'] ?>');
+
+
+    <?php } ?>
 </script>
 
 

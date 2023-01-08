@@ -95,6 +95,8 @@ $routes->get('/project-booked-details/(:num)','TaskLead::project_booked_details/
 $routes->post('/post-tasklead-upload/(:num)','Tasklead::upload/$1');
 $routes->get('/add-project','TaskLead::add_identified');
 $routes->post('/add-project','TaskLead::add_identified');
+$routes->post('post-update-project-status','TaskLead::update_project_status_validate');
+
 
 
 //EMPLOYEES
