@@ -19,11 +19,11 @@
                     <h2 class="headline text-success">OK!</h2>
 
                     <div class="error-content">
-                        <h3><i class="far fa-check-circle text-success"></i> Project is ready to be BOOKED!!</h3>
 
                         <p>
-                            You are updating your task lead to <label class="text-success">BOOKED!!!</label>
+                            You are updating your task lead to <label class="text-success"><?= $status_text ?></label>
                         </p>
+
 
 
 
@@ -35,7 +35,7 @@
         </div>
 
 
-        <?= form_open('post-booked-status',["id" => "post-booked-status"]) ;?>
+        <?= form_open('post-update-project-status', ["id" => "post-update-project-status"]); ?>
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
@@ -48,8 +48,43 @@
                         <div class="row">
                             <div class="col-md-2"></div>
                             <div class="col-md-8">
-                                <input type="hidden" name="id" id="id" value="<?= $id ;?>">
-                                <input type="hidden" name="status" id="status" value="100.00">
+                                <input type="hidden" name="id" id="id" value="<?= $id; ?>">
+                                <input type="hidden" name="status" id="status" value="<?= $status ?>">
+                                <div class="form-group">
+                                    <label for="quotation_num">Quotation Number</label>
+                                    <input name="quotation_num" id="quotation_num" type="text" class="form-control" placeholder="Do not put anything here, this is system generated after developed solution" readonly>
+                                    <small id="small_quotation_num" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="remark_next_step">Remark Next Step</label>
+                                    <textarea name="remark_next_step" id="remark_next_step" type="text" class="form-control" placeholder="Enter here..."></textarea>
+                                    <small id="small_remark_next_step" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="project">Project</label>
+                                    <input name="project" id="project" type="text" class="form-control" placeholder="Enter Project">
+                                    <small id="small_project" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="project_amount">Project Amount</label>
+                                    <input name="project_amount" id="project_amount" type="text" class="form-control" placeholder="Input amount in numbers">
+                                    <small id="small_project_amount" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="forecast_close_date">Forecast Close Date</label>
+                                    <input name="forecast_close_date" id="forecast_close_date" type="date" class="form-control" placeholder="Input amount in numbers">
+                                    <small id="small_forecast_close_date" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="min_forecast_date">Min. Forecast Date</label>
+                                    <input name="min_forecast_date" id="min_forecast_date" type="date" class="form-control" placeholder="Input amount in numbers">
+                                    <small id="small_min_forecast_date" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="max_forecast_date">Max Forecast Date</label>
+                                    <input name="max_forecast_date" id="max_forecast_date" type="date" class="form-control" placeholder="Input amount in numbers">
+                                    <small id="small_max_forecast_date" class="form-text text-muted"></small>
+                                </div>
                                 <div class="form-group">
                                     <label for="close_deal_date">Close Deal Date</label>
                                     <input type="date" name="close_deal_date" id="close_deal_date" class="form-control">

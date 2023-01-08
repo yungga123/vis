@@ -94,6 +94,7 @@ class TaskLead extends BaseController
     public function edit_project_validate()
     {
         $taskleadModel = new TaskLeadModel();
+        $taskleadHistoryModel = new TaskleadHistoryModel();
         $validate = [
             "success" => false,
             "messages" => ''
@@ -117,6 +118,11 @@ class TaskLead extends BaseController
             $validate['messages'] = $taskleadModel->errors();
         } else {
             $validate['success'] = true;
+            $taskleadHistoryModel->insert([
+                "id" => $id,
+                $data
+            ]);
+
         }
 
         echo json_encode($validate);
@@ -513,109 +519,209 @@ class TaskLead extends BaseController
         }
     }
 
-    // public function update_project_status($id, $status)
-    // {
-    //     if (session('logged_in') == true) {
+    public function update_project_status($id, $status)
+    {
+        if (session('logged_in') == true) {
 
-    //         $taskleadModel = new TaskLeadModel();
-    //         $taskleadHistoryModel = new TaskleadHistoryModel();
-    //         $taskleadData = $taskleadModel->find($id);
-    //         $data_model = [
-    //             'status' => $status
-    //         ];
+            $taskleadModel = new TaskLeadModel();
+            $taskleadHistoryModel = new TaskleadHistoryModel();
+            $taskleadData = $taskleadModel->find($id);
 
-    //         switch ($status) {
-    //             case '10.00':
+            $data['title'] = 'Update Tasklead Status';
+            $data['page_title'] = 'Update Tasklead Status';
+            $data['uri'] = service('uri');
+            $data['href'] = site_url('project-list');
+            $data['taskleadData'] = $taskleadData;
+            
 
-    //                 // $history_add = [
-    //                 //     "tasklead_id" => $id,
-    //                 //     "quarter" => $taskleadData['quarter'],
-    //                 //     "status" => $taskleadData['status'],
-    //                 //     "customer_id" => $taskleadData['customer_id'],
-    //                 //     "project" => $taskleadData['project'],
-    //                 //     "project_amount" => $taskleadData['project_amount'],
-    //                 //     "quotation_num" => $taskleadData['quotation_num'],
-    //                 //     "forecast_close_date" => $taskleadData['forecast_close_date'],
-    //                 //     "remark_next_step" => $taskleadData['remark_next_step'],
-    //                 //     "close_deal_date" => $taskleadData['close_deal_date'],
-    //                 //     "project_start_date" => $taskleadData['project_start_date'],
-    //                 //     "project_finish_date" => $taskleadData['project_finish_date']
-    //                 // ];
+            $data_model = [
+                'status' => $status
+            ];
 
 
-    //                 $status_text = "<h1 class='text-danger'>IDENTIFIED (10%)</h1>";
-    //                 $quotation_num = "";
-    //                 break;
+            switch ($status) {
 
-    //             case '30.00':
-    //                 $status_text = "<h1 class='text-secondary'>QUALIFIED (30%)</h1>";
-    //                 $quotation_num = "";
-    //                 break;
+                case '30.00': // QUALIFiED
+                    
+                    $status_text = "<h1 class='text-secondary'>QUALIFIED (30%)</h1>";
+                    $quotation_num = "";
 
-    //             case '50.00':
-    //                 $status_text = "<h1 class='text-warning'>DEVELOPED SOLUTION (50%)</h1>";
+                    $data['status'] = $status;
+                    $data['status_text'] = $status_text;
+                    $data['id'] = $id;
+                    $data['quotation_num'] = $quotation_num;
 
-    //                 if ($taskleadData['quotation_num'] == "") {
-    //                     $quotation_num = "QTN" . date('Ymd') . "001";
-    //                     $data_model['quotation_num'] = $quotation_num;
-    //                 } else {
-    //                     $quotation_num = "";
-    //                 }
+                    
 
-    //                 break;
+                    return view('templates/header', $data)
+                        . view('task_lead/header')
+                        . view('templates/navbar')
+                        . view('templates/sidebar')
+                        . view('task_lead/booked_tasklead')
+                        . view('templates/footer')
+                        . view('task_lead/script');
+                    break;
 
-    //             case '70.00':
-    //                 $status_text = "<h1 class='text-info'>EVALUATION (70%)</h1>";
+                case '50.00': // DEVELOPED SOLUTION
+                    $status_text = "<h1 class='text-warning'>DEVELOPED SOLUTION (50%)</h1>";
 
-    //                 if ($taskleadData['quotation_num'] == "") {
-    //                     $quotation_num = "QTN" . date('Ymd') . "001";
-    //                     $data_model['quotation_num'] = $quotation_num;
-    //                 } else {
-    //                     $quotation_num = "";
-    //                 }
+                    $name = session('name');
+                    $pos = strpos($name," ") + 1;
+                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
 
-    //                 break;
+                    $data['status'] = $status;
+                    $data['status_text'] = $status_text;
+                    $data['id'] = $id;
+                    $data['quotation_num'] = $quotation_num;
 
-    //             case '90.00':
-    //                 $status_text = "<h1 class='text-primary'>NEGOTIATION (90%)</h1>";
+                    
 
-    //                 if ($taskleadData['quotation_num'] == "") {
-    //                     $quotation_num = "QTN" . date('Ymd') . "001";
-    //                     $data_model['quotation_num'] = $quotation_num;
-    //                 } else {
-    //                     $quotation_num = "";
-    //                 }
+                    return view('templates/header', $data)
+                        . view('task_lead/header')
+                        . view('templates/navbar')
+                        . view('templates/sidebar')
+                        . view('task_lead/booked_tasklead')
+                        . view('templates/footer')
+                        . view('task_lead/script');
 
-    //                 break;
+                    break;
 
-    //             default:
-    //                 $status_text = "";
-    //                 $quotation_num = "";
-    //                 break;
-    //         }
+                case '70.00': // EVALUATION
+                    $status_text = "<h1 class='text-info'>EVALUATION (70%)</h1>";
+
+                    $name = session('name');
+                    $pos = strpos($name," ") + 1;
+                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
+
+                    $data['status'] = $status;
+                    $data['status_text'] = $status_text;
+                    $data['id'] = $id;
+                    $data['quotation_num'] = $quotation_num;
+
+                    
+
+                    return view('templates/header', $data)
+                        . view('task_lead/header')
+                        . view('templates/navbar')
+                        . view('templates/sidebar')
+                        . view('task_lead/booked_tasklead')
+                        . view('templates/footer')
+                        . view('task_lead/script');
+
+                    break;
+
+                case '90.00': // NEGOTIATION
+                    $status_text = "<h1 class='text-primary'>NEGOTIATION (90%)</h1>";
+
+                    $name = session('name');
+                    $pos = strpos($name," ") + 1;
+                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
+
+                    $data['status'] = $status;
+                    $data['status_text'] = $status_text;
+                    $data['id'] = $id;
+                    $data['quotation_num'] = $quotation_num;
+
+                    
+
+                    return view('templates/header', $data)
+                        . view('task_lead/header')
+                        . view('templates/navbar')
+                        . view('templates/sidebar')
+                        . view('task_lead/booked_tasklead')
+                        . view('templates/footer')
+                        . view('task_lead/script');
+
+                    break;
+
+                case '100.00':
+                    $status_text = "<h1 class='text-success'>BOOKED (100%)</h1>";
+
+                    $name = session('name');
+                    $pos = strpos($name," ") + 1;
+                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
+
+                    $data['status'] = $status;
+                    $data['status_text'] = $status_text;
+                    $data['id'] = $id;
+                    $data['quotation_num'] = $quotation_num;
+
+                    
+
+                    return view('templates/header', $data)
+                        . view('task_lead/header')
+                        . view('templates/navbar')
+                        . view('templates/sidebar')
+                        . view('task_lead/booked_tasklead')
+                        . view('templates/footer')
+                        . view('task_lead/script');
 
 
-    //         $data['title'] = 'Update Tasklead Status';
-    //         $data['page_title'] = 'Update Tasklead Status';
-    //         $data['uri'] = service('uri');
-    //         $data['href'] = site_url('project-list');
-    //         $data['status'] = $status_text;
-    //         $data['quotation_num'] = $quotation_num;
+                    break;
+
+                default:
+                    $status_text = "";
+                    $quotation_num = "";
+
+                    
+                    break;
+            }
 
 
-    //         $taskleadModel->update($id, $data_model);
+        } else {
+            return redirect()->to('login');
+        }
+    }
 
-    //         echo view('templates/header', $data);
-    //         echo view('task_lead/header');
-    //         echo view('templates/navbar');
-    //         echo view('templates/sidebar');
-    //         echo view('task_lead/update_tasklead_successpage');
-    //         echo view('templates/footer');
-    //         echo view('task_lead/script');
-    //     } else {
-    //         return redirect()->to('login');
-    //     }
-    // }
+    public function update_project_status_validate()
+    {
+        $taskleadModel = new TaskLeadModel();
+        $taskleadHistoryModel = new TaskleadHistoryModel();
+        $validate = [
+            "success" => false,
+            "messages" => ''
+        ];
+
+        $id = $this->request->getPost('id');
+        $data = [
+            "quotation_num" => $this->request->getPost('quotation_num'),//
+            "status" => $this->request->getPost('status'),//
+            "project" => $this->request->getPost('project'), //
+            "project_amount" => $this->request->getPost('project_amount'),//
+            "remark_next_step" => $this->request->getPost('remark_next_step'), //
+            "forecast_close_date" => $this->request->getPost('forecast_close_date'),//
+            "min_forecast_date" => $this->request->getPost('min_forecast_date'),//
+            "max_forecast_date" => $this->request->getPost('max_forecast_date'),//
+            "close_deal_date" => $this->request->getPost('close_deal_date'),//
+            "project_start_date" => $this->request->getPost('project_start_date'),//
+            "project_finish_date" => $this->request->getPost('project_finish_date'),//
+        ];
+
+        $insert_data = [
+            "tasklead_id" => $id,
+            "quotation_num" => $this->request->getPost('quotation_num'),//
+            "status" => $this->request->getPost('status'),//
+            "project" => $this->request->getPost('project'), //
+            "project_amount" => $this->request->getPost('project_amount'),//
+            "remark_next_step" => $this->request->getPost('remark_next_step'), //
+            "forecast_close_date" => $this->request->getPost('forecast_close_date'),//
+            "min_forecast_date" => $this->request->getPost('min_forecast_date'),//
+            "max_forecast_date" => $this->request->getPost('max_forecast_date'),//
+            "close_deal_date" => $this->request->getPost('close_deal_date'),//
+            "project_start_date" => $this->request->getPost('project_start_date'),//
+            "project_finish_date" => $this->request->getPost('project_finish_date'),//
+        ];
+
+        if (!$taskleadModel->update($id, $data)) {
+            $validate['messages'] = $taskleadModel->errors();
+        } else {
+            $validate['success'] = true;
+            $taskleadHistoryModel->insert($insert_data);
+
+        }
+
+        echo json_encode($validate);
+    }
 
     public function booked_status($id)
     {
@@ -811,61 +917,61 @@ class TaskLead extends BaseController
     //     }
     // }
 
-    public function add_identified() {
-        if (session('logged_in') == true) {
-            $time = new Time('now');
-            $taskleadModel = new TaskLeadModel();
-            $customersModel = new CustomersModel();
-            $data['title'] = 'Add Project';
-            $data['page_title'] = 'Add Identified Project';
-            $data['uri'] = service('uri');
-            $data['customers'] = $customersModel->find();
-            $data['date_quarter'] = $time->getQuarter();
-            $data['validation'] = [];
+    // public function add_identified() {
+    //     if (session('logged_in') == true) {
+    //         $time = new Time('now');
+    //         $taskleadModel = new TaskLeadModel();
+    //         $customersModel = new CustomersModel();
+    //         $data['title'] = 'Add Project';
+    //         $data['page_title'] = 'Add Identified Project';
+    //         $data['uri'] = service('uri');
+    //         $data['customers'] = $customersModel->find();
+    //         $data['date_quarter'] = $time->getQuarter();
+    //         $data['validation'] = [];
 
-            if ($this->request->getMethod() !== 'post') {
+    //         if ($this->request->getMethod() !== 'post') {
                 
-                return view('templates/header', $data)
-                . view('task_lead/header')
-                . view('templates/navbar')
-                . view('templates/sidebar')
-                . view('task_lead/add_identified_project')
-                . view('templates/footer')
-                . view('task_lead/script')
-                . view('task_lead/script_add_identified_project');
-            }
+    //             return view('templates/header', $data)
+    //             . view('task_lead/header')
+    //             . view('templates/navbar')
+    //             . view('templates/sidebar')
+    //             . view('task_lead/add_identified_project')
+    //             . view('templates/footer')
+    //             . view('task_lead/script')
+    //             . view('task_lead/script_add_identified_project');
+    //         }
 
-            $data_input = [
-                'employee_id' => session('employee_id'),
-                'quarter' => $this->request->getPost('quarter'),
-                'status' => $this->request->getPost('status'),
-                'customer_id' => $this->request->getPost('customer_id'),
-                'remark_next_step' => $this->request->getPost('remark_next_step'),
-                'forecast_close_date' => $this->request->getPost('forecast_close_date'),
-                'min_forecast_date' => $this->request->getPost('min_forecast_date'),
-                'max_forecast_date' => $this->request->getPost('max_forecast_date'),
-            ];
+    //         $data_input = [
+    //             'employee_id' => session('employee_id'),
+    //             'quarter' => $this->request->getPost('quarter'),
+    //             'status' => $this->request->getPost('status'),
+    //             'customer_id' => $this->request->getPost('customer_id'),
+    //             'remark_next_step' => $this->request->getPost('remark_next_step'),
+    //             'forecast_close_date' => $this->request->getPost('forecast_close_date'),
+    //             'min_forecast_date' => $this->request->getPost('min_forecast_date'),
+    //             'max_forecast_date' => $this->request->getPost('max_forecast_date'),
+    //         ];
 
-            if (!$taskleadModel->insert($data_input)) {
+    //         if (!$taskleadModel->insert($data_input)) {
 
-                $data['validation'] = $taskleadModel->errors();
+    //             $data['validation'] = $taskleadModel->errors();
 
-                return view('templates/header', $data)
-                . view('task_lead/header')
-                . view('templates/navbar')
-                . view('templates/sidebar')
-                . view('task_lead/add_identified_project')
-                . view('templates/footer')
-                . view('task_lead/script')
-                . view('task_lead/script_add_identified_project');
-            }
+    //             return view('templates/header', $data)
+    //             . view('task_lead/header')
+    //             . view('templates/navbar')
+    //             . view('templates/sidebar')
+    //             . view('task_lead/add_identified_project')
+    //             . view('templates/footer')
+    //             . view('task_lead/script')
+    //             . view('task_lead/script_add_identified_project');
+    //         }
 
             
-            return redirect()->to('project-list');
+    //         return redirect()->to('project-list');
 
         
-        } else {
-            return redirect()->to('login');
-        }
-    }
+    //     } else {
+    //         return redirect()->to('login');
+    //     }
+    // }
 }

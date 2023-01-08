@@ -48,12 +48,8 @@ class TaskLeadModel extends Model
         "project" => 'max_length[500]',
         "project_amount" => 'permit_empty|decimal|max_length[18]',
         "remark_next_step" => 'required',
-        "forecast_close_date" => 'required',
     ];
     protected $validationMessages   = [
-        "forecast_close_date" => [
-            "required" => "This field is required."
-        ],
         "quotation_num" => [
             "max_length" => "Max of 100 characters."
         ],
@@ -125,7 +121,7 @@ class TaskLeadModel extends Model
             return <<<EOF
                 <a href="tasklead-editproject/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Update</a>
                 <button class="btn btn-block btn-danger btn-xs delete-tasklead" data-toggle="modal" data-target="#modal-delete-tasklead" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
-                <button class="btn btn-block btn-success btn-xs update-tasklead" data-toggle="modal" data-target="#modal-update-tasklead" data-id="{$row['id']}"><i class="far fa-arrow-alt-circle-up"></i> Book project</button>
+                <button class="btn btn-block btn-success btn-xs update-tasklead" data-toggle="modal" data-target="#modal-update-tasklead" data-id="{$row['id']}"><i class="far fa-arrow-alt-circle-up"></i> Forecast</button>
             EOF; 
         };
         return $closureFun;
