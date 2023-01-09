@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\CustomersModel;
+use App\Models\TaskleadHistorViewModel;
 use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
 use App\Models\TaskLeadView;
@@ -63,6 +64,7 @@ class TaskLead extends BaseController
     public function add_project_validate()
     {
         $taskleadModel = new TaskLeadModel();
+        $taskleadHistoryModel = new TaskleadHistoryModel();
         $validate = [
             "success" => false,
             "messages" => ''
@@ -86,6 +88,17 @@ class TaskLead extends BaseController
             $validate['messages'] = $taskleadModel->errors();
         } else {
             $validate['success'] = true;
+            $db = \Config\Database::connect();
+            $query = $db->query("SELECT * FROM tasklead ORDER BY id DESC LIMIT 1");
+            $result = $query->getResultObject();
+            
+
+            $taskleadHistoryModel->insert([
+                "tasklead_id" => $result[0]->id,
+                "quarter" => $data["quarter"],
+                "status" => $data["status"],
+                "remark_next_step" => $data["remark_next_step"],
+            ]);
         }
 
         echo json_encode($validate);
@@ -118,11 +131,6 @@ class TaskLead extends BaseController
             $validate['messages'] = $taskleadModel->errors();
         } else {
             $validate['success'] = true;
-            $taskleadHistoryModel->insert([
-                "id" => $id,
-                $data
-            ]);
-
         }
 
         echo json_encode($validate);
@@ -181,11 +189,11 @@ class TaskLead extends BaseController
     public function project_list_booked()
     {
         if (session('logged_in') == true) {
-            // $taskleadModel = new TaskLeadModel();
+            //$taskleadModel = new TaskLeadModel();
             $taskleadView = new TaskLeadView();
             $data['title'] = 'Booked Project List';
             $data['uri'] = service('uri');
-            $data['booked_projects'] = $taskleadView->paginate(10);
+            $data['booked_projects'] = $taskleadView->orderBy('id','desc')->paginate(10);
             $data['pager'] = $taskleadView->pager;
 
             echo view('templates/header', $data);
@@ -810,12 +818,16 @@ class TaskLead extends BaseController
     {
         if (session('logged_in') == true) {
             helper('filesystem');
+            $taskleadModel = new TaskLeadModel();
             $taskleadView = new TaskLeadView();
+            $taskleadHistoryViewModel = new TaskleadHistorViewModel();
             $data['title'] = 'Project Booked Details';
             $data['uri'] = service('uri');
             $data['project_detail'] = $taskleadView->find($id);
             $data['errors'] = [];
             $data['id'] = $id;
+            $data['tasklead_history'] = $taskleadHistoryViewModel->where('tasklead_id', $id)->findAll();
+            $data['tasklead_data'] = $taskleadModel->find($id);
 
             $path = '../public/uploads/project-booked/' . $id;
 

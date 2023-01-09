@@ -30,3 +30,69 @@
 # 11. Managers will have access to consolidated forecast
 
 12. Notifications for transaction.
+
+
+
+
+
+
+
+Drop down
+
+Existing customer
+new customer
+Remarks next step each percent
+History of remarks
+
+
+# History of changes
+# Forecast close date at 50%
+
+# 10%
+Quarter
+Status
+Customer
+Remark Next step
+
+# 30%
+Project 
+
+# 50%
+Amount
+Quotation number
+Forecast
+
+# 70%
+Remark Next Step
+
+# 90%
+Remark Next Step
+
+# 100%
+Remark Next Step
+Close Deal Date
+Project Start Date
+Project End Date
+
+
+User level 1
+User level 2
+
+
+
+Employee ID number
+Quotation Number
+
+70% and 90%
+
+
+
+Remarks next step due date for calling client
+
+
+Color coding
+
+Primary - input
+Warning - List
+
+

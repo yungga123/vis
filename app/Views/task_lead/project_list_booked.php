@@ -101,9 +101,15 @@
                     
                     <tr>
                       <td><?= $item['id'] ?></td>
-                      <td><?= $item['employee_name'] ?></td>
-                      <td><?= $item['customer_name'] ?></td>
-                      <td><?= $item['status_percent'] ?></td>
+                      <td>
+                        <?= $item['employee_name'] ?>
+                        <p><small class="text-muted">Closed Deal: <?= $item['close_deal_date'] ?></small></p>
+                      </td>
+                      <td>
+                        <?= $item['customer_name'] ?>
+                        <p><small class="text-muted">Project: <?= $item['project'] ?></small></p>
+                      </td>
+                      <td><span class="badge badge-success"><?= $item['status_percent'] ?></span></td>
                       <td class="project-actions">
                         <a class="btn btn-primary btn-sm" href="<?= site_url('project-booked-details/').$item['id'] ;?>">
                             <i class="fas fa-folder">
