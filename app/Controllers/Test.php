@@ -12,17 +12,23 @@ class Test extends BaseController
     public function index()
     {
 
-        $taskleadModel = new TaskLeadModel();
-        $customerModel = new CustomersModel();
-        $customerFind = $customerModel->find(1);
-        // d($taskleadModel->booked_projects());
-        // $db      = \Config\Database::connect();
-        // $query = $db->query('SELECT * FROM task_lead_booked');
-        $result = $taskleadModel->booked_projects()->getResult();
+        // $taskleadModel = new TaskLeadModel();
+        // $customerModel = new CustomersModel();
+        // $customerFind = $customerModel->find(1);
+        // // d($taskleadModel->booked_projects());
+        // // $db      = \Config\Database::connect();
+        // // $query = $db->query('SELECT * FROM task_lead_booked');
+        // $result = $taskleadModel->booked_projects()->getResult();
 
-        foreach ($result as $row) {
-            echo $row['id'];
-        }
+        // foreach ($result as $row) {
+        //     echo $row['id'];
+        // }
+
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT * FROM tasklead ORDER BY id DESC LIMIT 1");
+        $result = $query->getResultObject();
+
+        return $result[0]->id;
         
         
     }

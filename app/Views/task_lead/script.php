@@ -438,36 +438,44 @@
             $('#max_forecast_date').val(max_forecast);
         });
 
+        $("#project").prop("type", "hidden");
         $("#project_amount").prop("type", "hidden");
         $("#quotation_num").prop("type", "hidden");
         $("#close_deal_date").prop("type", "hidden");
         $("#project_start_date").prop("type", "hidden");
         $("#project_finish_date").prop("type", "hidden");
         $("#forecast_close_date").prop("type", "hidden");
+        $("#min_forecast_date").prop("type", "hidden");
+        $("#max_forecast_date").prop("type", "hidden");
 
+        $('label[for="project"]').hide();
         $('label[for="project_amount"]').hide();
         $('label[for="quotation_num"]').hide();
         $('label[for="close_deal_date"]').hide();
         $('label[for="project_start_date"]').hide();
         $('label[for="project_finish_date"]').hide();
         $('label[for="forecast_close_date"]').hide();
+        $('label[for="min_forecast_date"]').hide();
+        $('label[for="max_forecast_date"]').hide();
     <?php } ?>
 
     
 
     $(document).on("click", ".delete-tasklead", function() {
         var id = $(this).data('id');
+        
         $(".href-tasklead").prop("href", "<?= site_url('delete-tasklead') ?>/" + id);
     });
 
     $(document).on("click", ".update-tasklead", function() {
         var id = $(this).data('id');
-        $(".href-identified").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/10.00");
-        $(".href-qualified").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/30.00");
-        $(".href-developed").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/50.00");
-        $(".href-evaluation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/70.00");
-        $(".href-negotiation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/90.00");
-        $(".href-booked").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/100.00");
+        var percent = $(this).data('percent');
+        
+        $(".href-qualified").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/30.00").addClass((percent == "10.00%") ? '' : 'disabled');
+        $(".href-developed").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/50.00").addClass((percent == "30.00%") ? '' : 'disabled');
+        $(".href-evaluation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/70.00").addClass((percent == "50.00%") ? '' : 'disabled');
+        $(".href-negotiation").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/90.00").addClass((percent == "70.00%") ? '' : 'disabled');
+        $(".href-booked").prop("href", "<?= site_url('update-tasklead') ?>/" + id + "/100.00").addClass((percent == "90.00%") ? '' : 'disabled');
     });
 
     <?php if ($uri->setSilent()->getSegment(3) == '30.00') { ?>
@@ -538,7 +546,7 @@
         $('#forecast_close_date').attr('required',true);
         $('#quotation_num').val('<?= $quotation_num ?>');
 
-        $("#quotation_num").val('<?= $taskleadData['quotation_num'] ?>');
+        
         $("#project_amount").val('<?= $taskleadData['project_amount'] ?>');
         $("#forecast_close_date").val('<?= $taskleadData['forecast_close_date'] ?>');
         $("#min_forecast_date").val('<?= $taskleadData['min_forecast_date'] ?>');

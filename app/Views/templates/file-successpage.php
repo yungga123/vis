@@ -19,7 +19,7 @@
                 <h3><i class="fas fa-exclamation-triangle text-success"></i> File has been uploaded.</h3>
 
                 <p>
-                    <a href="<?= $href ?>">Click here!</a> to return.
+                    <a href="javascript:history.back()">Click here!</a> to return.
                 </p>
             </div>
         </div>
