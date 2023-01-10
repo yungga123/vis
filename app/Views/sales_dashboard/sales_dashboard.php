@@ -96,7 +96,7 @@
             <div class="icon">
               <i class="fas fa-users"></i>
             </div>
-            <a href="<?= site_url('list-customer') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('customers-list') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
 

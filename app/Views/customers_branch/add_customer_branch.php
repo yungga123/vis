@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-success float-right">Submit</button>
                 </div>
                 <?= form_close() ?>
             </div>

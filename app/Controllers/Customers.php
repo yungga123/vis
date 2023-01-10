@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Controllers\BaseController;
 use App\Libraries\DataTable;
+use App\Models\CustomerBranchModel;
+use App\Models\CustomerBranchViewModel;
 use App\Models\CustomersModel;
+use App\Models\CustomersViewModel;
 use CodeIgniter\API\ResponseTrait;
 use monken\TablesIgniter;
 
@@ -11,13 +15,13 @@ class Customers extends BaseController
 {
 
     use ResponseTrait;
-    
+
     public function index()
     {
-        
+
 
         if (session('logged_in') == true) {
-            
+
             $data['title'] = 'Add Customer';
             $data['page_title'] = 'Add Customer';
             $data['uri'] = service('uri');
@@ -65,11 +69,11 @@ class Customers extends BaseController
 
     public function customer_table()
     {
-        
+
 
         if (session('logged_in') == true) {
 
-            
+
             $data['title'] = 'List of Customers';
             $data['uri'] = service('uri');
             echo view('templates/header', $data);
@@ -85,56 +89,106 @@ class Customers extends BaseController
     }
 
     public function getCustomers()
-	{
+    {
 
         $customersModel = new CustomersModel();
         $customersTable = new TablesIgniter();
 
         $customersTable->setTable($customersModel->noticeTable())
-                       ->setDefaultOrder('id', 'DESC')
-                       ->setSearch([
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                       ])
-                       ->setOrder([
-                            "id",
-                            null,
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                       ])
-                       ->setOutput([
-                            "id",
-                            $customersModel->buttonEdit(),
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "email_address",
-                            "contact_number",
-                            "source",
-                            "notes"
-                       ]);
-        
-        return $customersTable->getDatatable();
+            ->setDefaultOrder('id', 'DESC')
+            ->setSearch([
+                "id",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setOrder([
+                "id",
+                null,
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setOutput([
+                "id",
+                $customersModel->buttonEdit(),
+                "customer_name",
+                "contact_person",
+                "address",
+                "email_address",
+                "contact_number",
+                "source",
+                "notes"
+            ]);
 
-	}
+        return $customersTable->getDatatable();
+    }
+
+
+    public function customers_list()
+    {
+        if (session('logged_in') == false) {
+            return redirect()->to('login');
+        }
+
+        $customersViewModel = new CustomersViewModel();
+        $customerBranchViewModel = new CustomerBranchViewModel();
+        $request = service('request');
+        $searchData = $request->getGet();
+
+        $data['title'] = 'List of Customers';
+        $data['uri'] = service('uri');
+        $data['customerBranchViewModel'] = $customerBranchViewModel;
+
+        $data['page'] = isset($_GET['page']) ? $_GET['page'] : 1;
+        $data['perPage'] = 10;
+        $data['total'] = $customersViewModel->countAll();
+        $search = "";
+        if (isset($searchData) && isset($searchData['search'])) {
+            $search = $searchData['search'];
+        }
+
+        if ($search == '') {
+            $paginateData = $customersViewModel->orderBy('id', 'desc')->paginate($data['perPage']);
+        } else {
+            $paginateData = $customersViewModel->orLike('customer_name', $search)
+                ->orLike('contact_person', $search)
+                ->orLike('address', $search)
+                ->orLike('contact_number', $search)
+                ->orLike('email_address', $search)
+                ->orLike('source', $search)
+                ->orLike('notes', $search)
+                ->orderBy('id', 'desc')
+                ->paginate($data['perPage']);
+        }
+
+        $data['customersViewModel'] = $paginateData;
+        $data['pager'] = $customersViewModel->pager;
+        $data['search'] = $search;
+
+        return view('templates/header', $data)
+            . view('customers/header')
+            . view('templates/navbar')
+            . view('templates/sidebar')
+            . view('customers/customer_table_branch')
+            . view('templates/footer')
+            . view('customers/script');
+    }
 
     public function edit_customers($id)
     {
         if (session('logged_in') == true) {
 
             $customersModel = new CustomersModel();
-            
+
             $data['title'] = 'Update a customer';
             $data['page_title'] = 'Update Customer';
             $data['customer_details'] = $customersModel->find($id);
@@ -176,7 +230,7 @@ class Customers extends BaseController
             "address_sub" => $this->request->getPost('address_sub')
         ];
 
-        if (!$customersModel->update($id,$data)) {
+        if (!$customersModel->update($id, $data)) {
             $validate['messages'] = $customersModel->errors();
         } else {
             $validate['success'] = true;
@@ -185,11 +239,12 @@ class Customers extends BaseController
         echo json_encode($validate);
     }
 
-    public function delete_customer($id) {
+    public function delete_customer($id)
+    {
         if (session('logged_in') == true) {
 
             $customersModel = new CustomersModel();
-            
+
             $data['title'] = 'Delete Customer';
             $data['page_title'] = 'Delete Customer';
             $data['uri'] = service('uri');

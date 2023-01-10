@@ -41,10 +41,10 @@ class CustomerBranchModel extends Model
         "address_province" => 'required|alpha_numeric_space|max_length[500]',
         "address_city" => 'required|alpha_numeric_space|max_length[500]',
         "address_brgy" => 'required|alpha_numeric_space|max_length[500]',
-        "address_sub" => 'required|alpha_numeric_space|max_length[500]',
+        "address_sub" => 'permit_empty|alpha_numeric_space|max_length[500]',
         "contact_number" => 'required|alpha_numeric_space|max_length[500]',
         "contact_person" => 'required|alpha_numeric_space|max_length[500]',
-        "email_address" => 'valid_email|max_length[500]',
+        "email_address" => 'permit_empty|valid_email|max_length[500]',
         "notes" => 'required|alpha_numeric_space|max_length[500]',
     ];
     protected $validationMessages   = [

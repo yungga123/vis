@@ -15,5 +15,7 @@ class AllViews extends Seeder
         $this->call('TaskleadView');
         $this->call('AccountsView');
         $this->call('TaskleadBookedView');
+        $this->call('TaskleadHistoryView');
+
     }
 }

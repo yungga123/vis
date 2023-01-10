@@ -68,6 +68,7 @@ $routes->get('/customer-list','Customers::getCustomers');
 $routes->get('/edit-customer/(:num)','Customers::edit_customers/$1');
 $routes->post('/edit-customer-val','Customers::edit_customers_validate');
 $routes->get('/delete-customer/(:num)','Customers::delete_customer/$1');
+$routes->get('/customers-list','Customers::customers_list');
 
 //CUSTOMERS BRANCH
 $routes->get('/add-customer-branch','CustomerBranch::index');
