@@ -32,11 +32,6 @@
 12. Notifications for transaction.
 
 
-
-
-
-
-
 Drop down
 
 Existing customer
@@ -96,3 +91,34 @@ Primary - input
 Warning - List
 
 
+
+OLD CUSTOMERS DB
+`CustomerID`,
+`CompanyName`,
+`ContactPerson`,
+`Address`,
+`CityAddress`,
+`ContactNumber`,
+`EmailAddress`,
+`Website`,
+`source`,
+`InstallationDate`,
+`Interest`,
+`Type`,
+`Notes`
+
+NEW CUSTOMER DB
+`id`, > customer_id
+`customer_name`, > company name
+`contact_person`, > contact person
+`address_province`, > address
+`address_city`, > address
+`address_brgy`, > address
+`address_sub`, > address
+`contact_number`, > contact Number
+`email_address`, > email address
+`source`, > source
+`notes`, > notes
+`created_at`,
+`updated_at`,
+`deleted_at`

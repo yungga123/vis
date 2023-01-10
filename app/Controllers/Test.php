@@ -24,11 +24,13 @@ class Test extends BaseController
         //     echo $row['id'];
         // }
 
-        $db = \Config\Database::connect();
-        $query = $db->query("SELECT * FROM tasklead ORDER BY id DESC LIMIT 1");
-        $result = $query->getResultObject();
+        // $db = \Config\Database::connect();
+        // $query = $db->query("SELECT * FROM tasklead ORDER BY id DESC LIMIT 1");
+        // $result = $query->getResultObject();
 
-        return $result[0]->id;
+        helper('text');
+
+        return random_string('crypto');
         
         
     }
