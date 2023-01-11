@@ -104,7 +104,7 @@
             "onclick": null,
             "showDuration": "300",
             "hideDuration": "1000",
-            "timeOut": "3000",
+            "timeOut": "2000",
             "extendedTimeOut": "1000",
             "showEasing": "swing",
             "hideEasing": "linear",
@@ -118,7 +118,7 @@
             dataType: 'json',
             success: function(response) {
                 if (response.success == true) {
-                    toastr.success("Successfully Edited! This window will close in 3 seconds.");
+                    toastr.success("Successfully Edited! You will return to the table in 2 seconds.");
 
                     $('#customer_name').removeClass("is-invalid").addClass('is-valid');
                     $('#contact_person').removeClass("is-invalid").addClass('is-valid');
@@ -143,8 +143,8 @@
                     $('#small_address_sub').html('');
 
                     setTimeout(function() {
-                        window.close()
-                    }, 3000);
+                        javascript:history.back();
+                    }, 2000);
 
 
                 } else {

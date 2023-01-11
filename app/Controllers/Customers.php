@@ -248,7 +248,7 @@ class Customers extends BaseController
             $data['title'] = 'Delete Customer';
             $data['page_title'] = 'Delete Customer';
             $data['uri'] = service('uri');
-            $data['href'] = site_url('list-customer');
+            $data['href'] = site_url('customers-list');
             $customersModel->delete($id);
 
             echo view('templates/header', $data);
