@@ -18,7 +18,14 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-body">
-                    <?= form_open('add-customerbranch',["id" => "form-addcustomerbranch"]) ?>
+                    <?php
+                        $inputID = "";
+                        if ($uri->getSegment(1)=='edit-customerbranch'){
+                            echo form_open('edit-customerbranch/'.$customerBranchModel['id'],["id" => "form-editcustomerbranch"]);
+                        } else {
+                            echo form_open('add-customerbranch',["id" => "form-addcustomerbranch"]);
+                        }
+                    ;?>
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="card">

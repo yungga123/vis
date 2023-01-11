@@ -51,6 +51,7 @@
                     <th>Email Address</th>
                     <th>Source</th>
                     <th>Notes</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -65,9 +66,15 @@
                       <td><?= $item['email_address'] ?></td>
                       <td><?= $item['source'] ?></td>
                       <td><?= $item['notes'] ?></td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="<?= site_url('edit-customer/').$item['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                          <a href="<?= site_url('delete-customer/').$item['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                        </div>
+                      </td>
                     </tr>
                     <tr class="expandable-body">
-                      <td colspan="8">
+                      <td colspan="9">
                         <div class="row">
                           <div class="col-12">
                             <div class="card p-0">
@@ -85,6 +92,7 @@
                                       <th>Email Address</th>
                                       <th>Address</th>
                                       <th>Notes</th>
+                                      <th>Action</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -97,6 +105,12 @@
                                         <td><?= $item_branch['email_address'] ?></td>
                                         <td><?= $item_branch['address'] ?></td>
                                         <td><?= $item_branch['notes'] ?></td>
+                                        <td>
+                                          <div class="btn-group">
+                                            <a href="<?= site_url('edit-customerbranch/').$item_branch['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                            <a href="<?= site_url('delete-customer-branch/').$item_branch['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                          </div>
+                                        </td>
                                       </tr>
 
                                     <?php endforeach ?>

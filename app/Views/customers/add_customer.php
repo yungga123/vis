@@ -112,7 +112,8 @@
         </div>
 
         <div class="card-footer">
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <a class="btn btn-secondary" href="javascript:history.back();">Go Back</a>
+          <button type="submit" class="btn btn-success float-right">Submit</button>
         </div>
       </div>
       <?= form_close() ?>

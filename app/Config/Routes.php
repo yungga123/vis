@@ -73,6 +73,9 @@ $routes->get('/customers-list','Customers::customers_list');
 //CUSTOMERS BRANCH
 $routes->get('/add-customer-branch','CustomerBranch::index');
 $routes->post('/add-customerbranch','CustomerBranch::add_customer_validate');
+$routes->get('/edit-customerbranch/(:num)','CustomerBranch::edit_customer_branch/$1');
+$routes->post('/edit-customerbranch/(:num)','CustomerBranch::edit_customer_branch/$1');
+$routes->get('/delete-customer-branch/(:num)','CustomerBranch::delete_customer_branch/$1');
 
 //TaskLead
 $routes->get('/tasklead','TaskLead::index');
