@@ -125,6 +125,17 @@ $routes->get('edit-account/(:num)','Accounts::edit_account/$1');
 $routes->post('/post-edit-account','Accounts::edit_account_validate');
 $routes->get('delete-account/(:num)','Accounts::delete_account/$1');
 
+
+//CUSTOMERS VT
+$routes->get('/customersvt_menu','CustomersVt::index');
+$routes->get('/add-customervt','CustomersVt::add_customervt');
+$routes->post('/add-customervt','CustomersVt::add_customervt');
+$routes->get('/customervt-list','CustomersVt::customervt_list');
+$routes->get('/edit-customervtbranch/(:num)','CustomersVt::edit_customervt/$1');
+$routes->post('/edit-customervtbranch/(:num)','CustomersVt::edit_customervt/$1');
+$routes->get('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
+$routes->post('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
