@@ -10,12 +10,13 @@ class AllViews extends Seeder
     {
         $db = \Config\Database::connect();
         
-        $this->call('EmployeesView');
-        $this->call('CustomerView');
-        $this->call('TaskleadView');
         $this->call('AccountsView');
+        $this->call('CustomerBranchView');
+        $this->call('CustomerView');
+        $this->call('EmployeesView');
         $this->call('TaskleadBookedView');
         $this->call('TaskleadHistoryView');
+        $this->call('TaskleadView');
 
     }
 }
