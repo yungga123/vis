@@ -1,15 +1,16 @@
 <script>
 
-    $('#customer_name').val('<?= $customerVt['customer_name'] ?>');
-    $('#contact_person').val('<?= $customerVt['contact_person'] ?>');
-    $('#address_province').val('<?= $customerVt['address_province'] ?>');
-    $('#address_city').val('<?= $customerVt['address_city'] ?>');
-    $('#address_brgy').val('<?= $customerVt['address_brgy'] ?>');
-    $('#address_sub').val('<?= $customerVt['address_sub'] ?>');
-    $('#contact_number').val('<?= $customerVt['contact_number'] ?>');
-    $('#email_address').val('<?= $customerVt['email_address'] ?>');
-    $('#source').val('<?= $customerVt['source'] ?>');
-    $('#notes').val('<?= $customerVt['notes'] ?>');
+
+    $("#customer_name").val("<?= $customerVt["customer_name"] ?>");
+    $("#contact_person").val("<?= $customerVt["contact_person"] ?>");
+    $("#address_province").val("<?= $customerVt["address_province"] ?>");
+    $("#address_city").val("<?= $customerVt["address_city"] ?>");
+    $("#address_brgy").val("<?= $customerVt["address_brgy"] ?>");
+    $("#address_sub").val("<?= $customerVt["address_sub"] ?>");
+    $("#contact_number").val("<?= $customerVt["contact_number"] ?>");
+    $("#email_address").val("<?= $customerVt["email_address"] ?>");
+    $("#source").val("<?= $customerVt["source"] ?>");
+    $("#notes").val("<?= $customerVt["notes"] ?>");
 
 
 
