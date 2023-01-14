@@ -24,6 +24,7 @@ class TaskleadView extends Seeder
             CONCAT(status,'%') as status,
             status_percent,
             customer_name,
+            branch_name,
             customers.contact_number as contact_number,
             project,
             project_amount,
@@ -52,6 +53,10 @@ class TaskleadView extends Seeder
             employees
         ON
             tasklead.employee_id=employees.employee_id
+        LEFT JOIN
+            customer_branch
+        ON
+            tasklead.branch_id=customer_branch.id
         WHERE
             tasklead.deleted_at IS NULL AND status <> 100.00
         ");

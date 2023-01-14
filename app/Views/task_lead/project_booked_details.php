@@ -130,6 +130,10 @@
                 <b class="d-block"><?= $project_detail['customer_name']; ?></b>
               </p>
 
+              <p class="text-sm">Branch
+                <b class="d-block"><?= $project_detail['branch_name']; ?></b>
+              </p>
+
               <p class="text-sm">Contact Number
                 <b class="d-block"><?= $project_detail['contact_number']; ?></b>
               </p>

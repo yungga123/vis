@@ -3,7 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\CustomerBranchModel;
 use App\Models\CustomersModel;
+use App\Models\CustomersVtBranchModel;
+use App\Models\CustomersVtModel;
 use App\Models\TaskleadHistorViewModel;
 use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
@@ -21,8 +24,13 @@ class TaskLead extends BaseController
     public function index()
     {
         if (session('logged_in') == true) {
+
+            $customersModel = new CustomersModel();
+            $customersVtModel = new CustomersVtModel();
             $data['title'] = 'Task/Leads Monitoring';
             $data['uri'] = service('uri');
+            $data['customers'] = $customersModel->find();
+            $data['customersVt'] = $customersVtModel->find();
 
             echo view('templates/header', $data);
             echo view('task_lead/header');
@@ -41,21 +49,26 @@ class TaskLead extends BaseController
         if (session('logged_in') == true) {
             $time = new Time('now');
 
+            $selectedCustomer = $this->request->getPost('forecast_custmer');
             $customersModel = new CustomersModel();
+            $customersBranchModel = new CustomerBranchModel();
             $data['title'] = 'Add Project';
             $data['page_title'] = 'Add Project';
             $data['customers'] = $customersModel->findAll();
             $data['uri'] = service('uri');
             $data['date_quarter'] = $time->getQuarter();
+            $data['customers_branch'] = $customersBranchModel->where('customer_id',$selectedCustomer)->find();
+            $data['selectedCustomer'] = $selectedCustomer;
 
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/add_project');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('templates/header', $data)
+                . view('task_lead/header')
+                . view('templates/navbar')
+                . view('templates/sidebar')
+                . view('task_lead/add_project')
+                . view('templates/footer')
+                . view('task_lead/add_project_script')
+                . view('task_lead/script');
         } else {
             return redirect()->to('login');
         }
@@ -76,6 +89,7 @@ class TaskLead extends BaseController
             "quarter" => $this->request->getPost('quarter'),
             "status" => $this->request->getPost('status'),
             "customer_id" => $this->request->getPost('customer_id'),
+            "branch_id" => $this->request->getPost('branch_id'),
             "project" => $this->request->getPost('project'),
             "project_amount" => $this->request->getPost('project_amount'),
             "remark_next_step" => $this->request->getPost('remark_next_step'),
@@ -119,6 +133,7 @@ class TaskLead extends BaseController
             "quarter" => $this->request->getPost('quarter'),
             "status" => $this->request->getPost('status'),
             "customer_id" => $this->request->getPost('customer_id'),
+            "branch_id" => $this->request->getPost('branch_id'),
             "project" => $this->request->getPost('project'),
             "project_amount" => $this->request->getPost('project_amount'),
             "remark_next_step" => $this->request->getPost('remark_next_step'),
@@ -191,10 +206,33 @@ class TaskLead extends BaseController
         if (session('logged_in') == true) {
             //$taskleadModel = new TaskLeadModel();
             $taskleadView = new TaskLeadView();
+
+            $request = service('request');
+            $searchData = $request->getGet();
+
+            $data['page'] = isset($_GET['page']) ? $_GET['page'] : 1;
+            $data['perPage'] = 10;
+            $data['total'] = $taskleadView->countAll();
+            $search = "";
+            if (isset($searchData) && isset($searchData['search'])) {
+                $search = $searchData['search'];
+            }
+
+            if ($search == '') {
+                $paginateData = $taskleadView->where('employee_name',session('name'))->orderBy('id', 'desc')->paginate($data['perPage']);
+            } else {
+                $paginateData = $taskleadView->orLike('id', $search)
+                    ->orLike('employee_name', $search)
+                    ->orLike('customer_name', $search)
+                    ->orderBy('id', 'desc')
+                    ->paginate($data['perPage']);
+            }
+
             $data['title'] = 'Booked Project List';
             $data['uri'] = service('uri');
-            $data['booked_projects'] = $taskleadView->orderBy('id','desc')->paginate(10);
+            $data['booked_projects'] = $paginateData;
             $data['pager'] = $taskleadView->pager;
+            $data['search'] = $search;
 
             echo view('templates/header', $data);
             echo view('task_lead/header');
@@ -212,8 +250,35 @@ class TaskLead extends BaseController
     {
 
         if (session('logged_in') == true && (session('access') == 'manager' || session('access') == 'admin')) {
+
+            $taskleadView = new TaskLeadView();
+
+            $request = service('request');
+            $searchData = $request->getGet();
+
+            $data['page'] = isset($_GET['page']) ? $_GET['page'] : 1;
+            $data['perPage'] = 10;
+            $data['total'] = $taskleadView->countAll();
+            $search = "";
+            if (isset($searchData) && isset($searchData['search'])) {
+                $search = $searchData['search'];
+            }
+
+            if ($search == '') {
+                $paginateData = $taskleadView->orderBy('id', 'desc')->paginate($data['perPage']);
+            } else {
+                $paginateData = $taskleadView->orLike('id', $search)
+                    ->orLike('employee_name', $search)
+                    ->orLike('customer_name', $search)
+                    ->orderBy('id', 'desc')
+                    ->paginate($data['perPage']);
+            }
+
             $data['title'] = 'Booked Managers Project List';
             $data['uri'] = service('uri');
+            $data['booked_projects'] = $paginateData;
+            $data['pager'] = $taskleadView->pager;
+            $data['search'] = $search;
 
             echo view('templates/header', $data);
             echo view('task_lead/header');
@@ -255,6 +320,7 @@ class TaskLead extends BaseController
                 "status_percent",
                 "status",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -271,6 +337,7 @@ class TaskLead extends BaseController
             ])
             ->setSearch([
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "id",
                 "project",
@@ -288,6 +355,7 @@ class TaskLead extends BaseController
                 "status",
                 "status_percent",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -320,6 +388,7 @@ class TaskLead extends BaseController
                 "status_percent",
                 "status",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -336,6 +405,7 @@ class TaskLead extends BaseController
             ])
             ->setSearch([
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "id",
                 "project",
@@ -353,6 +423,7 @@ class TaskLead extends BaseController
                 "status",
                 "status_percent",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -385,6 +456,7 @@ class TaskLead extends BaseController
                 "status_percent",
                 "status",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -401,6 +473,7 @@ class TaskLead extends BaseController
             ])
             ->setSearch([
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "id",
                 "project",
@@ -418,6 +491,7 @@ class TaskLead extends BaseController
                 "status",
                 "status_percent",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -450,6 +524,7 @@ class TaskLead extends BaseController
                 "status_percent",
                 "status",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -466,6 +541,7 @@ class TaskLead extends BaseController
             ])
             ->setSearch([
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "id",
                 "project",
@@ -483,6 +559,7 @@ class TaskLead extends BaseController
                 "status",
                 "status_percent",
                 "customer_name",
+                "branch_name",
                 "contact_number",
                 "project",
                 "project_amount",
@@ -726,6 +803,68 @@ class TaskLead extends BaseController
             $validate['success'] = true;
             $taskleadHistoryModel->insert($insert_data);
 
+            if ($data['status']=='100.00') {
+                
+                //ADD MAIN CUSTOMER
+
+                $customersModel = new CustomersModel();
+                $customersVtModel = new CustomersVtModel();
+                
+
+                $taskleadData = $taskleadModel->find($id);
+                $customerID = $taskleadData['customer_id'];
+                $customersData = $customersModel->find($customerID);
+
+                $customersVTInsert = [
+                    "customer_name" => $customersData['customer_name'],
+                    "contact_person" => $customersData['contact_person'],
+                    "address_province" => $customersData['address_province'],
+                    "address_city" => $customersData['address_city'],
+                    "address_brgy" => $customersData['address_brgy'],
+                    "address_sub" => $customersData['address_sub'],
+                    "contact_number" => $customersData['contact_number'],
+                    "email_address" => $customersData['email_address'],
+                    "source" => $customersData['source'],
+                    "notes" => $customersData['notes'],
+                ];
+                
+                $customersVtModel->insert($customersVTInsert);
+                
+
+                $customersVtLastData = $customersVtModel->orderBy('id','desc')->limit(1)->find();
+                $taskleadModel->update($id,[
+                    "customer_id" => $customersVtLastData[0]['id']
+                ]);
+                $customersModel->delete($customerID);
+
+                 // ADD CUSTOMER BRANCH
+                if ($taskleadData['branch_id']) {
+                    $customersBranchModel = new CustomerBranchModel();
+                    $customersVTBranchModel = new CustomersVtBranchModel();
+                    $customerBranchID = $taskleadData['branch_id'];
+                    $customersBranchData = $customersBranchModel->find($customerBranchID);
+                    $customersVTBranchInsert = [
+                        "customer_id" => $customersBranchData['customer_id'],
+                        "branch_name" => $customersBranchData['branch_name'],
+                        "address_province" => $customersBranchData['address_province'],
+                        "address_city" => $customersBranchData['address_city'],
+                        "address_brgy" => $customersBranchData['address_brgy'],
+                        "address_sub" => $customersBranchData['address_sub'],
+                        "contact_number" => $customersBranchData['contact_number'],
+                        "contact_person" => $customersBranchData['contact_person'],
+                        "email_address" => $customersBranchData['email_address'],
+                        "notes" => $customersBranchData['notes'],
+                    ];
+                    $customersVTBranchModel->insert($customersVTBranchInsert);
+                    
+                    $customersVtBranchLastData = $customersVTBranchModel->orderBy('id', 'desc')->limit(1)->find();
+                    $taskleadModel->update($id, [
+                        "branch_id" => $customersVtBranchLastData[0]['id']
+                    ]);
+                    $customersVTBranchModel->delete($customerBranchID);
+                }
+
+            }
         }
 
         echo json_encode($validate);
@@ -907,83 +1046,4 @@ class TaskLead extends BaseController
             return redirect()->to('login');
         }
     }
-
-    // public function add_identified() {
-    //     if (session('logged_in') == true) {
-    //         $data['title'] = 'Add Project';
-    //         $data['page_title'] = 'Add Identified Project';
-    //         $data['uri'] = service('uri');
-    //         $data['validation'] = "";
-
-    //         return view('templates/header', $data)
-    //         . view('task_lead/header')
-    //         . view('templates/navbar')
-    //         . view('templates/sidebar')
-    //         . view('task_lead/add_identified_project')
-    //         . view('templates/footer')
-    //         . view('task_lead/script');
-
-        
-    //     } else {
-    //         return redirect()->to('login');
-    //     }
-    // }
-
-    // public function add_identified() {
-    //     if (session('logged_in') == true) {
-    //         $time = new Time('now');
-    //         $taskleadModel = new TaskLeadModel();
-    //         $customersModel = new CustomersModel();
-    //         $data['title'] = 'Add Project';
-    //         $data['page_title'] = 'Add Identified Project';
-    //         $data['uri'] = service('uri');
-    //         $data['customers'] = $customersModel->find();
-    //         $data['date_quarter'] = $time->getQuarter();
-    //         $data['validation'] = [];
-
-    //         if ($this->request->getMethod() !== 'post') {
-                
-    //             return view('templates/header', $data)
-    //             . view('task_lead/header')
-    //             . view('templates/navbar')
-    //             . view('templates/sidebar')
-    //             . view('task_lead/add_identified_project')
-    //             . view('templates/footer')
-    //             . view('task_lead/script')
-    //             . view('task_lead/script_add_identified_project');
-    //         }
-
-    //         $data_input = [
-    //             'employee_id' => session('employee_id'),
-    //             'quarter' => $this->request->getPost('quarter'),
-    //             'status' => $this->request->getPost('status'),
-    //             'customer_id' => $this->request->getPost('customer_id'),
-    //             'remark_next_step' => $this->request->getPost('remark_next_step'),
-    //             'forecast_close_date' => $this->request->getPost('forecast_close_date'),
-    //             'min_forecast_date' => $this->request->getPost('min_forecast_date'),
-    //             'max_forecast_date' => $this->request->getPost('max_forecast_date'),
-    //         ];
-
-    //         if (!$taskleadModel->insert($data_input)) {
-
-    //             $data['validation'] = $taskleadModel->errors();
-
-    //             return view('templates/header', $data)
-    //             . view('task_lead/header')
-    //             . view('templates/navbar')
-    //             . view('templates/sidebar')
-    //             . view('task_lead/add_identified_project')
-    //             . view('templates/footer')
-    //             . view('task_lead/script')
-    //             . view('task_lead/script_add_identified_project');
-    //         }
-
-            
-    //         return redirect()->to('project-list');
-
-        
-    //     } else {
-    //         return redirect()->to('login');
-    //     }
-    // }
 }

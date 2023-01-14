@@ -65,6 +65,23 @@
                     </select>
                     <small id="small_customer_id" class="form-text text-muted"></small>
                   </div>
+
+                  <div class="form-group">
+                    <label for="branch_id">Branch</label>
+                    <select class="form-control" name="branch_id" id="branch_id">
+                      <option value="">--Please Select--</option>
+                      <?php if ($customers_branch) : ?>
+                        <?php foreach ($customers_branch as $row) { ?>
+                        <option value="<?= $row['id'] ?>">
+                          <?= $row['branch_name'] ?>
+                        </option>
+                        <?php } ?>
+                      <?php endif ?>
+                      
+                    </select>
+                    <small id="small_branch_id" class="form-text text-muted"></small>
+                  </div>
+
                   <div class="form-group">
                     <label for="project">Project</label>
                     <input name="project" id="project" type="text" class="form-control" placeholder="Enter Project">

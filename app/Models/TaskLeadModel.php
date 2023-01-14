@@ -20,6 +20,7 @@ class TaskLeadModel extends Model
         "quarter", 
         "status", 
         "customer_id",
+        "branch_id",
         "project", 
         "project_amount", 
         "quotation_num", 
