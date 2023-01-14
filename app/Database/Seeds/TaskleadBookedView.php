@@ -24,7 +24,8 @@ class TaskleadBookedView extends Seeder
             CONCAT(status,'%') as status,
             status_percent,
             customer_name,
-            customers.contact_number as contact_number,
+            branch_name,
+            customers_vt.contact_number as contact_number,
             project,
             project_amount,
             quotation_num,
@@ -41,9 +42,9 @@ class TaskleadBookedView extends Seeder
         FROM 
             tasklead
         LEFT JOIN
-            customers
+            customers_vt
         ON
-            tasklead.customer_id=customers.id
+            tasklead.customer_id=customers_vt.id
         LEFT JOIN
             tasklead_status
         ON
@@ -52,6 +53,10 @@ class TaskleadBookedView extends Seeder
             employees
         ON
             tasklead.employee_id=employees.employee_id
+        LEFT JOIN
+            customervt_branch
+        ON
+            tasklead.branch_id=customervt_branch.id
         WHERE
             tasklead.deleted_at IS NULL AND status = 100.00
         ");

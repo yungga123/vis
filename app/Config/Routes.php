@@ -79,7 +79,7 @@ $routes->get('/delete-customer-branch/(:num)','CustomerBranch::delete_customer_b
 
 //TaskLead
 $routes->get('/tasklead','TaskLead::index');
-$routes->get('/tasklead-addproject','TaskLead::add_project');
+$routes->post('/tasklead-addproject','TaskLead::add_project');
 $routes->get('/tasklead-editproject/(:num)','TaskLead::edit_project/$1');
 $routes->post('/post-addproject','TaskLead::add_project_validate');
 $routes->post('/post-editproject','TaskLead::edit_project_validate');

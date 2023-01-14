@@ -35,9 +35,9 @@
 
         <div class="col-lg-3 col-6">
           <!-- small box -->
-          <div class="small-box bg-info">
+          <div class="small-box bg-success">
             <div class="inner">
-              <h3>999</h3>
+              <h3>0</h3>
 
               <p>Manager of Sales</p>
             </div>
@@ -50,9 +50,9 @@
 
         <div class="col-lg-3 col-6">
           <!-- small box -->
-          <div class="small-box bg-info">
+          <div class="small-box bg-warning">
             <div class="inner">
-              <h3>150</h3>
+              <h3>0</h3>
 
               <p>Add Customer (Forecast)</p>
             </div>
@@ -66,9 +66,9 @@
 
         <div class="col-lg-3 col-6">
           <!-- small box -->
-          <div class="small-box bg-info">
+          <div class="small-box bg-danger">
             <div class="inner">
-              <h3>44</h3>
+              <h3>0</h3>
 
               <p>Add Customer Branch (Forecast)</p>
             </div>
@@ -87,9 +87,9 @@
 
         <div class="col-lg-3 col-6">
           <!-- small box -->
-          <div class="small-box bg-success">
+          <div class="small-box bg-secondary">
             <div class="inner">
-              <h3>44</h3>
+              <h3>0</h3>
 
               <p>Customer List (Forecast)</p>
             </div>

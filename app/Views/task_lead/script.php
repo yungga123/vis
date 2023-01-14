@@ -29,6 +29,7 @@
                     $('#quarter').removeClass("is-invalid").addClass('is-valid');
                     $('#status').removeClass("is-invalid").addClass('is-valid');
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
+                    $('#branch_id').removeClass("is-invalid").addClass('is-valid');
                     $('#project').removeClass("is-invalid").addClass('is-valid');
                     $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
@@ -43,6 +44,7 @@
                     $('#small_quarter').html('');
                     $('#small_status').html('');
                     $('#small_customer_id').html('');
+                    $('#small_branch_id').html('');
                     $('#small_project').html('');
                     $('#small_project_amount').html('');
                     $('#small_quotation_num').html('');
@@ -64,6 +66,7 @@
                     $('#quarter').removeClass("is-invalid").addClass('is-valid');
                     $('#status').removeClass("is-invalid").addClass('is-valid');
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
+                    $('#branch_id').removeClass("is-invalid").addClass('is-valid');
                     $('#project').removeClass("is-invalid").addClass('is-valid');
                     $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
@@ -78,6 +81,7 @@
                     $('#small_quarter').html('');
                     $('#small_status').html('');
                     $('#small_customer_id').html('');
+                    $('#small_branch_id').html('');
                     $('#small_project').html('');
                     $('#small_project_amount').html('');
                     $('#small_quotation_num').html('');
@@ -138,6 +142,7 @@
                     $('#quarter').removeClass("is-invalid").addClass('is-valid');
                     $('#status').removeClass("is-invalid").addClass('is-valid');
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
+                    $('#branch_id').removeClass("is-invalid").addClass('is-valid');
                     $('#project').removeClass("is-invalid").addClass('is-valid');
                     $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
@@ -152,6 +157,7 @@
                     $('#small_quarter').html('');
                     $('#small_status').html('');
                     $('#small_customer_id').html('');
+                    $('#small_branch_id').html('');
                     $('#small_project').html('');
                     $('#small_project_amount').html('');
                     $('#small_quotation_num').html('');
@@ -173,6 +179,7 @@
                     $('#quarter').removeClass("is-invalid").addClass('is-valid');
                     $('#status').removeClass("is-invalid").addClass('is-valid');
                     $('#customer_id').removeClass("is-invalid").addClass('is-valid');
+                    $('#branch_id').removeClass("is-invalid").addClass('is-valid');
                     $('#project').removeClass("is-invalid").addClass('is-valid');
                     $('#quotation_num').removeClass("is-invalid").addClass('is-valid');
                     $('#project_amount').removeClass("is-invalid").addClass('is-valid');
@@ -187,6 +194,7 @@
                     $('#small_quarter').html('');
                     $('#small_status').html('');
                     $('#small_customer_id').html('');
+                    $('#small_branch_id').html('');
                     $('#small_project').html('');
                     $('#small_project_amount').html('');
                     $('#small_quotation_num').html('');
@@ -357,7 +365,7 @@
     //             text: "Export to Excel"
     //         }, "colvis"],
     //         "serverSide": true,
-    //         "ajax": '<?= ($uri->getSegment(1)=='manager-project-list-booked') ? site_url('manager-project-table-booked') : site_url('project-table-booked') ?>',
+    //         "ajax": '</?= ($uri->getSegment(1)=='manager-project-list-booked') ? site_url('manager-project-table-booked') : site_url('project-table-booked') ?>',
     //         "initComplete": function(settings, json) {
     //             project_list_table.buttons().container().appendTo('#project_list_table_wrapper .col-md-6:eq(0)');
     //         }
@@ -661,6 +669,11 @@
         $("#forecast_close_date").prop("type", "hidden");
         $("#min_forecast_date").prop("type", "hidden");
         $("#max_forecast_date").prop("type", "hidden");
+
+        $('#close_deal_date').attr('required',true);
+        $('#project_start_date').attr('required',true);
+        $('#project_finish_date').attr('required',true);
+        
 
         $('label[for="project"]').hide();
         $('label[for="project_amount"]').hide();

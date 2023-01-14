@@ -20,6 +20,23 @@
         <div class="col-md-12">
           <!-- Main Card -->
           <div class="card">
+            <div class="card-header">
+              
+              <h3 class="card-title">Project Booked List</h3>
+              <div class="card-tools">
+                <form method='get' action="customervt-list" id="searchForm">
+
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="search" class="form-control float-right" value='<?= $search ?>' placeholder="Search">
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default" id='btnsearch' onclick='document.getElementById("searchForm").submit();'>
+                        <i class="fas fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
             <div class="card-body p-0">
               <!-- <table id="project_list_table_booked" class="table table-bordered table-striped nowrap">
                                 <thead>
@@ -107,6 +124,7 @@
                       </td>
                       <td>
                         <?= $item['customer_name'] ?>
+                        <p><small class="text-muted">Branch: <?= ($item['branch_name']=='' ? "<i class='text-danger'>Not Set</i>" : $item['branch_name'] ) ?></small></p>
                         <p><small class="text-muted">Project: <?= $item['project'] ?></small></p>
                       </td>
                       <td><span class="badge badge-success"><?= $item['status_percent'] ?></span></td>
@@ -126,7 +144,7 @@
             </div>
 
             <div class="card-footer">
-              <?= $pager->links() ?>
+              <?= $pager->makeLinks($page, $perPage, $total, 'custom_view') ?>
               <div class="float-right">
                 <a href="<?= site_url('sales-dashboard') ?>" class="btn btn-success"><i class="fas fa-table"></i> Sales Dashboard</a>
                 <a href="<?= site_url('tasklead') ?>" class="btn btn-secondary"><i class="fas fa-undo-alt"></i> Task Lead Menu</a>
@@ -142,45 +160,3 @@
   </section>
 
 </div>
-
-
-<div class="modal fade" id="modal-delete-tasklead">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Delete Data</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Confirm to delete.</p>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> NO</button>
-        <a href="button" class="btn btn-success href-tasklead"><i class="fas fa-check"></i> YES</a>
-      </div>
-    </div>
-    <!-- /.modal-content -->
-  </div>
-  <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-
-<div class="modal fade" id="modal-update-tasklead">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body">
-        <a href="#" class="btn btn-danger btn-lg btn-block href-identified"><i class="fas fa-search"></i> Identified</a>
-        <a href="#" class="btn btn-secondary btn-lg btn-block href-qualified"><i class="fas fa-door-open"></i> Qualified</a>
-        <a href="#" class="btn btn-warning btn-lg btn-block href-developed"><i class="fas fa-lightbulb"></i> Developed Solution</a>
-        <a href="#" class="btn btn-info btn-lg btn-block href-evaluation"><i class="fas fa-calculator"></i> Evaluation</a>
-        <a href="#" class="btn btn-primary btn-lg btn-block href-negotiation"><i class="fas fa-handshake"></i> Negotiation</a>
-        <a href="#" class="btn btn-success btn-lg btn-block href-booked"><i class="fas fa-calendar-check"></i> Booked</a>
-      </div>
-    </div>
-    <!-- /.modal-content -->
-  </div>
-  <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->

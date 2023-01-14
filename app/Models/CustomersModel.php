@@ -36,42 +36,42 @@ class CustomersModel extends Model
 
     // Validation
     protected $validationRules      = [
-        "customer_name" => 'required|max_length[500]|alpha_numeric_space',
-        "contact_person" => 'required|max_length[500]|alpha_numeric_space',
-        "address_province" => 'required|max_length[500]|alpha_numeric_space',
-        "address_city" => 'required|max_length[500]|alpha_numeric_space',
-        "address_brgy" => 'required|max_length[500]|alpha_numeric_space',
+        "customer_name" => 'required|max_length[500]',
+        "contact_person" => 'required|max_length[500]',
+        "address_province" => 'required|max_length[500]',
+        "address_city" => 'required|max_length[500]',
+        "address_brgy" => 'required|max_length[500]',
         "address_sub" => 'required|max_length[500]',
-        "contact_number" => 'required|max_length[500]|alpha_numeric_space',
+        "contact_number" => 'required|max_length[500]',
         "email_address" => 'max_length[500]',
-        "source" => 'max_length[100]|alpha_numeric_space',
-        "notes" => 'required|max_length[100]|alpha_numeric_space'
+        "source" => 'max_length[100]',
+        "notes" => 'required|max_length[100]'
     ];
     protected $validationMessages   = [
         "customer_name" => [
             "required" => "Customer Name is required.",
             "max_length" => "Max length is 500.",
-            "alpha_numeric_space" => "Customer Name must only contain alpha-numeric characters."
+            
         ],
         "contact_person" => [
             "required" => "Contact Person is required.",
             "max_length" => "Max length is 500.",
-            "alpha_numeric_space" => "Contact Person must only contain alpha-numeric characters."
+            
         ],
         "address_province" => [
             "required" => "Province is required.",
             "max_length" => "Max length is 500.",
-            "alpha_numeric_space" => "Province must only contain alpha-numeric characters."
+            
         ],
         "address_city" => [
             "required" => "City is required.",
             "max_length" => "Max length is 500.",
-            "alpha_numeric_space" => "City must only contain alpha-numeric characters."
+            
         ],
         "address_brgy" => [
             "required" => "Barangay is required.",
             "max_length" => "Max length is 500.",
-            "alpha_numeric_space" => "Barangay must only contain alpha-numeric characters."
+            
         ],
         "address_sub" => [
             "required" => "Detailed Address is required.",
@@ -80,19 +80,19 @@ class CustomersModel extends Model
         "contact_number" => [
             "required" => "Contact Number is required.",
             "max_length" => "Max length is 500.",
-            "alpha_numeric_space" => "Contact Number must only contain alpha-numeric characters."
+            
         ],
         "email_address" => [
             "max_length" => "Max length is 500."
         ],
         "source" => [
             "max_length" => "Max length is 100.",
-            "alpha_numeric_space" => "Source of contact must only contain alpha-numeric characters."
+            
         ],
         "notes" => [
             "required" => "Additional Notes is required.",
             "max_length" => "Max length is 100.",
-            "alpha_numeric_space" => "Additional Notes must only contain alpha-numeric characters."
+            
         ]
     ];
     protected $skipValidation       = false;

@@ -31,6 +31,7 @@
                                         <th>Percent</th>
                                         <th>Status</th>
                                         <th>Customer</th>
+                                        <th>Branch</th>
                                         <th>Contact Number</th>
                                         <th>Project</th>
                                         <th>Amount</th>
@@ -56,6 +57,7 @@
                                         <th>Percent</th>
                                         <th>Status</th>
                                         <th>Customer</th>
+                                        <th>Branch</th>
                                         <th>Contact Number</th>
                                         <th>Project</th>
                                         <th>Amount</th>
