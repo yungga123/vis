@@ -133,6 +133,9 @@
               </table>
             </div>
             <div class="card-footer">
+
+              <a href="<?= site_url('customersvt_menu') ?>" class="btn btn-success" href="#">Customers Menu</a>
+
               <div class="float-right">
                 <?= $pager->makeLinks($page, $perPage, $total, 'custom_view') ?>
               </div>
