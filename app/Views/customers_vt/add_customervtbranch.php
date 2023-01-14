@@ -21,9 +21,9 @@
                     <?php
                         $inputID = "";
                         if ($uri->getSegment(1)=='edit-customervtbranch'){
-                            echo form_open('edit-customerbranch/'.$customervtBranch['id'],["id" => "form-editcustomervtbranch"]);
+                            echo form_open('edit-customervtbranch/'.$id,["id" => "form-editcustomervtbranch"]);
                         } else {
-                            echo form_open('add-customervtbranch',["id" => "form-addcustomervtbranch"]);
+                            echo form_open('add_customervtbranch',["id" => "form-addcustomervtbranch"]);
                         }
                     ;?>
                     <div class="row">

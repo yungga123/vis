@@ -131,10 +131,14 @@ $routes->get('/customersvt_menu','CustomersVt::index');
 $routes->get('/add-customervt','CustomersVt::add_customervt');
 $routes->post('/add-customervt','CustomersVt::add_customervt');
 $routes->get('/customervt-list','CustomersVt::customervt_list');
-$routes->get('/edit-customervtbranch/(:num)','CustomersVt::edit_customervt/$1');
-$routes->post('/edit-customervtbranch/(:num)','CustomersVt::edit_customervt/$1');
+$routes->get('/add_customervtbranch','CustomersVt::add_customervtbranch');
+$routes->post('/add_customervtbranch','CustomersVt::add_customervtbranch');
+$routes->get('/edit-customervtbranch/(:num)','CustomersVt::edit_customervtbranch/$1');
+$routes->post('/edit-customervtbranch/(:num)','CustomersVt::edit_customervtbranch/$1');
 $routes->get('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
 $routes->post('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
+$routes->get('/delete-customervt/(:num)','CustomersVt::delete_customervt/$1');
+$routes->get('/delete-customervtbranch/(:num)','CustomersVt::delete_customervt_branch/$1');
 
 /*
  * --------------------------------------------------------------------

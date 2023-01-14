@@ -134,6 +134,59 @@ class CustomersVt extends BaseController
 
     }
 
+    public function add_customervtbranch() {
+
+        $customersVtBranchModel = new CustomersVtBranchModel();
+        $customerVtModel = new CustomersVtModel();
+
+        if ($this->request->getMethod() == 'post') {
+            
+            $validate = [
+                "success" => false,
+                "messages" => ''
+            ];
+
+            $data = [
+                "customer_id" => $this->request->getPost("customer_id"),
+                "branch_name" => $this->request->getPost("branch_name"),
+                "address_province" => $this->request->getPost("address_province"),
+                "address_city" => $this->request->getPost("address_city"),
+                "address_brgy" => $this->request->getPost("address_brgy"),
+                "address_sub" => $this->request->getPost("address_sub"),
+                "contact_number" => $this->request->getPost("contact_number"),
+                "contact_person" => $this->request->getPost("contact_person"),
+                "email_address" => $this->request->getPost("email_address"),
+                "notes" => $this->request->getPost("notes"),
+            ];
+
+            if (!$customersVtBranchModel->insert($data)) {
+                $validate['messages'] = $customersVtBranchModel->errors();
+            } else {
+                $validate['success'] = true;
+            }
+
+            return json_encode($validate);
+        }
+
+        if (session('logged_in')==false) {
+            return redirect()->to('login');
+        }
+
+        $data['title'] = 'Add Branch Customer';
+        $data['page_title'] = 'Add a branch customer';
+        $data['uri'] = service('uri');
+        $data['customersvt'] = $customerVtModel->find();
+
+        return view('templates/header', $data)
+            . view('customers_vt/header')
+            . view('templates/navbar')
+            . view('templates/sidebar')
+            . view('customers_vt/add_customervtbranch')
+            . view('templates/footer')
+            . view('customers_vt/add_customervtbranch_script')
+            . view('customers_vt/script');
+    }
+
     public function edit_customervtbranch($id) {
 
         $customersVtModel = new CustomersVtModel();
@@ -177,6 +230,7 @@ class CustomersVt extends BaseController
         $data['customersvt'] = $customersVtModel->find();
         $data['customervtBranch'] = $customersVtBranchModel->find($id);
         $data['uri'] = service('uri');
+        $data['id'] = $id;
 
         return view('templates/header', $data)
         . view('customers_vt/header')
@@ -184,6 +238,7 @@ class CustomersVt extends BaseController
         . view('templates/sidebar')
         . view('customers_vt/add_customervtbranch')
         . view('templates/footer')
+        . view('customers_vt/edit_customervtbranch_script')
         . view('customers_vt/script');
 
     }
@@ -237,5 +292,51 @@ class CustomersVt extends BaseController
             . view('customers_vt/customervt_table')
             . view('templates/footer')
             . view('customers_vt/script');
+    }
+
+    public function delete_customervt($id) {
+
+        if (session('logged_in')==false) {
+            return redirect()->to('login');
+        }
+
+        $customersvtModel = new CustomersVtModel();
+
+        $data['title'] = 'Delete Customer';
+        $data['page_title'] = 'Delete Customer';
+        $data['uri'] = service('uri');
+        $data['href'] = site_url('customervt-list');
+        $customersvtModel->delete($id);
+
+        return view('templates/header', $data)
+            . view('customers/header')
+            . view('templates/navbar')
+            . view('templates/sidebar')
+            . view('templates/deletepage')
+            . view('templates/footer')
+            . view('customers/script');
+    }
+
+    public function delete_customervt_branch($id) {
+        
+        if (session('logged_in')==false) {
+            return redirect()->to('login');
+        }
+
+        $customersvtBranchModel = new CustomersVtBranchModel();
+
+        $data['title'] = 'Delete Branch Customer';
+        $data['page_title'] = 'Delete Branch Customer';
+        $data['uri'] = service('uri');
+        $data['href'] = site_url('customervt-list');
+        $customersvtBranchModel->delete($id);
+
+        return view('templates/header', $data)
+            . view('customers/header')
+            . view('templates/navbar')
+            . view('templates/sidebar')
+            . view('templates/deletepage')
+            . view('templates/footer')
+            . view('customers/script');
     }
 }

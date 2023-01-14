@@ -107,8 +107,8 @@
                                         <td><?= $item_branch['notes'] ?></td>
                                         <td>
                                           <div class="btn-group">
-                                            <a href="<?= site_url('edit-customerbranch/').$item_branch['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                                            <a href="<?= site_url('delete-customer-branch/').$item_branch['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                            <a href="<?= site_url('edit-customervtbranch/').$item_branch['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                            <a href="<?= site_url('delete-customervtbranch/').$item_branch['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
                                           </div>
                                         </td>
                                       </tr>
@@ -117,7 +117,7 @@
 
                                     <?php if (!$customer_find) : ?>
                                       <tr class="text-center text-danger">
-                                        <td colspan="6"><i>NO BRANCH YET!!</i></td>
+                                        <td colspan="7"><i>NO BRANCH YET!!</i></td>
                                       </tr>
                                     <?php endif ?>
                                   </tbody>

@@ -46,7 +46,7 @@
             <div class="icon">
               <i class="fas fa-user-plus"></i>
             </div>
-            <a href="#" class="small-box-footer">
+            <a href="<?= site_url("add_customervtbranch") ?>" class="small-box-footer">
               Proceed <i class="fas fa-arrow-circle-right"></i>
             </a>
           </div>
