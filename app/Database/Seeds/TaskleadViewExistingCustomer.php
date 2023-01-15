@@ -4,18 +4,18 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 
-class TaskleadView extends Seeder
+class TaskleadViewExistingCustomer extends Seeder
 {
     public function run()
     {
         $db = \Config\Database::connect();
         $db->query("
             DROP VIEW IF EXISTS
-                task_lead
+                task_lead_existing_customer
         ");
         $db->query("
         CREATE VIEW 
-            task_lead 
+            task_lead_existing_customer 
         AS SELECT 
             tasklead.id as id,
             tasklead.employee_id,
@@ -26,7 +26,7 @@ class TaskleadView extends Seeder
             existing_customer,
             customer_name,
             branch_name,
-            customers.contact_number as contact_number,
+            customers_vt.contact_number as contact_number,
             project,
             project_amount,
             quotation_num,
@@ -43,9 +43,9 @@ class TaskleadView extends Seeder
         FROM 
             tasklead
         LEFT JOIN
-            customers
+            customers_vt
         ON
-            tasklead.customer_id=customers.id
+            tasklead.customer_id=customers_vt.id
         LEFT JOIN
             tasklead_status
         ON
@@ -55,11 +55,11 @@ class TaskleadView extends Seeder
         ON
             tasklead.employee_id=employees.employee_id
         LEFT JOIN
-            customer_branch
+            customervt_branch
         ON
-            tasklead.branch_id=customer_branch.id
+            tasklead.branch_id=customervt_branch.id
         WHERE
-            tasklead.deleted_at IS NULL AND status <> 100.00 AND existing_customer = 0
+            tasklead.deleted_at IS NULL AND status <> 100.00 AND existing_customer = 1
         ");
     }
 }

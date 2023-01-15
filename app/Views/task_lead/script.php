@@ -276,7 +276,7 @@
                     $('#small_max_forecast_date').html('');
 
                     setTimeout(function() {
-                        window.location.href = "<?= site_url('project-list') ?>";
+                        javascript:history.back();
                     }, 3000);
 
                 } else {
@@ -338,7 +338,7 @@
                 text: "Export to Excel"
             }, "colvis"],
             "serverSide": true,
-            "ajax": '<?= ($uri->getSegment(1)=='manager-project-list') ? site_url('manager-project-table') : site_url('project-table') ?>',
+            "ajax": '<?= ($uri->getSegment(1)=='manager-project-list') ? site_url('manager-project-table')."?".$uri->getQuery() : site_url('project-table')."?".$uri->getQuery() ?>',
             "initComplete": function(settings, json) {
                 project_list_table.buttons().container().appendTo('#project_list_table_wrapper .col-md-6:eq(0)');
             }

@@ -20,8 +20,27 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
-          <?=($uri->getSegment(1) == 'tasklead-addproject') ? form_open("post-addproject", ["id" => "post-addproject"]) : form_open("post-editproject", ["id" => "post-editproject"]) ?>
-          <?=($uri->getSegment(1) != "tasklead-addproject") ? "<input type='hidden' name='id' id='id' value='" . $id . "'>" : "" ?>
+
+          <?php 
+            switch ($uri->getSegment(1)) {
+              case 'tasklead-addproject':
+                echo form_open("post-addproject", ["id" => "post-addproject"]);
+                break;
+              case 'tasklead-editproject':
+                echo form_open("post-editproject", ["id" => "post-editproject"]);
+                echo "<input type='hidden' name='id' id='id' value='" . $id . "'>";
+                break;
+              case 'add-project-existingcustomer':
+                echo form_open("add-project-existingcustomer", ["id" => "post-addproject"]);
+
+                break;
+
+              default:
+                # code...
+                break;
+            }
+          ?>
+
           <input type="hidden" name="employee_id" id="employee_id" value="<?= $_SESSION['employee_id'] ?>">
           <!-- Main Card -->
           <div class="card">
