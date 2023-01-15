@@ -50,6 +50,7 @@
                             <div class="col-md-8">
                                 <input type="hidden" name="id" id="id" value="<?= $id; ?>">
                                 <input type="hidden" name="status" id="status" value="<?= $status ?>">
+                                <input type="hidden" name="existing_customer" id="existing_customer" value="<?= $taskleadData['existing_customer'] ?>">
                                 <div class="form-group">
                                     <label for="quotation_num">Quotation Number</label>
                                     <input name="quotation_num" id="quotation_num" type="text" class="form-control" placeholder="Do not put anything here, this is system generated after developed solution" readonly>
@@ -108,7 +109,7 @@
                     </div>
 
                     <div class="card-footer">
-                        <a class="btn btn-danger" href="<?= site_url('project-list') ?>"><i class="fas fa-times"></i> Cancel</a>
+                        <a class="btn btn-danger" href="javascript:history.back();"><i class="fas fa-times"></i> Cancel</a>
                         <button type="submit" class="btn btn-success float-right"><i class="fas fa-check"></i> Submit</button>
                     </div>
                 </div>
