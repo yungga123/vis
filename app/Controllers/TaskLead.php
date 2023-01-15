@@ -49,7 +49,7 @@ class TaskLead extends BaseController
         if (session('logged_in') == true) {
             $time = new Time('now');
 
-            $selectedCustomer = $this->request->getPost('forecast_custmer');
+            $selectedCustomer = $this->request->getGet('forecast_custmer');
             $customersModel = new CustomersModel();
             $customersBranchModel = new CustomerBranchModel();
             $data['title'] = 'Add Project';
@@ -68,6 +68,82 @@ class TaskLead extends BaseController
                 . view('task_lead/add_project')
                 . view('templates/footer')
                 . view('task_lead/add_project_script')
+                . view('task_lead/script');
+        } else {
+            return redirect()->to('login');
+        }
+    }
+
+    public function add_projectExistingCustomer()
+    {
+        if (session('logged_in') == true) {
+
+            if ($this->request->getMethod()=="post") {
+                $taskleadModel = new TaskLeadModel();
+                $taskleadHistoryModel = new TaskleadHistoryModel();
+                $validate = [
+                    "success" => false,
+                    "messages" => ''
+                ];
+
+                $data = [
+                    "employee_id" => $this->request->getPost('employee_id'),
+                    "quotation_num" => $this->request->getPost('quotation_num'),
+                    "quarter" => $this->request->getPost('quarter'),
+                    "status" => $this->request->getPost('status'),
+                    "customer_id" => $this->request->getPost('customer_id'),
+                    "branch_id" => $this->request->getPost('branch_id'),
+                    "project" => $this->request->getPost('project'),
+                    "project_amount" => $this->request->getPost('project_amount'),
+                    "remark_next_step" => $this->request->getPost('remark_next_step'),
+                    "forecast_close_date" => $this->request->getPost('forecast_close_date'),
+                    "min_forecast_date" => $this->request->getPost('min_forecast_date'),
+                    "max_forecast_date" => $this->request->getPost('max_forecast_date'),
+                    "existing_customer" => 1,
+                ];
+
+                if (!$taskleadModel->insert($data)) {
+                    $validate['messages'] = $taskleadModel->errors();
+                } else {
+                    $validate['success'] = true;
+                    $db = \Config\Database::connect();
+                    $query = $db->query("SELECT * FROM tasklead ORDER BY id DESC LIMIT 1");
+                    $result = $query->getResultObject();
+                    
+
+                    $taskleadHistoryModel->insert([
+                        "tasklead_id" => $result[0]->id,
+                        "quarter" => $data["quarter"],
+                        "status" => $data["status"],
+                        "remark_next_step" => $data["remark_next_step"],
+                    ]);
+                }
+
+                return json_encode($validate);
+            }
+
+
+            $time = new Time('now');
+            $selectedCustomer = $this->request->getGet('existing_customer');
+            $customersVtModel = new CustomersVtModel();
+            $customersVtBranchModel = new CustomersVtBranchModel();
+            $data['title'] = 'Add Project';
+            $data['page_title'] = 'Add Project';
+            $data['customers'] = $customersVtModel->findAll();
+            $data['uri'] = service('uri');
+            $data['date_quarter'] = $time->getQuarter();
+            $data['customers_branch'] = $customersVtBranchModel->where('customer_id',$selectedCustomer)->find();
+            $data['selectedCustomer'] = $selectedCustomer;
+
+
+            return view('templates/header', $data)
+                . view('task_lead/header')
+                . view('templates/navbar')
+                . view('templates/sidebar')
+                . view('task_lead/add_project')
+                . view('templates/footer')
+                . view('task_lead/add_project_script')
+                . view('task_lead/addProjectExistingCustomerScript')
                 . view('task_lead/script');
         } else {
             return redirect()->to('login');
@@ -96,6 +172,8 @@ class TaskLead extends BaseController
             "forecast_close_date" => $this->request->getPost('forecast_close_date'),
             "min_forecast_date" => $this->request->getPost('min_forecast_date'),
             "max_forecast_date" => $this->request->getPost('max_forecast_date'),
+            "existing_customer" => 0,
+
         ];
 
         if (!$taskleadModel->insert($data)) {
@@ -309,8 +387,14 @@ class TaskLead extends BaseController
     {
         $taskleadModel = new TaskLeadModel();
 
+        if ($this->request->getGet('existing_customer')==1) {
+            $project_table = $taskleadModel->noticeTableExistingCustomer();
+        } else {
+            $project_table = $taskleadModel->noticeTable();
+        }
+
         $taskleadTable = new TablesIgniter();
-        $taskleadTable->setTable($taskleadModel->noticeTable())
+        $taskleadTable->setTable($project_table)
             ->setDefaultOrder("id", "DESC")
             ->setOrder([
                 "id",
@@ -377,8 +461,14 @@ class TaskLead extends BaseController
     {
         $taskleadModel = new TaskLeadModel();
 
+        if ($this->request->getGet('existing_customer')==1) {
+            $project_table = $taskleadModel->noticeTableWhereExistingCustomer(session('employee_id'));
+        } else {
+            $project_table = $taskleadModel->noticeTableWhere(session('employee_id'));
+        }
+
         $taskleadTable = new TablesIgniter();
-        $taskleadTable->setTable($taskleadModel->noticeTableWhere(session('employee_id')))
+        $taskleadTable->setTable($project_table)
             ->setDefaultOrder("id", "DESC")
             ->setOrder([
                 "id",
@@ -803,7 +893,9 @@ class TaskLead extends BaseController
             $validate['success'] = true;
             $taskleadHistoryModel->insert($insert_data);
 
-            if ($data['status']=='100.00') {
+            $existingCustomer = $this->request->getPost('existing_customer');
+
+            if ($data['status']=='100.00' && !$existingCustomer) {
                 
                 //ADD MAIN CUSTOMER
 

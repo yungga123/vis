@@ -7,7 +7,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0">Forms</h1>
+          <h1 class="m-0">Leads Forecast</h1>
         </div><!-- /.col -->
         <div class="col-sm-6">
         </div><!-- /.col -->
@@ -37,6 +37,34 @@
             <a href="javascript:void(0)" class="small-box-footer" data-toggle="modal" data-target="#modalCustomerSelect">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
 
+        </div>
+
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h4>Booked Projects</h4>
+              
+              <p>View booked projects.</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <a href="<?= site_url('project-list-booked') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-secondary">
+            <div class="inner">
+              <h4>Booked Projects (Consolidated)</h4>
+              
+              <p>View booked projects.</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <a href="<?= site_url('manager-project-list-booked') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
         </div>
       </div>
 
@@ -95,33 +123,7 @@
           </div>
         </div>
 
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h4>Booked Projects</h4>
-              
-              <p>View booked projects.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('project-list-booked') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-secondary">
-            <div class="inner">
-              <h4>Booked Projects (Consolidated)</h4>
-              
-              <p>View booked projects.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('manager-project-list-booked') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
+        
       </div>
       </div>
 
@@ -160,7 +162,7 @@
             <div class="icon">
               <i class="fas fa-tasks"></i>
             </div>
-            <a href="</?= site_url('project-list') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('project-list?existing_customer=1') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
 
@@ -175,37 +177,10 @@
             <div class="icon">
               <i class="fas fa-tasks"></i>
             </div>
-            <a href="</?= site_url('manager-project-list') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('manager-project-list?existing_customer=1') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
 
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h4>Booked Projects</h4>
-              
-              <p>View booked projects.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="</?= site_url('project-list-booked') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-secondary">
-            <div class="inner">
-              <h4>Booked Projects (Consolidated)</h4>
-              
-              <p>View booked projects.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="</?= site_url('manager-project-list-booked') ;?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
       </div>
       </div>
 
@@ -226,7 +201,7 @@
           </button>
       </div>
       <div class="modal-body">
-        <?= form_open('tasklead-addproject') ?>
+        <?= form_open('tasklead-addproject',["method" => "get"]) ?>
         <div class="form-group">
           <label for="forecast_custmer">Select Customer (Forecast)</label>
           <select class="form-control" name="forecast_custmer" id="forecast_custmer" required>
@@ -243,19 +218,19 @@
         <br>
         <br>
         <br>
-
+        
+        <?= form_open("add-project-existingcustomer",["method" => "get"]) ?>
         <div class="form-group">
           <label for="existing_customer">Select Customer (Existing)</label>
           <select class="form-control" name="existing_customer" id="existing_customer" required>
-            <option>---Please Select----</option>
+            <option value="">---Please Select----</option>
             <?php foreach ($customersVt as $item) : ?>
               <option value="<?= $item['id'] ?>"><?= $item['customer_name'] ?></option>
             <?php endforeach ?>
           </select>
         </div>
-
         <button type="submit" class="btn btn-success">Select</button>
-
+        <?= form_close() ?>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
