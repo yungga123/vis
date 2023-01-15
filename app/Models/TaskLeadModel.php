@@ -18,7 +18,8 @@ class TaskLeadModel extends Model
     protected $allowedFields    = [
         "employee_id",
         "quarter", 
-        "status", 
+        "status",
+        "existing_customer",
         "customer_id",
         "branch_id",
         "project", 
@@ -96,10 +97,24 @@ class TaskLeadModel extends Model
         return $builder;
     }
 
+    public function noticeTableExistingCustomer(){
+        $db      = \Config\Database::connect();
+        $builder = $db->table('task_lead_existing_customer');
+        $builder->select('*');
+        return $builder;
+    }
+
 
     public function noticeTableWhere($employee_id){
         $db      = \Config\Database::connect();
         $builder = $db->table('task_lead')->where('employee_id',$employee_id);
+        $builder->select('*');
+        return $builder;
+    }
+
+    public function noticeTableWhereExistingCustomer($employee_id){
+        $db      = \Config\Database::connect();
+        $builder = $db->table('task_lead_existing_customer')->where('employee_id',$employee_id);
         $builder->select('*');
         return $builder;
     }
