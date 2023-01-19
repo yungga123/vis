@@ -54,8 +54,10 @@
     </div>
     <?= form_close() ?>
 </div>
-    <?= $this->section('CustomScript') ;?>
-        <?= $this->include('accounts/script') ;?>
-    <?= $this->endSection() ;?>
+    
     
 <?= $this->endSection(); ?>
+
+<?= $this->section('CustomScript') ;?>
+    <?= $this->include('accounts/script') ;?>
+<?= $this->endSection() ;?>
