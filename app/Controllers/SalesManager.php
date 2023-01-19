@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\TaskLeadModel;
+use App\Models\TaskLeadView;
 
 class SalesManager extends BaseController
 {
@@ -29,6 +30,7 @@ class SalesManager extends BaseController
         }
 
         $taskleadModel = new TaskLeadModel();
+        $taskleadView = new TaskLeadView();
 
         $data['title'] = 'Consolidated Sales Forecast';
         $data['page_title'] = 'Consolidated Sales Forecast';
@@ -39,6 +41,21 @@ class SalesManager extends BaseController
         $data['devsolNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','50.00')->find();
         $data['qualifiedNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','30.00')->find();
         $data['identifiedNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','10.00')->find();
+
+        $data['Q1stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','1')->find();
+        $data['Q2stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','2')->find();
+        $data['Q3stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','3')->find();
+        $data['Q4stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','4')->find();
+
+        $data['Q1hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','1')->find();
+        $data['Q2hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','2')->find();
+        $data['Q3hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','3')->find();
+        $data['Q4hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','4')->find();
+
+        $data['Q1miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','1')->find();
+        $data['Q2miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','2')->find();
+        $data['Q3miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','3')->find();
+        $data['Q4miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','4')->find();
 
 
         return view('manager_of_sales/sales_forecast', $data);
