@@ -15,13 +15,7 @@ class SalesManager extends BaseController
             $data['page_title'] = 'Manager of Sales';
             $data['uri'] = service('uri');
 
-            echo view('templates/header',$data);
-            echo view('manager_of_sales/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('manager_of_sales/menu');
-            echo view('templates/footer');
-            echo view('manager_of_sales/script');
+            return view('manager_of_sales/menu',$data);
         }
         else
         {
@@ -47,11 +41,6 @@ class SalesManager extends BaseController
         $data['identifiedNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','10.00')->find();
 
 
-        return view('templates/header',$data)
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('manager_of_sales/sales_forecast')
-            . view('templates/footer')
-            . view('manager_of_sales/script');
+        return view('manager_of_sales/sales_forecast', $data);
     }
 }

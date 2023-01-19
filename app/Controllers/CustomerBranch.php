@@ -18,13 +18,7 @@ class CustomerBranch extends BaseController
             $data['customers'] = $customersModel->findAll();
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('customers_branch/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('customers_branch/add_customer_branch');
-            echo view('templates/footer');
-            echo view('customers_branch/script');
+            return view('customers_branch/add_customer_branch',$data);
         } else {
             return redirect()->to('login');
         }
