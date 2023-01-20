@@ -28,17 +28,12 @@ class TaskLead extends BaseController
             $customersModel = new CustomersModel();
             $customersVtModel = new CustomersVtModel();
             $data['title'] = 'Task/Leads Monitoring';
+            $data['page_title'] = 'Task/Leads Monitoring';
             $data['uri'] = service('uri');
             $data['customers'] = $customersModel->find();
             $data['customersVt'] = $customersVtModel->find();
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/task_lead_menu');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('task_lead/task_lead_menu',$data);
         } else {
             return redirect()->to('login');
         }
@@ -61,14 +56,7 @@ class TaskLead extends BaseController
             $data['selectedCustomer'] = $selectedCustomer;
 
 
-            return view('templates/header', $data)
-                . view('task_lead/header')
-                . view('templates/navbar')
-                . view('templates/sidebar')
-                . view('task_lead/add_project')
-                . view('templates/footer')
-                . view('task_lead/add_project_script')
-                . view('task_lead/script');
+            return view('task_lead/add_project',$data);
         } else {
             return redirect()->to('login');
         }
@@ -136,15 +124,7 @@ class TaskLead extends BaseController
             $data['selectedCustomer'] = $selectedCustomer;
 
 
-            return view('templates/header', $data)
-                . view('task_lead/header')
-                . view('templates/navbar')
-                . view('templates/sidebar')
-                . view('task_lead/add_project')
-                . view('templates/footer')
-                . view('task_lead/add_project_script')
-                . view('task_lead/addProjectExistingCustomerScript')
-                . view('task_lead/script');
+            return view('task_lead/add_project',$data);
         } else {
             return redirect()->to('login');
         }
@@ -233,15 +213,10 @@ class TaskLead extends BaseController
     {
         if (session('logged_in') == true) {
             $data['title'] = 'Project List';
+            $data['page_title'] = 'Project List';
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/project_list');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('task_lead/project_list',$data);
         } else {
             return redirect()->to('login');
         }
@@ -252,28 +227,18 @@ class TaskLead extends BaseController
 
         if (session('logged_in') == true && (session('access') == 'manager' || session('access') == 'admin')) {
             $data['title'] = 'Managers Project List';
+            $data['page_title'] = 'Managers Project List';
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/project_list');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('task_lead/project_list',$data);
         } elseif (session('logged_in') == true) {
             $data['title'] = 'Invalid Access';
             $data['page_title'] = 'Invalid Access';
             $data['href'] = site_url('tasklead');
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('templates/offlimits');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+
+            return view('templates/offlimits',$data);
         } else {
             return redirect()->to('login');
         }
@@ -307,18 +272,13 @@ class TaskLead extends BaseController
             }
 
             $data['title'] = 'Booked Project List';
+            $data['page_title'] = 'Booked Project List';
             $data['uri'] = service('uri');
             $data['booked_projects'] = $paginateData;
             $data['pager'] = $taskleadView->pager;
             $data['search'] = $search;
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/project_list_booked');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('task_lead/project_list_booked',$data);
         } else {
             return redirect()->to('login');
         }
@@ -353,31 +313,20 @@ class TaskLead extends BaseController
             }
 
             $data['title'] = 'Booked Managers Project List';
+            $data['page_title'] = 'Booked Managers Project List';
             $data['uri'] = service('uri');
             $data['booked_projects'] = $paginateData;
             $data['pager'] = $taskleadView->pager;
             $data['search'] = $search;
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/project_list_booked');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('task_lead/project_list_booked',$data);
         } elseif (session('logged_in') == true) {
             $data['title'] = 'Invalid Access';
             $data['page_title'] = 'Invalid Access';
             $data['href'] = site_url('tasklead');
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('templates/offlimits');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('templates/offlimits',$data);
         } else {
             return redirect()->to('login');
         }
@@ -667,32 +616,41 @@ class TaskLead extends BaseController
         return $taskleadTable->getDatatable();
     }
 
-    public function edit_project($id)
-    {
-        if (session('logged_in') == true) {
+    // public function edit_project($id)
+    // {
+    //     if (session('logged_in') == true) {
 
-            $taskleadModel = new TaskLeadModel();
-            $customersModel = new CustomersModel();
+    //         $taskleadModel = new TaskLeadModel();
+    //         $customersModel = new CustomersModel();
+    //         $customersBranchModel = new CustomerBranchModel();
+
+    //         $customersVtModel = new CustomersVtModel();
+    //         $customersVtBranchModel = new CustomersVtBranchModel();
+
+    //         $project_details = $taskleadModel->find($id);
 
 
-            $data['title'] = 'Update a project';
-            $data['page_title'] = 'Update project';
-            $data['customers'] = $customersModel->findAll();
-            $data['project_details'] = $taskleadModel->find($id);
-            $data['id'] = $id;
-            $data['uri'] = service('uri');
+    //         $data['title'] = 'Update a project';
+    //         $data['page_title'] = 'Update project';
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/add_project');
-            echo view('templates/footer');
-            echo view('task_lead/script');
-        } else {
-            return redirect()->to('login');
-        }
-    }
+    //         if ($project_details['existing_customer']) {
+    //             $data['customers'] = $customersVtModel->findAll();
+    //             $data['customers_branch'] = $customersVtBranchModel->where('customer_id',$project_details['customer_id'])->find();
+    //         } else {
+    //             $data['customers'] = $customersModel->findAll();
+    //             $data['customers_branch'] = $customersBranchModel->where('customer_id',$project_details['customer_id'])->find();
+    //         }
+            
+            
+    //         $data['project_details'] = $project_details;
+    //         $data['id'] = $id;
+    //         $data['uri'] = service('uri');
+
+    //         return view('task_lead/add_project',$data);
+    //     } else {
+    //         return redirect()->to('login');
+    //     }
+    // }
 
     public function update_project_status($id, $status)
     {
@@ -728,13 +686,7 @@ class TaskLead extends BaseController
 
                     
 
-                    return view('templates/header', $data)
-                        . view('task_lead/header')
-                        . view('templates/navbar')
-                        . view('templates/sidebar')
-                        . view('task_lead/booked_tasklead')
-                        . view('templates/footer')
-                        . view('task_lead/script');
+                    return view('task_lead/booked_tasklead',$data);
                     break;
 
                 case '50.00': // DEVELOPED SOLUTION
@@ -751,13 +703,7 @@ class TaskLead extends BaseController
 
                     
 
-                    return view('templates/header', $data)
-                        . view('task_lead/header')
-                        . view('templates/navbar')
-                        . view('templates/sidebar')
-                        . view('task_lead/booked_tasklead')
-                        . view('templates/footer')
-                        . view('task_lead/script');
+                    return view('task_lead/booked_tasklead',$data);
 
                     break;
 
@@ -775,13 +721,7 @@ class TaskLead extends BaseController
 
                     
 
-                    return view('templates/header', $data)
-                        . view('task_lead/header')
-                        . view('templates/navbar')
-                        . view('templates/sidebar')
-                        . view('task_lead/booked_tasklead')
-                        . view('templates/footer')
-                        . view('task_lead/script');
+                    return view('task_lead/booked_tasklead',$data);
 
                     break;
 
@@ -799,13 +739,7 @@ class TaskLead extends BaseController
 
                     
 
-                    return view('templates/header', $data)
-                        . view('task_lead/header')
-                        . view('templates/navbar')
-                        . view('templates/sidebar')
-                        . view('task_lead/booked_tasklead')
-                        . view('templates/footer')
-                        . view('task_lead/script');
+                    return view('task_lead/booked_tasklead',$data);
 
                     break;
 
@@ -823,13 +757,7 @@ class TaskLead extends BaseController
 
                     
 
-                    return view('templates/header', $data)
-                        . view('task_lead/header')
-                        . view('templates/navbar')
-                        . view('templates/sidebar')
-                        . view('task_lead/booked_tasklead')
-                        . view('templates/footer')
-                        . view('task_lead/script');
+                    return view('task_lead/booked_tasklead',$data);
 
 
                     break;
@@ -962,64 +890,6 @@ class TaskLead extends BaseController
         echo json_encode($validate);
     }
 
-    public function booked_status($id)
-    {
-        if (session('logged_in') == true) {
-
-            $taskleadModel = new TaskLeadModel();
-            $taskleadData = $taskleadModel->find($id);
-
-            if ($taskleadData['quotation_num'] == "") {
-                $quotation_num = "QTN" . date('Ymd') . "001";
-                $status["quotation_num"] = $quotation_num;
-                $taskleadModel->update($id, $status);
-            } else {
-                $quotation_num = "";
-            }
-
-
-            $data['title'] = 'Booked Task Lead';
-            $data['page_title'] = 'Book a Task Lead';
-            $data['quotation_num'] = $quotation_num;
-            $data['uri'] = service('uri');
-            $data['id'] = $id;
-
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/booked_tasklead');
-            echo view('templates/footer');
-            echo view('task_lead/script');
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function booked_status_validate()
-    {
-        $taskleadModel = new TaskLeadModel();
-        $validate = [
-            "success" => false,
-            "messages" => ''
-        ];
-
-        $id = $this->request->getPost('id');
-        $data = [
-            "status" => $this->request->getPost('status'),
-            "close_deal_date" => $this->request->getPost('close_deal_date'),
-            "project_start_date" => $this->request->getPost('project_start_date'),
-            "project_finish_date" => $this->request->getPost('project_finish_date'),
-        ];
-
-        if (!$taskleadModel->update($id, $data)) {
-            $validate['messages'] = $taskleadModel->errors();
-        } else {
-            $validate['success'] = true;
-        }
-
-        echo json_encode($validate);
-    }
 
     public function delete_tasklead($id)
     {
@@ -1053,6 +923,7 @@ class TaskLead extends BaseController
             $taskleadView = new TaskLeadView();
             $taskleadHistoryViewModel = new TaskleadHistorViewModel();
             $data['title'] = 'Project Booked Details';
+            $data['page_title'] = 'Project Booked Details';
             $data['uri'] = service('uri');
             $data['project_detail'] = $taskleadView->find($id);
             $data['errors'] = [];
@@ -1064,13 +935,7 @@ class TaskLead extends BaseController
 
             $data['map'] = directory_map($path);
 
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('task_lead/project_booked_details');
-            echo view('templates/footer');
-            echo view('task_lead/script');
+            return view('task_lead/project_booked_details',$data);
         } else {
             return redirect()->to('login');
         }
