@@ -135,7 +135,6 @@ class TaskLeadModel extends Model
     public function buttonEdit(){
         $closureFun = function($row){
             return <<<EOF
-                <a href="tasklead-editproject/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Update</a>
                 <button class="btn btn-block btn-danger btn-xs delete-tasklead" data-toggle="modal" data-target="#modal-delete-tasklead" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
                 <button class="btn btn-block btn-success btn-xs update-tasklead" data-toggle="modal" data-target="#modal-update-tasklead" data-id="{$row['id']}" data-percent="{$row['status']}"><i class="far fa-arrow-alt-circle-up"></i> Forecast</button>
             EOF; 

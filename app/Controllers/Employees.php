@@ -16,13 +16,8 @@ class Employees extends BaseController
             $data['title'] = 'Add Employee';
             $data['page_title'] = 'Add Employee';
             $data['uri'] = service('uri');
-            echo view('templates/header', $data);
-            echo view('employees/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('employees/add_employees');
-            echo view('templates/footer');
-            echo view('employees/script');
+
+            return view('employees/add_employees',$data);
         } else {
             return redirect()->to('login');
         }
@@ -35,13 +30,8 @@ class Employees extends BaseController
             $data['title'] = 'Employee Menu';
             $data['page_title'] = 'Employee Menu';
             $data['uri'] = service('uri');
-            echo view('templates/header', $data);
-            echo view('employees/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('employees/employee_menu');
-            echo view('templates/footer');
-            echo view('employees/script');
+
+            return view('employees/employee_menu',$data);
         } else {
             return redirect()->to('login');
         }
@@ -109,13 +99,8 @@ class Employees extends BaseController
             $data['title'] = 'List of Employees';
             $data['page_title'] = 'List of Employees';
             $data['uri'] = service('uri');
-            echo view('templates/header', $data);
-            echo view('employees/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('employees/employee_list');
-            echo view('templates/footer');
-            echo view('employees/script');
+
+            return view('employees/employee_list',$data);
         } else {
             return redirect()->to('login');
         }
@@ -302,13 +287,7 @@ class Employees extends BaseController
             $data['href'] = site_url('employee-list');
             $employeesModel->delete($id);
 
-            echo view('templates/header', $data);
-            echo view('employees/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('templates/deletepage');
-            echo view('templates/footer');
-            echo view('employees/script');
+            return view('templates/deletepage',$data);
         } else {
             return redirect()->to('login');
         }
