@@ -20,14 +20,8 @@ class Accounts extends BaseController
             $data['page_title'] = 'Add an account';
             $data['uri'] = service('uri');
             $data['employees'] = $employeesModel->findAll();
-
-            echo view('templates/header', $data);
-            echo view('accounts/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('accounts/add_account');
-            echo view('templates/footer');
-            echo view('accounts/script');
+            
+            return view('accounts/add_account',$data);
         } else {
             return redirect()->to('login');
         }
@@ -67,13 +61,7 @@ class Accounts extends BaseController
             $data['page_title'] = 'List of Accounts';
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('accounts/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('accounts/list_account');
-            echo view('templates/footer');
-            echo view('accounts/script');
+            return view('accounts/list_account',$data);
         } else {
             return redirect()->to('login');
         }

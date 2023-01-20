@@ -12,13 +12,10 @@ class Dashboard extends BaseController
         if (session('logged_in')==true)
         {
             $data['title'] = 'Dashboard';
+            $data['page_title'] = 'Dashboard';
+            $data['uri'] = service('uri');
 
-            echo view('templates/header',$data);
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('dashboard/dashboard');
-            echo view('templates/footer');
-            echo view('dashboard/script');
+            return view('dashboard/dashboard',$data);
         }
         else
         {

@@ -117,6 +117,7 @@ $routes->get('/delete-employee/(:num)','Employees::delete_employee/$1');
 
 //SALES MANAGER
 $routes->get('/manager-of-sales','SalesManager::index');
+$routes->get('/consolidated-sales-forecast','SalesManager::consolidated_forecast');
 
 //ACCOUNTS
 $routes->get('/add-account','Accounts::index');
@@ -141,6 +142,9 @@ $routes->get('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
 $routes->post('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
 $routes->get('/delete-customervt/(:num)','CustomersVt::delete_customervt/$1');
 $routes->get('/delete-customervtbranch/(:num)','CustomersVt::delete_customervt_branch/$1');
+
+
+
 
 /*
  * --------------------------------------------------------------------
