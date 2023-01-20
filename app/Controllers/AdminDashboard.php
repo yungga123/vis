@@ -10,12 +10,10 @@ class AdminDashboard extends BaseController
     {
         if (session('logged_in') == true) {
             $data['title'] = 'Admin Dashboard';
-            echo view('templates/header', $data);
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('admin_dashboard/admin_dashboard');
-            echo view('templates/footer');
-            echo view('admin_dashboard/script');
+            $data['page_title'] = 'Admin Dashboard';
+            $data['uri'] = service('uri');
+            
+            return view('admin_dashboard/admin_dashboard',$data);
         } else {
             return redirect()->to('login');
         }

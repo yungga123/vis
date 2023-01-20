@@ -18,13 +18,7 @@ class CustomerBranch extends BaseController
             $data['customers'] = $customersModel->findAll();
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('customers_branch/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('customers_branch/add_customer_branch');
-            echo view('templates/footer');
-            echo view('customers_branch/script');
+            return view('customers_branch/add_customer_branch',$data);
         } else {
             return redirect()->to('login');
         }
@@ -73,14 +67,7 @@ class CustomerBranch extends BaseController
         $data['customerBranchModel'] = $customerBranchModel->find($id);
         $data['uri'] = service('uri');
 
-        return view('templates/header', $data)
-            . view('customers_branch/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('customers_branch/add_customer_branch')
-            . view('templates/footer')
-            . view('customers_branch/edit_script')
-            . view('customers_branch/script');
+        return view('customers_branch/add_customer_branch',$data);
     }
 
     public function delete_customer_branch($id) {
@@ -99,13 +86,7 @@ class CustomerBranch extends BaseController
         $data['href'] = site_url('customers-list');
         $customerBranchModel->delete($id);
 
-        return view('templates/header', $data)
-            . view('customers/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('templates/deletepage')
-            . view('templates/footer')
-            . view('customers/script');
+        return view('templates/deletepage',$data);
     }
 
     public function add_customer_validate() {

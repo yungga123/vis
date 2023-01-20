@@ -19,18 +19,14 @@ class Customers extends BaseController
     public function index()
     {
 
-
         if (session('logged_in') == true) {
 
             $data['title'] = 'Add Customer';
             $data['page_title'] = 'Add Customer';
             $data['uri'] = service('uri');
-            echo view('templates/header', $data);
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('customers/add_customer');
-            echo view('templates/footer');
-            echo view('customers/script');
+
+            return view('customers/add_customer',$data);
+
         } else {
             return redirect()->to('login');
         }
@@ -173,14 +169,9 @@ class Customers extends BaseController
         $data['customersViewModel'] = $paginateData;
         $data['pager'] = $customersViewModel->pager;
         $data['search'] = $search;
+        $data['page_title'] = 'Customers Forecast List';
 
-        return view('templates/header', $data)
-            . view('customers/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('customers/customer_table_branch')
-            . view('templates/footer')
-            . view('customers/script');
+        return view('customers/customer_table_branch',$data);
     }
 
     public function edit_customers($id)
@@ -195,13 +186,7 @@ class Customers extends BaseController
             $data['id'] = $id;
             $data['uri'] = service('uri');
 
-            echo view('templates/header', $data);
-            echo view('customers/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('customers/add_customer');
-            echo view('templates/footer');
-            echo view('customers/script');
+            return view('customers/add_customer',$data);
         } else {
             return redirect()->to('login');
         }

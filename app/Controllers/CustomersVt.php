@@ -21,13 +21,7 @@ class CustomersVt extends BaseController
         $data['page_title'] = 'Customers Menu';
         $data['uri'] = service('uri');
 
-        return view('templates/header', $data)
-        . view('customers_vt/header')
-        . view('templates/navbar')
-        . view('templates/sidebar')
-        . view('customers_vt/menu')
-        . view('templates/footer')
-        . view('customers_vt/script');
+        return view('customers_vt/menu',$data);
 
     }
 
@@ -71,14 +65,7 @@ class CustomersVt extends BaseController
         $data['page_title'] = 'Add a customer';
         $data['uri'] = service('uri');
 
-        return view('templates/header', $data)
-            . view('customers_vt/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('customers_vt/add_customervt')
-            . view('templates/footer')
-            . view('customers_vt/add_customervt_script')
-            . view('customers_vt/script');
+        return view('customers_vt/add_customervt',$data);
     }
 
     public function edit_customervt($id) {
@@ -123,14 +110,7 @@ class CustomersVt extends BaseController
         $data['id'] = $id;
         $data['customerVt'] = $customerVtModel->find($id);
 
-        return view('templates/header', $data)
-            . view('customers_vt/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('customers_vt/add_customervt')
-            . view('templates/footer')
-            . view('customers_vt/edit_customervt_script')
-            . view('customers_vt/script');
+        return view('customers_vt/add_customervt',$data);
 
     }
 
@@ -177,14 +157,7 @@ class CustomersVt extends BaseController
         $data['uri'] = service('uri');
         $data['customersvt'] = $customerVtModel->find();
 
-        return view('templates/header', $data)
-            . view('customers_vt/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('customers_vt/add_customervtbranch')
-            . view('templates/footer')
-            . view('customers_vt/add_customervtbranch_script')
-            . view('customers_vt/script');
+        return view('customers_vt/add_customervtbranch',$data);
     }
 
     public function edit_customervtbranch($id) {
@@ -232,14 +205,7 @@ class CustomersVt extends BaseController
         $data['uri'] = service('uri');
         $data['id'] = $id;
 
-        return view('templates/header', $data)
-        . view('customers_vt/header')
-        . view('templates/navbar')
-        . view('templates/sidebar')
-        . view('customers_vt/add_customervtbranch')
-        . view('templates/footer')
-        . view('customers_vt/edit_customervtbranch_script')
-        . view('customers_vt/script');
+        return view('customers_vt/add_customervtbranch',$data);
 
     }
 
@@ -285,13 +251,7 @@ class CustomersVt extends BaseController
         $data['pager'] = $customersVtViewModel->pager;
         $data['search'] = $search;
 
-        return view('templates/header', $data)
-            . view('customers_vt/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('customers_vt/customervt_table')
-            . view('templates/footer')
-            . view('customers_vt/script');
+        return view('customers_vt/customervt_table',$data);
     }
 
     public function delete_customervt($id) {
@@ -308,13 +268,7 @@ class CustomersVt extends BaseController
         $data['href'] = site_url('customervt-list');
         $customersvtModel->delete($id);
 
-        return view('templates/header', $data)
-            . view('customers/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('templates/deletepage')
-            . view('templates/footer')
-            . view('customers/script');
+        return view('templates/deletepage',$data);
     }
 
     public function delete_customervt_branch($id) {
@@ -331,12 +285,6 @@ class CustomersVt extends BaseController
         $data['href'] = site_url('customervt-list');
         $customersvtBranchModel->delete($id);
 
-        return view('templates/header', $data)
-            . view('customers/header')
-            . view('templates/navbar')
-            . view('templates/sidebar')
-            . view('templates/deletepage')
-            . view('templates/footer')
-            . view('customers/script');
+        return view('templates/deletepage',$data);
     }
 }
