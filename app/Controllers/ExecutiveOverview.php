@@ -11,13 +11,10 @@ class ExecutiveOverview extends BaseController
         if (session('logged_in')==true)
         {
             $data['title'] = 'Executive Overview Dashboard';
+            $data['page_title'] = 'Executive Overview Dashboard';
+            $data['uri'] = service('uri');
 
-            echo view('templates/header',$data);
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('executive_overview/eo_dashboard');
-            echo view('templates/footer');
-            echo view('executive_overview/script');
+            return view('executive_overview/eo_dashboard',$data);
         }
         else
         {

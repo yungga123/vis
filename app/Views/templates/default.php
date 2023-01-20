@@ -31,6 +31,10 @@
                 <li class="nav-item">
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
+
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="<?= site_url('dashboard') ;?>" class="nav-link">Home</a>
+                </li>
             </ul>
 
             <!-- Right navbar links -->
@@ -157,10 +161,7 @@
             <!-- /.content-header -->
 
             <section class="content">
-                <div class="container-fluid">
                     <?= $this->renderSection('content') ?>
-                </div>
-            
             </section>
         </div>
 

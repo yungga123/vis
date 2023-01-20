@@ -13,13 +13,10 @@ class SalesDashboard extends BaseController
         {
             $taskleadModel = new TaskLeadModel();
             $data['title'] = 'Sales Dashboard';
+            $data['page_title'] = 'Sales Dashboard';
             $data['count_tasklead'] = count($taskleadModel->findAll());
-            echo view('templates/header',$data);
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('sales_dashboard/sales_dashboard');
-            echo view('templates/footer');
-            echo view('sales_dashboard/script');
+
+            return view('sales_dashboard/sales_dashboard',$data);
         }
         else
         {
