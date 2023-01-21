@@ -24,7 +24,7 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $baseURL = 'http://192.168.0.90/vcmmis/public';
+    public $baseURL = 'http://192.168.0.90/vis';
 
     /**
      * --------------------------------------------------------------------------
