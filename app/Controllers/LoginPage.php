@@ -67,7 +67,7 @@ class LoginPage extends BaseController
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status'] = self::STATUS_ERROR;
             // $data['errors']     = $e->getMessage();
-            $data['message'] = $e->getMessage();
+            $data ['message']   = 'Error while processing data! Please contact your system administrator.';
         }
 
         return $this->response->setJSON($data); 
