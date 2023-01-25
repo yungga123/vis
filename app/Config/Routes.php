@@ -37,10 +37,17 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Dashboard::index');
-$routes->get('/login', 'LoginPage::index');
-$routes->get('/login_validate', 'LoginPage::sign_in');
-$routes->post('/login_validate', 'LoginPage::sign_in');
+$routes->get('/login', 'LoginPage::index', ['filter' => 'notlogged']);
+$routes->get('/login_validate', 'LoginPage::sign_in', ['filter' => 'notlogged']);
+$routes->post('/login_validate', 'LoginPage::sign_in', ['filter' => 'notlogged']);
+
+// Authenticate login crendentials with filter 'notlogged'
+// If there's currently logged user, it will redirect to the previous 
+// opposite of filter 'checkauth'
+$routes->post('/authenticate', 'LoginPage::login', [
+    'as'        => 'login.authenticate',
+    'filter'    => 'notlogged'
+]);
 
 //TEST
 $routes->get('/test',"Test::index");
@@ -49,7 +56,8 @@ $routes->get('/test',"Test::index");
 $routes->get('/logout',"LoginPage::logout");
 
 //DASHBOARD ROUTE
-$routes->get('/dashboard','Dashboard::index');
+$routes->get('/dashboard','Dashboard::index', ['filter' => 'checkauth']);
+$routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 
 //SALES DASHBOARD
 $routes->get('/sales-dashboard','SalesDashboard::index');
@@ -127,6 +135,14 @@ $routes->get('/ajax-account','Accounts::get_accounts');
 $routes->get('edit-account/(:num)','Accounts::edit_account/$1');
 $routes->post('/post-edit-account','Accounts::edit_account_validate');
 $routes->get('delete-account/(:num)','Accounts::delete_account/$1');
+
+// USER PROFILE
+# Filter 'checkauth' will check whether user is logged in or not for this route group 'user'
+# and no need to individual add the filter in every routes
+$routes->group('user', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('profile','UserProfile::index', ['as' => 'user.profile']);
+    $routes->post('change-password','UserProfile::change_password', ['as' => 'user.change_pass']);
+});
 
 
 //CUSTOMERS VT
