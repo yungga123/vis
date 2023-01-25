@@ -48,7 +48,7 @@
                         </div>
                         <!-- /.col -->
                         <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                            <button type="submit" class="btn btn-primary btn-block btn-login">Sign In</button>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -68,51 +68,39 @@
     <script src="<?= base_url('assets') ?>/plugins/toastr/toastr.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.min.js"></script>
+    <!-- General custom js -->
+    <script src="<?= base_url('assets') ?>/custom/js/functions.js"></script>
 
     <script>
 		$(document).ready(function() {
 			$('#form_login').submit(function(e) {
 				e.preventDefault();
-				var me = $(this);
+				
+                const self = $(this);
+                const route = '<?= url_to('login.authenticate'); ?>';
+                const data = self.serialize();
 
-				toastr.options = {
-					"closeButton": false,
-					"debug": false,
-					"newestOnTop": false,
-					"progressBar": true,
-					"positionClass": "toast-top-center",
-					"preventDuplicates": false,
-					"onclick": null,
-					"showDuration": "300",
-					"hideDuration": "1000",
-					"timeOut": "3000",
-					"extendedTimeOut": "1000",
-					"showEasing": "swing",
-					"hideEasing": "linear",
-					"showMethod": "fadeIn",
-					"hideMethod": "fadeOut"
-				}
-				//ajax
-				$.ajax({
-					url: me.attr('action'),
-					type: 'post',
-					data: me.serialize(),
-					dataType: 'json',
-					success: function(response) {
-						if (response.success == true) {
-                            toastr.success("Login Success!! Logging in...");
-                            window.setTimeout(function() {
-                                window.location = '<?php echo site_url('dashboard') ?>';
-                            }, 3000);
-						} else {
+                $.post(route, data)
+                    .then((res) => {
+                        let message = res.message;
+                        let multiple = false;
 
-                            $.each(response.errors, function (key, value){
-                                toastr.error(response.errors[key]);
-                            });
+                        if ('errors' in res) {
+                            message = res.errors;
+                            multiple = true;
+                        }
+                        
+                        if (res.status === STATUS.SUCCESS) {
+                            $('.btn-login').attr('disabled', true);
                             
-						}
-					}
-				});
+                            setTimeout(() => {
+                                window.location.href = '<?= site_url('dashboard'); ?>';
+                            }, 4000);
+                        }
+
+                        notifMsg(message, res.status, multiple);
+                    })
+                    .catch(err => console.log(err));
 			});
 		});
 	</script>
