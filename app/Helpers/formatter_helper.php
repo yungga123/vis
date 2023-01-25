@@ -69,7 +69,7 @@ if (! function_exists('user_access_level'))
 			'super_admin' 	=> 'Super Admin',
 			'admin' 		=> 'Administrator',
 			'executive' 	=> 'Executive',
-			'managers' 		=> 'Manager',
+			'manager' 		=> 'Manager',
 			'operation' 	=> 'Admin/Opertation',
 			'supervisor'	=> 'Supervisory',
 			'user' 			=> 'General User',

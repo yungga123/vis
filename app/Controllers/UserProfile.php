@@ -12,9 +12,6 @@ class UserProfile extends BaseController
         $data['title'] = 'User Profile';
         $data['page_title'] = 'User Profile';
         $data['user'] = $this->_get_user_details();
-
-        // print_r(session()->get());
-        // return;
         
         return view('accounts/user/profile', $data);
     }
@@ -63,7 +60,7 @@ class UserProfile extends BaseController
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = self::STATUS_ERROR;
             // $data['errors']     = $e->getMessage();
-            $data ['message']   = 'Error while processing data! Please contact you system administrator.';
+            $data ['message']   = 'Error while processing data! Please contact your system administrator.';
         }
 
         return $this->response->setJSON($data); 
