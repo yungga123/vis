@@ -84,7 +84,7 @@
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="info">
-                        <a href="#" class="d-block">Hi! <?= $_SESSION['name'] ?></a>
+                        <a href="<?= url_to('user.profile') ?>" class="d-block" title="Click here to view profile.">Hello! <strong><?= esc($_SESSION['name']) ?></strong></a>
                     </div>
                 </div>
 
@@ -193,7 +193,9 @@
     <script src="<?= base_url('assets') ?>/plugins/toastr/toastr.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.js"></script>
-
+    <!-- General custom js -->
+    <script src="<?= base_url('assets') ?>/custom/js/functions.js"></script>
+                                                                                                
     <?= $this->renderSection('CustomScript') ;?>
 
 </body>
