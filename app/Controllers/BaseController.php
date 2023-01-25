@@ -35,7 +35,17 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = ['url', 'form'];
+    protected $helpers = ['url', 'form', 'formatter'];
+
+
+    /**
+     * Add custom properties accessible throughout all controllers
+     */
+    protected const STATUS_SUCCESS = 'success';
+    protected const STATUS_ERROR = 'error';
+
+    // Will be use to initialize \Config\Database::connect();
+    protected $qbuilder;
 
     /**
      * Constructor.
@@ -48,5 +58,7 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = \Config\Services::session();
+
+        $this->qbuilder = \Config\Database::connect();
     }
 }
