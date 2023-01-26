@@ -137,28 +137,8 @@
        });
 
        $(function() {
-           var table = $('#accounts_table').DataTable({
-               "processing": true,
-               "scrollX": true,
-               "autoWidth": false,
-               "columnDefs": [{
-                   "targets": '_all',
-                   "defaultContent": "<i>Not set</i>"
-               }],
-               "buttons": [{
-                   extend: "excel",
-                   exportOptions: {
-                       columns: ":visible"
-                   },
-                   text: "Export to Excel"
-               }, "colvis"],
-               "serverSide": true,
-               "ajax": '<?= site_url('ajax-account') ?>',
-               "initComplete": function(settings, json) {
-                   table.buttons().container().appendTo('#employee_table_wrapper .col-md-6:eq(0)');
-               }
-           });
-
+            const route = '<?= site_url('ajax-account') ?>';
+            var table = loadDataTable('accounts_table', route);
        });
 
        <?php if ($uri->getSegment(1) == 'edit-account') : ?>
