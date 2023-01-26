@@ -35,17 +35,25 @@ class Accounts extends BaseController
             "messages" => ''
         ];
 
-        $data = [
-            "employee_id" => $this->request->getPost('employee_id'),
-            "username" => $this->request->getPost('username'),
-            "password" => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            "access_level" => $this->request->getPost('access_level')
-        ];
+        $password = $this->request->getPost('password');
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        $password_rules = ['password' => 'required|min_length[8]|alpha_numeric'];
 
-        if (!$accountsModel->insert($data)) {
-            $validate['messages'] = $accountsModel->errors();
+        if ($this->validate($password_rules)) {
+            $data = [
+                "employee_id" => $this->request->getPost('employee_id'),
+                "username" => $this->request->getPost('username'),
+                "password" => $password_hash,
+                "access_level" => $this->request->getPost('access_level')
+            ];
+    
+            if (!$accountsModel->insert($data)) {
+                $validate['messages'] = $accountsModel->errors();
+            } else {
+                $validate['success'] = true;
+            }
         } else {
-            $validate['success'] = true;
+            $validate['messages'] = $this->validator->getErrors();
         }
 
         echo json_encode($validate);

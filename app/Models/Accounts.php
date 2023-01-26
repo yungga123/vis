@@ -31,8 +31,8 @@ class Accounts extends Model
     // Validation
     protected $validationRules      = [
         "employee_id"   => "is_unique[accounts.employee_id]|required",
-        "username"      => "alpha_numeric|is_unique",
-        "password"      => "alpha_numeric",
+        "username"      => "alpha_numeric|is_unique[accounts.employee_id]|required",
+        "password"      => "required",
         "access_level"  => "required"
     ];
     protected $validationMessages   = [
@@ -41,6 +41,7 @@ class Accounts extends Model
             "required" => "This field is required."
         ],
         "username" => [
+            "is_unique" => "This username has already been taken.",
             "alpha_numeric" => "Only alpha numeric characters is allowed (A-Z, a-z, 0-9)"
         ],
         "password" => [
