@@ -57,21 +57,42 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">For New Customers(Forecast)</h3>
-    </div>
-    <div class="card-body">
       <div class="row">
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h4>Add Customer Forecast</h4>
+
+
+              <p>Forecast Customers</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <a href="<?= site_url('add-customer') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
 
         <div class="col-lg-3 col-6">
-          <div class="small-box bg-info">
+          <div class="small-box bg-warning">
             <div class="inner">
-              <h4>Project List</h4>
+              <h4>Add Customer Branch</h4>
+
+
+              <p>Forecast Customers</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <a href="<?= site_url('add-customer-branch') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-secondary">
+            <div class="inner">
+              <h4>Forecast Customer List</h4>
 
 
               <p>View your projects here.</p>
@@ -79,70 +100,103 @@
             <div class="icon">
               <i class="fas fa-tasks"></i>
             </div>
-            <a href="<?= site_url('project-list') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-danger">
-            <div class="inner">
-              <h4>Project List (Consolidated)</h4>
-
-
-              <p>Only Managers have access.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('manager-project-list'); ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">For Existing Customers(Old/Official Vinculum Customers)</h3>
-    </div>
-    <div class="card-body">
-      <div class="row">
-
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-info">
-            <div class="inner">
-              <h4>Project List</h4>
-
-
-              <p>View your projects here.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('project-list?existing_customer=1') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-danger">
-            <div class="inner">
-              <h4>Project List (Consolidated)</h4>
-
-
-              <p>Only Managers have access.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('manager-project-list?existing_customer=1'); ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= site_url('customers-list') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
 
       </div>
+
+
+    </div>
+
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">For New Customers(Forecast)</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+
+
+
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h4>Project List</h4>
+
+
+            <p>View your projects here.</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <a href="<?= site_url('project-list') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+          <div class="inner">
+            <h4>Project List (Consolidated)</h4>
+
+
+            <p>Only Managers have access.</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <a href="<?= site_url('manager-project-list'); ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+
+
     </div>
   </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">For Existing Customers(Old/Official Vinculum Customers)</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h4>Project List</h4>
+
+
+            <p>View your projects here.</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <a href="<?= site_url('project-list?existing_customer=1') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+          <div class="inner">
+            <h4>Project List (Consolidated)</h4>
+
+
+            <p>Only Managers have access.</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <a href="<?= site_url('manager-project-list?existing_customer=1'); ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 
 </div>
