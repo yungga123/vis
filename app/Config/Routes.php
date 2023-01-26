@@ -128,13 +128,13 @@ $routes->get('/manager-of-sales','SalesManager::index');
 $routes->get('/consolidated-sales-forecast','SalesManager::consolidated_forecast');
 
 //ACCOUNTS
-$routes->get('/add-account','Accounts::index');
-$routes->post('/post-add-account','Accounts::add_account_validate');
-$routes->get('/list-account','Accounts::list_account');
-$routes->get('/ajax-account','Accounts::get_accounts');
-$routes->get('edit-account/(:num)','Accounts::edit_account/$1');
-$routes->post('/post-edit-account','Accounts::edit_account_validate');
-$routes->get('delete-account/(:num)','Accounts::delete_account/$1');
+$routes->get('/add-account','Accounts::index', ['filter' => 'checkauth']);
+$routes->post('/post-add-account','Accounts::add_account_validate', ['filter' => 'checkauth']);
+$routes->get('/list-account','Accounts::list_account', ['filter' => 'checkauth']);
+$routes->get('/ajax-account','Accounts::get_accounts', ['filter' => 'checkauth']);
+$routes->get('edit-account/(:num)','Accounts::edit_account/$1', ['filter' => 'checkauth']);
+$routes->post('/post-edit-account','Accounts::edit_account_validate', ['filter' => 'checkauth']);
+$routes->get('delete-account/(:num)','Accounts::delete_account/$1', ['filter' => 'checkauth']);
 
 // USER PROFILE
 # Filter 'checkauth' will check whether user is logged in or not for this route group 'user'

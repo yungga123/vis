@@ -33,3 +33,27 @@ function notifMsg(message, type = 'success', objMsg = false) {
         else toastr.error(message);
     }
 }
+
+function loadDataTable(table, route, options = {}) {
+    var dtTable =  $('#'+ table).DataTable({
+        "processing": true,
+        "scrollX": true,
+        "autoWidth": false,
+        "columnDefs": [{
+            "targets": '_all',
+            "defaultContent": "<i>No records found...</i>"
+        }],
+        "buttons": [{
+            extend: "excel",
+            exportOptions: {
+                columns: ":visible"
+            },
+            text: "Export to Excel"
+        }, "colvis"],
+        "serverSide": true,
+        "ajax": route,
+        "initComplete": function(settings, json) {
+            dtTable.buttons().container().appendTo(`#${table}_wrapper .col-md-6:eq(0)`);
+        }
+    });
+}
