@@ -10,7 +10,7 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="info">
-                <a href="#" class="d-block">Hi! <?= session('name') ?></a>
+                <a href="<?= url_to('user.profile') ?>" class="d-block" title="Click here to view profile.">Hello! <strong><?= esc(session('name')); ?></strong></a>
             </div>
         </div>
 
