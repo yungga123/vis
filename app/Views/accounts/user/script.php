@@ -12,13 +12,7 @@
 
                 $.post(route, data)
                     .then((res) => {
-                        let message = res.message;
-                        let multiple = false;
-
-                        if ('errors' in res) {
-                            message = res.errors;
-                            multiple = true;
-                        }
+                        let message = res.errors ?? res.message;
 
                         if (res.status === STATUS.SUCCESS) {
                             self[0].reset();
@@ -28,9 +22,9 @@
                             }, 4000);
                         }
 
-                        notifMsg(message, res.status, multiple);
+                        notifMsg(message, res.status);
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => catchErrMsg(err));
             }
         });
     });

@@ -82,13 +82,7 @@
 
                 $.post(route, data)
                     .then((res) => {
-                        let message = res.message;
-                        let multiple = false;
-
-                        if ('errors' in res) {
-                            message = res.errors;
-                            multiple = true;
-                        }
+                        let message = res.errors ?? res.message;
                         
                         if (res.status === STATUS.SUCCESS) {
                             $('.btn-login').attr('disabled', true);
@@ -98,9 +92,9 @@
                             }, 4000);
                         }
 
-                        notifMsg(message, res.status, multiple);
+                        notifMsg(message, res.status);
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => catchErrMsg(err));
 			});
 		});
 	</script>
