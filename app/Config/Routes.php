@@ -160,6 +160,13 @@ $routes->get('/delete-customervt/(:num)','CustomersVt::delete_customervt/$1');
 $routes->get('/delete-customervtbranch/(:num)','CustomersVt::delete_customervt_branch/$1');
 
 
+//INVENTORY
+$routes->group('inventory', static function ($routes) {
+    $routes->get('menu', 'Inventory::index');
+    $routes->get('add-item', 'Inventory::add_item');
+});
+
+
 
 
 /*
