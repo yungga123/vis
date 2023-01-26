@@ -31,8 +31,6 @@
         <!-- SideBar -->
         <?= $this->include('templates/sidebar') ;?>
 
-
-        
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
@@ -55,8 +53,6 @@
         </div>
 
     </div>
-
-
 
     <footer class="main-footer">
         <strong>Copyright &copy; 2022 <a href="#">Vinculum Technologies</a>.</strong>
@@ -82,9 +78,10 @@
     <script src="<?= base_url('assets') ?>/plugins/toastr/toastr.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.js"></script>
-
+    <!-- General custom js -->
+    <script src="<?= base_url('assets') ?>/custom/js/functions.js"></script>
+                                                                                                
     <?= $this->renderSection('CustomScript') ;?>
 
 </body>
-
 </html>

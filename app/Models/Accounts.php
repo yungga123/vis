@@ -31,7 +31,7 @@ class Accounts extends Model
     // Validation
     protected $validationRules      = [
         "employee_id"   => "is_unique[accounts.employee_id]|required",
-        "username"      => "alpha_numeric",
+        "username"      => "alpha_numeric|is_unique",
         "password"      => "alpha_numeric",
         "access_level"  => "required"
     ];
@@ -64,23 +64,40 @@ class Accounts extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function findUser($user) {
+    public function authenticate($username, $password) 
+    {
+        $user = $this->where('username', $username)->first();
+
+        if (! empty($user)) {
+            if (password_verify($password, $user['password'])) {
+                return $user;
+            }
+        }
+        
+        return false;
+    }
+
+    public function findUser($user) 
+    {
         return $this->find($user);
     }
 
-    public function findUsername($user) {
+    public function findUsername($user) 
+    {
         return $this->where('username',$user)
                     ->findAll();
     }
 
-    public function noticeTable() {
+    public function noticeTable() 
+    {
         $db      = \Config\Database::connect();
         $builder = $db->table('accounts_view');
         $builder->select("*");
         return $builder;
     }
 
-    public function buttonEdit(){
+    public function buttonEdit()
+    {
         $closureFun = function($row){
             return <<<EOF
                 <a href="edit-account/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>

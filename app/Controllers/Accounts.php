@@ -38,7 +38,7 @@ class Accounts extends BaseController
         $data = [
             "employee_id" => $this->request->getPost('employee_id'),
             "username" => $this->request->getPost('username'),
-            "password" => $this->request->getPost('password'),
+            "password" => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
             "access_level" => $this->request->getPost('access_level')
         ];
 
