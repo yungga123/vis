@@ -25,16 +25,41 @@ class Employees extends BaseController
 
     public function employee_menu()
     {
-        if (session('logged_in') == true) {
 
-            $data['title'] = 'Employee Menu';
-            $data['page_title'] = 'Employee Menu';
-            $data['uri'] = service('uri');
-
-            return view('employees/employee_menu',$data);
-        } else {
+        if (session('logged_in') == false) {
             return redirect()->to('login');
         }
+
+        switch (session('access')) {
+            case 'admin':
+
+                break;
+
+            case 'hr':
+
+                break;
+
+            case 'manager':
+
+                break;
+            
+            default:
+                $data['title'] = 'Invalid Access!!';
+                $data['page_title'] = 'Invalid Access!!';
+                $data['href'] = site_url('dashboard');
+
+                return view('templates/offlimits',$data);
+                break;
+        }
+
+        $data['title'] = 'Employee Menu';
+        $data['page_title'] = 'Employee Menu';
+        $data['uri'] = service('uri');
+
+        return view('employees/employee_menu', $data);
+        return redirect()->to('login');
+
+            
     }
 
     public function employee_add()

@@ -12,6 +12,8 @@ class Inventory extends BaseController
             return redirect()->to('login');
         }
 
+        
+
         $data['title'] = 'Inventory Menu';
         $data['page_title'] = 'Inventory Menu';
 
