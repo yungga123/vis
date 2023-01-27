@@ -123,13 +123,7 @@ class Accounts extends BaseController
             $data['account_data'] = $accountsModel->find($id);
             $data['id'] = $id;
 
-            echo view('templates/header', $data);
-            echo view('accounts/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('accounts/add_account');
-            echo view('templates/footer');
-            echo view('accounts/script');
+            echo view('accounts/add_account',$data);
         } else {
             return redirect()->to('login');
         }

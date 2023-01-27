@@ -30,7 +30,7 @@ class AccountsView extends Seeder
             ON
                 accounts.employee_id = employees.employee_id
             WHERE
-                accounts.deleted_at IS NULL
+                accounts.deleted_at IS NULL AND employees.deleted_at IS NULL
             "
         );
     }
