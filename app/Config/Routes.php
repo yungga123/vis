@@ -131,17 +131,17 @@ $routes->get('/consolidated-sales-forecast','SalesManager::consolidated_forecast
 $routes->get('/add-account','Accounts::index', ['filter' => 'checkauth']);
 $routes->post('/post-add-account','Accounts::add_account_validate', ['filter' => 'checkauth']);
 $routes->get('/list-account','Accounts::list_account', ['filter' => 'checkauth']);
-$routes->get('/ajax-account','Accounts::get_accounts', ['filter' => 'checkauth']);
+$routes->post('/ajax-account','Accounts::get_accounts', ['filter' => 'checkauth']);
 $routes->get('edit-account/(:num)','Accounts::edit_account/$1', ['filter' => 'checkauth']);
 $routes->post('/post-edit-account','Accounts::edit_account_validate', ['filter' => 'checkauth']);
 $routes->get('delete-account/(:num)','Accounts::delete_account/$1', ['filter' => 'checkauth']);
 
-// USER PROFILE
-# Filter 'checkauth' will check whether user is logged in or not for this route group 'user'
+// ACCOUNT PROFILE
+# Filter 'checkauth' will check whether account is logged in or not for this route group 'account'
 # and no need to individual add the filter in every routes
-$routes->group('user', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('profile','UserProfile::index', ['as' => 'user.profile']);
-    $routes->post('change-password','UserProfile::change_password', ['as' => 'user.change_pass']);
+$routes->group('account', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('profile','AccountProfile::index', ['as' => 'account.profile']);
+    $routes->post('change-password','AccountProfile::change_password', ['as' => 'account.change_pass']);
 });
 
 

@@ -1,9 +1,7 @@
 <?= $this->extend('templates/default'); ?>
-
 <?= $this->section('content'); ?>
 <div class="container-fluid">
     <div class="row">
-
         <div class="col-sm-6">
             <?= ($uri->getSegment(1) == 'edit-account') ? form_open("post-edit-account", ["id" => "form-post-edit-account"]) : form_open("post-add-account", ["id" => "form-post-add-account"]) ?>
             <?= ($uri->getSegment(1) == 'edit-account') ? "<input type='hidden' name='id' id='id' value='" . $id . "'>" : ""; ?>
@@ -11,7 +9,7 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label for="employee_id">Employee Name</label>
-                        <select name="employee_id" id="employee_id" class="form-control">
+                        <select name="employee_id" id="employee_id" class="form-control" data-value="<?= $account_data['employee_id'] ?? ''; ?>">
                             <option value="">---Please Select---</option>
                             <?php foreach ($employees as $item) : ?>
                                 <option value="<?= $item['employee_id']; ?>"><?= $item['employee_id'] . ' - ' . $item['firstname'] . ' ' . $item['lastname'] ?></option>
@@ -22,7 +20,8 @@
 
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" name="username" id="username" class="form-control" placeholder="Enter here...">
+                        <input type="text" name="username" id="username" class="form-control" placeholder="Enter here..." value="<?= $account_data['username'] ?? ''; ?>">
+                        <input type="hidden" name="prev_username" id="prev_username" class="form-control" value="<?= $account_data['username'] ?? ''; ?>" readonly>
                         <small id="small_username" class="text-muted"></small>
                     </div>
 
@@ -34,7 +33,7 @@
 
                     <div class="form-group">
                         <label for="access_level">Access Level</label>
-                        <select name="access_level" id="access_level" class="form-control">
+                        <select name="access_level" id="access_level" class="form-control" data-value="<?= $account_data['access_level'] ?? ''; ?>">
                             <option value="">---Please Select---</option>
                             <option value="admin">Administrator</option>
                             <option value="manager">Managers</option>
@@ -51,16 +50,8 @@
                     <a href="<?= site_url('employee-menu') ?>" class="btn btn-secondary"><i class="fas fa-undo"></i> Go to Employee Menu</a>
                 </div>
             </div>
-
         </div>
         <?= form_close() ?>
     </div>
 </div>
-
-
-
-<?= $this->endSection(); ?>
-
-<?= $this->section('CustomScript'); ?>
-<?= $this->include('accounts/script'); ?>
 <?= $this->endSection(); ?>
