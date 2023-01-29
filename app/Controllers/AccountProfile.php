@@ -5,15 +5,16 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\Accounts as ModelsAccounts;
 
-class UserProfile extends BaseController
+class AccountProfile extends BaseController
 {
     public function index()
     {
-        $data['title'] = 'User Profile';
-        $data['page_title'] = 'User Profile';
-        $data['user'] = $this->_get_user_details();
-        
-        return view('accounts/user/profile', $data);
+        $data['title']      = 'Account Profile';
+        $data['page_title'] = 'Account Profile';
+        $data['custom_js']  = 'accounts/profile.js';
+        $data['account']       = $this->_get_account_details();
+
+        return view('accounts/profile', $data);
     }
 
     public function change_password()
@@ -33,7 +34,7 @@ class UserProfile extends BaseController
                 $data['status']     = self::STATUS_ERROR;
                 $data['message']    = "Wrong current password! Please try again.";
 
-                if ($user = $model->authenticate($username, $curr_password)) {
+                if ($account = $model->authenticate($username, $curr_password)) {
                     $hash_password = password_hash(
                         $this->request->getVar('password'), 
                         PASSWORD_DEFAULT
@@ -49,11 +50,15 @@ class UserProfile extends BaseController
                     $data['status']     = self::STATUS_SUCCESS;
                     $data['message']    = "You have successfully changed you password! You will be logged out now...";
 
-                    // # Using this method of update due restriction in model
-                    $builder = $this->qbuilder;
-                    $builder->table($model->table)->where('username', $username)
-                                ->set(['password' => $hash_password])
-                                ->update();
+                    // Turn protection off - to skip validation
+                    $model->protect(false);
+                    
+                    $model->where('username', $username)
+                        ->set(['password' => $hash_password])
+                        ->update();
+
+                    // Turn protection on
+                    $model->protect(true);
                 }
             }
         } catch (\Exception $e) {
@@ -87,7 +92,7 @@ class UserProfile extends BaseController
         return $rules;
     }
 
-    private function _get_user_details()
+    private function _get_account_details()
     {
         $table = 'employees_view';
         $fields = '
@@ -106,9 +111,9 @@ class UserProfile extends BaseController
                     ->where('employee_id', session()->get('employee_id'))
                     ->get();
 
-        $user = $query->getRowArray();
-        $user['avatar'] = get_avatar(strtolower($user['gender']));
+        $account = $query->getRowArray();
+        $account['avatar'] = get_avatar(strtolower($account['gender']));
 
-        return $user;
+        return $account;
     }
 }
