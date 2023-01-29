@@ -10,16 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/fontawesome-free/css/all.min.css">
-    <!-- DataTables -->
-    <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="<?= base_url('assets') ?>/dist/css/adminlte.min.css">
-    <!-- Toastr -->
-    <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/toastr/toastr.min.css">
-
-    <?= $this->renderSection('CustomCSS') ;?>
+    <?= $this->include('templates/styles') ;?>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -41,50 +32,36 @@
                             <h1 class="m-0"><?= $page_title ?></h1>
                         </div><!-- /.col -->
                         <div class="col-sm-6">
+                            <?php if (isset($can_add) && $can_add): ?>
+                            <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus-circle" id="btn_add_record"></i> Add New Record</button>
+                            <?php endif; ?>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->
             </div>
             <!-- /.content-header -->
-
+            
             <section class="content">
-                    <?= $this->renderSection('content') ?>
+                <?= $this->renderSection('content') ?>
             </section>
         </div>
 
-    </div>
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2022 <a href="#">Vinculum Technologies</a>.</strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 3.0
+            </div>
+        </footer>
 
-
-
-    <footer class="main-footer">
-        <strong>Copyright &copy; 2022 <a href="#">Vinculum Technologies</a>.</strong>
-        All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 3.0
-        </div>
-    </footer>
-
-    <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-    </aside>
-    <!-- /.control-sidebar -->
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
     </div>
     <!-- ./wrapper -->
 
-    <!-- jQuery -->
-    <script src="<?= base_url('assets') ?>/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
-    <script src="<?= base_url('assets') ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Toastr -->
-    <script src="<?= base_url('assets') ?>/plugins/toastr/toastr.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="<?= base_url('assets') ?>/dist/js/adminlte.js"></script>
-    <!-- General custom js -->
-    <script src="<?= base_url('assets') ?>/custom/js/functions.js"></script>
-                                                                                                
-    <?= $this->renderSection('CustomScript') ;?>
-
+    <?= $this->include('templates/javascripts') ;?>
 </body>
-
 </html>
