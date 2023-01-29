@@ -61,9 +61,9 @@ if (! function_exists('customers_name'))
 	}
 }
 
-if (! function_exists('user_access_level'))
+if (! function_exists('account_access_level'))
 {
-	function user_access_level(mixed $params = null): mixed
+	function account_access_level(mixed $params = null): mixed
 	{
 		$access_levels = [
 			'super_admin' 	=> 'Super Admin',

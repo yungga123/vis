@@ -11,23 +11,19 @@ class Accounts extends BaseController
 {
     public function index()
     {
-        if (session('logged_in') == true) {
-
-            $employeesModel = new EmployeesModel();
+        $employeesModel = new EmployeesModel();
             
-            
-            $data['title'] = 'Add Account';
-            $data['page_title'] = 'Add an account';
-            $data['uri'] = service('uri');
-            $data['employees'] = $employeesModel->findAll();
-            
-            return view('accounts/add_account',$data);
-        } else {
-            return redirect()->to('login');
-        }
+        $data['title']      = 'Add Account';
+        $data['page_title'] = 'Add an account';
+        $data['uri']        = service('uri');
+        $data['employees']  = $employeesModel->findAll();
+        $data['custom_js']      = 'accounts/form.js';
+        
+        return view('accounts/add_account', $data);
     }
 
-    public function add_account_validate() {
+    public function add_account_validate() 
+    {
         $accountsModel = new ModelsAccounts();
 
         $validate = [
@@ -35,22 +31,37 @@ class Accounts extends BaseController
             "messages" => ''
         ];
 
-        $password = $this->request->getPost('password');
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
-        $password_rules = ['password' => 'required|min_length[8]|alpha_numeric'];
+        $password       = $this->request->getPost('password');
+        $password_hash  = password_hash($password, PASSWORD_BCRYPT);
+        $rules          = $accountsModel->getValidationRules(['except' => ['password', 'employee_id']]);
+        $rules['employee_id']   = 'required';
+        $rules['password']      = 'permit_empty|min_length[8]|alpha_numeric';
 
-        if ($this->validate($password_rules)) {
-            $data = [
-                "employee_id" => $this->request->getPost('employee_id'),
-                "username" => $this->request->getPost('username'),
-                "password" => $password_hash,
-                "access_level" => $this->request->getPost('access_level')
-            ];
+        if ($this->validate($rules)) {
+            $checkAcct  = $this->_checkAccount($this->request->getPost(), false);
+
+            if (! $checkAcct) {
+                $data = [
+                    "employee_id" => $this->request->getPost('employee_id'),
+                    "username" => $this->request->getPost('username'),
+                    "password" => $password_hash,
+                    "access_level" => $this->request->getPost('access_level')
+                ];
     
-            if (!$accountsModel->insert($data)) {
-                $validate['messages'] = $accountsModel->errors();
+                $accountsModel->protect(false);
+                $accountsModel->cleanRules(true);
+                $accountsModel->skipValidation(true);
+    
+                if (! $accountsModel->insert($data)) {
+                    $validate['messages'] = $accountsModel->errors();
+                } else {
+                    $validate['success'] = true;
+                }
+    
+                // Turn protection on
+                $accountsModel->protect(true);
             } else {
-                $validate['success'] = true;
+                $validate['messages'] = 'Employee has already an account for this username and access level!';
             }
         } else {
             $validate['messages'] = $this->validator->getErrors();
@@ -61,21 +72,19 @@ class Accounts extends BaseController
 
     public function list_account()
     {
-        if (session('logged_in') == true) {
+        $data['title']          = 'List of Accounts';
+        $data['page_title']     = 'List of Accounts';
+        $data['uri']            = service('uri');
+        $data['with_dtTable']   = true;
+        $data['with_jszip']     = true;
+        // $data['with_pdfmake']   = true;
+        $data['custom_js']      = 'accounts/list.js';
 
-            
-            
-            $data['title'] = 'List of Accounts';
-            $data['page_title'] = 'List of Accounts';
-            $data['uri'] = service('uri');
-
-            return view('accounts/list_account',$data);
-        } else {
-            return redirect()->to('login');
-        }
+        return view('accounts/list_account', $data);
     }
 
-    public function get_accounts() {
+    public function get_accounts() 
+    {
         $accountsModel = new ModelsAccounts();
         $accountsTable = new TablesIgniter();
 
@@ -110,48 +119,90 @@ class Accounts extends BaseController
 
     public function edit_account($id)
     {
-        if (session('logged_in') == true) {
+        $employeesModel = new EmployeesModel();
+        $accountsModel = new ModelsAccounts();
 
-            $employeesModel = new EmployeesModel();
-            $accountsModel = new ModelsAccounts();
+        if ($account = $accountsModel->find($id)) {
+            $data['title']          = 'Edit Account';
+            $data['page_title']     = 'Edit account';
+            $data['uri']            = service('uri');
+            $data['employees']      = $employeesModel->findAll();
+            $data['account_data']   = $account;
+            $data['id']             = $id;
+            $data['custom_js']      = 'accounts/form.js';
             
-            
-            $data['title'] = 'Add Account';
-            $data['page_title'] = 'Add an account';
-            $data['uri'] = service('uri');
-            $data['employees'] = $employeesModel->findAll();
-            $data['account_data'] = $accountsModel->find($id);
-            $data['id'] = $id;
-
-            echo view('templates/header', $data);
-            echo view('accounts/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('accounts/add_account');
-            echo view('templates/footer');
-            echo view('accounts/script');
+            return view('accounts/add_account', $data);
         } else {
-            return redirect()->to('login');
+            $redirect = site_url('add-account');
+            echo "
+                <script>
+                    alert('Could not find account with the id `{$id}`! Click `OK` to redirect to `Add Account` page!');
+                    window.location.href = '{$redirect}';
+                </script>
+            ";
         }
     }
 
-    public function edit_account_validate() {
+    public function edit_account_validate() 
+    {
         $accountsModel = new ModelsAccounts();
-
         $validate = [
             "success" => false,
             "messages" => ''
         ];
 
-        $id = $this->request->getPost('id');
+        $id         = $this->request->getPost('id');
+        $username   = $this->request->getPost('username');
+        $rules      = $accountsModel->getValidationRules(['except' => ['password', 'employee_id']]);
+        $rules['password'] = 'permit_empty|min_length[8]|alpha_numeric';
 
-        $data = [
-            "username" => $this->request->getPost('username'),
-            "password" => $this->request->getPost('password'),
-            "access_level" => $this->request->getPost('access_level')
+        if ($this->request->getPost('prev_username') === $username) {
+            $rules['username'] = 'required|min_length[4]|alpha_numeric';
+            $username = '';
+        }
+
+        if ($this->validate($rules)) {
+            $password   = $this->request->getPost('password');
+            $data       = ["access_level" => $this->request->getPost('access_level')];
+            $checkAcct  = $this->_checkAccount($this->request->getPost(), false);
+            
+            if (! $checkAcct) {
+                if (! empty($username)) $data['username'] = $username;
+                if (! empty($password)) $data['password'] = password_hash($password, PASSWORD_BCRYPT);
+
+                // Turn protection off - to skip validation
+                $accountsModel->protect(false);
+                $accountsModel->cleanRules(true);
+                $accountsModel->skipValidation(true);
+                
+                if (! $accountsModel->update($id, $data)) {
+                    $validate['messages'] = $accountsModel->errors();
+                } else {
+                    $validate['success'] = true;
+                }
+
+                // Turn protection on
+                $accountsModel->protect(true);
+            } else {
+                $validate['messages'] = 'Employee has already an account for the selected access level!';
+            }
+        } else {
+            $validate['messages'] = $this->validator->getErrors();
+        }
+
+        echo json_encode($validate);
+    }
+
+    public function delete_account($id) 
+    {
+        $accountsModel = new ModelsAccounts();
+
+        $validate = [
+            "success" => false,
+            "messages" => 'Account has been deleted!'
         ];
 
-        if (!$accountsModel->update($id,$data)) {
+        if (! $accountsModel->delete($id)) {
             $validate['messages'] = $accountsModel->errors();
         } else {
             $validate['success'] = true;
@@ -160,26 +211,16 @@ class Accounts extends BaseController
         echo json_encode($validate);
     }
 
-    public function delete_account($id) {
-        if (session('logged_in') == true) {
+    private function _checkAccount(array $params, bool $with_username = true)
+    {
+        $accountsModel = new ModelsAccounts();
+        $employee_id = isset($params['employee_id']) ? $params['employee_id'] : session('employee_id');
+        $checkAcct  = $accountsModel->where('employee_id', $employee_id)
+                            ->where('access_level', $params['access_level']);
 
-            $accountsModel = new ModelsAccounts();
-            
-            $data['title'] = 'Delete Account';
-            $data['page_title'] = 'Delete Account';
-            $data['uri'] = service('uri');
-            $data['href'] = site_url('list-account');
-            $accountsModel->delete($id);
+        if ($with_username) $checkAcct->where('username', $params['username']);
 
-            echo view('templates/header', $data);
-            echo view('employees/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('templates/deletepage');
-            echo view('templates/footer');
-            echo view('employees/script');
-        } else {
-            return redirect()->to('login');
-        }
+        return $checkAcct->first();
     }
+
 }
