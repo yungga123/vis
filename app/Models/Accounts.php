@@ -31,7 +31,7 @@ class Accounts extends Model
     // Validation
     protected $validationRules      = [
         "employee_id"   => "is_unique[accounts.employee_id]|required",
-        "username"      => "alpha_numeric|is_unique[accounts.username]|required",
+        "username"      => "alpha_numeric|is_unique[accounts.username]|required|min_length[4]",
         "password"      => "required",
         "access_level"  => "required"
     ];
