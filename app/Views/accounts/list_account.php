@@ -10,7 +10,7 @@
                         <th>Action</th>
                         <th>Employee Name</th>
                         <th>Username</th>
-                        <th>Password</th>
+                        <!-- <th>Password</th> -->
                         <th>Access Level</th>
                     </tr>
                 </thead>
@@ -20,7 +20,7 @@
                         <th>Action</th>
                         <th>Employee Name</th>
                         <th>Username</th>
-                        <th>Password</th>
+                        <!-- <th>Password</th> -->
                         <th>Access Level</th>
                     </tr>
                 </tfoot>

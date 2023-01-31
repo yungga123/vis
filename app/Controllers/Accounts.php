@@ -24,50 +24,83 @@ class Accounts extends BaseController
 
     public function add_account_validate() 
     {
-        $accountsModel = new ModelsAccounts();
-
-        $validate = [
-            "success" => false,
-            "messages" => ''
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Account has been updated!'
         ];
 
-        $password       = $this->request->getPost('password');
-        $password_hash  = password_hash($password, PASSWORD_BCRYPT);
-        $rules          = $accountsModel->getValidationRules(['except' => ['password', 'employee_id']]);
-        $rules['employee_id']   = 'required';
-        $rules['password']      = 'permit_empty|min_length[8]|alpha_numeric';
+        try {
+            $accountsModel = new ModelsAccounts();
+            
+            $password       = $this->request->getPost('password');
+            $password_hash  = password_hash($password, PASSWORD_BCRYPT);
+            $rules          = $accountsModel->getValidationRules(['except' => ['password', 'employee_id']]);
+            $rules['employee_id']   = 'required';
+            $rules['password']      = 'permit_empty|min_length[8]|alpha_numeric';
 
-        if ($this->validate($rules)) {
-            $checkAcct  = $this->_checkAccount($this->request->getPost(), false);
+            if ($this->validate($rules)) {
+                $checkAcct  = $this->_checkAccount($this->request->getPost(), false);
+    
+                if (! $checkAcct) {
+                    $params = [
+                        "employee_id" => $this->request->getPost('employee_id'),
+                        "username" => $this->request->getPost('username'),
+                        "password" => $password_hash,
+                        "access_level" => $this->request->getPost('access_level')
+                    ];
 
-            if (! $checkAcct) {
-                $data = [
-                    "employee_id" => $this->request->getPost('employee_id'),
-                    "username" => $this->request->getPost('username'),
-                    "password" => $password_hash,
-                    "access_level" => $this->request->getPost('access_level')
-                ];
-    
-                $accountsModel->protect(false);
-                $accountsModel->cleanRules(true);
-                $accountsModel->skipValidation(true);
-    
-                if (! $accountsModel->insert($data)) {
-                    $validate['messages'] = $accountsModel->errors();
+                    // Turn protection off - to skip validation
+                    $accountsModel->protect(false);
+                    $accountsModel->cleanRules(true);
+                    $accountsModel->skipValidation(true);
+
+                    $accountsModel->insert($params);
+
+                    if (! empty($password)) {
+                        // Get employee details
+                        $employeesModel = new EmployeesModel();
+                        $employee = $employeesModel->getEmployeeDetails(
+                            $this->request->getPost('employee_id'),
+                            'employee_id, employee_name, email_address',
+                        );
+                        $employee['username'] = $this->request->getPost('username');
+                        $employee['password'] = $password;
+                        $employee['subject'] = 'Account confirmation!';
+                        $employee['is_add'] = true;
+
+                        // Send mail to employee
+                        $res = $this->sendMail($employee, 'regular');
+                        $sts = $res['status'];
+                        $msg = $data['message'] . $res['message'];
+
+                        if($res['status'] === STATUS_ERROR) {
+                            // If mail didn't sent set status as info
+                            $sts = STATUS_INFO;
+                            $msg = 'Account has been added but mail could not be sent!';
+                        }
+
+                        $data['status'] = $sts;
+                        $data['message'] = $msg;
+                    }
+
+                    // Turn protection on
+                    $accountsModel->protect(true);
                 } else {
-                    $validate['success'] = true;
+                    $data['status'] = STATUS_ERROR;
+                    $data['message'] = 'Employee has already an account for the selected access level!';
                 }
-    
-                // Turn protection on
-                $accountsModel->protect(true);
             } else {
-                $validate['messages'] = 'Employee has already an account for this username and access level!';
+                $data['status'] = STATUS_ERROR;
+                $data['message'] = 'Validation error!';
+                $data['errors'] = $this->validator->getErrors();
             }
-        } else {
-            $validate['messages'] = $this->validator->getErrors();
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data ['message']   = 'Error while processing data! Please contact your system administrator.';
         }
 
-        echo json_encode($validate);
+        return $this->response->setJSON($data); 
     }
 
     public function list_account()
@@ -93,7 +126,7 @@ class Accounts extends BaseController
                             "employee_id",
                             "employee_name",
                             "username",
-                            "password",
+                            // "password",
                             "access_level"
                        ])
                        ->setOrder([
@@ -101,7 +134,7 @@ class Accounts extends BaseController
                             null,
                             "employee_name",
                             "username",
-                            "password",
+                            // "password",
                             "access_level"
                        ])
                        ->setOutput(
@@ -110,7 +143,7 @@ class Accounts extends BaseController
                             $accountsModel->buttonEdit(),
                             "employee_name",
                             "username",
-                            "password",
+                            // "password",
                             "access_level"
                         ]);
 
@@ -145,52 +178,84 @@ class Accounts extends BaseController
 
     public function edit_account_validate() 
     {
-        $accountsModel = new ModelsAccounts();
-        $validate = [
-            "success" => false,
-            "messages" => ''
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Account has been updated!'
         ];
 
-        $id         = $this->request->getPost('id');
-        $username   = $this->request->getPost('username');
-        $rules      = $accountsModel->getValidationRules(['except' => ['password', 'employee_id']]);
-        $rules['password'] = 'permit_empty|min_length[8]|alpha_numeric';
-
-        if ($this->request->getPost('prev_username') === $username) {
-            $rules['username'] = 'required|min_length[4]|alpha_numeric';
-            $username = '';
-        }
-
-        if ($this->validate($rules)) {
-            $password   = $this->request->getPost('password');
-            $data       = ["access_level" => $this->request->getPost('access_level')];
-            $checkAcct  = $this->_checkAccount($this->request->getPost(), false);
+        try {
+            $accountsModel = new ModelsAccounts();
             
-            if (! $checkAcct) {
-                if (! empty($username)) $data['username'] = $username;
-                if (! empty($password)) $data['password'] = password_hash($password, PASSWORD_BCRYPT);
+            $id         = $this->request->getPost('id');
+            $username   = $this->request->getPost('username');
+            $rules      = $accountsModel->getValidationRules(['except' => ['password', 'employee_id']]);
+            $rules['password'] = 'permit_empty|min_length[8]|alpha_numeric';
 
-                // Turn protection off - to skip validation
-                $accountsModel->protect(false);
-                $accountsModel->cleanRules(true);
-                $accountsModel->skipValidation(true);
-                
-                if (! $accountsModel->update($id, $data)) {
-                    $validate['messages'] = $accountsModel->errors();
-                } else {
-                    $validate['success'] = true;
-                }
-
-                // Turn protection on
-                $accountsModel->protect(true);
-            } else {
-                $validate['messages'] = 'Employee has already an account for the selected access level!';
+            if ($this->request->getPost('prev_username') === $username) {
+                $rules['username'] = 'required|min_length[4]|alpha_numeric';
+                $username = '';
             }
-        } else {
-            $validate['messages'] = $this->validator->getErrors();
+
+            if ($this->validate($rules)) {
+                $password   = $this->request->getPost('password');
+                $params     = ["access_level" => $this->request->getPost('access_level')];
+                $checkAcct  = $this->_checkAccount($this->request->getPost(), false);
+                
+                if (! $checkAcct) {
+                    if (! empty($username)) $params['username'] = $username;
+                    if (! empty($password)) $params['password'] = password_hash($password, PASSWORD_BCRYPT);
+
+                    // Turn protection off - to skip validation
+                    $accountsModel->protect(false);
+                    $accountsModel->cleanRules(true);
+                    $accountsModel->skipValidation(true);
+
+                    $accountsModel->update($id, $params);
+
+                    if (! empty($password)) {
+                        // Get employee details
+                        $employeesModel = new EmployeesModel();
+                        $employee = $employeesModel->getEmployeeDetails(
+                            $this->request->getPost('employee_id'),
+                            'employee_id, employee_name, email_address',
+                        );
+                        $employee['username'] = $this->request->getPost('username');
+                        $employee['password'] = $password;
+                        $employee['subject'] = 'Password changed confirmation!';
+
+                        // Send mail to employee
+                        $res = $this->sendMail($employee, 'regular');
+                        $sts = $res['status'];
+                        $msg = $data['message'] . $res['message'];
+
+                        if($res['status'] === STATUS_ERROR) {
+                            // If mail didn't sent set status as info
+                            $sts = STATUS_INFO;
+                            $msg = 'Account has been updated but mail could not be sent!';
+                        }
+
+                        $data['status'] = $sts;
+                        $data['message'] = $msg;
+                    }
+
+                    // Turn protection on
+                    $accountsModel->protect(true);
+                } else {
+                    $data['status'] = STATUS_ERROR;
+                    $data['message'] = 'Employee has already an account for the selected access level!';
+                }
+            } else {
+                $data['status'] = STATUS_ERROR;
+                $data['message'] = 'Validation error!';
+                $data['errors'] = $this->validator->getErrors();
+            }
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data ['message']   = 'Error while processing data! Please contact your system administrator.';
         }
 
-        echo json_encode($validate);
+        return $this->response->setJSON($data); 
     }
 
     public function delete_account($id) 
@@ -213,14 +278,18 @@ class Accounts extends BaseController
 
     private function _checkAccount(array $params, bool $with_username = true)
     {
-        $accountsModel = new ModelsAccounts();
-        $employee_id = isset($params['employee_id']) ? $params['employee_id'] : session('employee_id');
-        $checkAcct  = $accountsModel->where('employee_id', $employee_id)
+        $accountsModel  = new ModelsAccounts();
+        $employee_id    = isset($params['employee_id']) 
+                            ? $params['employee_id'] : session('employee_id');
+        $checkAcct      = $accountsModel
+                            ->where('employee_id', $employee_id)
                             ->where('access_level', $params['access_level']);
 
-        if ($with_username) $checkAcct->where('username', $params['username']);
+        if ($with_username) 
+            $checkAcct->where('username', $params['username']);
 
-        return $checkAcct->first();
+        return (! empty($params['password'])) 
+            ? false 
+            : $checkAcct->first();
     }
-
 }

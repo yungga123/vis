@@ -66,6 +66,18 @@
                         </p>
                     </a>
                 </li>
+
+                <?php if (in_array(session('access_level'), ['admin', 'superadmin'])): ?>
+                    <li class="nav-header">SETTINGS</li>
+                    <li class="nav-item">
+                        <a href="<?= url_to('mail.home') ?>" class="nav-link <?= (url_is('settings/mail') ? "active" : "") ;?>">
+                            <i class="nav-icon fas fa-envelope"></i>
+                            <p>
+                                Mail Config
+                            </p>
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

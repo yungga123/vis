@@ -54,4 +54,5 @@
         <?= form_close() ?>
     </div>
 </div>
+<?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>

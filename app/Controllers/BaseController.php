@@ -41,9 +41,6 @@ abstract class BaseController extends Controller
     /**
      * Add custom properties accessible throughout all controllers
      */
-    protected const STATUS_SUCCESS = 'success';
-    protected const STATUS_ERROR = 'error';
-
     // Will be use to initialize \Config\Database::connect();
     protected $qbuilder;
 
@@ -60,5 +57,14 @@ abstract class BaseController extends Controller
         // E.g.: $this->session = \Config\Services::session();
 
         $this->qbuilder = \Config\Database::connect();
+    }
+
+    /**
+     * For sending mail to employee
+     */
+    public function sendMail($params, $sendVia)
+    {
+        $mail = new \App\Controllers\Settings\MailConfig();
+        return $mail->send($params, $sendVia);
     }
 }

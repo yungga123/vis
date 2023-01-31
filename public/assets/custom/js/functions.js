@@ -2,6 +2,7 @@
 var STATUS = {
     SUCCESS: 'success',
     ERROR: 'error',
+    INFO: 'info',
 }, METHOD = {
     GET: 'GET',
     POST: 'POST'
@@ -28,15 +29,36 @@ $(function() {
     }
 });
 
+/* Show loading overlay - need to include the templates/loading view to work */
+function showLoading(id = 'modal_loading') {
+    $('#'+ id).modal('show');
+}
+
+/* Close loading overlay - need to include the templates/loading view to work */
+function closeLoading(id = 'modal_loading') {
+    $('#'+ id).modal('hide');
+}
+
 /* General notif message */
-function notifMsg(message, type = 'success', objMsg = false) {
+function notifMsg(message, status = STATUS.SUCCESS, objMsg = false) {
     if (objMsg || (! isEmpty(message) && isObject(message))) {
         $.each(message, function (key, value){
-            notifMsg(value, type);
+            notifMsg(value, status);
         });
     } else {
-        if (type === STATUS.SUCCESS) toastr.success(message);
-        else toastr.error(message);
+        switch (status) {
+            case STATUS.SUCCESS:
+                toastr.success(message);
+                break;
+            case STATUS.ERROR:
+                toastr.error(message);
+                break;
+            case STATUS.INFO:
+                toastr.info(message);
+                break;        
+            default:
+                break;
+        }
     }
 }
 
@@ -67,7 +89,7 @@ function clearAlertInForm(elems, status, prefix = 'alert') {
         for (let i = 0; i < elems.length; i++) {
             const elem = elems[i];
             $('#'+ elem).removeClass('is-invalid');
-            $(`#${prefix}_ ${elem}`).html('');
+            $(`#${prefix}_${elem}`).html('');
 
             if (status === STATUS.SUCCESS) $('#'+ elem).addClass('is-valid');
         }
@@ -75,7 +97,7 @@ function clearAlertInForm(elems, status, prefix = 'alert') {
 }
 
 /* Load dataTable data */
-function loadDataTable(table, route, type = 'get', options = {}) {
+function loadDataTable(table, route, type = METHOD.GET, options = {}) {
     let columnDefs = [
         {
             "targets": '_all',

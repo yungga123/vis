@@ -23,7 +23,7 @@ class AccountProfile extends BaseController
         
         try {            
             if (! $this->validate($this->_rules())) {
-                $data['status']     = self::STATUS_ERROR;
+                $data['status']     = STATUS_ERROR;
                 $data ['errors']    = $this->validator->getErrors();
                 $data ['message']   = 'Validation error!';
             } else {
@@ -31,7 +31,7 @@ class AccountProfile extends BaseController
                 $username       = session()->get('username');
                 $curr_password  = $this->request->getVar('current_password');
 
-                $data['status']     = self::STATUS_ERROR;
+                $data['status']     = STATUS_ERROR;
                 $data['message']    = "Wrong current password! Please try again.";
 
                 if ($account = $model->authenticate($username, $curr_password)) {
@@ -47,7 +47,7 @@ class AccountProfile extends BaseController
                     //     'password'      => $hash_password,
                     // ];
     
-                    $data['status']     = self::STATUS_SUCCESS;
+                    $data['status']     = STATUS_SUCCESS;
                     $data['message']    = "You have successfully changed you password! You will be logged out now...";
 
                     // Turn protection off - to skip validation
@@ -63,7 +63,7 @@ class AccountProfile extends BaseController
             }
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = self::STATUS_ERROR;
+            $data['status']     = STATUS_ERROR;
             // $data['errors']     = $e->getMessage();
             $data ['message']   = 'Error while processing data! Please contact your system administrator.';
         }
