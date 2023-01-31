@@ -251,4 +251,14 @@ class EmployeesModel extends Model
         };
         return $closureFun;
     }
+
+    public function getEmployeeDetails($employee_id, $columns = '*')
+    {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('employees_view');
+
+        return $builder->select($columns)
+                    ->where('employee_id', $employee_id)
+                    ->get()->getRowArray();
+    }
 }

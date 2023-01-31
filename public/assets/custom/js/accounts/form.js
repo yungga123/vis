@@ -4,7 +4,7 @@ $(document).ready(function() {
         'username',
         'password',
         'access_level',
-    ], prefix = 'small';
+    ], prefix = 'small', modal_loading = $('#modal_loading');
 
     if (! isEmpty($('#employee_id').data('value'))) {
         $('#employee_id').val($('#employee_id').data('value')).change();
@@ -13,55 +13,56 @@ $(document).ready(function() {
         $("#small_password").text("Leave it blank if you will not update the password.");
     }
 
+    $('.btn-trigger').click(function() {
+        notifMsg('This is info!', 'info');
+    })
+
     $('#form-post-add-account').submit(function(e) {
         e.preventDefault();
+        showLoading();
         var self = $(this);
-
+        
         $.ajax({
             url: self.attr('action'),
             type: METHOD.POST,
             data: self.serialize(),
             dataType: 'json',
-            success: function(response) {
-                let status = STATUS.SUCCESS,
-                    message = "Successfully Added!";
+            success: function(res) {
+                const message = res.errors ?? res.message;
 
-                if (response.success == true) {
-                    notifMsg(message, status);
+                if (res.status !== STATUS.ERROR) {
+                    notifMsg(message, res.status);
                     self[0].reset();
-                } else {
-                    status = STATUS.ERROR;
-                    message = "Errors Occured!";
                 }
 
-                showAlertInForm(elems, response.messages, status, prefix);
+                closeLoading();
+                showAlertInForm(elems, message, res.status, prefix);
             }
         });
     });
 
     $('#form-post-edit-account').submit(function(e) {
         e.preventDefault();
+        showLoading();
         var self = $(this);
-
+        
         $.ajax({
             url: self.attr('action'),
             type: METHOD.POST,
             data: self.serialize(),
             dataType: 'json',
-            success: function(response) {
-                let status = STATUS.SUCCESS,
-                    message = "Successfully Updated! This window will close in 3 seconds";
+            success: function(res) {
+                const message = res.errors ?? res.message;
+                let msg = " This window will close in 10 seconds..";
 
-                if (response.success == true) {
-                    notifMsg(message, status);
+                if (res.status !== STATUS.ERROR) {
                     self[0].reset();
-                    setTimeout(function() { window.close() }, 3000);
-                } else {
-                    status = STATUS.ERROR;
-                    message = "Errors Occured!";
+                    notifMsg(message + msg, res.status);
+                    setTimeout(function() { window.close() }, 10000);
                 }
 
-                showAlertInForm(elems, response.messages, status, prefix);
+                closeLoading();
+                showAlertInForm(elems, message, res.status, prefix);
             }
         });
     });

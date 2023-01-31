@@ -167,6 +167,17 @@ $routes->group('inventory', static function ($routes) {
 });
 
 
+// SETTINGS
+/* Mail Config */
+$routes->get('settings/mail','Settings\MailConfig::index', [
+    'filter'    => 'checkauth',
+    'as'        => 'mail.home',
+]);
+$routes->group('settings/mail', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->post('save','Settings\MailConfig::save', ['as' => 'mail.save']);
+    $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail.config']);
+    $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail.reset']);
+});
 
 
 /*

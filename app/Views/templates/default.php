@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $title ?></title>
+    <title><?= $title ?? 'Viculum MIS'; ?></title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -29,7 +29,7 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0"><?= $page_title ?></h1>
+                            <h1 class="m-0"><?= $page_title ?? 'Dashboard'; ?></h1>
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <?php if (isset($can_add) && $can_add): ?>

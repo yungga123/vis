@@ -37,11 +37,11 @@ class LoginPage extends BaseController
                 $username       = $this->request->getVar('username');
                 $password       = $this->request->getVar('password');
 
-                $data['status']         = self::STATUS_ERROR;
+                $data['status']         = STATUS_ERROR;
                 $data['message']        = 'Wrong username or password. Please try again!';
 
                 if ($user = $accountsModel->authenticate($username, $password)) {
-                    $data['status']     = self::STATUS_SUCCESS;
+                    $data['status']     = STATUS_SUCCESS;
                     $data['message']    = 'You have successfully logged in! Please wait while redirecting...';
 
                     $employeesModel = new EmployeesModel();
@@ -59,13 +59,13 @@ class LoginPage extends BaseController
                     ]);
                 }
             } else {
-                $data['status']     = self::STATUS_ERROR;
+                $data['status']     = STATUS_ERROR;
                 $data['message']    = 'Validation error!';
                 $data['errors']     = $this->validator->getErrors();
             }
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status'] = self::STATUS_ERROR;
+            $data['status'] = STATUS_ERROR;
             // $data['errors']     = $e->getMessage();
             $data ['message']   = 'Error while processing data! Please contact your system administrator.';
         }
