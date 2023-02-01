@@ -99,6 +99,9 @@ class Employees extends BaseController
             $data['title'] = 'List of Employees';
             $data['page_title'] = 'List of Employees';
             $data['uri'] = service('uri');
+            $data['custom_js'] = 'employees/list.js';
+            $data['with_dtTable'] = true;
+            $data['with_jszip']     = true;
 
             return view('employees/employee_list',$data);
         } else {

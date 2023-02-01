@@ -58,55 +58,6 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-success">
-            <div class="inner">
-              <h4>Add Customer Forecast</h4>
-
-
-              <p>Forecast Customers</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('add-customer') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h4>Add Customer Branch</h4>
-
-
-              <p>Forecast Customers</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('add-customer-branch') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-secondary">
-            <div class="inner">
-              <h4>Forecast Customer List</h4>
-
-
-              <p>View your projects here.</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <a href="<?= site_url('customers-list') ?>" class="small-box-footer">Proceed <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-
-      </div>
-
-
     </div>
 
   </div>

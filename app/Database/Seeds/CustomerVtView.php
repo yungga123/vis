@@ -18,6 +18,7 @@ class CustomerVtView extends Seeder
                 customervt_view 
             AS SELECT
                 id,
+                customer_type,
                 customer_name,
                 contact_person,
                 CONCAT_WS(', ',address_province,address_city,address_brgy,address_sub) as address,

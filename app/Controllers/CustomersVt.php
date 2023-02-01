@@ -8,6 +8,7 @@ use App\Models\CustomersVtBranchModel;
 use App\Models\CustomersVtBranchViewModel;
 use App\Models\CustomersVtModel;
 use App\Models\CustomersVtViewModel;
+use monken\TablesIgniter;
 
 class CustomersVt extends BaseController
 {
@@ -36,6 +37,7 @@ class CustomersVt extends BaseController
             ];
 
             $data = [
+                "customer_type" => $this->request->getPost('customer_type'),
                 "customer_name" => $this->request->getPost('customer_name'),
                 "contact_person" => $this->request->getPost('contact_person'),
                 "notes" => $this->request->getPost('notes'),
@@ -64,6 +66,7 @@ class CustomersVt extends BaseController
         $data['title'] = 'Add Customer';
         $data['page_title'] = 'Add a customer';
         $data['uri'] = service('uri');
+        $data['custom_js'] = 'customer_vt/form.js';
 
         return view('customers_vt/add_customervt',$data);
     }
@@ -79,6 +82,7 @@ class CustomersVt extends BaseController
             ];
     
             $data = [
+                "customer_type" => $this->request->getPost('customer_type'),
                 "customer_name" => $this->request->getPost('customer_name'),
                 "contact_person" => $this->request->getPost('contact_person'),
                 "notes" => $this->request->getPost('notes'),
@@ -100,17 +104,9 @@ class CustomersVt extends BaseController
             return json_encode($validate);
         }
 
-        if (session('logged_in')==false) {
-            return redirect()->to('login');
-        }
+        // $data['customerVt'] = $customerVtModel->find($id);
 
-        $data['title'] = 'Edit Customer';
-        $data['page_title'] = 'Edit a customer';
-        $data['uri'] = service('uri');
-        $data['id'] = $id;
-        $data['customerVt'] = $customerVtModel->find($id);
-
-        return view('customers_vt/add_customervt',$data);
+        return json_encode($customerVtModel->find($id));
 
     }
 
@@ -209,51 +205,7 @@ class CustomersVt extends BaseController
 
     }
 
-    public function customervt_list() {
-
-        if (session('logged_in')==false) {
-            return redirect()->to('login');
-        }
-
-        $customersVtViewModel = new CustomersVtViewModel();
-        $customerVtBranchViewModel = new CustomersVtBranchViewModel();
-        $request = service('request');
-        $searchData = $request->getGet();
-
-        $data['title'] = 'List of Customers';
-        $data['page_title'] = 'List of Customers';
-        $data['uri'] = service('uri');
-        $data['customerVtBranchViewModel'] = $customerVtBranchViewModel;
-
-        $data['page'] = isset($_GET['page']) ? $_GET['page'] : 1;
-        $data['perPage'] = 10;
-        $data['total'] = $customersVtViewModel->countAll();
-        $search = "";
-        if (isset($searchData) && isset($searchData['search'])) {
-            $search = $searchData['search'];
-        }
-
-        if ($search == '') {
-            $paginateData = $customersVtViewModel->orderBy('id', 'desc')->paginate($data['perPage']);
-        } else {
-            $paginateData = $customersVtViewModel->orLike('customer_name', $search)
-                ->orLike('contact_person', $search)
-                ->orLike('address', $search)
-                ->orLike('contact_number', $search)
-                ->orLike('email_address', $search)
-                ->orLike('source', $search)
-                ->orLike('notes', $search)
-                ->orderBy('id', 'desc')
-                ->paginate($data['perPage']);
-        }
-
-        $data['customersVtViewModel'] = $paginateData;
-        $data['pager'] = $customersVtViewModel->pager;
-        $data['search'] = $search;
-
-        return view('customers_vt/customervt_table',$data);
-    }
-
+    
     public function delete_customervt($id) {
 
         if (session('logged_in')==false) {
@@ -286,5 +238,68 @@ class CustomersVt extends BaseController
         $customersvtBranchModel->delete($id);
 
         return view('templates/deletepage',$data);
+    }
+
+    public function customervt_list() {
+
+        if (session('logged_in')==false) {
+            return redirect()->to('login');
+        }
+
+        $data['title'] = 'Customers List';
+        $data['page_title'] = 'Customers List';
+        $data['custom_js'] = 'customer_vt/list.js';
+        $data['with_dtTable'] = true;
+        $data['with_jszip'] = true;
+        $data['uri'] = service('uri');
+
+        return view('customers_vt/customervt_table',$data);
+    }
+
+
+    public function getCustomersList() {
+        $customersVtModel = new CustomersVtModel();
+        $customersVtTable = new TablesIgniter();
+        $customer_type = $this->request->getGet('customer_type');
+
+        $customersVtTable->setTable($customersVtModel->noticeTable($customer_type))
+                         ->setDefaultOrder("id","DESC")
+                         ->setSearch([
+                            "id",
+                            "customer_type",
+                            "customer_name",
+                            "contact_person",
+                            "address",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes",
+                         ])
+                         ->setOrder([
+                            "id",
+                            null,
+                            "customer_type",
+                            "customer_name",
+                            "contact_person",
+                            "address",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes",
+                         ])
+                         ->setOutput([
+                            "id",
+                            $customersVtModel->buttonEdit(),
+                            "customer_type",
+                            "customer_name",
+                            "contact_person",
+                            "address",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes"
+                         ]);
+        
+        return $customersVtTable->getDatatable();
     }
 }

@@ -15,6 +15,7 @@ class CustomersVtModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        "customer_type",
         "customer_name", 
         "contact_person", 
         "address_province",
@@ -36,6 +37,7 @@ class CustomersVtModel extends Model
 
     // Validation
     protected $validationRules      = [
+        "customer_type" => 'required',
         "customer_name" => 'required|max_length[500]',
         "contact_person" => 'required|max_length[500]',
         "address_province" => 'required|max_length[500]',
@@ -48,6 +50,10 @@ class CustomersVtModel extends Model
         "notes" => 'required|max_length[100]'
     ];
     protected $validationMessages   = [
+        "customer_type" => [
+            "required" => "Customer Type is required.",
+            "max_length" => "Max length is 500."
+        ],
         "customer_name" => [
             "required" => "Customer Name is required.",
             "max_length" => "Max length is 500."
@@ -107,4 +113,24 @@ class CustomersVtModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function noticeTable($customer_type) {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('customervt_view');
+        $builder->select("*")->where('customer_type',$customer_type);
+        return $builder;
+    }
+
+    public function buttonEdit(){
+        $closureFun = function($row){
+
+            $url_edit = site_url('edit-customervt/'.$row['id']);
+
+            return <<<EOF
+                <button class="btn btn-block btn-warning btn-xs btn-customer-edit" target="_blank" data-toggle="modal" data-target="#modal-edit-customervt" data-url="{$url_edit}"><i class="fas fa-edit"></i> Edit</a>
+                <button class="btn btn-block btn-danger btn-xs delete-employee" data-toggle="modal" data-target="#modal-delete-customervt" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
+            EOF; 
+        };
+        return $closureFun;
+    }
 }

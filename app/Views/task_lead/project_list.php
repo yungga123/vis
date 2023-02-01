@@ -8,7 +8,7 @@
       <!-- Main Card -->
       <div class="card">
         <div class="card-body">
-          <table id="project_list_table" class="table table-bordered table-striped nowrap">
+          <table id="project_list_table" class="table table-bordered table-striped nowrap" data-url="<?= isset($uri) && $uri->getSegment(1)=='manager-project-list' ? url_to('manager-project-table') : url_to('project-table') ?>?<?= isset($uri) ? $uri->getQuery() : "" ?>">
             <thead>
               <tr>
                 <th>Project ID</th>
@@ -120,5 +120,5 @@
 <?= $this->endSection() ;?>
 
 <?= $this->section('CustomScript') ;?>
-<?= $this->include('task_lead/script') ;?>
+<?= $this->include('templates/javascripts') ;?>
 <?= $this->endSection() ;?>

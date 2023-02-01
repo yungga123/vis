@@ -215,6 +215,8 @@ class TaskLead extends BaseController
             $data['title'] = 'Project List';
             $data['page_title'] = 'Project List';
             $data['uri'] = service('uri');
+            $data['with_dtTable'] = true;
+            $data['custom_js'] = 'task_lead/list.js';
 
             return view('task_lead/project_list',$data);
         } else {
@@ -229,6 +231,8 @@ class TaskLead extends BaseController
             $data['title'] = 'Managers Project List';
             $data['page_title'] = 'Managers Project List';
             $data['uri'] = service('uri');
+            $data['with_dtTable'] = true;
+            $data['custom_js'] = 'task_lead/list.js';
 
             return view('task_lead/project_list',$data);
         } elseif (session('logged_in') == true) {

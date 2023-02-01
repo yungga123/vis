@@ -5,7 +5,7 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-body">
-      <table id="employee_table" class="table table-bordered table-striped nowrap">
+      <table id="employee_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('employees') ?>">
         <thead>
           <tr>
             <th>Employee ID</th>
@@ -85,8 +85,4 @@
   <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-<?= $this->endSection() ;?>
-
-<?= $this->section('CustomScript') ;?>
-<?= $this->include('employees/script') ;?>
 <?= $this->endSection() ;?>

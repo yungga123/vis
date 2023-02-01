@@ -97,8 +97,8 @@ $routes->get('/project-list-booked','TaskLead::project_list_booked');
 $routes->get('/manager-project-list-booked','TaskLead::manager_project_list_booked');
 $routes->get('/project-table-booked','TaskLead::getProjectBookedList');
 $routes->get('/manager-project-table-booked','TaskLead::getProjectListBookedManager');
-$routes->get('/project-table','TaskLead::getProjectList');
-$routes->get('/manager-project-table','TaskLead::getProjectListManager');
+$routes->post('/project-table','TaskLead::getProjectList');
+$routes->post('/manager-project-table','TaskLead::getProjectListManager');
 $routes->get('/delete-tasklead/(:num)','Tasklead::delete_tasklead/$1');
 $routes->get('/update-tasklead/(:num)/(:any)','Tasklead::update_project_status/$1/$2');
 $routes->get('/booked-status/(:num)','TaskLead::booked_status/$1');
@@ -117,7 +117,7 @@ $routes->post('/add-project-existingcustomer','TaskLead::add_projectExistingCust
 $routes->get('/add-employee','Employees::index');
 $routes->get('/employee-menu','Employees::employee_menu');
 $routes->post('/employee-add','Employees::employee_add');
-$routes->get('/employees','Employees::getEmployees');
+$routes->post('/employees','Employees::getEmployees');
 $routes->get('/employee-list','Employees::employees_list');
 $routes->get('/edit-employee/(:num)','Employees::edit_employee/$1');
 $routes->post('/employee-edit','Employees::employee_edit');
@@ -158,6 +158,7 @@ $routes->get('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
 $routes->post('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
 $routes->get('/delete-customervt/(:num)','CustomersVt::delete_customervt/$1');
 $routes->get('/delete-customervtbranch/(:num)','CustomersVt::delete_customervt_branch/$1');
+$routes->post('/customervt_dttable','CustomersVt::getCustomersList');
 
 
 //INVENTORY

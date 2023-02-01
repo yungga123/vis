@@ -281,5 +281,5 @@
 <?= $this->endSection() ;?>
 
 <?= $this->section('CustomScript') ;?>
-<?= $this->include('employees/script') ;?>
+<?= $this->include('templates/script') ;?>
 <?= $this->endSection() ;?>
