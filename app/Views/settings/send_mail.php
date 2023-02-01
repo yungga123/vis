@@ -1,7 +1,7 @@
 <?= $this->extend('templates/default'); ?>
 <?= $this->section('content'); ?>
 <div class="container-fluid">
-    <form id="form_mail_config" action="<?= url_to('mail.save'); ?>" method="POST" autocomplete="off">
+    <form id="form_mail_config" class="with-label-indicator" action="<?= url_to('mail.save'); ?>" method="POST" autocomplete="off">
     <input type="hidden" name="mail_config_id" value="<?= esc($mail['mail_config_id']) ?? ''; ?>">
         <div class="row">
             <div class="col-sm-6">
@@ -16,17 +16,17 @@
                     </div>         
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="email_name">Email Name</label>
+                            <label class="required" for="email_name">Email Name</label>
                             <input type="text" name="email_name" id="email_name" class="form-control" placeholder="Enter Email Name..." value="<?= esc($mail['email_name'])?? ''; ?>">
                             <small id="alert_name" class="text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label for="email">Email Address</label>
+                            <label class="required" for="email">Email Address</label>
                             <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email Address..." value="<?= esc($mail['email']) ?? ''; ?>">
                             <small id="alert_email" class="text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label for="password">App Password</label>
+                            <label class="required" for="password">App Password</label>
                             <input type="text" name="password" id="password" class="form-control" placeholder="Enter App Password..." value="<?= esc($mail['password']) ?? ''; ?>">
                             <small id="alert_password" class="text-danger"></small>
                         </div>
@@ -38,7 +38,7 @@
                     </div>         
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="hostname">Host Name</label>
+                            <label class="required" for="hostname">Host Name</label>
                             <input type="text" class="form-control" name="hostname" id="hostname" value="<?= esc($mail['hostname']) ?? ''; ?>" placeholder="Enter Host Name">
                             <small id="alert_hostname" class="text-danger"></small>
                         </div>

@@ -10,6 +10,8 @@
 <!-- Toastr -->
 <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/toastr/toastr.min.css">
 
+<!-- Load custom css -->
+<link rel="stylesheet" href="<?= base_url('assets') ?>/custom/css/style.css">
 <?php 
 if (isset($custom_css) && !empty($custom_css)): 
     $custom_css = is_string($custom_css) ? [$custom_css] : $custom_css;

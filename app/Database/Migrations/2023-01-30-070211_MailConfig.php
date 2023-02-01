@@ -27,19 +27,23 @@ class MailConfig extends Migration
             ],
             'oauth_client_id' => [
                 'type' => "VARCHAR",
-                'constraint' => 255
+                'constraint' => 255,
+                'null' => true
             ],
             'oauth_client_secret' => [
                 'type' => "VARCHAR",
-                'constraint' => 255
+                'constraint' => 255,
+                'null' => true
             ],
             'oauth_scope' => [
                 'type' => "VARCHAR",
-                'constraint' => 150
+                'constraint' => 150,
+                'null' => true
             ],
             'redirect_uri' => [
                 'type' => "VARCHAR",
-                'constraint' => 150
+                'constraint' => 150,
+                'null' => true
             ],
             'hostname' => [
                 'type' => "VARCHAR",
