@@ -18,6 +18,21 @@ $(document).ready(function () {
 
 
     $(document).on('click', '.btn-customer-edit', function () {
+
+        $('.form :input').each(
+            function(){
+                var input = $(this);
+                input.removeClass("is-invalid").removeClass("is-valid");
+            }
+        );
+
+        $('.form small').each(
+            function(){
+                var input = $(this);
+                input.html('');
+            }
+        );
+
         $.ajax({
             url: $(this).data('url'),
             type: 'get',
@@ -76,13 +91,9 @@ $(document).ready(function () {
                 
                 if (response.success == true) {
                     toastr.success("Successfully Edited!");
-
-                    $('#modal-edit-customervt').modal('hide')
-
+                    $('#modal-edit-customervt').modal('hide');
                     refreshDataTable();
-    
                     me[0].reset();
-
                     $('.form :input').each(
                         function(){
                             var input = $(this);
