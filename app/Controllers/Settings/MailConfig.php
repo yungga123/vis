@@ -114,9 +114,10 @@ class MailConfig extends BaseController
             else $this->_sendViaRegularSMPT($mail, $mail_config);
 
             //Set who the message is to be sent from
-            // $mail->setFrom($mail_config['email'], $mail_config['email_name']);
+            $mail->setFrom($mail_config['email'], $mail_config['email_name']);
 
-            $mail->addAddress('radyballs69@gmail.com');
+            //Set who will receive the mail
+            $mail->addAddress($params['email_address'], $params['employee_name']);
 
             //Set who can get a copy
             if (! empty($mail_config['recepients'])) {
