@@ -25,9 +25,14 @@
                             <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email Address..." value="<?= esc($mail['email']) ?? ''; ?>">
                             <small id="alert_email" class="text-danger"></small>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group input-group">
                             <label class="required" for="password">App Password</label>
-                            <input type="text" name="password" id="password" class="form-control" placeholder="Enter App Password..." value="<?= esc($mail['password']) ?? ''; ?>">
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Enter App Password..." value="<?= esc($mail['password']) ?? ''; ?>">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" id="show_password" type="button" title="Click here to show password!"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
                             <small id="alert_password" class="text-danger"></small>
                         </div>
                     </div>
@@ -54,7 +59,7 @@
             <div class="col-sm-6">
                 <div class="card card-secondary collapsed-card">
                     <div class="card-header">
-                        <h3 class="card-title">OAuth Google Client</h3>
+                        <h3 class="card-title">OAuth2 Google Client</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                 <i class="fas fa-minus"></i>
@@ -90,8 +95,7 @@
                     </div>
                     <div class="card-footer">
                         <a href="<?= url_to('mail.config'); ?>" 
-                            class="btn btn-secondary float-right"
-                            onclick="return confirm('Are you sure you want to continue?')"
+                            class="btn btn-secondary float-right" id="btn_getAccessToken"
                             ><i class="fas fa-yin-yang"></i> Get Access Token for OAuth2</a>
                     </div>
                 </div>

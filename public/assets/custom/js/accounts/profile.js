@@ -9,6 +9,8 @@ $(document).ready(function() {
             const route = self.attr('action');
             const data = self.serialize();
 
+            showLoading();
+
             $.post(route, data)
                 .then((res) => {
                     const message = res.errors ?? res.message;
@@ -27,6 +29,7 @@ $(document).ready(function() {
                         }, 4000);
                     }
 
+                    closeLoading();
                     showAlertInForm(elems, message, res.status);
                 })
                 .catch(err => catchErrMsg(err));

@@ -21,6 +21,9 @@ class AccountProfile extends BaseController
     {
         $data = [];
         
+        // Using DB Transaction
+        $this->transBegin();
+
         try {            
             if (! $this->validate($this->_rules())) {
                 $data['status']     = STATUS_ERROR;
@@ -35,17 +38,11 @@ class AccountProfile extends BaseController
                 $data['message']    = "Wrong current password! Please try again.";
 
                 if ($account = $model->authenticate($username, $curr_password)) {
+                    $new_password = $this->request->getVar('password');
                     $hash_password = password_hash(
-                        $this->request->getVar('password'), 
+                        $new_password, 
                         PASSWORD_DEFAULT
                     );
-
-                    // $inputs = [
-                    //     'employee_id'   => session()->get('employee_id'),
-                    //     'username'      => $username,
-                    //     'access_level'  => session()->get('access_level'),
-                    //     'password'      => $hash_password,
-                    // ];
     
                     $data['status']     = STATUS_SUCCESS;
                     $data['message']    = "You have successfully changed you password! You will be logged out now...";
@@ -59,9 +56,28 @@ class AccountProfile extends BaseController
 
                     // Turn protection on
                     $model->protect(true);
+
+                    if (! empty($new_password)) {
+                        // Send mail to employee
+                        $res = $this->sendMail($this->request->getVar(), 'regular');
+                        $msg = $res['message'];
+
+                        if($res['status'] === STATUS_SUCCESS) {
+                            $msg = $data['message'] . $msg;
+                        }
+
+                        $data['status'] = $res['status'];
+                        $data['message'] = $msg;
+                    }
                 }
             }
+
+            // Commit transaction
+            $this->transCommit();
         } catch (\Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
             // $data['errors']     = $e->getMessage();
@@ -106,7 +122,7 @@ class AccountProfile extends BaseController
             email_address
         ';
 
-        $db = $this->qbuilder;
+        $db = $this->builder;
         $query = $db->table($table)->select($fields)
                     ->where('employee_id', session()->get('employee_id'))
                     ->get();
