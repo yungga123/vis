@@ -128,7 +128,7 @@ class CustomersVtModel extends Model
 
             return <<<EOF
                 <button class="btn btn-block btn-warning btn-xs btn-customer-edit" target="_blank" data-toggle="modal" data-target="#modal-edit-customervt" data-url="{$url_edit}"><i class="fas fa-edit"></i> Edit</a>
-                <button class="btn btn-block btn-danger btn-xs delete-employee" data-toggle="modal" data-target="#modal-delete-customervt" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-block btn-danger btn-xs delete-customervt" data-toggle="modal" data-target="#modal-delete-customervt" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
             EOF; 
         };
         return $closureFun;

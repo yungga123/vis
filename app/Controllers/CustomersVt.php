@@ -208,19 +208,21 @@ class CustomersVt extends BaseController
     
     public function delete_customervt($id) {
 
-        if (session('logged_in')==false) {
-            return redirect()->to('login');
-        }
 
         $customersvtModel = new CustomersVtModel();
+        $validate = [
+            "success" => false,
+            "messages" => 'Customer has been deleted!'
+        ];
 
-        $data['title'] = 'Delete Customer';
-        $data['page_title'] = 'Delete Customer';
-        $data['uri'] = service('uri');
-        $data['href'] = site_url('customervt-list');
-        $customersvtModel->delete($id);
+        if (!$customersvtModel->delete($id)) {
+            $validate['message'] = $customersvtModel->errors();
+        } else {
+            $validate['success'] = true;
+        }
 
-        return view('templates/deletepage',$data);
+        return json_encode($validate);
+
     }
 
     public function delete_customervt_branch($id) {
@@ -302,4 +304,5 @@ class CustomersVt extends BaseController
         
         return $customersVtTable->getDatatable();
     }
+
 }

@@ -16,7 +16,7 @@ $(document).ready(function () {
     /* Load dataTable */
     loadDataTable(table, route, METHOD.POST, options);
 
-
+    // Edit Form
     $(document).on('click', '.btn-customer-edit', function () {
 
         $('.form :input').each(
@@ -49,6 +49,34 @@ $(document).ready(function () {
         $('#form-editcustomervt').attr('action',$(this).data('url'));
     });
 
+    $(document).on('click','.delete-customervt',function(){
+
+        var id = $(this).data('id');
+
+        $('#btn-delete-customervt').off('click').on('click',function(){
+            route = $(this).data('url');
+
+            $.post(route + '/' + id,function(response){
+                let status = STATUS.SUCCESS,
+                    message = response.messages;
+
+                if (response.success) {
+
+                    $('#modal-delete-customervt').modal('hide');
+                    refreshDataTable($('#' + table));
+                    
+                } else {
+                    status = STATUS.ERROR;
+                }
+
+                notifMsg(message, status);
+
+            },'json');
+        });
+        
+    });
+
+    // Form Submit Validation (For Edit)
     $('#form-editcustomervt').submit(function(e) {
         e.preventDefault();
         var me = $(this);

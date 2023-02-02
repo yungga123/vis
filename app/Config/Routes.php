@@ -156,7 +156,7 @@ $routes->get('/edit-customervtbranch/(:num)','CustomersVt::edit_customervtbranch
 $routes->post('/edit-customervtbranch/(:num)','CustomersVt::edit_customervtbranch/$1');
 $routes->get('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
 $routes->post('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
-$routes->get('/delete-customervt/(:num)','CustomersVt::delete_customervt/$1');
+$routes->post('/delete-customervt/(:num)','CustomersVt::delete_customervt/$1');
 $routes->get('/delete-customervtbranch/(:num)','CustomersVt::delete_customervt_branch/$1');
 $routes->post('/customervt_dttable','CustomersVt::getCustomersList');
 
