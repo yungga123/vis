@@ -42,7 +42,7 @@ abstract class BaseController extends Controller
      * Add custom properties accessible throughout all controllers
      */
     // Will be use to initialize \Config\Database::connect();
-    protected $qbuilder;
+    protected $builder;
 
     /**
      * Constructor.
@@ -56,15 +56,71 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
 
-        $this->qbuilder = \Config\Database::connect();
+        $this->builder = \Config\Database::connect();
+    }
+
+    /**
+     * DB transaction begin for the default database
+     */
+    protected function transBegin()
+    {
+        $this->builder->transBegin();
+    }
+
+    /**
+     * DB transaction commit for the default database
+     */
+    protected function transCommit()
+    {
+        $this->builder->transCommit();
+    }
+
+    /**
+     * DB transaction rollback for the default database
+     */
+    protected function transRollback()
+    {
+        $this->builder->transRollback();
     }
 
     /**
      * For sending mail to employee
+     * $request param should contain [employee_id, username, password]
      */
-    public function sendMail($params, $sendVia)
+    protected function sendMail($request, $sendVia, $is_add = false)
     {
+        // Declare mail config controller
         $mail = new \App\Controllers\Settings\MailConfig();
-        return $mail->send($params, $sendVia);
+
+        // Get employee details
+        $employeesModel = new \App\Models\EmployeesModel();
+        $params = $employeesModel->getEmployeeDetails(
+            $request['employee_id'],
+            'employee_id, employee_name, email_address',
+        );
+
+        $params['email_address'] = 'radyballs69@gmail.com';
+        $params['username'] = $request['username'];
+        $params['password'] = $request['password'];
+        $params['subject'] = 'Password changed confirmation!';
+
+        if ($is_add) {
+            $params['subject'] = 'Account confirmation!';
+            $params['is_add'] = true;
+        }
+
+        // $params should contain (employee_id, employee_name, email_address, username, password, subject)
+        // And $sendVia either via 'regular' or 'xoauth'
+        $res = $mail->send($params, $sendVia);
+        $status = $res['status'];
+        $message = $res['message'];
+
+        if($status === STATUS_ERROR) {
+            // If mail didn't sent set status as info
+            $status = STATUS_INFO;
+            $message = 'Account has been updated but mail could not be sent!';
+        }
+
+        return compact('status', 'message');
     }
 }

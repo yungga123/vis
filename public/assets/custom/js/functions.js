@@ -64,6 +64,8 @@ function notifMsg(message, status = STATUS.SUCCESS, objMsg = false) {
 
 /* Catch error message */
 function catchErrMsg(err) {
+    if ($('modal_loading').length > 0) closeLoading();
+
     notifMsg('Error while process data! Please contact your system administrator.', STATUS.ERROR);
     console.log(err);
 }
@@ -142,6 +144,26 @@ function loadDataTable(table, route, type = METHOD.GET, options = {}) {
 function refreshDataTable(table = null) {
     if (! isEmpty(table)) table.DataTable().ajax.reload();
     else dtTable.ajax.reload();
+}
+
+/* 
+ * Use for showing and hiding a password - dependent on input group password 
+ * You can see reference from Views/settings/send_mail.php for the input group
+ * passId = name of the password id selector
+ * showPassId = name of the show password button id selector
+*/
+function passwordShowHideInit(passId = 'password', showPassId = 'show_password') {
+    $('#'+ showPassId).on('click', function() {
+        if ($(this).hasClass('show')) {
+            $(this).removeClass('show').attr('title', 'Click here to show password!');
+            $(this).children('i').removeClass().addClass('fas fa-eye');
+            $('#'+ passId).attr('type', 'password');
+        } else {
+            $(this).addClass('show').attr('title', 'Click here to hide password!');
+            $(this).children('i').removeClass().addClass('fas fa-eye-slash');
+            $('#'+ passId).attr('type', 'text');
+        }
+    });
 }
 
 /* 

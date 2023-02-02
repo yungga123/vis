@@ -26,8 +26,11 @@ class Accounts extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Account has been updated!'
+            'message'   => 'Account has been added!'
         ];
+        
+        // Using DB Transaction
+        $this->transBegin();
 
         try {
             $accountsModel = new ModelsAccounts();
@@ -57,29 +60,15 @@ class Accounts extends BaseController
                     $accountsModel->insert($params);
 
                     if (! empty($password)) {
-                        // Get employee details
-                        $employeesModel = new EmployeesModel();
-                        $employee = $employeesModel->getEmployeeDetails(
-                            $this->request->getPost('employee_id'),
-                            'employee_id, employee_name, email_address',
-                        );
-                        $employee['username'] = $this->request->getPost('username');
-                        $employee['password'] = $password;
-                        $employee['subject'] = 'Account confirmation!';
-                        $employee['is_add'] = true;
-
                         // Send mail to employee
-                        $res = $this->sendMail($employee, 'regular');
-                        $sts = $res['status'];
-                        $msg = $data['message'] . $res['message'];
+                        $res = $this->sendMail($this->request->getVar(), 'regular', true);
+                        $msg = $res['message'];
 
-                        if($res['status'] === STATUS_ERROR) {
-                            // If mail didn't sent set status as info
-                            $sts = STATUS_INFO;
-                            $msg = 'Account has been added but mail could not be sent!';
+                        if($res['status'] === STATUS_SUCCESS) {
+                            $msg = $data['message'] . $msg;
                         }
 
-                        $data['status'] = $sts;
+                        $data['status'] = $res['status'];
                         $data['message'] = $msg;
                     }
 
@@ -94,7 +83,13 @@ class Accounts extends BaseController
                 $data['message'] = 'Validation error!';
                 $data['errors'] = $this->validator->getErrors();
             }
+
+            // Commit transaction
+            $this->transCommit();
         } catch (\Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
             $data ['message']   = 'Error while processing data! Please contact your system administrator.';
@@ -183,6 +178,9 @@ class Accounts extends BaseController
             'message'   => 'Account has been updated!'
         ];
 
+        // Using DB Transaction
+        $this->transBegin();
+
         try {
             $accountsModel = new ModelsAccounts();
             
@@ -213,28 +211,15 @@ class Accounts extends BaseController
                     $accountsModel->update($id, $params);
 
                     if (! empty($password)) {
-                        // Get employee details
-                        $employeesModel = new EmployeesModel();
-                        $employee = $employeesModel->getEmployeeDetails(
-                            $this->request->getPost('employee_id'),
-                            'employee_id, employee_name, email_address',
-                        );
-                        $employee['username'] = $this->request->getPost('username');
-                        $employee['password'] = $password;
-                        $employee['subject'] = 'Password changed confirmation!';
-
                         // Send mail to employee
-                        $res = $this->sendMail($employee, 'regular');
-                        $sts = $res['status'];
-                        $msg = $data['message'] . $res['message'];
+                        $res = $this->sendMail($this->request->getVar(), 'regular');
+                        $msg = $res['message'];
 
-                        if($res['status'] === STATUS_ERROR) {
-                            // If mail didn't sent set status as info
-                            $sts = STATUS_INFO;
-                            $msg = 'Account has been updated but mail could not be sent!';
+                        if($res['status'] === STATUS_SUCCESS) {
+                            $msg = $data['message'] . $msg;
                         }
 
-                        $data['status'] = $sts;
+                        $data['status'] = $res['status'];
                         $data['message'] = $msg;
                     }
 
@@ -249,7 +234,13 @@ class Accounts extends BaseController
                 $data['message'] = 'Validation error!';
                 $data['errors'] = $this->validator->getErrors();
             }
+
+            // Commit transaction
+            $this->transCommit();
         } catch (\Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
             $data ['message']   = 'Error while processing data! Please contact your system administrator.';

@@ -31,6 +31,9 @@ class MailConfig extends BaseController
     public function save()
     {
         $data = [];
+
+        // Using DB Transaction
+        $this->transBegin();
         
         try {            
             $model = new MailConfigModel();
@@ -43,7 +46,6 @@ class MailConfig extends BaseController
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             } else {
-                $data['log']    = "log";
                 log_message(
                     'info', 
                     'Mail config data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.',
@@ -56,7 +58,13 @@ class MailConfig extends BaseController
                     ]
                 );
             }
+
+            // Commit transaction
+            $this->transCommit();
         } catch (\Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
             // $data['errors']     = $e->getMessage();
@@ -117,7 +125,7 @@ class MailConfig extends BaseController
             $mail->setFrom($mail_config['email'], $mail_config['email_name']);
 
             //Set who will receive the mail
-            $mail->addAddress($params['email_address'], $params['employee_name']);
+            $mail->addAddress($params['email_address'], $params['employee_name'] ?? '');
 
             //Set who can get a copy
             if (! empty($mail_config['recepients'])) {
@@ -158,7 +166,7 @@ class MailConfig extends BaseController
         }
 
         return [
-            'status'    => empty($error) ? STATUS_SUCCESS: STATUS_ERROR,
+            'status'    => empty($error) ? STATUS_SUCCESS : STATUS_ERROR,
             'message'   => empty($error) ? ' A mail has been sent to employee.' : $error,
         ];
     }

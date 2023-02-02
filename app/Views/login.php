@@ -60,6 +60,8 @@
     </div>
     <!-- /.login-box -->
 
+    <?= $this->include('templates/loading'); ?>
+
     <!-- jQuery -->
     <script src="<?= base_url('assets') ?>/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
@@ -80,6 +82,8 @@
                 const route = '<?= url_to('login.authenticate'); ?>';
                 const data = self.serialize();
 
+                showLoading();
+
                 $.post(route, data)
                     .then((res) => {
                         let message = res.errors ?? res.message;
@@ -92,6 +96,7 @@
                             }, 4000);
                         }
 
+                        closeLoading();
                         notifMsg(message, res.status);
                     })
                     .catch(err => catchErrMsg(err));

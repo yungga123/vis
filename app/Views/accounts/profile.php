@@ -66,19 +66,19 @@
                                 <div class="form-group row">
                                     <label for="employee_id" class="col-sm-2 col-form-label">Employee ID</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="employee_id" id="employee_id" placeholder="Employee ID" value="<?= esc(session()->get('employee_id')); ?>" disabled>
+                                        <input type="text" class="form-control" name="employee_id" id="employee_id" placeholder="Employee ID" value="<?= esc(session()->get('employee_id')); ?>" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="access_level" class="col-sm-2 col-form-label">Access Level</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="access_level" id="access_level" placeholder="Access Level" value="<?= esc(account_access_level(session()->get('access_level'))); ?>" disabled>
+                                        <input type="text" class="form-control" name="access_level" id="access_level" placeholder="Access Level" value="<?= esc(account_access_level(session()->get('access_level'))); ?>" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="username" class="col-sm-2 col-form-label">Username</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="<?= esc(session()->get('username')); ?>" disabled>
+                                        <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="<?= esc(session()->get('username')); ?>" readonly>
                                         <small id="alert_username" class="form-text text-danger"></small>
                                     </div>
                                 </div>
@@ -120,4 +120,5 @@
         <!-- /.col -->
     </div>
 </div>
+<?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>
