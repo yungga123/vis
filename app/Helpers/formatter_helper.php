@@ -108,3 +108,16 @@ if (! function_exists('get_avatar'))
 		return $param ? $avatars[$param] : $avatars;
 	}
 }
+
+if (! function_exists('get_current_user_avatar'))
+{
+	function get_current_user_avatar(): string
+	{
+		$avatars = [
+			'female' 	=> 'assets/dist/img/avatar3.png',
+			'male' 		=> 'assets/dist/img/avatar5.png',
+		];
+
+		return base_url($avatars[strtolower(session('gender'))]);
+	}
+}

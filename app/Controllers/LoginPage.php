@@ -49,6 +49,7 @@ class LoginPage extends BaseController
                         'access'        => $user['access_level'],
                         'employee_id'   => $employee['employee_id'],
                         'name'          => $employee['firstname'].' '.$employee['lastname'],
+                        'gender'        => $employee['gender'],
                         'logged_at'     => date('Y-m-d H:i:s'),
                     ]);
 
