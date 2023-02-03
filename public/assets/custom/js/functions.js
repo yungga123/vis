@@ -63,27 +63,25 @@ function closeLoading(id = "modal_loading") {
 }
 
 /* Convert status into title */
-function convertStatusToTitle(status) {
-	let title;
-
-	switch (status) {
+function convertStatusToTitle(title) {
+	switch (title) {
 		case STATUS.SUCCESS:
-			title = "Success!";
-			break;
-		case STATUS.WARNING:
-			title = "Warning!";
+			title = TITLE.SUCCESS;
 			break;
 		case STATUS.ERROR:
-			title = "Oops!";
+			title = TITLE.ERROR;
 			break;
 		case STATUS.INFO:
-			title = "Info!";
+			title = TITLE.INFO;
+			break;
+		case STATUS.WARNING:
+			title = TITLE.WARNING;
 			break;
 		case STATUS.QUESTION:
-			title = "Question!";
+			title = TITLE.QUESTION;
 			break;
-		default:
-			title = status;
+		case STATUS.CONFIRM:
+			title = TITLE.CONFIRM;
 			break;
 	}
 
@@ -125,12 +123,12 @@ function notifMsg(message, status = STATUS.SUCCESS, objMsg = false) {
  * @param {string} status   - status of notif - refer to 'STATUS' global variable
  */
 function notifMsgSwal(title, message, status) {
-	title = convertStatusToTitle(status);
+	title = convertStatusToTitle(title);
 
 	if (!isEmpty(message) && isObject(message)) {
-		$.each(message, function (key, value) {
-			notifMsgSwal(title, value, status);
-		});
+		let msg = "";
+		$.each(message, (key, value) => (msg += value + " <br>"));
+		notifMsgSwal(title, msg, status);
 	} else {
 		Swal.fire({ title: title, html: message, icon: status });
 	}
