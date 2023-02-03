@@ -7,16 +7,27 @@ use App\Models\Accounts as ModelsAccounts;
 
 class AccountProfile extends BaseController
 {
+    /**
+     * For displaying the view
+     *
+     * @return view
+     */
     public function index()
     {
-        $data['title']      = 'Account Profile';
-        $data['page_title'] = 'Account Profile';
-        $data['custom_js']  = 'accounts/profile.js';
-        $data['account']       = $this->_get_account_details();
+        $data['title']          = 'Account Profile';
+        $data['page_title']     = 'Account Profile';
+        $data['custom_js']      = 'accounts/profile.js';
+        $data['sweetalert2']    = true;
+        $data['account']        = $this->_get_account_details();
 
         return view('accounts/profile', $data);
     }
 
+    /**
+     * Process for changing password
+     *
+     * @return json
+     */
     public function change_password()
     {
         $data = [];
@@ -45,7 +56,7 @@ class AccountProfile extends BaseController
                     );
     
                     $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = "You have successfully changed you password! You will be logged out now...";
+                    $data['message']    = "You have successfully changed you password! You will be logged out now in <b></b>...";
 
                     // Turn protection off - to skip validation
                     $model->protect(false);
@@ -87,6 +98,11 @@ class AccountProfile extends BaseController
         return $this->response->setJSON($data); 
     }
 
+    /**
+     * Rules for the required inputs
+     *
+     * @return array
+     */
     private function _rules()
     {
         $rules = [
@@ -108,6 +124,11 @@ class AccountProfile extends BaseController
         return $rules;
     }
 
+    /**
+     * Get account details
+     *
+     * @return array
+     */
     private function _get_account_details()
     {
         $table = 'employees_view';

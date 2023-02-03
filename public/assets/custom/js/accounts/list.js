@@ -1,38 +1,51 @@
-$(document).ready(function() {
-    let table = 'accounts_table',
-        route = $('#'+ table).data('url');
+var table, removeRoute;
+$(document).ready(function () {
+	table = "accounts_table";
+	removeRoute = $("#remove_url").val();
 
-    /* Disable sorting for this column - default is 1st column. 
+	let route = $("#" + table).data("url");
+
+	/* Disable sorting for this column - default is 1st column. 
     1 = 2nd column of the table  */
-    let options = {
-        columnDefs: {
-            targets: 1,
-            orderable: false
-        },
-    };
+	let options = {
+		columnDefs: {
+			targets: 1,
+			orderable: false,
+		},
+	};
 
-    /* Load dataTable */
-    loadDataTable(table, route, METHOD.POST, options);
-    
-    $(document).on('click', '.delete-account', function() {
-        var id = $(this).data('id');
+	$("#btn_toastr").on("click", function () {
+		// swalNotifRedirect(TITLE.SUCCESS, "message <b></b>", STATUS.SUCCESS);
+	});
 
-        $('#btn-delete-account').on('click', function() {
-            route = $(this).data('url');
-        
-            $.get(route +'/'+ id, function(response) {
-                let status = STATUS.SUCCESS,
-                    message = response.messages;
-
-                if (response.success == true) {
-                    $('#modal-delete-account').modal('hide');
-                    refreshDataTable($('#'+ table));
-                } else {
-                    status = STATUS.ERROR;
-                }
-
-                notifMsg(message, status);
-            }, 'json');
-        });
-    });
+	/* Load dataTable */
+	loadDataTable(table, route, METHOD.POST, options);
 });
+
+function remove(id) {
+	const swalMsg = "delete";
+	swalNotifConfirm(
+		function () {
+			$.get(
+				removeRoute + "/" + id,
+				function (response) {
+					let status = STATUS.SUCCESS,
+						message = response.messages;
+
+					if (response.success == true) {
+						$("#modal-delete-account").modal("hide");
+						refreshDataTable($("#" + table));
+					} else {
+						status = STATUS.ERROR;
+					}
+
+					notifMsgSwal(status, message, status);
+				},
+				"json"
+			);
+		},
+		TITLE.WARNING,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
