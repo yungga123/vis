@@ -161,9 +161,12 @@ $routes->get('/delete-customervtbranch/(:num)','CustomersVt::delete_customervt_b
 
 
 //INVENTORY
-$routes->group('inventory', static function ($routes) {
-    $routes->get('menu', 'Inventory::index');
-    $routes->get('add-item', 'Inventory::add_item');
+$routes->group('inventory', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Inventory::index', ['as' => 'inventory.home']);
+    $routes->post('list', 'Inventory::list', ['as' => 'inventory.list']);
+    $routes->post('save', 'Inventory::save', ['as' => 'inventory.save']);
+    $routes->post('edit', 'Inventory::edit', ['as' => 'inventory.edit']);
+    $routes->post('delete', 'Inventory::delete', ['as' => 'inventory.delete']);
 });
 
 

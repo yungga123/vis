@@ -99,7 +99,6 @@ abstract class BaseController extends Controller
             'employee_id, employee_name, email_address',
         );
 
-        $params['email_address'] = 'radyballs69@gmail.com';
         $params['username'] = $request['username'];
         $params['password'] = $request['password'];
         $params['subject'] = 'Password changed confirmation!';

@@ -33,7 +33,7 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <?php if (isset($can_add) && $can_add): ?>
-                            <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus-circle" id="btn_add_record"></i> Add New Record</button>
+                            <button type="button" class="btn btn-primary float-right" id="btn_add_record"><?= $btn_add_lbl ?? 'Add New Record' ?></button>
                             <?php endif; ?>
                         </div><!-- /.col -->
                     </div><!-- /.row -->

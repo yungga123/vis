@@ -151,6 +151,7 @@ function swalNotifConfirm(
 	confirmText,
 	cancelText
 ) {
+	let color = "#dc3545";
 	title = convertStatusToTitle(title);
 
 	if (message === "delete") {
@@ -158,6 +159,7 @@ function swalNotifConfirm(
 		confirmText = "Yes, delete it!";
 	} else if ((message = "continue")) {
 		message = "Are you really sure you want to continue?";
+		color = "#007bff";
 	}
 
 	Swal.fire({
@@ -166,7 +168,7 @@ function swalNotifConfirm(
 		icon: status,
 		showCancelButton: true,
 		focusCancel: true,
-		confirmButtonColor: "#d33",
+		confirmButtonColor: color,
 		confirmButtonText: confirmText || "Yes, continue!",
 		cancelButtonText: cancelText || "No, cancel!",
 		reverseButtons: true,
@@ -333,21 +335,16 @@ function formSubmit(
  */
 function loadDataTable(table, route, type = METHOD.GET, options = {}) {
 	let columnDefs = [
-			{
-				targets: "_all",
-				defaultContent: "<i>No records found...</i>",
-			},
+			inObject(options, "columnDefs")
+				? options.columnDefs
+				: {
+						targets: 0,
+						orderable: false,
+				  },
 		],
 		order = inObject(options, "order") ? [options.order] : [];
 
-	columnDefs.push(
-		inObject(options, "columnDefs")
-			? options.columnDefs
-			: {
-					targets: 0,
-					orderable: false,
-			  }
-	);
+	columnDefs.push();
 
 	dtTable = $("#" + table).DataTable({
 		processing: true,
@@ -355,6 +352,9 @@ function loadDataTable(table, route, type = METHOD.GET, options = {}) {
 		autoWidth: false,
 		columnDefs: columnDefs,
 		order: order,
+		language: {
+			emptyTable: "No records found...",
+		},
 		buttons: [
 			{
 				extend: "excel",

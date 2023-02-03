@@ -14,10 +14,6 @@ $(document).ready(function () {
 		},
 	};
 
-	$("#btn_toastr").on("click", function () {
-		// swalNotifRedirect(TITLE.SUCCESS, "message <b></b>", STATUS.SUCCESS);
-	});
-
 	/* Load dataTable */
 	loadDataTable(table, route, METHOD.POST, options);
 });
