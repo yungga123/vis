@@ -2,7 +2,8 @@
 <?= $this->section('content'); ?>
 <div class="container-fluid">
     <form id="form_mail_config" class="with-label-indicator" action="<?= url_to('mail.save'); ?>" method="POST" autocomplete="off">
-    <input type="hidden" name="mail_config_id" value="<?= esc($mail['mail_config_id']) ?? ''; ?>">
+        <?= csrf_field(); ?>
+        <input type="hidden" name="mail_config_id" value="<?= esc($mail['mail_config_id']) ?? ''; ?>">
         <div class="row">
             <div class="col-sm-6">
                 <div class="card card-primary collapsed-card">
