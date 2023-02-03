@@ -8,10 +8,7 @@
 <!-- Theme style -->
 <link rel="stylesheet" href="<?=base_url('assets')?>/dist/css/adminlte.min.css">
 
-<?php 
-if (isset($exclude_toastr) && $exclude_toastr):
-else:
-?>
+<?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/toastr/toastr.min.css">
 <?php endif;?>
