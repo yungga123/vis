@@ -3,7 +3,10 @@
 <!-- Bootstrap 4 -->
 <script src="<?=base_url('assets')?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-<?php if (isset($toastr) && $toastr): ?>
+<?php 
+if (isset($exclude_toastr) && $exclude_toastr):
+else:
+?>
 <!-- Toastr -->
 <script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
 <?php endif;?>
