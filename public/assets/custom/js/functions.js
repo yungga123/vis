@@ -22,7 +22,7 @@ var STATUS = {
 	},
 	dtTable;
 
-$(function () {
+$(document).ready(function () {
 	$.ajaxSetup({
 		headers: {
 			"X-CSRF-TOKEN": $("meta#csrf").attr("content"),
@@ -60,12 +60,14 @@ $(function () {
 
 /* Show loading overlay - need to include the templates/loading view to work */
 function showLoading(id) {
-	$("#" + id || "modal_loading").modal("show");
+	id = id || "modal_loading";
+	$("#" + id).modal("show");
 }
 
 /* Close loading overlay - need to include the templates/loading view to work */
 function closeLoading(id) {
-	$("#" + id || "modal_loading").modal("hide");
+	id = id || "modal_loading";
+	$("#" + id).modal("hide");
 
 	if ($(".modal").hasClass("show")) $("body").addClass("modal-open");
 }
@@ -273,7 +275,9 @@ function clearAlertInForm(elems, status, prefix = "alert") {
 	if (Array.isArray(elems) && !isEmpty(elems)) {
 		for (let i = 0; i < elems.length; i++) {
 			const elem = elems[i];
-			$("#" + elem).removeClass("is-invalid");
+			$("#" + elem)
+				.removeClass("is-invalid")
+				.removeClass("is-valid");
 			$(`#${prefix}_${elem}`).html("");
 
 			if (status === STATUS.SUCCESS) $("#" + elem).addClass("is-valid");

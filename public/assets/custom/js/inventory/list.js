@@ -26,6 +26,8 @@ $(document).ready(function () {
 		$(`#${modal} .modal-title`).text("Add New Item");
 		$(`#${form}`)[0].reset();
 		$("#inventory_id").val("");
+
+		clearAlertInForm(elems);
 	});
 
 	/* Load dataTable */
@@ -56,6 +58,7 @@ function edit(id) {
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#inventory_id").val(id);
 
+	clearAlertInForm(elems);
 	showLoading();
 
 	$.post(editRoute, { id: id })
