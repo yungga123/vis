@@ -120,6 +120,7 @@ $routes->post('/employee-add','Employees::employee_add');
 $routes->post('/employees','Employees::getEmployees');
 $routes->get('/employee-list','Employees::employees_list');
 $routes->get('/edit-employee/(:num)','Employees::edit_employee/$1');
+$routes->post('/edit-employee/(:num)','Employees::edit_employee/$1');
 $routes->post('/employee-edit','Employees::employee_edit');
 $routes->get('/delete-employee/(:num)','Employees::delete_employee/$1');
 

@@ -85,4 +85,6 @@
   <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<?= $this->include('employees/ajax_editemployees') ?>
 <?= $this->endSection() ;?>

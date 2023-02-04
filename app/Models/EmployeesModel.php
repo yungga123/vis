@@ -244,8 +244,11 @@ class EmployeesModel extends Model
 
     public function buttonEdit(){
         $closureFun = function($row){
+
+            $edit_url = site_url('edit-employee/'.$row['id']);
+
             return <<<EOF
-                <a href="edit-employee/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
+                <button class="btn btn-block btn-warning btn-xs btn-employee-edit" data-toggle="modal" data-target="#modal-edit-editemployee" data-url="{$edit_url}"><i class="fas fa-edit"></i> Edit</button>
                 <button class="btn btn-block btn-danger btn-xs delete-employee" data-toggle="modal" data-target="#modal-delete-employee" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
             EOF; 
         };

@@ -205,27 +205,19 @@ class Employees extends BaseController
 
     public function edit_employee($id)
     {
-        if (session('logged_in') == true) {
 
-            $employeesModel = new EmployeesModel();
-            $data['title'] = 'Update Employee';
-            $data['page_title'] = 'Update Employee';
-            $data['uri'] = service('uri');
-            $data['employee_details'] = $employeesModel->find($id);
-            $data['id'] = $id;
-            echo view('templates/header', $data);
-            echo view('employees/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('employees/add_employees');
-            echo view('templates/footer');
-            echo view('employees/script');
-        } else {
-            return redirect()->to('login');
+        if ($this->request->getMethod()=='post') {
+            $this->employee_edit($id);
         }
+
+
+        $employeesModel = new EmployeesModel();
+        $employeesData = $employeesModel->find($id);
+
+        return json_encode($employeesData);
     }
 
-    public function employee_edit()
+    public function employee_edit($id)
     {
         $employeesModel = new EmployeesModel();
 
@@ -233,7 +225,6 @@ class Employees extends BaseController
             "success" => false,
             "messages" => ''
         ];
-        $id = $this->request->getPost("id");
         $data = [
             "firstname"                     => $this->request->getPost("firstname"),
             "middlename"                    => $this->request->getPost("middlename"),
@@ -276,7 +267,7 @@ class Employees extends BaseController
             $validate['success'] = true;
         }
 
-        echo json_encode($validate);
+        return json_encode($validate);
     }
 
     public function delete_employee($id) {

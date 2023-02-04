@@ -16,7 +16,7 @@ $(document).ready(function () {
     /* Load dataTable */
     loadDataTable(table, route, METHOD.POST, options);
 
-    // Edit Form
+    // Edit Form Response
     $(document).on('click', '.btn-customer-edit', function () {
 
         $('.form :input').each(
@@ -49,6 +49,7 @@ $(document).ready(function () {
         $('#form-editcustomervt').attr('action',$(this).data('url'));
     });
 
+    //Delete Data
     $(document).on('click','.delete-customervt',function(){
 
         var id = $(this).data('id');
