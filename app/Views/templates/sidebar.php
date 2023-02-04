@@ -62,7 +62,7 @@
                 <li class="nav-header">INVENTORY</li>
 
                 <li class="nav-item">
-                    <a href="<?= site_url("inventory/menu") ?>" class="nav-link <?= (url_is('inventory/menu') ? "active" : "") ;?>">
+                    <a href="<?= url_to("inventory.home"); ?>" class="nav-link <?= (url_is('inventory') ? "active" : "") ;?>">
                         <i class="nav-icon fas fa-warehouse"></i>
                         <p>
                             Inventory
