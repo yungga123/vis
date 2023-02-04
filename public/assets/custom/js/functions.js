@@ -23,6 +23,12 @@ var STATUS = {
 	dtTable;
 
 $(function () {
+	$.ajaxSetup({
+		headers: {
+			"X-CSRF-TOKEN": $("meta#csrf").attr("content"),
+		},
+	});
+
 	// Initialize toastr
 	if (isToastrLoaded()) {
 		toastr.options = {
@@ -53,13 +59,15 @@ $(function () {
 });
 
 /* Show loading overlay - need to include the templates/loading view to work */
-function showLoading(id = "modal_loading") {
-	$("#" + id).modal("show");
+function showLoading(id) {
+	$("#" + id || "modal_loading").modal("show");
 }
 
 /* Close loading overlay - need to include the templates/loading view to work */
-function closeLoading(id = "modal_loading") {
-	$("#" + id).modal("hide");
+function closeLoading(id) {
+	$("#" + id || "modal_loading").modal("hide");
+
+	if ($(".modal").hasClass("show")) $("body").addClass("modal-open");
 }
 
 /* Convert status into title */
