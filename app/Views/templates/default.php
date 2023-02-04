@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="<?= csrf_header() ?>" content="<?= csrf_hash() ?>" id="csrf">
     <title><?= $title ?? 'Viculum MIS'; ?></title>
 
     <!-- Google Font: Source Sans Pro -->
