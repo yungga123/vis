@@ -48,7 +48,7 @@ $(document).ready(function(){
 
         if (res.status !== STATUS.ERROR) {
             self[0].reset();
-            refreshDataTable();
+            refreshDataTable($("#" + table));
             notifMsgSwal(res.status, message, res.status);
 
             if ($(`#${modal}`).hasClass("edit")) {
@@ -104,6 +104,25 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+function branchCustomervtRetrieve(id) {
+	
+	let table = "customervtbranch_table";
+    let route = $("#"+table).data('url') + '?customervt_id=' + id;
+
+    /* Disable sorting for this column - default is 1st column. 
+    1 = 2nd column of the table  */
+	let options = {
+		columnDefs: {
+			targets: [0],
+			orderable: false,
+		},
+	};
+
+	$('#modal-customer-branch').modal("show");
+
+	loadDataTable(table, route, METHOD.GET, options, destroy = true);
 }
 
 

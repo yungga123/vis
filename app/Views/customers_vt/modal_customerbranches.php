@@ -1,4 +1,4 @@
-<div class="modal fade" id="modal-xl">
+<div class="modal fade" id="modal-customer-branch">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <table id="customervtbranch_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to(''); ?>">
+                <table id="customervtbranch_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('customervt.branchlist'); ?>">
                     <thead>
                         <tr>
                             <th>Action</th>
@@ -34,7 +34,7 @@
                 </table>
             </div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-syccess" data-dismiss="modal">OK</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
             </div>
         </div>
     </div>

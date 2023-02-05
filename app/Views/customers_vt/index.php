@@ -41,6 +41,7 @@
     </div>
 </div>
 
+<?= $this->include('customers_vt/modal_customerbranches') ;?>
 <?= $this->include('customers_vt/modal_addcustomervt') ;?>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>

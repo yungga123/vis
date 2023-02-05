@@ -130,7 +130,7 @@ class CustomersVtModel extends Model
     public function buttonBranch(){
         $closureFun = function($row){
             return <<<EOF
-                <button class="btn btn-secondary btn-block btn-xs mt-1" title="View Branch">View Branches</button>
+                <button class="btn btn-secondary btn-block btn-xs mt-1" onclick="branchCustomervtRetrieve({$row['id']})" title="View Branch">View Branches</button>
             EOF; 
         };
         return $closureFun;

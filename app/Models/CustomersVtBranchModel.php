@@ -109,4 +109,22 @@ class CustomersVtBranchModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function noticeTable($customervt_id) {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('customervt_view_branch')->where('customer_id',$customervt_id);
+        $builder->select("*");
+        return $builder;
+    }
+
+    public function button(){
+        $closureFun = function($row){
+            return <<<EOF
+                <button class="btn btn-warning btn-xs" onclick="edit({$row["id"]})" data-toggle="modal" data-target="#modal_customervt" title="Edit"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-danger btn-xs" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i> Delete</button>
+                
+            EOF; 
+        };
+        return $closureFun;
+    }
 }

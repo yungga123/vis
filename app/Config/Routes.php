@@ -167,6 +167,7 @@ $routes->group('customervt',['filter' => 'checkauth'],static function($routes){
     $routes->post('save','CustomersVt::save',['as' => 'customervt.save']);
     $routes->post('edit','CustomersVt::edit',['as' => 'customervt.edit']);
     $routes->post('delete','CustomersVt::delete',['as' => 'customervt.delete']);
+    $routes->get('branch','CustomersVt::branchCustomervtList',['as' => 'customervt.branchlist']);
 });
 
 //INVENTORY

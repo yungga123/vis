@@ -345,7 +345,7 @@ function formSubmit(
  * @param {string} type     - type of request method (GET, POST)
  * @param {object} options  - other options for the dataTable
  */
-function loadDataTable(table, route, type = METHOD.GET, options = {}) {
+function loadDataTable(table, route, type = METHOD.GET, options = {}, destroy = false) {
 	let columnDefs = [
 			inObject(options, "columnDefs")
 				? options.columnDefs
@@ -358,7 +358,9 @@ function loadDataTable(table, route, type = METHOD.GET, options = {}) {
 
 	columnDefs.push();
 
+
 	dtTable = $("#" + table).DataTable({
+		destroy: destroy,
 		processing: true,
 		scrollX: true,
 		autoWidth: false,

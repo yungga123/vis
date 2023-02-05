@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\CustomersVtBranchModel;
 use App\Models\CustomersVtModel;
 use monken\TablesIgniter;
 
@@ -167,5 +168,45 @@ class CustomersVt extends BaseController
         }
 
         return $this->response->setJSON($data);
+    }
+
+    public function branchCustomervtList() {
+        $customersVtBranchModel = new CustomersVtBranchModel();
+        $customersVtBranchTable = new TablesIgniter();
+        $customervt_id = $this->request->getGet('customervt_id');
+
+        $customersVtBranchTable->setTable($customersVtBranchModel->noticeTable($customervt_id))
+                         ->setSearch([
+                            "customer_id",
+                            "branch_name",
+                            "contact_person",
+                            "contact_number",
+                            "address",
+                            "email_address",
+                            "notes"
+                         ])
+                         ->setDefaultOrder('id','desc')
+                         ->setOrder([
+                            null,
+                            "customer_id",
+                            "branch_name",
+                            "contact_person",
+                            "contact_number",
+                            "address",
+                            "email_address",
+                            "notes"
+                         ])
+                         ->setOutput([
+                            $customersVtBranchModel->button(),
+                            "customer_id",
+                            "branch_name",
+                            "contact_person",
+                            "contact_number",
+                            "address",
+                            "email_address",
+                            "notes"
+                         ]);
+
+        return $customersVtBranchTable->getDatatable();
     }
 }
