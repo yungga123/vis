@@ -119,9 +119,18 @@ class CustomersVtModel extends Model
     public function button(){
         $closureFun = function($row){
             return <<<EOF
-                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="" data-id="{$row['id']}"
-                ><i class="fas fa-edit"></i></button>
-                <button class="btn btn-danger" data-toggle="modal" data-target="" data-id="{$row['id']}"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-warning btn-xs" onclick="edit({$row["id"]})" data-toggle="modal" data-target="#modal_customervt" title="Edit"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-danger btn-xs" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i> Delete</button>
+                
+            EOF; 
+        };
+        return $closureFun;
+    }
+
+    public function buttonBranch(){
+        $closureFun = function($row){
+            return <<<EOF
+                <button class="btn btn-secondary btn-block btn-xs mt-1" title="View Branch">View Branches</button>
             EOF; 
         };
         return $closureFun;

@@ -5,10 +5,13 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-body">
+            <input type="hidden" id="edit_url" value="<?= url_to('customervt.edit'); ?>" disabled>
+            <input type="hidden" id="remove_url" value="<?= url_to('customervt.delete'); ?>" disabled>
             <table id="customervt_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('customervt.list'); ?>">
                 <thead>
                     <tr>
-                        <td>Action</td>
+                        <th>Action</th>
+                        <th>Branches</th>
                         <th>ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>
@@ -21,7 +24,8 @@
                 </thead>
                 <tfoot>
                     <tr>
-                        <td>Action</td>
+                        <th>Action</th>
+                        <th>Branches</th>
                         <th>ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>

@@ -4,6 +4,12 @@
             <form id="form_customervt" action="<?= url_to('customervt.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="customervt_id" name="id" readonly>
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Customer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 <div class="card">
                     <div class="card-body">
 
