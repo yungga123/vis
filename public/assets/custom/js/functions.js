@@ -424,6 +424,11 @@ function passwordShowHideInit(
  * Small functions
  */
 
+/* To set option value dynamically */
+function setOptionValue(selector, val) {
+	$(`${selector}`).val(val).change();
+}
+
 /* Check if value is empty - from stackoverflow */
 function isEmpty(value) {
 	return (

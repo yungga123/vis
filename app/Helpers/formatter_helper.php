@@ -63,17 +63,26 @@ if (! function_exists('customers_name'))
 
 if (! function_exists('account_access_level'))
 {
-	function account_access_level(mixed $params = null): mixed
+	function account_access_level($old = false, $params = null): mixed
 	{
-		$access_levels = [
-			'super_admin' 	=> 'Super Admin',
-			'admin' 		=> 'Administrator',
-			'executive' 	=> 'Executive',
-			'manager' 		=> 'Manager',
-			'operation' 	=> 'Admin/Opertation',
-			'supervisor'	=> 'Supervisory',
-			'user' 			=> 'General User',
-		];
+		$access_levels = $old 
+			? [
+				'admin' 		=> 'Administrator',
+				'manager' 		=> 'Manager',
+				'sales' 		=> 'Sales',
+				'ofcadmin' 		=> 'Office Admin',
+				'hr' 			=> 'HR',
+				'user'  		=> 'User',
+			] 
+			: [
+				// 'super_admin' 	=> 'Super Admin',
+				'admin' 		=> 'Administrator',
+				'executive' 	=> 'Executive',
+				'manager' 		=> 'Manager',
+				'operation' 	=> 'Admin/Operation',
+				'supervisor'	=> 'Supervisory',
+				'user'  		=> 'General User',
+			];
 
 		if (! empty($params)) {
 			if (is_string($params)) {

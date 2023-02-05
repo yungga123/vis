@@ -54,7 +54,7 @@ class MailConfig extends BaseController
                 $data['message'] = "Validation error!";
             } else {
                 log_message(
-                    'info',
+                    'error',
                     'Mail config data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.',
                     [
                         'username' => session()->get('username'),

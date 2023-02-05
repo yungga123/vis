@@ -98,3 +98,21 @@ define('EVENT_PRIORITY_HIGH', 10);
 define('STATUS_SUCCESS', 'success');
 define('STATUS_ERROR', 'error');
 define('STATUS_INFO', 'info');
+
+/* Account Access Level (AAL) */
+// New
+defined('AAL_SUPER_ADMIN')  || define('AAL_SUPER_ADMIN', 'super_admin');
+defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
+defined('AAL_EXECUTIVE')    || define('AAL_EXECUTIVE', 'executive');
+defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+defined('AAL_OPERATION')    || define('AAL_OPERATION', 'operation');
+defined('AAL_SUPERVISOR')   || define('AAL_SUPERVISOR', 'supervisor');
+// defined('AAL_USER')         || define('AAL_USER', 'user');
+
+// Old
+// defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
+defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+defined('AAL_HR')           || define('AAL_HR', 'hr');
+defined('AAL_SALES')        || define('AAL_SALES', 'sales');
+defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
+defined('AAL_USER')         || define('AAL_USER', 'user');

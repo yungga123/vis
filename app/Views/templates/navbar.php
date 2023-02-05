@@ -18,7 +18,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="<?= site_url('logout') ?>" class="nav-link">Logout</a>
+            <a href="<?= site_url('logout') ?>" onclick="return confirm('Are you sure you want to logout?')" class="nav-link">Logout</a>
         </li>
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown">

@@ -8,6 +8,7 @@ class Accounts extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'accounts';
+    protected $view             = 'accounts_view';
     protected $primaryKey       = 'account_id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -89,21 +90,34 @@ class Accounts extends Model
                     ->findAll();
     }
 
+    // For dataTables
     public function noticeTable() 
     {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('accounts_view');
-        $builder->select("*");
+        $builder = $this->db->table($this->view);
+
+        if (session('access_level') !== AAL_ADMIN) {
+            $builder->whereNotIn('access_level', [AAL_ADMIN]);
+        }
+        
         return $builder;
     }
 
-    public function buttonEdit()
+    public function dtAccessLevel($old = false) 
     {
-        $closureFun = function($row){
+        $access_level = function($row) use($old) {
+            return account_access_level($old, $row['access_level']);
+        };
+
+        return $access_level;
+    }
+
+    public function buttons()
+    {
+        $closureFun = function($row) {
             return <<<EOF
-                <a href="edit-account/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
-                <button class="btn btn-block btn-danger btn-xs" onclick="remove({$row['id']})"><i class="fas fa-trash"></i> Delete</button>
-            EOF; 
+                <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
+                <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
+            EOF;
         };
         return $closureFun;
     }

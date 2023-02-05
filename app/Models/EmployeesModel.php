@@ -8,6 +8,7 @@ class EmployeesModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'employees';
+    protected $view             = 'employees_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -60,165 +61,160 @@ class EmployeesModel extends Model
     // Validation
     protected $validationRules      = [
         "employee_id"               => "required|alpha_numeric|max_length[20]|is_unique[employees.employee_id]",
-        "firstname"                 => "required|alpha_numeric_space|max_length[500]",
-        "lastname"                  => "required|alpha_numeric_space|max_length[500]",
+        "firstname"                 => "required|alpha_space|min_length[2]|max_length[100]",
+        "lastname"                  => "required|alpha_space|min_length[2]|max_length[100]",
+        "middlename"                => "permit_empty|min_length[2]|max_length[100]",
         "gender"                    => "required",
-        "civil_status"              => "required|alpha_numeric_space|max_length[500]",
+        "civil_status"              => "required",
         "date_of_birth"             => "required",
-        "place_of_birth"            => "required|max_length[500]",
-        "postal_code"               => "required|numeric|max_length[500]",
-        "language"                  => "required|max_length[500]",
-        "address_province"          => "required|max_length[500]",
-        "address_city"              => "required|max_length[500]",
-        "address_brgy"              => "required|max_length[500]",
-        "address_sub"               => "required|max_length[500]",
-        "contact_number"            => "required|max_length[500]",
-        "email_address"             => "permit_empty|valid_email|max_length[500]",
-        "sss_no"                    => "required|max_length[500]",
-        "tin_no"                    => "required|max_length[500]",
-        "philhealth_no"             => "required|max_length[500]",
-        "pag_ibig_no"               => "required|max_length[500]",
-        "educational_attainment"    => "required|alpha_numeric_space|max_length[500]",
-        "emergency_name"            => "required|alpha_numeric_space|max_length[500]",
-        "emergency_contact_no"      => "required|max_length[500]",
-        "emergency_address"         => "required|max_length[500]",
+        "place_of_birth"            => "required|max_length[255]",
+        "postal_code"               => "required|numeric",
+        "language"                  => "required|max_length[100]",
+        "address_province"          => "required|max_length[150]",
+        "address_city"              => "required|max_length[150]",
+        "address_brgy"              => "required|max_length[150]",
+        "address_sub"               => "required|max_length[150]",
+        "contact_number"            => "required|numeric",
+        "email_address"             => "required|valid_email",
+        "sss_no"                    => "required|max_length[20]",
+        "tin_no"                    => "required|max_length[20]",
+        "philhealth_no"             => "required|max_length[20]",
+        "pag_ibig_no"               => "required|max_length[20]",
+        "educational_attainment"    => "required|alpha_numeric_space|max_length[255]",
+        "emergency_name"            => "required|alpha_numeric_space|max_length[200]",
+        "emergency_contact_no"      => "required|max_length[150]",
+        "emergency_address"         => "required|max_length[255]",
         "name_of_spouse"            => "required_with[civil_status.married]|permit_empty|max_length[100]",
         "spouse_contact_no"         => "required_with[civil_status.married]|permit_empty|max_length[50]",
         "no_of_children"            => "required_with[civil_status.married]|permit_empty|numeric|max_length[2]",
         "spouse_address"            => "required_with[civil_status.married]|max_length[255]",
-        "position"                  => "required|alpha_numeric_space|max_length[500]",
-        "employment_status"         => "required|alpha_numeric_space|max_length[500]",
+        "position"                  => "required|alpha_numeric_space|max_length[100]",
+        "employment_status"         => "required",
         "date_hired"                => "required"
     ];
     protected $validationMessages   = [
         "employee_id"               => [
-            "required" => "This field is required.",
-            "alpha_numeric" => "Must be in alpha numeric characters.",
-            "max_length" => "Max length is 20.",
-            "is_unique" => "This ID is existing"
+            "label" => "Employee ID",
+            "required" => "Employee ID is required.",
+            "alpha_numeric" => "Employee ID must be in alpha numeric characters.",
+            "is_unique" => "Employee ID has already been taken! Please try a different one."
         ],        
-        "firstname"                 => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "This field must only contain alpha numeric spaces.",
-            "max_length" => "Max length is 500."
+        "firstname" => [ 
+            "label" => "First Name",
+            "required" => "First Name is required.",
+            "alpha_numeric_space" => "First Name must only contain alpha numeric spaces.",
         ],
-        "lastname"                  => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "This field must only contain alpha numeric spaces.",
-            "max_length" => "Max length is 500."
+        "lastname" => [ 
+            "label" => "Last Name",
+            "required" => "Last Name is required.",
+            "alpha_numeric_space" => "Last Name must only contain alpha numeric spaces.",
         ],
-        "gender"                    => [ 
-            "required" => "This field is required."
+        "gender" => [ 
+            "required" => "Gender is required."
         ],
-        "civil_status"              => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "This field must only contain alpha numeric spaces.",
-            "max_length" => "Max length is 500."
+        "civil_status" => [ 
+            "label" => "Civil Status",
+            "required" => "Civil Status is required.",
         ],
-        "date_of_birth"             => [ 
-            "required" => "This field is required."
+        "date_of_birth" => [ 
+            "label" => "Date of Birth",
+            "required" => "Date of Birth is required."
         ],
-        "place_of_birth"            => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "place_of_birth" => [ 
+            "label" => "Place of Birth",
+            "required" => "Place of Birth is required.",
         ],
-        "postal_code"               => [ 
-            "required" => "This field is required.",
-            "numeric" => "Must be in numeric characters.",
-            "max_length" => "Max length is 500."
+        "postal_code" => [ 
+            "label" => "Postal Code",
+            "required" => "Postal Code is required.",
         ],
-        "language"                  => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "language" => [ 
+            "label" => "Language",
+            "required" => "Language is required.",
         ],
-        "address_province"          => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "address_province" => [ 
+            "label" => "Province",
+            "required" => "Province is required.",
         ],
-        "address_city"              => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "address_city" => [ 
+            "label" => "City/Municipality",
+            "required" => "City/Municipality is required.",
         ],
-        "address_brgy"              => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "address_brgy" => [ 
+            "label" => "Barangay",
+            "required" => "Barangay is required.",
         ],
-        "address_sub"               => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "address_sub" => [ 
+            "label" => "Additional Address",
+            "required" => "Additional Address is required.",
         ],
-        "contact_number"            => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "contact_number" => [ 
+            "label" => "Contact Number",
+            "required" => "Contact Number is required.",
         ],
-        "email_address"             => [ 
-            "valid_email" => "Enter valid email.",
-            "max_length" => "Max length is 500."
+        "email_address" => [ 
+            "label" => "Email Address",
+            "required" => "Email Address is required."
         ],
-        "sss_no"                    => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "sss_no" => [ 
+            "label" => "SSS Number",
+            "required" => "SSS Number is required.",
         ],
-        "tin_no"                    => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "tin_no" => [ 
+            "label" => "TIN Number",
+            "required" => "TIN Number is required.",
         ],
-        "philhealth_no"             => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "philhealth_no" => [ 
+            "label" => "PHILHEALTH Number",
+            "required" => "PHILHEALTH Number is required.",
         ],
-        "pag_ibig_no"               => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "pag_ibig_no" => [ 
+            "label" => "PAGIBIG Number",
+            "required" => "PAGIBIG Number is required.",
         ],
-        "educational_attainment"    => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "Must be in alpha numeric space characters.",
-            "max_length" => "Max length is 500."
+        "educational_attainment" => [ 
+            "label" => "Educational Attainment",
+            "required" => "Educational Attainment is required.",
         ],
-        "emergency_name"            => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "Must be in alpha numeric space characters.",
-            "max_length" => "Max length is 500."
+        "emergency_name" => [ 
+            "label" => "Emergency Name",
+            "required" => "Emergency Name is required.",
         ],
-        "emergency_contact_no"      => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "emergency_contact_no" => [ 
+            "label" => "Emergency Contact Number",
+            "required" => "Emergency Contact Number is required.",
         ],
-        "emergency_address"         => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "emergency_address" => [ 
+            "label" => "Emergency Address",
+            "required" => "Emergency Address is required.",
         ],
-        "name_of_spouse"            => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "Must be in alpha numeric space characters.",
-            "max_length" => "Max length is 500."
+        "name_of_spouse" => [ 
+            "label" => "Name of Spouse",
+            "required" => "Name of Spouse is required.",
         ],
-        "spouse_contact_no"         => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "spouse_contact_no" => [ 
+            "label" => "Spouse Contact Number",
+            "required" => "Spouse Contact Number is required.",
         ],
-        "no_of_children"            => [ 
-            "required" => "This field is required.",
-            "numeric" => "Must be in numeric characters.",
-            "max_length" => "Max length is 500."
+        "no_of_children" => [ 
+            "label" => "Number of Children",
+            "required" => "Number of children is required.",
         ],
-        "spouse_address"            => [ 
-            "required" => "This field is required.",
-            "max_length" => "Max length is 500."
+        "spouse_address" => [ 
+            "label" => "Spouse Address",
+            "required" => "Spouse Address is required.",
         ],
-        "position"                  => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "Must be in alpha numeric space characters.",
-            "max_length" => "Max length is 500."
+        "position" => [ 
+            "label" => "Position",
+            "required" => "Position is required.",
         ],
-        "employment_status"         => [ 
-            "required" => "This field is required.",
-            "alpha_numeric_space" => "Must be in alpha numeric space characters.",
-            "max_length" => "Max length is 500."
+        "employment_status" => [ 
+            "label" => "Employment Status",
+            "required" => "Employment Status is required.",
         ],
-        "date_hired"                => [ 
-            "required" => "This field is required."
+        "date_hired"  => [ 
+            "label" => "Date Hired",
+            "required" => "Date Hired is required."
         ]
     ];
     protected $skipValidation       = false;
@@ -235,30 +231,34 @@ class EmployeesModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable() {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('employees_view');
-        $builder->select("*");
-        return $builder;
-    }
-
-    public function buttonEdit(){
-        $closureFun = function($row){
-            return <<<EOF
-                <a href="edit-employee/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
-                <button class="btn btn-block btn-danger btn-xs delete-employee" data-toggle="modal" data-target="#modal-delete-employee" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
-            EOF; 
-        };
-        return $closureFun;
-    }
-
     public function getEmployeeDetails($employee_id, $columns = '*')
     {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('employees_view');
-
+        $builder = $this->db->table($this->view);
         return $builder->select($columns)
                     ->where('employee_id', $employee_id)
                     ->get()->getRowArray();
+    }
+
+    // For dataTables
+    public function noticeTable() 
+    {
+        $builder = $this->db->table($this->view);
+        $builder->select("*");
+
+        if (session('access_level') !== AAL_ADMIN) {
+            $builder->whereNotIn('access_level', [AAL_ADMIN]);
+        }
+        return $builder;
+    }
+
+    public function buttons()
+    {
+        $closureFun = function($row) {
+            return <<<EOF
+                <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#employee_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
+                <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
+            EOF;
+        };
+        return $closureFun;
     }
 }

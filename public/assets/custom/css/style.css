@@ -1,12 +1,12 @@
 form.with-label-indicator .form-group label:first-child::after {
-    content:" (Optional)";
-    color: grey;
-    font-weight: lighter;
-    font-size: small;
-    font-style: italic;
+	content: " (Optional)";
+	color: grey;
+	font-weight: lighter;
+	font-size: small;
+	font-style: italic;
 }
 
 form.with-label-indicator .form-group label.required::after {
-    content:" (Required)";
-    color: red;
+	content: " (Required)";
+	color: red;
 }
