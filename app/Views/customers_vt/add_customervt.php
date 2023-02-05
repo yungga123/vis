@@ -16,7 +16,7 @@
             if ($uri->getSegment(1) == 'edit-customervt') {
               echo form_open('edit-customervt/' . $id, ["id" => "form-editcustomervt"]);
             } else {
-              echo form_open('add-customervt', ["id" => "form-addcustomervt"]);
+              echo form_open('add-customervt', ["id" => "form-customervt"]);
             }; ?>
 
             <div class="card-body row">

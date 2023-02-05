@@ -7,7 +7,7 @@
             <input type="hidden" id="remove_url" value="<?= url_to('inventory.delete'); ?>" disabled>
             <table id="inventory_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('inventory.list'); ?>">
                 <thead>
-                    <tr>
+                    <tr> 
                         <th>Action</th>
                         <th>Item Name</th>
                         <th>Brand</th>

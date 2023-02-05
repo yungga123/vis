@@ -107,4 +107,23 @@ class CustomersVtModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+
+    public function noticeTable() {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('customervt_view');
+        $builder->select("*");
+        return $builder;
+    }
+
+    public function button(){
+        $closureFun = function($row){
+            return <<<EOF
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="" data-id="{$row['id']}"
+                ><i class="fas fa-edit"></i></button>
+                <button class="btn btn-danger" data-toggle="modal" data-target="" data-id="{$row['id']}"><i class="fas fa-trash"></i></button>
+            EOF; 
+        };
+        return $closureFun;
+    }
 }

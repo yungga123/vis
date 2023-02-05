@@ -85,7 +85,7 @@
         <div class="icon">
           <i class="fas fa-users"></i>
         </div>
-        <a href="<?= site_url('customersvt_menu') ?>" class="small-box-footer">
+        <a href="<?= url_to('customervt.home') ?>" class="small-box-footer">
           Proceed <i class="fas fa-arrow-circle-right"></i>
         </a>
       </div>
