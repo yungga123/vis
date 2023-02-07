@@ -111,13 +111,34 @@ class Accounts extends Model
         return $access_level;
     }
 
-    public function buttons()
+    public function buttons($permissions)
     {
-        $closureFun = function($row) {
-            return <<<EOF
-                <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
-                <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
-            EOF;
+        $id = 'id';
+        $closureFun = function($row) use($id, $permissions) {
+            if (is_admin()) {
+                return <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
+                $edit = <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
+                EOF;
+            }
+
+            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
+                $delete = <<<EOF
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            return $edit. $delete;
         };
         return $closureFun;
     }

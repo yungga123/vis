@@ -9,12 +9,51 @@ use monken\TablesIgniter;
 class Employees extends BaseController
 {
     /**
+     * Use to initialize PermissionModel class
+     * @var object
+     */
+    private $_model;
+
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->_model       = new EmployeesModel(); // Current model
+        $this->_module_code = MODULE_CODES['employees']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+    }
+
+    /**
      * Display the employee view
      *
      * @return view
      */
     public function index()
     {
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+
         $data['title']          = 'List of Employees';
         $data['page_title']     = 'List of Employees';
         $data['custom_js']      = 'employees/list.js';
@@ -22,7 +61,7 @@ class Employees extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
-        $data['can_add']        = true;
+        $data['can_add']        = $this->_can_add;;
 
         return view('employees/index', $data);
     }
@@ -34,10 +73,9 @@ class Employees extends BaseController
      */
     public function list()
     {
-        $model = new EmployeesModel();
         $table = new TablesIgniter();
 
-        $table->setTable($model->noticeTable())
+        $table->setTable($this->_model->noticeTable())
             ->setSearch([
                 "employee_id", 
                 "employee_name", 
@@ -94,7 +132,7 @@ class Employees extends BaseController
                 "spouse_address"
             ])
             ->setOutput([
-                $model->buttons(),
+                $this->_model->buttons($this->_permissions),
                 "employee_id",
                 "employee_name", 
                 "address", 
@@ -142,20 +180,19 @@ class Employees extends BaseController
         $this->transBegin();
 
         try {
-            $model  = new EmployeesModel();
             $id     = $this->request->getVar('id');
             $prev   = $this->request->getVar('prev_employee_id');
             $curr   = $this->request->getVar('employee_id');
-            $rules  = $model->getValidationRules();
+            $rules  = $this->_model->getValidationRules();
 
             if (! empty($id) && $prev === $curr) {
                 $rules['employee_id'] = 'required|alpha_numeric|max_length[20]';
             }
 
-            $model->setValidationRules($rules);
+            $this->_model->setValidationRules($rules);
 
-            if (! $model->save($this->request->getVar())) {
-                $data['errors']     = $model->errors();
+            if (! $this->_model->save($this->request->getVar())) {
+                $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             }
@@ -191,11 +228,10 @@ class Employees extends BaseController
         ];
 
         try {
-            $model  = new EmployeesModel();
             $id     = $this->request->getVar('id');
-            $fields = $model->allowedFields;
+            $fields = $this->_model->allowedFields;
 
-            $data['data'] = $model->select($fields)->find($id);;
+            $data['data'] = $this->_model->select($fields)->find($id);;
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
@@ -221,10 +257,8 @@ class Employees extends BaseController
         $this->transBegin();
 
         try {
-            $model = new EmployeesModel();
-
-            if (! $model->delete($this->request->getVar('id'))) {
-                $data['errors']     = $model->errors();
+            if (! $this->_model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             }

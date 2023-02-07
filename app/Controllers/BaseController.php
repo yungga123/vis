@@ -35,7 +35,7 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = ['url', 'form', 'formatter'];
+    protected $helpers = ['url', 'form', 'formatter', 'custom'];
 
 
     /**
@@ -43,6 +43,12 @@ abstract class BaseController extends Controller
      */
     // Will be use to initialize \Config\Database::connect();
     protected $builder;
+
+    // Use to get the user permissions
+    protected $permissions;
+
+    // Use to get the user modules
+    protected $modules;
 
     /**
      * Constructor.
@@ -56,7 +62,9 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
 
-        $this->builder = \Config\Database::connect();
+        $this->builder          = \Config\Database::connect();
+        $this->permissions      = url_is('login') ? [] : get_permissions();
+        $this->modules          = get_user_modules($this->permissions);
     }
 
     /**
@@ -84,8 +92,21 @@ abstract class BaseController extends Controller
     }
 
     /**
+     * Check if current logged user is administrator
+     * @return bool
+     */
+    protected function isAdmin()
+    {
+        return session('access_level') === AAL_ADMIN;
+    }
+
+    /**
      * For sending mail to employee
      * $request param should contain [employee_id, username, password]
+     * @param array $request    - should contain [employee_id, username, password]
+     * @param string $sendVia   - either 'xoauth' or 'regular'
+     * @param boolean $is_add   - set true if from add request
+     * @return array
      */
     protected function sendMail($request, $sendVia, $is_add = false)
     {
@@ -122,4 +143,56 @@ abstract class BaseController extends Controller
 
         return compact('status', 'message');
     }
+
+    /**
+     * Get specific permissions based on module code
+     *
+     * @param string $module_code
+     * @return string|array
+     */
+    protected function getSpecificPermissions($module_code)
+	{
+        if ($this->isAdmin()) return array_keys(ACTIONS);
+
+        $model = new \App\Models\PermissionModel();
+        $perms = $model->getCurrUserSpecificPermissions($module_code);
+
+        if (empty($perms)) return false;
+        
+		return explode(',', $perms['permissions']);
+	}
+
+    /**
+     * Check permissions based on the passed needle
+     *
+     * @param string $permissions
+     * @param string $needle
+     * @return bool
+     */
+    protected function checkPermissions($permissions, $needle)
+	{
+        if ($this->isAdmin()) return true;
+        if ($permissions) {
+		    return in_array($needle, $permissions) ? true : false;
+        }
+
+        return false;
+	}
+
+    /**
+     * Check role permissions based on the passed needle
+     * and redirect to denied page
+     * @param string $module
+     * @return view
+     */
+    public function checkRolePermissions($module)
+	{
+		if (! in_array($module, $this->modules)) {
+            $data['title']          = 'Access Denied';
+            $data['page_title']     = 'Access Denied!';
+
+            echo view('errors/custom/denied', $data);
+            exit;
+        }
+	}
 }

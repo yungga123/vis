@@ -28,6 +28,19 @@ class CheckAuthFilter implements FilterInterface
         $session = session();
         if (! $session->get('logged_in')) {
             return redirect()->to('login');
+        } else {
+            // $is_dashboard = url_is('/') || url_is('dashboard');
+            // if (session('access_level') !== AAL_ADMIN && !$is_dashboard) {
+            //     $model          = new \App\Models\PermissionModel();
+            //     $permissions    = $model->getCurrUserPermissions();
+            //     $modules        = array_column($permissions, 'module_code');    
+            //     $module_code    = MODULE_CODES_URI[$request->getUri()->getPath()];
+            //     // d($modules, $module_code); die;
+    
+            //     if (! in_array($module_code, $modules)) {
+            //         return redirect()->to('access-denied?from='. $request->getPath());
+            //     }
+            // }    
         }
     }
 

@@ -116,3 +116,65 @@ defined('AAL_HR')           || define('AAL_HR', 'hr');
 defined('AAL_SALES')        || define('AAL_SALES', 'sales');
 defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
 defined('AAL_USER')         || define('AAL_USER', 'user');
+
+// Actions - add new here
+define('ACTIONS', [
+    'VIEW'      => 'View',
+    'ADD'       => 'Add',
+    'EDIT'      => 'Edit',
+    'DELETE'    => 'Delete',
+    // 'EXPORT'    => 'Export',
+    // 'IMPORT'    => 'Import',
+]);
+
+// Roles - add new here
+define('ROLES', [
+    'ADMIN'         => 'Administrator',
+    'EXECUTIVE'     => 'Executive',
+    'MANAGER'       => 'Manager',
+    'OPERATION'     => 'Admin/Operation',
+    'SUPERVISOR'    => 'Supervisory',
+    'USER'          => 'General User',
+]);
+
+// Modules - add new here
+define('MODULES', [
+    'DASHBOARD'             => 'Dashboard',
+    'ACCOUNTS'              => 'Accounts',
+    'EMPLOYEES'             => 'Employees',
+    'CUSTOMERS'             => 'Customers',
+    'CUSTOMERS_BRANCH'      => 'Customers Branch',
+    'TASK_LEAD'             => 'Task/Lead Monitoring',
+    'MANAGER_OF_SALES'      => 'Manager of Sales',
+    'SETTINGS_MAILCONFIG'   => 'Settings | Mail Configuration',
+    'SETTINGS_PERMISSIONS'  => 'Settings | Permissions',
+]);
+
+// Modules code based on the specific identifier you set
+// (value should be the same key in MODULES)
+// Will be used in the constructor of the controller
+define('MODULE_CODES', [
+    'dashboard'             => 'DASHBOARD',
+    'accounts'              => 'ACCOUNTS',
+    'employees'             => 'EMPLOYEES',
+    'customers'             => 'CUSTOMERS',
+    'c_barnch'              => 'CUSTOMERS_BRANCH',
+    'task_lead'             => 'TASK_LEAD',
+    'sales'                 => 'MANAGER_OF_SALES',
+    'mail_config'           => 'SETTINGS_MAILCONFIG',
+    'permissions'           => 'SETTINGS_PERMISSIONS',
+]);
+
+// Modules code based on the uri of the modules
+// (value should be the same key in MODULES)
+define('MODULE_CODES_URI', [
+    'dashboard'             => 'DASHBOARD',
+    'accounts'              => 'ACCOUNTS',
+    'employees'             => 'EMPLOYEES',
+    'customers'             => 'CUSTOMERS',
+    'c_barnch'              => 'CUSTOMERS_BRANCH',
+    'task_lead'             => 'TASK_LEAD',
+    'sales'                 => 'MANAGER_OF_SALES',
+    'settings/mail_config'  => 'SETTINGS_MAILCONFIG',
+    'settings/permissions'  => 'SETTINGS_PERMISSIONS',
+]);

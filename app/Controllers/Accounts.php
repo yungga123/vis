@@ -10,12 +10,51 @@ use monken\TablesIgniter;
 class Accounts extends BaseController
 {
     /**
+     * Use to initialize PermissionModel class
+     * @var object
+     */
+    private $_model;
+
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->_model       = new AccountModel(); // Current model
+        $this->_module_code = MODULE_CODES['accounts']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+    }
+
+    /**
      * Display the account view
      *
      * @return view
      */
     public function index()
     {
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+
         $employeeModel  = new EmployeesModel();
         $access_level   = account_access_level();
         $fields         = 'employee_id, lastname, firstname';
@@ -32,7 +71,7 @@ class Accounts extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
-        $data['can_add']        = true;
+        $data['can_add']        = $this->_can_add;
         $data['employees']      = $employees;
         $data['access_level']   = $access_level;
 
@@ -46,10 +85,9 @@ class Accounts extends BaseController
      */
     public function list()
     {
-        $model = new AccountModel();
         $table = new TablesIgniter();
 
-        $table->setTable($model->noticeTable())
+        $table->setTable($this->_model->noticeTable())
             ->setSearch([
                 'employee_id',
                 'employee_name',
@@ -66,12 +104,12 @@ class Accounts extends BaseController
                 'access_level',
             ])
             ->setOutput([
-                $model->buttons(),
+                $this->_model->buttons($this->_permissions),
                 'employee_id',
                 'employee_name',
                 'username',
                 // 'password',
-                $model->dtAccessLevel(),
+                $this->_model->dtAccessLevel(),
             ]);
 
         return $table->getDatatable();
@@ -98,11 +136,10 @@ class Accounts extends BaseController
         $this->transBegin();
 
         try {
-            $model          = new AccountModel();
             $password       = $this->request->getVar('password');
             $password_hash  = password_hash($password, PASSWORD_BCRYPT);
-            $rules          = $model->getValidationRules(['except' => ['password', 'employee_id']]);
-            $rule_msg       = $model->getValidationMessages();
+            $rules          = $this->_model->getValidationRules(['except' => ['password', 'employee_id']]);
+            $rule_msg       = $this->_model->getValidationMessages();
 
             $rules['employee_id']   = 'required';
             $rules['password']      = 'required|min_length[8]|alpha_numeric';
@@ -119,13 +156,13 @@ class Accounts extends BaseController
                     ];
 
                     // Turn protection off - to skip validation
-                    $model->protect(false);
-                    $model->cleanRules(true);
-                    $model->skipValidation(true);
+                    $this->_model->protect(false);
+                    $this->_model->cleanRules(true);
+                    $this->_model->skipValidation(true);
                     // Insert account
-                    $model->insert($params);
+                    $this->_model->insert($params);
                     // Turn protection on
-                    $model->protect(true);
+                    $this->_model->protect(true);
                     // Send mail
                     $data = $this->_sendMail($data);
                 } else {
@@ -165,12 +202,11 @@ class Accounts extends BaseController
         ];
 
         try {
-            $model  = new AccountModel();
             $id     = $this->request->getVar('id');
             $fields = 'employee_id, username, access_level';
-            // $fields = $model->allowedFields;
+            // $fields = $this->_model->allowedFields;
 
-            $data['data'] = $model->select($fields)->find($id);;
+            $data['data'] = $this->_model->select($fields)->find($id);;
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
@@ -196,10 +232,8 @@ class Accounts extends BaseController
         $this->transBegin();
 
         try {
-            $model = new AccountModel();
-
-            if (! $model->delete($this->request->getVar('id'))) {
-                $data['errors']     = $model->errors();
+            if (! $this->_model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             }
@@ -234,12 +268,11 @@ class Accounts extends BaseController
         $this->transBegin();
 
         try {
-            $model      = new AccountModel();
             $bool       = true;
             $id         = $this->request->getVar('id');
             $username   = $this->request->getVar('username');
-            $rules      = $model->getValidationRules(['except' => ['password', 'employee_id']]);
-            $rule_msg   = $model->getValidationMessages();
+            $rules      = $this->_model->getValidationRules(['except' => ['password', 'employee_id']]);
+            $rule_msg   = $this->_model->getValidationMessages();
 
             $rules['password']  = 'permit_empty|min_length[8]|alpha_numeric';
 
@@ -265,13 +298,13 @@ class Accounts extends BaseController
                     }
 
                     // Turn protection off - to skip validation
-                    $model->protect(false);
-                    $model->cleanRules(true);
-                    $model->skipValidation(true);
+                    $this->_model->protect(false);
+                    $this->_model->cleanRules(true);
+                    $this->_model->skipValidation(true);
                     // Update account
-                    $model->update($id, $params);
+                    $this->_model->update($id, $params);
                     // Turn protection on
-                    $model->protect(true);
+                    $this->_model->protect(true);
                     // Send mail
                     $data = $this->_sendMail($data);
 
@@ -330,10 +363,9 @@ class Accounts extends BaseController
      */
     private function _checkAccount($params, $username = true)
     {
-        $model          = new AccountModel();
         $employee_id    = isset($params['employee_id'])
                             ? $params['employee_id'] : session('employee_id');
-        $checkAcct      = $model
+        $checkAcct      = $this->_model
                             ->where('employee_id', $employee_id)
                             ->where('access_level', $params['access_level']);
 
