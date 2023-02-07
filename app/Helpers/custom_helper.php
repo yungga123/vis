@@ -40,7 +40,7 @@ if (! function_exists('get_nav_menus'))
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('list-customer')),
+                'urls'      => (url_is('customervt-list')),
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -87,8 +87,8 @@ if (! function_exists('setup_modules'))
             'CUSTOMERS'             => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => 'Customers',
-                'url'       => url_to('employee.home'),
-                'class'     => (url_is('employees') ? 'active' : ''),
+                'url'       => site_url('customervt-list'),
+                'class'     => (url_is('customervt-list') ? 'active' : ''),
                 'icon'      => 'far fa-address-card',
             ],
             'CUSTOMERS_BRANCH'      => [
@@ -161,7 +161,7 @@ if (! function_exists('get_sidebar_menus'))
 
                             // Create the nav menu item
                             $menus[$module['menu']] = <<<EOF
-                                <li class="nav-item {$menu}">
+                                <li class="nav-item {$menu}" id="{$module['menu']}">
                                     <a href="#" class="nav-link {$active}">
                                         <i class="nav-icon {$head['icon']}"></i>
                                         <p>
