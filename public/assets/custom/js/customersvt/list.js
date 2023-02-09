@@ -182,7 +182,7 @@ function getCustomers() {
 	
 
 	/* Form for saving form_branch */
-    formSubmit($("#form_branchcustomervt"), "continue", function (res, self) {
+    formSubmit($("#" + form), "continue", function (res, self) {
         const message = res.errors ?? res.message;
 
         if (res.status !== STATUS.ERROR) {
