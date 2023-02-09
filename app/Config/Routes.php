@@ -168,7 +168,10 @@ $routes->group('customervt',['filter' => 'checkauth'],static function($routes){
     $routes->post('edit','CustomersVt::edit',['as' => 'customervt.edit']);
     $routes->post('delete','CustomersVt::delete',['as' => 'customervt.delete']);
     $routes->get('branch','CustomersVt::branchCustomervtList',['as' => 'customervt.branchlist']);
+    $routes->post('customerget','CustomersVt::getCustomers',['as' => 'customervtbranch.getcustomer']);
+    $routes->post('saveBranch','CustomersVt::saveBranch',['as' => 'customervtbranch.save']);
 });
+
 
 //INVENTORY
 $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes) {

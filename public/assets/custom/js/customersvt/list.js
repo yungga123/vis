@@ -1,4 +1,4 @@
-var table,modal,form,elems,editRoute,removeRoute;
+var table,modal,form,elems,editRoute,removeRoute,branch_elems;
 
 $(document).ready(function(){
     table = "customervt_table";
@@ -17,6 +17,8 @@ $(document).ready(function(){
         "source", 
         "notes"
 	];
+
+	
     modal = 'modal_customervt';
     let route = $("#"+table).data('url');
 
@@ -42,7 +44,7 @@ $(document).ready(function(){
 	});
 
 
-    /* Form for saving item */
+    /* Form for saving customervt */
     formSubmit($("#" + form), "continue", function (res, self) {
         const message = res.errors ?? res.message;
 
@@ -58,6 +60,7 @@ $(document).ready(function(){
 
         showAlertInForm(elems, message, res.status, prefix = "small");
     });
+
 });
 
 /* Get item details */
@@ -123,6 +126,79 @@ function branchCustomervtRetrieve(id) {
 	$('#modal-customer-branch').modal("show");
 
 	loadDataTable(table, route, METHOD.GET, options, destroy = true);
+}
+
+// Used in Select Customers from ADD BRANCH modal
+function getCustomers() {
+	
+    let modal = 'modal_branchcustomervt';
+	let getCustomerUrl = $('#get_customer_url').val();
+	let form = 'form_branchcustomervt';
+	let elems = [
+		"bcustomer_id",
+		"bbranch_name",
+		"baddress_province",
+		"baddress_city",
+		"baddress_brgy",
+		"baddress_sub",
+		"bcontact_number",
+		"bcontact_person",
+		"bemail_address",
+		"bnotes"
+	];
+
+	
+	$('#bcustomer_id').empty();
+
+	showLoading();
+	$.post(getCustomerUrl)
+		.then((res) => {
+			
+
+			if (res.status === STATUS.SUCCESS) {
+				$('#bcustomer_id').append($('<option>', {
+					value: "",
+					text: "---Please Select---"
+				}));
+				$.each(res.data, (key, value) => {
+
+					$('#bcustomer_id').append($('<option>', {
+						value: value.id,
+						text: value.customer_name
+					}));
+
+				});
+				$(`#${modal}`).modal('show');
+			} else {
+				$(`#${modal}`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status, prefix='small');
+			}
+			
+		})
+		.catch((err) => catchErrMsg(err));
+	
+	closeLoading();
+
+	
+
+	/* Form for saving form_branch */
+    formSubmit($("#form_branchcustomervt"), "continue", function (res, self) {
+        const message = res.errors ?? res.message;
+
+        if (res.status !== STATUS.ERROR) {
+            self[0].reset();
+            refreshDataTable();
+            notifMsgSwal(res.status, message, res.status);
+
+            if ($(`#${modal}`).hasClass("edit")) {
+                $(`#${modal}`).modal("hide");
+            }
+        }
+
+        showAlertInForm(elems, message, res.status, prefix = "small");
+    });
+
+	
 }
 
 
