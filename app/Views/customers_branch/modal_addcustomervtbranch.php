@@ -20,8 +20,7 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="bcustomer_id">Main Customer</label>
-                                        <select class="form-control" name="customer_id" id="bcustomer_id">
-                                        </select>
+                                        <input type="text" class="form-control" name="customer_id" id="bcustomer_id" readonly>
                                         <small id="small_bcustomer_id" class="form-text text-muted"></small>
                                     </div>
 

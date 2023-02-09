@@ -212,9 +212,11 @@ class CustomersVt extends BaseController
 
     public function getCustomers() {
         $model = new CustomersVtModel();
+        $id = $this->request->getVar('gcustomer_id');
         $data['status'] = STATUS_SUCCESS;
-        $data['data'] = $model->find();
+        $data['data'] = $model->find($id);
 
+        print_r($id); return;
         return $this->response->setJSON($data);
     }
 

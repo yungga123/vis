@@ -129,7 +129,7 @@ function branchCustomervtRetrieve(id) {
 }
 
 // Used in Select Customers from ADD BRANCH modal
-function getCustomers() {
+function getCustomers(id) {
 	
     let modal = 'modal_branchcustomervt';
 	let getCustomerUrl = $('#get_customer_url').val();
@@ -148,36 +148,12 @@ function getCustomers() {
 	];
 
 	
-	$('#bcustomer_id').empty();
 
 	showLoading();
-	$.post(getCustomerUrl)
-		.then((res) => {
-			
-
-			if (res.status === STATUS.SUCCESS) {
-				$('#bcustomer_id').append($('<option>', {
-					value: "",
-					text: "---Please Select---"
-				}));
-				$.each(res.data, (key, value) => {
-
-					$('#bcustomer_id').append($('<option>', {
-						value: value.id,
-						text: value.customer_name
-					}));
-
-				});
-				$(`#${modal}`).modal('show');
-			} else {
-				$(`#${modal}`).modal("hide");
-				notifMsgSwal(res.status, res.message, res.status, prefix='small');
-			}
-			
-		})
-		.catch((err) => catchErrMsg(err));
-	
+	$('#bcustomer_id').val(id);
 	closeLoading();
+
+	$(`#${modal}`).modal('show');
 
 	
 
@@ -187,7 +163,7 @@ function getCustomers() {
 
         if (res.status !== STATUS.ERROR) {
             self[0].reset();
-            refreshDataTable();
+            //refreshDataTable();
             notifMsgSwal(res.status, message, res.status);
 
             if ($(`#${modal}`).hasClass("edit")) {
