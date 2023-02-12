@@ -98,7 +98,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success float-right">Submit</button>
+                    <button type="submit" class="btn btn-success float-right" onclick="addBranch()">Submit</button>
                 </div>
             </form>
         </div>

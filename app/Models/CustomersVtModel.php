@@ -119,7 +119,7 @@ class CustomersVtModel extends Model
     public function button(){
         $closureFun = function($row){
             return <<<EOF
-                <button class="btn btn-warning btn-xs" onclick="edit({$row["id"]})" data-toggle="modal" data-target="#modal_customervt" title="Edit"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-warning btn-xs" onclick="edit({$row["id"]})" title="Edit"><i class="fas fa-edit"></i> Edit</button>
                 <button class="btn btn-danger btn-xs" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i> Delete</button>
                 
             EOF; 

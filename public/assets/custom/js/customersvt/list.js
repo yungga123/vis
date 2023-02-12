@@ -83,9 +83,10 @@ function edit(id) {
 					});
 				}
 			} else {
-				$(`#${modal}`).modal("hide");
+				//$(`#${modal}`).modal("hide");
 				notifMsgSwal(res.status, res.message, res.status, prefix='small');
 			}
+			$(`#${modal}`).modal('show');
 		})
 		.catch((err) => catchErrMsg(err));
 }
@@ -124,13 +125,40 @@ function branchCustomervtRetrieve(id) {
 	};
 	$('#modal-customer-branch').modal("show");
 	loadDataTable(table, route, METHOD.GET, options, destroy = true);
+	refreshDataTable($('#' + table));
 }
 
 // Used in Select Customers from ADD BRANCH modal
 function getCustomers(id) {
 	
     let modal = 'modal_branchcustomervt';
-	let getCustomerUrl = $('#get_customer_url').val();
+	let elems = [
+		"bcustomer_id",
+		"bbranch_name",
+		"baddress_province",
+		"baddress_city",
+		"baddress_brgy",
+		"baddress_sub",
+		"bcontact_number",
+		"bcontact_person",
+		"bemail_address",
+		"bnotes"
+	];
+	
+
+	showLoading();
+	$('#bcustomer_id').val(id);
+	closeLoading();
+
+	clearAlertInForm(elems, status, prefix = "small");
+	$(`#${modal}`).modal('show');
+
+	
+
+}
+
+function addBranch() {
+	//let getCustomerUrl = $('#get_customer_url').val();
 	let form = 'form_branchcustomervt';
 	let elems = [
 		"bcustomer_id",
@@ -145,15 +173,11 @@ function getCustomers(id) {
 		"bnotes"
 	];
 
-	
+	let modal = 'modal_branchcustomervt';
 
-	showLoading();
-	$('#bcustomer_id').val(id);
-	closeLoading();
-
-	$(`#${modal}`).modal('show');
-
-	
+	let table = 'customervtbranch_table';
+	$(`#${modal}`).removeClass("add").addClass("edit");
+	$(`#${modal} .modal-title`).text("Edit Customer");
 
 	/* Form for saving form_branch */
     formSubmit($("#" + form), "continue", function (res, self) {
@@ -161,7 +185,7 @@ function getCustomers(id) {
 
         if (res.status !== STATUS.ERROR) {
             self[0].reset();
-            //refreshDataTable();
+            refreshDataTable($("#" + table));
             notifMsgSwal(res.status, message, res.status);
 
             if ($(`#${modal}`).hasClass("edit")) {
@@ -171,9 +195,6 @@ function getCustomers(id) {
 
         showAlertInForm(elems, message, res.status, prefix = "small");
     });
-
-	
-
 }
 
 /* Get item details */
