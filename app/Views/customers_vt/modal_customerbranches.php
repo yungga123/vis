@@ -8,30 +8,35 @@
                 </button>
             </div>
             <div class="modal-body">
-                <table id="customervtbranch_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('customervt.branchlist'); ?>">
-                    <thead>
-                        <tr>
-                            <th>Action</th>
-                            <th>Branch Name</th>
-                            <th>Contact Person</th>
-                            <th>Contact Number</th>
-                            <th>Address</th>
-                            <th>Email Address</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Action</th>
-                            <th>Branch Name</th>
-                            <th>Contact Person</th>
-                            <th>Contact Number</th>
-                            <th>Address</th>
-                            <th>Email Address</th>
-                            <th>Notes</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="card">
+                    <div class="card-body">
+                        <table id="customervtbranch_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('customervt.branchlist'); ?>">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Branch Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Contact Number</th>
+                                    <th>Address</th>
+                                    <th>Email Address</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Branch Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Contact Number</th>
+                                    <th>Address</th>
+                                    <th>Email Address</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>

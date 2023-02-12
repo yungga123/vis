@@ -5,6 +5,8 @@
                 <?= csrf_field(); ?>
                 <input type="hidden" id="branch_id" name="id" readonly>
                 <input type="hidden" id="get_customer_url" name="get_customer_url" value="<?= url_to('customervtbranch.getcustomer') ?>" readonly>
+                <input type="hidden" id="editBranch_url" value="<?= url_to('customervtbranch.edit') ?>">
+                <input type="hidden" id="removeBranch_url" value="<?= url_to('customervtbranch.delete') ?>">
                 <div class="modal-header">
                     <h5 class="modal-title">Add Customer Branch</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

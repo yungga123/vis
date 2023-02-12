@@ -98,7 +98,7 @@ function remove(id) {
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					refreshDataTable();
+					refreshDataTable($('#' + table));
 					notifMsgSwal(res.status, message, res.status);
 				})
 				.catch((err) => catchErrMsg(err));
@@ -122,9 +122,7 @@ function branchCustomervtRetrieve(id) {
 			orderable: false,
 		},
 	};
-
 	$('#modal-customer-branch').modal("show");
-
 	loadDataTable(table, route, METHOD.GET, options, destroy = true);
 }
 
@@ -175,6 +173,78 @@ function getCustomers(id) {
     });
 
 	
+
 }
+
+/* Get item details */
+function editBranch(id) {
+
+	let modal = 'modal_branchcustomervt';
+	let editRoute = $('#editBranch_url').val();
+	let elems = [
+		"bcustomer_id",
+		"bbranch_name",
+		"baddress_province",
+		"baddress_city",
+		"baddress_brgy",
+		"baddress_sub",
+		"bcontact_number",
+		"bcontact_person",
+		"bemail_address",
+		"bnotes"
+	];
+	
+ 
+	$(`#${modal}`).removeClass("add").addClass("edit");
+	$(`#${modal} .modal-title`).text("Edit Customer Branch");
+	$("#branch_id").val(id);
+
+	clearAlertInForm(elems);
+	showLoading();
+
+	$.post(editRoute, { id: id })
+		.then((res) => {
+			closeLoading();
+
+			if (res.status === STATUS.SUCCESS) {
+				if (inObject(res, "data") && !isEmpty(res.data)) {
+					$.each(res.data, (key, value) => {
+						$(`input[name="${key}"]`).val(value);
+					});
+				}
+			} else {
+				$(`#${modal}`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status, prefix='small');
+			}
+
+			
+		})
+		.catch((err) => catchErrMsg(err));
+
+
+}
+
+function removeBranch(id) {
+	const swalMsg = "delete";
+	let removeRoute = $('#removeBranch_url').val();
+	let table = 'customervtbranch_table';
+	swalNotifConfirm(
+		function () {
+			$.post(removeRoute, { id: id })
+				.then((res) => {
+					const message = res.errors ?? res.message;
+
+					refreshDataTable($('#' + table));
+					notifMsgSwal(res.status, message, res.status);
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		TITLE.WARNING,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
+
 
 
