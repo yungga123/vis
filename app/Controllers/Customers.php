@@ -3,248 +3,320 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Libraries\DataTable;
 use App\Models\CustomerBranchModel;
-use App\Models\CustomerBranchViewModel;
 use App\Models\CustomersModel;
-use App\Models\CustomersViewModel;
-use CodeIgniter\API\ResponseTrait;
 use monken\TablesIgniter;
 
 class Customers extends BaseController
 {
-
-    use ResponseTrait;
-
     public function index()
     {
+        $data['title'] = 'Customers Forecast';
+        $data['page_title'] = 'Customers Forecast | List';
+        $data['can_add'] = true;
+        $data['with_dtTable'] = true;
+        $data['with_jszip'] = true;
+        $data['sweetalert2'] = true;
+        $data['custom_js'] = 'customers/list.js';
 
-        if (session('logged_in') == true) {
-
-            $data['title'] = 'Add Customer';
-            $data['page_title'] = 'Add Customer';
-            $data['uri'] = service('uri');
-
-            return view('customers/add_customer',$data);
-
-        } else {
-            return redirect()->to('login');
-        }
+        return view('customers/index',$data);
     }
 
-    public function add_customers()
+    public function list()
     {
-        $customersModel = new CustomersModel();
-
-        $validate = [
-            "success" => false,
-            "messages" => ''
-        ];
-
-        $data = [
-            "customer_name" => $this->request->getPost('customer_name'),
-            "contact_person" => $this->request->getPost('contact_person'),
-            "notes" => $this->request->getPost('notes'),
-            "contact_number" => $this->request->getPost('contact_number'),
-            "email_address" => $this->request->getPost('email_address'),
-            "source" => $this->request->getPost('source'),
-            "address_province" => $this->request->getPost('address_province'),
-            "address_city" => $this->request->getPost('address_city'),
-            "address_brgy" => $this->request->getPost('address_brgy'),
-            "address_sub" => $this->request->getPost('address_sub')
-        ];
-
-        if (!$customersModel->insert($data)) {
-            $validate['messages'] = $customersModel->errors();
-        } else {
-            $validate['success'] = true;
-        }
-
-        echo json_encode($validate);
-    }
-
-    public function customer_table()
-    {
-
-
-        if (session('logged_in') == true) {
-
-
-            $data['title'] = 'List of Customers';
-            $data['uri'] = service('uri');
-            echo view('templates/header', $data);
-            echo view('customers/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('customers/customer_table');
-            echo view('templates/footer');
-            echo view('customers/script');
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function getCustomers()
-    {
-
         $customersModel = new CustomersModel();
         $customersTable = new TablesIgniter();
 
         $customersTable->setTable($customersModel->noticeTable())
-            ->setDefaultOrder('id', 'DESC')
-            ->setSearch([
-                "id",
-                "customer_name",
-                "contact_person",
-                "address",
-                "contact_number",
-                "email_address",
-                "source",
-                "notes"
-            ])
-            ->setOrder([
-                "id",
-                null,
-                "customer_name",
-                "contact_person",
-                "address",
-                "contact_number",
-                "email_address",
-                "source",
-                "notes"
-            ])
-            ->setOutput([
-                "id",
-                $customersModel->buttonEdit(),
-                "customer_name",
-                "contact_person",
-                "address",
-                "email_address",
-                "contact_number",
-                "source",
-                "notes"
-            ]);
-
+                         ->setSearch([
+                            "id",
+                            "customer_name",
+                            "contact_person",
+                            "address",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes"
+                         ])
+                         ->setDefaultOrder('id','desc')
+                         ->setOrder([
+                            null,
+                            null,
+                            "id",
+                            "customer_name",
+                            "contact_person",
+                            "address",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes"
+                         ])
+                         ->setOutput([
+                            $customersModel->button(),
+                            $customersModel->buttonBranch(),
+                            "id",
+                            "customer_name",
+                            "contact_person",
+                            "address",
+                            "contact_number",
+                            "email_address",
+                            "source",
+                            "notes"
+                         ]);
+        
         return $customersTable->getDatatable();
+
     }
 
-
-    public function customers_list()
+    public function save() 
     {
-        if (session('logged_in') == false) {
-            return redirect()->to('login');
-        }
-
-        $customersViewModel = new CustomersViewModel();
-        $customerBranchViewModel = new CustomerBranchViewModel();
-        $request = service('request');
-        $searchData = $request->getGet();
-
-        $data['title'] = 'List of Customers';
-        $data['uri'] = service('uri');
-        $data['customerBranchViewModel'] = $customerBranchViewModel;
-
-        $data['page'] = isset($_GET['page']) ? $_GET['page'] : 1;
-        $data['perPage'] = 10;
-        $data['total'] = $customersViewModel->countAll();
-        $search = "";
-        if (isset($searchData) && isset($searchData['search'])) {
-            $search = $searchData['search'];
-        }
-
-        if ($search == '') {
-            $paginateData = $customersViewModel->orderBy('id', 'desc')->paginate($data['perPage']);
-        } else {
-            $paginateData = $customersViewModel->orLike('customer_name', $search)
-                ->orLike('contact_person', $search)
-                ->orLike('address', $search)
-                ->orLike('contact_number', $search)
-                ->orLike('email_address', $search)
-                ->orLike('source', $search)
-                ->orLike('notes', $search)
-                ->orderBy('id', 'desc')
-                ->paginate($data['perPage']);
-        }
-
-        $data['customersViewModel'] = $paginateData;
-        $data['pager'] = $customersViewModel->pager;
-        $data['search'] = $search;
-        $data['page_title'] = 'Customers Forecast List';
-
-        return view('customers/customer_table_branch',$data);
-    }
-
-    public function edit_customers($id)
-    {
-        if (session('logged_in') == true) {
-
-            $customersModel = new CustomersModel();
-
-            $data['title'] = 'Update a customer';
-            $data['page_title'] = 'Update Customer';
-            $data['customer_details'] = $customersModel->find($id);
-            $data['id'] = $id;
-            $data['uri'] = service('uri');
-
-            return view('customers/add_customer',$data);
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function edit_customers_validate()
-    {
-        $customersModel = new CustomersModel();
-
-        $validate = [
-            "success" => false,
-            "messages" => ''
-        ];
-
-        $id = $this->request->getPost('id');
         $data = [
-            "customer_name" => $this->request->getPost('customer_name'),
-            "contact_person" => $this->request->getPost('contact_person'),
-            "notes" => $this->request->getPost('notes'),
-            "contact_number" => $this->request->getPost('contact_number'),
-            "email_address" => $this->request->getPost('email_address'),
-            "source" => $this->request->getPost('source'),
-            "address_province" => $this->request->getPost('address_province'),
-            "address_city" => $this->request->getPost('address_city'),
-            "address_brgy" => $this->request->getPost('address_brgy'),
-            "address_sub" => $this->request->getPost('address_sub')
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Customer has been saved successfully!'
         ];
 
-        if (!$customersModel->update($id, $data)) {
-            $validate['messages'] = $customersModel->errors();
-        } else {
-            $validate['success'] = true;
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            $model = new CustomersModel();
+
+            if (! $model->save($this->request->getVar())) {
+                $data['errors']     = $model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+            }
+
+            if ($this->request->getVar('id')) {
+                $data['message']    = 'Customer has been updated successfully!';
+            }
+
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception$e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
         }
 
-        echo json_encode($validate);
+        return $this->response->setJSON($data);
     }
 
-    public function delete_customer($id)
+    /**
+     * For getting the item data using the id
+     *
+     * @return json
+     */
+    public function edit() 
     {
-        if (session('logged_in') == true) {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Customer has been retrieved!'
+        ];
 
-            $customersModel = new CustomersModel();
+        try {
+            $model  = new CustomersModel();
+            $id     = $this->request->getVar('id');
+            // $item   = $model->select($model->allowedFields)->find($id);
 
-            $data['title'] = 'Delete Customer';
-            $data['page_title'] = 'Delete Customer';
-            $data['uri'] = service('uri');
-            $data['href'] = site_url('customers-list');
-            $customersModel->delete($id);
-
-            echo view('templates/header', $data);
-            echo view('customers/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('templates/deletepage');
-            echo view('templates/footer');
-            echo view('customers/script');
-        } else {
-            return redirect()->to('login');
+            $data['data'] = $model->select($model->allowedFields)->find($id);;
+        } catch (\Exception$e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
         }
+
+        return $this->response->setJSON($data);
+    }
+
+    /**
+     * Saving process of items
+     *
+     * @return json
+     */
+    public function delete() 
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Customer has been deleted successfully!'
+        ];
+
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            $model = new CustomersModel();
+
+            if (! $model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+            }
+
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception$e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function branchCustomersList() {
+        $customersBranchModel = new CustomerBranchModel();
+        $customersBranchTable = new TablesIgniter();
+        $customers_id = $this->request->getGet('customers_id');
+
+        $customersBranchTable->setTable($customersBranchModel->noticeTable($customers_id))
+                         ->setSearch([
+                            "branch_name",
+                            "contact_person",
+                            "contact_number",
+                            "address",
+                            "email_address",
+                            "notes"
+                         ])
+                         ->setDefaultOrder('id','desc')
+                         ->setOrder([
+                            null,
+                            "branch_name",
+                            "contact_person",
+                            "contact_number",
+                            "address",
+                            "email_address",
+                            "notes"
+                         ])
+                         ->setOutput([
+                            $customersBranchModel->button(),
+                            "branch_name",
+                            "contact_person",
+                            "contact_number",
+                            "address",
+                            "email_address",
+                            "notes"
+                         ]);
+
+        return $customersBranchTable->getDatatable();
+    }
+
+    public function getCustomers() {
+        $model = new CustomersModel();
+        $id = $this->request->getVar('gcustomer_id');
+        $data['status'] = STATUS_SUCCESS;
+        $data['data'] = $model->find($id);
+
+        print_r($id); return;
+        return $this->response->setJSON($data);
+    }
+
+    public function saveBranch() 
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Customer Branch has been saved successfully!'
+        ];
+
+        // print_r($this->request->getVar()); return;
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            $model = new CustomerBranchModel();
+
+            if (! $model->save($this->request->getVar())) {
+                $data['errors']     = $model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+
+                $errors = $model->errors();
+                $arr = [];
+                if (! empty($errors)) {
+                    foreach ($errors as $key => $value) {
+                        $arr['b'.$key] = $value;
+                    }
+                }
+
+                $data['errors']  = $arr;
+            }
+
+            if ($this->request->getVar('id')) {
+                $data['message']    = 'Customer Branch has been updated successfully!';
+            }
+
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception$e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function editBranch() 
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Customer has been retrieved!'
+        ];
+
+        try {
+            $model  = new CustomerBranchModel();
+            $id     = $this->request->getVar('id');
+            // $item   = $model->select($model->allowedFields)->find($id);
+
+            $data['data'] = $model->select($model->allowedFields)->find($id);;
+        } catch (\Exception$e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function deleteBranch() 
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Customer Branch has been deleted successfully!'
+        ];
+
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            $model = new CustomerBranchModel();
+
+            if (! $model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+            }
+
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception$e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
+
+        return $this->response->setJSON($data);
     }
 }

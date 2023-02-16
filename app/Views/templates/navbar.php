@@ -11,7 +11,7 @@
         </li>
 
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="<?= site_url('customersvt_menu') ;?>" class="nav-link">Customers</a>
+            <a href="<?= url_to('customervt.home') ;?>" class="nav-link">Customers</a>
         </li>
     </ul>
 

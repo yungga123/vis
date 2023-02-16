@@ -4,10 +4,10 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class CustomersModel extends Model
+class CustomersResidentialModel extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table            = 'customers';
+    protected $table            = 'customers_residential';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -15,15 +15,16 @@ class CustomersModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        "customer_name", 
-        "contact_person", 
+        "forecast",
+        "customer_name",
+        "contact_person",
         "address_province",
-        "address_city", 
-        "address_brgy", 
-        "address_sub", 
-        "contact_number", 
-        "email_address", 
-        "source", 
+        "address_city",
+        "address_brgy",
+        "address_sub",
+        "contact_number",
+        "email_address",
+        "source",
         "notes"
     ];
 
@@ -111,7 +112,7 @@ class CustomersModel extends Model
 
     public function noticeTable() {
         $db      = \Config\Database::connect();
-        $builder = $db->table('customer_view');
+        $builder = $db->table('customers_residential_view');
         $builder->select("*");
         return $builder;
     }
@@ -122,16 +123,6 @@ class CustomersModel extends Model
                 <button class="btn btn-warning btn-xs" onclick="edit({$row["id"]})" title="Edit"><i class="fas fa-edit"></i> Edit</button>
                 <button class="btn btn-danger btn-xs" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i> Delete</button>
                 
-            EOF; 
-        };
-        return $closureFun;
-    }
-
-    public function buttonBranch(){
-        $closureFun = function($row){
-            return <<<EOF
-                <button class="btn btn-success btn-block btn-xs mt-1" title="Add Branch" onclick="getCustomers({$row['id']})">Add Branch</button>
-                <button class="btn btn-secondary btn-block btn-xs mt-1" onclick="branchCustomerRetrieve({$row['id']})" title="View Branch">View Branches</button>
             EOF; 
         };
         return $closureFun;

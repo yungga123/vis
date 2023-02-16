@@ -68,15 +68,40 @@ $routes->get('/admin-dashboard','AdminDashboard::index');
 //EXECUTIVE OVERVIEW
 $routes->get('/executive-overview','ExecutiveOverview::index');
 
-//CUSTOMERS
-$routes->get('/add-customer','Customers::index');
-$routes->get('/list-customer','Customers::customer_table');
-$routes->post('/add-customers','Customers::add_customers');
-$routes->get('/customer-list','Customers::getCustomers');
-$routes->get('/edit-customer/(:num)','Customers::edit_customers/$1');
-$routes->post('/edit-customer-val','Customers::edit_customers_validate');
-$routes->get('/delete-customer/(:num)','Customers::delete_customer/$1');
-$routes->get('/customers-list','Customers::customers_list');
+//CUSTOMERS old
+// $routes->get('/add-customer','Customers::index');
+// $routes->get('/list-customer','Customers::customer_table');
+// $routes->post('/add-customers','Customers::add_customers');
+// $routes->get('/customer-list','Customers::getCustomers');
+// $routes->get('/edit-customer/(:num)','Customers::edit_customers/$1');
+// $routes->post('/edit-customer-val','Customers::edit_customers_validate');
+// $routes->get('/delete-customer/(:num)','Customers::delete_customer/$1');
+// $routes->get('/customers-list','Customers::customers_list');
+
+// CUSTOMERS RECONSTRUCTED
+$routes->group('customers',['filter' => 'checkauth'],static function($routes){
+    $routes->get('/','Customers::index', ['as' => 'customers.home']);
+    $routes->post('list','Customers::list',['as' => 'customers.list']);
+    $routes->post('save','Customers::save',['as' => 'customers.save']);
+    $routes->post('edit','Customers::edit',['as' => 'customers.edit']);
+    $routes->post('delete','Customers::delete',['as' => 'customers.delete']);
+    $routes->get('branch','Customers::branchCustomersList',['as' => 'customers.branchlist']);
+    $routes->post('customerget','Customers::getCustomers',['as' => 'customersbranch.getcustomer']);
+    $routes->post('saveBranch','Customers::saveBranch',['as' => 'customersbranch.save']);
+    $routes->post('editBranch','Customers::editBranch',['as' => 'customersbranch.edit']);
+    $routes->post('deleteBranch','Customers::deleteBranch',['as' => 'customersbranch.delete']);
+});
+
+// CUSTOMERS RESIDENTIAL
+$routes->group('customersresidential',['filter' => 'checkauth'],static function($routes){
+    $routes->get('/','CustomersResidential::index', ['as' => 'customersresidential.home']);
+    $routes->post('list','CustomersResidential::list',['as' => 'customersresidential.list']);
+    $routes->post('save','CustomersResidential::save',['as' => 'customersresidential.save']);
+    $routes->post('edit','CustomersResidential::edit',['as' => 'customersresidential.edit']);
+    $routes->post('delete','CustomersResidential::delete',['as' => 'customersresidential.delete']);
+});
+
+
 
 //CUSTOMERS BRANCH
 $routes->get('/add-customer-branch','CustomerBranch::index');

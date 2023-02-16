@@ -11,8 +11,8 @@ class CustomersVt extends BaseController
 {
     public function index()
     {
-        $data['title'] = 'Customers';
-        $data['page_title'] = 'Customers | List';
+        $data['title'] = 'Customers (Commercial)';
+        $data['page_title'] = 'Customers | List (Commercial)';
         $data['can_add'] = true;
         $data['with_dtTable'] = true;
         $data['with_jszip'] = true;

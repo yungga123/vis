@@ -5,15 +5,9 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-body">
-            <a class="btn btn-success disabled" href="#" role="button">Commercial</a>
-            <a class="btn btn-success" href="<?= url_to('customersresidential.home') ?>" role="button">Residential</a>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <input type="hidden" id="edit_url" value="<?= url_to('customervt.edit'); ?>" disabled>
-            <input type="hidden" id="remove_url" value="<?= url_to('customervt.delete'); ?>" disabled>
-            <table id="customervt_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('customervt.list'); ?>">
+            <input type="hidden" id="edit_url" value="<?= url_to('customers.edit'); ?>" disabled>
+            <input type="hidden" id="remove_url" value="<?= url_to('customers.delete'); ?>" disabled>
+            <table id="customer_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('customers.list'); ?>">
                 <thead>
                     <tr>
                         <th>Action</th>
@@ -47,8 +41,11 @@
     </div>
 </div>
 
-<?= $this->include('customers_vt/modal_customerbranches') ;?>
-<?= $this->include('customers_vt/modal_addcustomervt') ;?>
-<?= $this->include('customers_branch/modal_addcustomervtbranch') ;?>
+<?= $this->include('customers/modal_addcustomer') ;?>
+
+<?= $this->include('customers/modal_customerbranches') ;?>
+
+<?= $this->include('customers/modal_addcustomerbranch') ;?>
+
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>
