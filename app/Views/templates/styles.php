@@ -5,9 +5,6 @@
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <?php endif;?>
 
-<!-- Theme style -->
-<link rel="stylesheet" href="<?=base_url('assets')?>/dist/css/adminlte.min.css">
-
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/toastr/toastr.min.css">
@@ -17,6 +14,14 @@
 <!-- Sweetalert2 -->
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/sweetalert2/sweetalert2.min.css">
 <?php endif;?>
+
+<?php if (isset($select2) && $select2): ?>
+<!-- Select2 -->
+<link rel="stylesheet" href="<?=base_url('assets')?>/plugins/select2/css/select2.min.css">
+<?php endif;?>
+
+<!-- Theme style -->
+<link rel="stylesheet" href="<?=base_url('assets')?>/dist/css/adminlte.min.css">
 
 <!-- Load custom css -->
 <link rel="stylesheet" href="<?=base_url('assets')?>/custom/css/style.css">

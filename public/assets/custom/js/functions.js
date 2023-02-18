@@ -426,6 +426,17 @@ function passwordShowHideInit(
  * Small functions
  */
 
+/* Initialize select2 */
+function select2Init(selector) {
+	selector = selector || ".select2";
+	$(`${selector}`).select2();
+}
+
+/* To set option value dynamically */
+function setOptionValue(selector, val) {
+	$(`${selector}`).val(val).change();
+}
+
 /* Check if value is empty - from stackoverflow */
 function isEmpty(value) {
 	return (

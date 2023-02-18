@@ -8,18 +8,11 @@ class Dashboard extends BaseController
 {
     public function index()
     {
+        $data['title']          = 'Dashboard';
+        $data['page_title']     = 'Dashboard';
+        $data['uri']            = service('uri');
+        $data['modules']        = $this->modules;
 
-        if (session('logged_in')==true)
-        {
-            $data['title'] = 'Dashboard';
-            $data['page_title'] = 'Dashboard';
-            $data['uri'] = service('uri');
-
-            return view('dashboard/dashboard',$data);
-        }
-        else
-        {
-            return redirect()->to('login');
-        }
+        return view('dashboard/dashboard', $data);
     }
 }

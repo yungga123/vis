@@ -1,23 +1,55 @@
 var table, modal, form, editRoute, removeRoute, elems;
 
 $(document).ready(function () {
-	table = "account_table";
-	modal = "account_modal";
-	form = "account_form";
+	table = "employee_table";
+	modal = "employee_modal";
+	form = "employee_form";
 	editRoute = $("#edit_url").val();
 	removeRoute = $("#remove_url").val();
-	elems = ["employee_id", "username", "password", "access_level"];
+	elems = [
+		"employee_id",
+		"firstname",
+		"middlename",
+		"lastname",
+		"gender",
+		"civil_status",
+		"date_of_birth",
+		"place_of_birth",
+		"postal_code",
+		"language",
+		"address_province",
+		"address_city",
+		"address_brgy",
+		"address_sub",
+		"contact_number",
+		"email_address",
+		"sss_no",
+		"tin_no",
+		"philhealth_no",
+		"pag_ibig_no",
+		"educational_attainment",
+		"course",
+		"emergency_name",
+		"emergency_contact_no",
+		"emergency_address",
+		"name_of_spouse",
+		"spouse_contact_no",
+		"no_of_children",
+		"spouse_address",
+		"position",
+		"employment_status",
+		"date_hired",
+		"date_resigned",
+	];
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
-		$(`#${modal} .modal-title`).text("Add New Account");
+		$(`#${modal} .modal-title`).text("Add New Employee");
 		$(`#${form}`)[0].reset();
-		$("#account_id").val("");
-		$("#employee_id").attr("disabled", false);
-		$("#employee_id1").val("").attr("name", "employee_id1");
-		$(".lbl_password").addClass("required");
-		$("#small_password").css("display", "none");
+		$("#id").val("");
+		$("#employee_id").attr("readonly", false);
+		$("#prev_employee_id").val("");
 
 		clearAlertInForm(elems);
 	});
@@ -26,12 +58,12 @@ $(document).ready(function () {
 	const route = $("#" + table).data("url");
 	loadDataTable(table, route, METHOD.POST, { order: [1, "asc"] });
 
-	/* Form for saving account */
+	/* Form for saving employee */
 	formSubmit($("#" + form), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
 
 		if (res.status !== STATUS.ERROR) {
-			$("#account_id").val("");
+			$("#id").val("");
 			self[0].reset();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
@@ -45,11 +77,11 @@ $(document).ready(function () {
 	});
 });
 
-/* Get account details */
+/* Get employee details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Account");
-	$("#account_id").val(id);
+	$(`#${modal} .modal-title`).text("Edit Employee");
+	$("#id").val(id);
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -60,16 +92,18 @@ function edit(id) {
 
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
-					$("#username").val(res.data.username);
-					$("#prev_username").val(res.data.username);
-					$("#employee_id").attr("disabled", true);
-					setOptionValue("#employee_id", res.data.employee_id);
-					setOptionValue("#access_level", res.data.access_level);
-					$("#employee_id1")
-						.val(res.data.employee_id)
-						.attr("name", "employee_id");
-					$(".lbl_password").removeClass("required");
-					$("#small_password").css("display", "block");
+					$.each(res.data, (key, value) => {
+						$(`input[name="${key}"]`).val(value);
+					});
+
+					$("#employee_id").attr("readonly", true);
+					$("#prev_employee_id").val(res.data.employee_id);
+					setOptionValue("#gender", res.data.gender);
+					setOptionValue("#civil_status", res.data.civil_status);
+					setOptionValue("#date_of_birth", res.data.date_of_birth);
+					setOptionValue("#employment_status", res.data.employment_status);
+					setOptionValue("#date_hired", res.data.date_hired);
+					setOptionValue("#date_resigned", res.data.date_resigned);
 				}
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -79,7 +113,7 @@ function edit(id) {
 		.catch((err) => catchErrMsg(err));
 }
 
-/* Delete account */
+/* Delete employee */
 function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(

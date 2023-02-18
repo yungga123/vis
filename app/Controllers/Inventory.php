@@ -37,10 +37,10 @@ class Inventory extends BaseController
      */
     public function list()
     {
-        $inventoryModel = new InventoryModel();
-        $inventoryTable = new TablesIgniter();
+        $model = new InventoryModel();
+        $table = new TablesIgniter();
 
-        $inventoryTable->setTable($inventoryModel->noticeTable())
+        $table->setTable($model->noticeTable())
             ->setSearch([
                 'item_name',
                 'item_brand',
@@ -72,7 +72,7 @@ class Inventory extends BaseController
                 'created_at',
             ])
             ->setOutput([
-                $inventoryModel->button(),
+                $model->buttons(),
                 'item_name',
                 'item_brand',
                 'item_type',
@@ -88,7 +88,7 @@ class Inventory extends BaseController
                 'created_at',
             ]);
 
-        return $inventoryTable->getDatatable();
+        return $table->getDatatable();
     }
 
     /**

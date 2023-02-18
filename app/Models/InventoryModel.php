@@ -103,7 +103,8 @@ class InventoryModel extends Model
     protected $afterDelete    = [];
     
      // For DataTables
-     public function noticeTable() {
+     public function noticeTable() 
+     {
         $builder = $this->db->table($this->table)
             ->select("
                 id,
@@ -126,8 +127,9 @@ class InventoryModel extends Model
         return $builder;
     }
 
-    public function button(){
-        $closureFun = function($row){
+    public function buttons()
+    {
+        $closureFun = function($row) {
             return <<<EOF
                 <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_inventory" title="Edit"><i class="fas fa-edit"></i> </button> 
                 <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 

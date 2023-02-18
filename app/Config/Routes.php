@@ -136,38 +136,9 @@ $routes->post('post-update-project-status','TaskLead::update_project_status_vali
 $routes->get('/add-project-existingcustomer','TaskLead::add_projectExistingCustomer');
 $routes->post('/add-project-existingcustomer','TaskLead::add_projectExistingCustomer');
 
-
-
-//EMPLOYEES
-$routes->get('/add-employee','Employees::index');
-$routes->get('/employee-menu','Employees::employee_menu');
-$routes->post('/employee-add','Employees::employee_add');
-$routes->get('/employees','Employees::getEmployees');
-$routes->get('/employee-list','Employees::employees_list');
-$routes->get('/edit-employee/(:num)','Employees::edit_employee/$1');
-$routes->post('/employee-edit','Employees::employee_edit');
-$routes->get('/delete-employee/(:num)','Employees::delete_employee/$1');
-
 //SALES MANAGER
 $routes->get('/manager-of-sales','SalesManager::index');
 $routes->get('/consolidated-sales-forecast','SalesManager::consolidated_forecast');
-
-//ACCOUNTS
-$routes->get('/add-account','Accounts::index', ['filter' => 'checkauth']);
-$routes->post('/post-add-account','Accounts::add_account_validate', ['filter' => 'checkauth']);
-$routes->get('/list-account','Accounts::list_account', ['filter' => 'checkauth']);
-$routes->post('/ajax-account','Accounts::get_accounts', ['filter' => 'checkauth']);
-$routes->get('edit-account/(:num)','Accounts::edit_account/$1', ['filter' => 'checkauth']);
-$routes->post('/post-edit-account','Accounts::edit_account_validate', ['filter' => 'checkauth']);
-$routes->get('delete-account/(:num)','Accounts::delete_account/$1', ['filter' => 'checkauth']);
-
-// ACCOUNT PROFILE
-# Filter 'checkauth' will check whether account is logged in or not for this route group 'account'
-# and no need to individual add the filter in every routes
-$routes->group('account', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('profile','AccountProfile::index', ['as' => 'account.profile']);
-    $routes->post('change-password','AccountProfile::change_password', ['as' => 'account.change_pass']);
-});
 
 
 //CUSTOMERS VT old
@@ -199,6 +170,27 @@ $routes->group('customervt',['filter' => 'checkauth'],static function($routes){
     $routes->post('deleteBranch','CustomersVt::deleteBranch',['as' => 'customervtbranch.delete']);
 });
 
+//EMPLOYEES
+$routes->get('employees','Employees::index', ['filter' => 'checkauth', 'as' => 'employee.home']);
+$routes->group('employee', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->post('list', 'Employees::list', ['as' => 'employee.list']);
+    $routes->post('save', 'Employees::save', ['as' => 'employee.save']);
+    $routes->post('edit', 'Employees::edit', ['as' => 'employee.edit']);
+    $routes->post('delete', 'Employees::delete', ['as' => 'employee.delete']);
+});
+
+//ACCOUNTS
+$routes->get('accounts','Accounts::index', ['filter' => 'checkauth', 'as' => 'account.home']);
+$routes->group('account', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->post('list', 'Accounts::list', ['as' => 'account.list']);
+    $routes->post('save', 'Accounts::save', ['as' => 'account.save']);
+    $routes->post('edit', 'Accounts::edit', ['as' => 'account.edit']);
+    $routes->post('delete', 'Accounts::delete', ['as' => 'account.delete']);
+
+    // Account Profile
+    $routes->get('profile','AccountProfile::index', ['as' => 'account.profile']);
+    $routes->post('change-password','AccountProfile::change_password', ['as' => 'account.change_pass']);
+});
 
 //INVENTORY
 $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes) {
@@ -222,6 +214,16 @@ $routes->group('settings/mail', ['filter' => 'checkauth'], static function ($rou
     $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail.reset']);
 });
 
+/* Permission */
+$routes->group('settings/permissions', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Settings\Permission::index', ['as' => 'permission.home']);
+    $routes->post('list', 'Settings\Permission::list', ['as' => 'permission.list']);
+    $routes->post('save', 'Settings\Permission::save', ['as' => 'permission.save']);
+    $routes->post('edit', 'Settings\Permission::edit', ['as' => 'permission.edit']);
+    $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
+});
+
+$routes->get('access-denied','Settings\Permission::denied', ['as' => 'access.denied']);
 
 /*
  * --------------------------------------------------------------------

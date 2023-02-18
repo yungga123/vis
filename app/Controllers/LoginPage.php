@@ -8,9 +8,6 @@ use App\Models\EmployeesModel;
 
 class LoginPage extends BaseController
 {
-
-    protected $helpers = ['form'];
-
     public function index()
     {
         $data['title']          = "Welcome to M.I.S.";

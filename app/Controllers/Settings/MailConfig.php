@@ -13,21 +13,58 @@ use PHPMailer\PHPMailer\SMTP;
 class MailConfig extends BaseController
 {
     /**
-     * For displaying the view
+     * Use to initialize PermissionModel class
+     * @var object
+     */
+    private $_model;
+
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->_model       = new MailConfigModel(); // Current model
+        $this->_module_code = MODULE_CODES['mail_config']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+    }
+
+    /**
+     * Display the account view
      *
      * @return view
      */
     public function index()
     {
-        $model = new MailConfigModel();
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
 
         $data['title']          = 'Settings | Mail Configuration';
         $data['page_title']     = 'Settings | Mail Configuration';
         $data['custom_js']      = 'settings/mail_config.js';
         $data['sweetalert2']    = true;
-        $data['mail']           = $model->getMailConfig();
+        $data['mail']           = $this->_model->getMailConfig();
 
-        return view('settings/send_mail', $data);
+        return view('settings/mail_config/send_mail', $data);
     }
 
     /**
@@ -43,18 +80,16 @@ class MailConfig extends BaseController
         $this->transBegin();
 
         try {
-            $model = new MailConfigModel();
-
             $data['status'] = STATUS_SUCCESS;
             $data['message'] = "Changes have been saved!";
 
-            if (!$model->save($this->request->getVar())) {
-                $data['errors'] = $model->errors();
+            if (!$this->_model->save($this->request->getVar())) {
+                $data['errors'] = $this->_model->errors();
                 $data['status'] = STATUS_ERROR;
                 $data['message'] = "Validation error!";
             } else {
                 log_message(
-                    'info',
+                    'error',
                     'Mail config data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.',
                     [
                         'username' => session()->get('username'),
@@ -99,8 +134,7 @@ class MailConfig extends BaseController
             // $this->checkIfStillHasSessionToken();
 
             //Get mail config details
-            $model = new MailConfigModel();
-            $mail_config = $model->getMailConfig();
+            $mail_config = $this->_model->getMailConfig();
 
             if (empty($mail_config)) {
                 exit('There is no mail config data.');
@@ -200,8 +234,7 @@ class MailConfig extends BaseController
     {
         $this->reset();
 
-        $model = new MailConfigModel();
-        $mail_config = $model->getMailConfig();
+        $mail_config = $this->_model->getMailConfig();
         $session = session();
         $params = [
             'clientId' => $mail_config['oauth_client_id'],
@@ -266,7 +299,7 @@ class MailConfig extends BaseController
             // var_dump('token', $token); echo '<br>';
             // var_dump('getRefreshToken', $token->getRefreshToken());
 
-            $model->saveRefreshToken($token->getRefreshToken());
+            $this->_model->saveRefreshToken($token->getRefreshToken());
 
             return $this->_status(STATUS_SUCCESS, $view);
         }
