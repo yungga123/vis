@@ -36,7 +36,7 @@ $(document).ready(function () {
 				Swal.close();
 				swalNotifRedirect(
 					TITLE.INFO,
-					"You session has expired! You will be redirected to login page in <b></b> second/s.",
+					"Your session has expired! You will be redirected to login page in <b></b> second/s.",
 					STATUS.WARNING,
 					"reload",
 					6000
