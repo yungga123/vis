@@ -91,13 +91,6 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('customers') ? 'active' : ''),
                 'icon'      => 'far fa-address-card',
             ],
-            'CUSTOMERS_BRANCH'      => [
-                'menu'      => '', // Leave empty if none
-                'name'      => 'Customers Branch',
-                'url'       => url_to('employee.home'),
-                'class'     => (url_is('employees') ? 'active' : ''),
-                'icon'      => 'far fa-address-book',
-            ],
             'TASK_LEAD'             => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => 'Task/Lead Monitoring',
