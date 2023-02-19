@@ -5,8 +5,8 @@
         <div class="card-body">
             <input type="hidden" id="edit_url" value="<?= url_to('inventory.edit'); ?>" disabled>
             <input type="hidden" id="remove_url" value="<?= url_to('inventory.delete'); ?>" disabled>
-            <table id="inventory_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('inventory.list'); ?>">
-                <thead>
+            <table id="inventory_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('inventory.list'); ?>">
+                <thead class="nowrap">
                     <tr> 
                         <th>Action</th>
                         <th>Item Name</th>
@@ -24,28 +24,7 @@
                         <th>Created At</th>
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>Action</th>
-                        <th>Item Name</th>
-                        <th>Brand</th>
-                        <th>Item Type</th>
-                        <th>Dealer's Price</th>
-                        <th>Retail Price</th>
-                        <th>Project Price</th>
-                        <th>Quantity</th>
-                        <th>Unit</th>
-                        <th>Date of Purchase</th>
-                        <th>Supplier</th>
-                        <th>Location</th>
-                        <th>Encoder</th>
-                        <th>Created At</th>
-                    </tr>
-                </tfoot>
             </table>
-        </div>
-        <div class="card-footer">
-            <!-- <a href="<?=site_url('employee-menu');?>" class="btn btn-secondary float-right"><i class="fas fa-undo"></i> RETURN TO MENU</a> -->
         </div>
     </div>
 </div>

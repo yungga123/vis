@@ -10,3 +10,17 @@ form.with-label-indicator .form-group label.required::after {
 	content: " (Required)";
 	color: red;
 }
+
+.table thead {
+	margin-top: 20px !important;
+	background-color: #17a2b8 !important;
+	color: #fff !important;
+}
+
+.dataTables_scrollHead {
+	margin-top: 5px;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+	margin-top: 10px !important;
+}

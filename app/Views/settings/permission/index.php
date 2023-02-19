@@ -7,8 +7,8 @@
                 <div class="card-body">                    
                     <input type="hidden" id="edit_url" value="<?= url_to('permission.edit'); ?>" disabled>
                     <input type="hidden" id="remove_url" value="<?= url_to('permission.delete'); ?>" disabled>
-                    <table id="permission_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('permission.list'); ?>">
-                        <thead>
+                    <table id="permission_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('permission.list'); ?>">
+                        <thead class="nowrap">
                             <tr>
                                 <th>Role</th>
                                 <th>Module</th>
@@ -20,18 +20,6 @@
                                 <th>Updated At</th> -->
                             </tr>
                         </thead>
-                        <!-- <tfoot>
-                            <tr>
-                                <th>Action</th>
-                                <th>Role</th>
-                                <th>Module</th>
-                                <th>Permissions</th>
-                                <th>Added By</th>
-                                <th>Updated By</th>
-                                <th>Created At</th>
-                                <th>Updated At</th>
-                            </tr>
-                        </tfoot> -->
                     </table>
                 </div>
             </div>

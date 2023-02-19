@@ -13,8 +13,8 @@
         <div class="card-body">
             <input type="hidden" id="edit_url" value="<?= url_to('customervt.edit'); ?>" disabled>
             <input type="hidden" id="remove_url" value="<?= url_to('customervt.delete'); ?>" disabled>
-            <table id="customervt_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('customervt.list'); ?>">
-                <thead>
+            <table id="customervt_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('customervt.list'); ?>">
+                <thead class="nowrap">
                     <tr>
                         <th>Action</th>
                         <th>Branches</th>
@@ -28,20 +28,6 @@
                         <th>Notes</th>
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>Action</th>
-                        <th>Branches</th>
-                        <th>ID</th>
-                        <th>Customer Name</th>
-                        <th>Contact Person</th>
-                        <th>Address</th>
-                        <th>Contact Number</th>
-                        <th>Email Address</th>
-                        <th>Source</th>
-                        <th>Notes</th>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>

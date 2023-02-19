@@ -7,8 +7,8 @@
                 <div class="card-body">
                     <input type="hidden" id="edit_url" value="<?= url_to('account.edit'); ?>" disabled>
                     <input type="hidden" id="remove_url" value="<?= url_to('account.delete'); ?>" disabled>
-                    <table id="account_table" class="table table-striped table-hover" data-url="<?= url_to('account.list'); ?>">
-                        <thead>
+                    <table id="account_table" class="table table-striped table-hover nowrap" data-url="<?= url_to('account.list'); ?>">
+                        <thead class="nowrap">
                             <tr>
                                 <th>Employee ID</th>
                                 <th>Employee Name</th>

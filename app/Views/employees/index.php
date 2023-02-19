@@ -7,8 +7,8 @@
 				<div class="card-body">
 					<input type="hidden" id="edit_url" value="<?= url_to('employee.edit'); ?>" disabled>
 					<input type="hidden" id="remove_url" value="<?= url_to('employee.delete'); ?>" disabled>
-					<table id="employee_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('employee.list'); ?>">
-						<thead>
+					<table id="employee_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('employee.list'); ?>">
+						<thead class="nowrap">
 							<tr>
 								<th>Action</th>
 								<th>Employee ID</th>
@@ -32,30 +32,6 @@
 								<th>Course</th>
 							</tr>
 						</thead>
-						<tfoot>
-							<tr>
-								<th>Action</th>
-								<th>Employee ID</th>
-								<th>Employee Name</th>
-								<th>Address</th>
-								<th>Gender</th>
-								<th>Civil Status</th>
-								<th>Birthdate</th>
-								<th>Birthplace</th>
-								<th>Position</th>
-								<th>Employment Status</th>
-								<th>Date Hired</th>
-								<th>Language</th>
-								<th>Contact Number</th>
-								<th>Email Address</th>
-								<th>SSS Number</th>
-								<th>TIN Number</th>
-								<th>PhilHealth Number</th>
-								<th>PAGIBIG Number</th>
-								<th>Educational Attainment</th>
-								<th>Course</th>
-							</tr>
-						</tfoot>
 					</table>
 				</div>
 			</div>
