@@ -24,7 +24,13 @@ $(document).ready(function () {
 
 	/* Load dataTable */
 	const route = $("#" + table).data("url");
-	loadDataTable(table, route, METHOD.POST, { order: [1, "asc"] });
+	const options = {
+		columnDefs: {
+			targets: -1,
+			orderable: false,
+		},
+	};
+	loadDataTable(table, route, METHOD.POST, options);
 
 	/* Form for saving account */
 	formSubmit($("#" + form), "continue", function (res, self) {

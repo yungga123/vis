@@ -95,21 +95,22 @@ class Accounts extends BaseController
                 // 'password',
                 'access_level',
             ])
+            ->setDefaultOrder('employee_name','asc')
             ->setOrder([
-                null,
                 'employee_id',
                 'employee_name',
                 'username',
                 // 'password',
                 'access_level',
+                null,
             ])
             ->setOutput([
-                $this->_model->buttons($this->_permissions),
                 'employee_id',
                 'employee_name',
                 'username',
                 // 'password',
                 $this->_model->dtAccessLevel(),
+                $this->_model->buttons($this->_permissions),
             ]);
 
         return $table->getDatatable();

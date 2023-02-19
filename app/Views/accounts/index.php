@@ -7,25 +7,16 @@
                 <div class="card-body">
                     <input type="hidden" id="edit_url" value="<?= url_to('account.edit'); ?>" disabled>
                     <input type="hidden" id="remove_url" value="<?= url_to('account.delete'); ?>" disabled>
-                    <table id="account_table" class="table table-bordered table-hover" data-url="<?= url_to('account.list'); ?>">
+                    <table id="account_table" class="table table-striped table-hover" data-url="<?= url_to('account.list'); ?>">
                         <thead>
                             <tr>
-                                <th>Action</th>
                                 <th>Employee ID</th>
                                 <th>Employee Name</th>
                                 <th>Username</th>
                                 <th>Access Level</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tfoot>
-                            <tr>
-                                <th>Action</th>
-                                <th>Employee ID</th>
-                                <th>Employee Name</th>
-                                <th>Username</th>
-                                <th>Access Level</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
