@@ -222,7 +222,6 @@ $routes->group('settings/permissions', ['filter' => 'checkauth'], static functio
     $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
 });
 
-$routes->get('access-denied','Settings\Permission::denied', ['as' => 'access.denied']);
 /* Permission */
 $routes->group('settings/permissions', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'Settings\Permission::index', ['as' => 'permission.home']);
@@ -232,6 +231,7 @@ $routes->group('settings/permissions', ['filter' => 'checkauth'], static functio
     $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
 });
 
+/* Access denied */
 $routes->get('access-denied','Settings\Permission::denied', ['as' => 'access.denied']);
 
 /*
