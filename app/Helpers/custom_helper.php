@@ -40,7 +40,7 @@ if (! function_exists('get_nav_menus'))
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customervt-list')),
+                'urls'      => (url_is('customers')),
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -87,8 +87,8 @@ if (! function_exists('setup_modules'))
             'CUSTOMERS'             => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => 'Customers',
-                'url'       => site_url('customervt-list'),
-                'class'     => (url_is('customervt-list') ? 'active' : ''),
+                'url'       => url_to('customers.home'),
+                'class'     => (url_is('customers') ? 'active' : ''),
                 'icon'      => 'far fa-address-card',
             ],
             'CUSTOMERS_BRANCH'      => [
