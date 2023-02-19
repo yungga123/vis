@@ -29,6 +29,22 @@ $(document).ready(function () {
 		},
 	});
 
+	$(document).ajaxComplete(function (event, request, settings) {
+		if (request.responseText === "already_logged_out") {
+			setTimeout(() => {
+				$(".modal").modal("hide");
+				Swal.close();
+				swalNotifRedirect(
+					TITLE.INFO,
+					"You session has expired! You will be redirected to login page in <b></b> second/s.",
+					STATUS.WARNING,
+					"reload",
+					6000
+				);
+			}, 100);
+		}
+	});
+
 	// Initialize toastr
 	if (isToastrLoaded()) {
 		toastr.options = {
@@ -220,6 +236,7 @@ function swalNotifRedirect(title, message, status, url, timer) {
 	}).then((result) => {
 		if (result.dismiss === Swal.DismissReason.timer) {
 			if (url === "close") window.close();
+			else if (url === "reload") window.location.reload();
 			else window.location = url;
 		}
 	});
@@ -345,7 +362,13 @@ function formSubmit(
  * @param {string} type     - type of request method (GET, POST)
  * @param {object} options  - other options for the dataTable
  */
-function loadDataTable(table, route, type = METHOD.GET, options = {}, destroy = false) {
+function loadDataTable(
+	table,
+	route,
+	type = METHOD.GET,
+	options = {},
+	destroy = false
+) {
 	let columnDefs = [
 			inObject(options, "columnDefs")
 				? options.columnDefs
@@ -357,7 +380,6 @@ function loadDataTable(table, route, type = METHOD.GET, options = {}, destroy = 
 		order = inObject(options, "order") ? [options.order] : [];
 
 	columnDefs.push();
-
 
 	dtTable = $("#" + table).DataTable({
 		destroy: destroy,
