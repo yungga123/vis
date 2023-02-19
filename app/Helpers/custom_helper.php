@@ -263,7 +263,7 @@ if (! function_exists('get_modules'))
 	{
 		$modules = MODULES;
 
-        if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
+        // if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
 
 		return $param ? $modules[$param] : $modules;
 	}

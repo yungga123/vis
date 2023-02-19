@@ -62,6 +62,8 @@ class MailConfig extends BaseController
         $data['page_title']     = 'Settings | Mail Configuration';
         $data['custom_js']      = 'settings/mail_config.js';
         $data['sweetalert2']    = true;
+        $data['exclude_toastr'] = true;
+        $data['can_save']       = is_admin() ? true : $this->_can_add;
         $data['mail']           = $this->_model->getMailConfig();
 
         return view('settings/mail_config/send_mail', $data);
