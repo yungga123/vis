@@ -222,15 +222,6 @@ $routes->group('settings/permissions', ['filter' => 'checkauth'], static functio
     $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
 });
 
-/* Permission */
-$routes->group('settings/permissions', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Settings\Permission::index', ['as' => 'permission.home']);
-    $routes->post('list', 'Settings\Permission::list', ['as' => 'permission.list']);
-    $routes->post('save', 'Settings\Permission::save', ['as' => 'permission.save']);
-    $routes->post('edit', 'Settings\Permission::edit', ['as' => 'permission.edit']);
-    $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
-});
-
 /* Access denied */
 $routes->get('access-denied','Settings\Permission::denied', ['as' => 'access.denied']);
 
