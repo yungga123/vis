@@ -146,6 +146,7 @@ if (! function_exists('get_sidebar_menus'))
         $user_modules   = get_user_modules();
 
 		if (! empty($modules)) {
+            ksort($modules);
             foreach ($modules as $key => $module) {
                 if (in_array($key, $user_modules) && !empty($module)) {
 
