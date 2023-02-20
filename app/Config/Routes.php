@@ -38,8 +38,8 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/login', 'LoginPage::index', ['filter' => 'notlogged']);
-$routes->get('/login_validate', 'LoginPage::sign_in', ['filter' => 'notlogged']);
-$routes->post('/login_validate', 'LoginPage::sign_in', ['filter' => 'notlogged']);
+// $routes->get('/login_validate', 'LoginPage::sign_in', ['filter' => 'notlogged']);
+// $routes->post('/login_validate', 'LoginPage::sign_in', ['filter' => 'notlogged']);
 
 // Authenticate login crendentials with filter 'notlogged'
 // If there's currently logged user, it will redirect to the previous 
@@ -60,23 +60,13 @@ $routes->get('/dashboard','Dashboard::index', ['filter' => 'checkauth']);
 $routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 
 //SALES DASHBOARD
-$routes->get('/sales-dashboard','SalesDashboard::index');
+// $routes->get('/sales-dashboard','SalesDashboard::index');
 
 //ADMIN DASHBOARD
-$routes->get('/admin-dashboard','AdminDashboard::index');
+// $routes->get('/admin-dashboard','AdminDashboard::index');
 
 //EXECUTIVE OVERVIEW
-$routes->get('/executive-overview','ExecutiveOverview::index');
-
-//CUSTOMERS old
-// $routes->get('/add-customer','Customers::index');
-// $routes->get('/list-customer','Customers::customer_table');
-// $routes->post('/add-customers','Customers::add_customers');
-// $routes->get('/customer-list','Customers::getCustomers');
-// $routes->get('/edit-customer/(:num)','Customers::edit_customers/$1');
-// $routes->post('/edit-customer-val','Customers::edit_customers_validate');
-// $routes->get('/delete-customer/(:num)','Customers::delete_customer/$1');
-// $routes->get('/customers-list','Customers::customers_list');
+// $routes->get('/executive-overview','ExecutiveOverview::index');
 
 // CUSTOMERS RECONSTRUCTED - FORECAST
 $routes->group('customers',['filter' => 'checkauth'],static function($routes){
@@ -92,7 +82,19 @@ $routes->group('customers',['filter' => 'checkauth'],static function($routes){
     $routes->post('deleteBranch','Customers::deleteBranch',['as' => 'customersbranch.delete']);
 });
 
-
+// CUSTOMERS VT RECONSTRUCTED
+$routes->group('customers/commercial',['filter' => 'checkauth'],static function($routes){
+    $routes->get('/','CustomersVt::index', ['as' => 'customervt.home']);
+    $routes->post('list','CustomersVt::list',['as' => 'customervt.list']);
+    $routes->post('save','CustomersVt::save',['as' => 'customervt.save']);
+    $routes->post('edit','CustomersVt::edit',['as' => 'customervt.edit']);
+    $routes->post('delete','CustomersVt::delete',['as' => 'customervt.delete']);
+    $routes->get('branch','CustomersVt::branchCustomervtList',['as' => 'customervt.branchlist']);
+    $routes->post('customerget','CustomersVt::getCustomers',['as' => 'customervtbranch.getcustomer']);
+    $routes->post('saveBranch','CustomersVt::saveBranch',['as' => 'customervtbranch.save']);
+    $routes->post('editBranch','CustomersVt::editBranch',['as' => 'customervtbranch.edit']);
+    $routes->post('deleteBranch','CustomersVt::deleteBranch',['as' => 'customervtbranch.delete']);
+});
 
 // CUSTOMERS RESIDENTIAL
 $routes->group('customers/residential',['filter' => 'checkauth'],static function($routes){
@@ -102,15 +104,6 @@ $routes->group('customers/residential',['filter' => 'checkauth'],static function
     $routes->post('edit','CustomersResidential::edit',['as' => 'customersresidential.edit']);
     $routes->post('delete','CustomersResidential::delete',['as' => 'customersresidential.delete']);
 });
-
-
-
-//CUSTOMERS BRANCH
-$routes->get('/add-customer-branch','CustomerBranch::index');
-$routes->post('/add-customerbranch','CustomerBranch::add_customer_validate');
-$routes->get('/edit-customerbranch/(:num)','CustomerBranch::edit_customer_branch/$1');
-$routes->post('/edit-customerbranch/(:num)','CustomerBranch::edit_customer_branch/$1');
-$routes->get('/delete-customer-branch/(:num)','CustomerBranch::delete_customer_branch/$1');
 
 //TaskLead
 $routes->get('/tasklead','TaskLead::index');
@@ -142,36 +135,6 @@ $routes->post('/add-project-existingcustomer','TaskLead::add_projectExistingCust
 $routes->get('/manager-of-sales','SalesManager::index');
 $routes->get('/consolidated-sales-forecast','SalesManager::consolidated_forecast');
 
-
-//CUSTOMERS VT old
-// $routes->get('/customersvt_menu','CustomersVt::index');
-// $routes->get('/add-customervt','CustomersVt::add_customervt');
-// $routes->post('/add-customervt','CustomersVt::add_customervt');
-// $routes->get('/customervt-list','CustomersVt::customervt_list');
-// $routes->get('/add_customervtbranch','CustomersVt::add_customervtbranch');
-// $routes->post('/add_customervtbranch','CustomersVt::add_customervtbranch');
-// $routes->get('/edit-customervtbranch/(:num)','CustomersVt::edit_customervtbranch/$1');
-// $routes->post('/edit-customervtbranch/(:num)','CustomersVt::edit_customervtbranch/$1');
-// $routes->get('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
-// $routes->post('/edit-customervt/(:num)','CustomersVt::edit_customervt/$1');
-// $routes->get('/delete-customervt/(:num)','CustomersVt::delete_customervt/$1');
-// $routes->get('/delete-customervtbranch/(:num)','CustomersVt::delete_customervt_branch/$1');
-
-
-// CUSTOMERS VT RECONSTRUCTED
-$routes->group('customervt',['filter' => 'checkauth'],static function($routes){
-    $routes->get('/','CustomersVt::index', ['as' => 'customervt.home']);
-    $routes->post('list','CustomersVt::list',['as' => 'customervt.list']);
-    $routes->post('save','CustomersVt::save',['as' => 'customervt.save']);
-    $routes->post('edit','CustomersVt::edit',['as' => 'customervt.edit']);
-    $routes->post('delete','CustomersVt::delete',['as' => 'customervt.delete']);
-    $routes->get('branch','CustomersVt::branchCustomervtList',['as' => 'customervt.branchlist']);
-    $routes->post('customerget','CustomersVt::getCustomers',['as' => 'customervtbranch.getcustomer']);
-    $routes->post('saveBranch','CustomersVt::saveBranch',['as' => 'customervtbranch.save']);
-    $routes->post('editBranch','CustomersVt::editBranch',['as' => 'customervtbranch.edit']);
-    $routes->post('deleteBranch','CustomersVt::deleteBranch',['as' => 'customervtbranch.delete']);
-});
-
 //EMPLOYEES
 $routes->get('employees','Employees::index', ['filter' => 'checkauth', 'as' => 'employee.home']);
 $routes->group('employee', ['filter' => 'checkauth'], static function ($routes) {
@@ -202,7 +165,6 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('edit', 'Inventory::edit', ['as' => 'inventory.edit']);
     $routes->post('delete', 'Inventory::delete', ['as' => 'inventory.delete']);
 });
-
 
 // SETTINGS
 /* Mail Config */

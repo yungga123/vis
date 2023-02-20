@@ -12,7 +12,7 @@ class Customers extends BaseController
     public function index()
     {
         $data['title'] = 'Customers Forecast';
-        $data['page_title'] = 'Customers Forecast | List';
+        $data['page_title'] = 'Customers | List (Forecast)';
         $data['can_add'] = true;
         $data['with_dtTable'] = true;
         $data['with_jszip'] = true;

@@ -40,7 +40,7 @@ if (! function_exists('get_nav_menus'))
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customervt-list')),
+                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential')),
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -86,17 +86,24 @@ if (! function_exists('setup_modules'))
             ],
             'CUSTOMERS'             => [
                 'menu'      => 'SALES', // Leave empty if none
-                'name'      => 'Customers',
-                'url'       => site_url('customervt-list'),
-                'class'     => (url_is('customervt-list') ? 'active' : ''),
-                'icon'      => 'far fa-address-card',
-            ],
-            'CUSTOMERS_BRANCH'      => [
-                'menu'      => '', // Leave empty if none
-                'name'      => 'Customers Branch',
-                'url'       => url_to('employee.home'),
-                'class'     => (url_is('employees') ? 'active' : ''),
+                'name'      => 'Customers (Forecast)',
+                'url'       => url_to('customers.home'),
+                'class'     => (url_is('customers') ? 'active' : ''),
                 'icon'      => 'far fa-address-book',
+            ],
+            'CUSTOMERS_COMMERCIAL'      => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => 'Customers (Commercial)',
+                'url'       => url_to('customervt.home'),
+                'class'     => (url_is('customers/commercial') ? 'active' : ''),
+                'icon'      => 'fas fa-building',
+            ],
+            'CUSTOMERS_RESIDENTIAL'      => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => 'Customers (Residential)',
+                'url'       => url_to('customersresidential.home'),
+                'class'     => (url_is('customers/residential') ? 'active' : ''),
+                'icon'      => 'fas fa-house-user',
             ],
             'TASK_LEAD'             => [
                 'menu'      => 'SALES', // Leave empty if none
