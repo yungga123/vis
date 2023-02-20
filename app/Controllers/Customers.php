@@ -27,42 +27,39 @@ class Customers extends BaseController
         $customersModel = new CustomersModel();
         $customersTable = new TablesIgniter();
 
-        $customersTable->setTable($customersModel->noticeTable())
-                         ->setSearch([
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ])
-                         ->setDefaultOrder('id','desc')
-                         ->setOrder([
-                            null,
-                            null,
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ])
-                         ->setOutput([
-                            $customersModel->button(),
-                            $customersModel->buttonBranch(),
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ]);
+        $customersTable
+            ->setTable($customersModel->noticeTable())
+            ->setSearch([
+                "id",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                null,
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setOutput([
+            $customersModel->buttons(),
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ]);
         
         return $customersTable->getDatatable();
 
@@ -175,34 +172,35 @@ class Customers extends BaseController
         $customersBranchTable = new TablesIgniter();
         $customers_id = $this->request->getGet('customers_id');
 
-        $customersBranchTable->setTable($customersBranchModel->noticeTable($customers_id))
-                         ->setSearch([
-                            "branch_name",
-                            "contact_person",
-                            "contact_number",
-                            "address",
-                            "email_address",
-                            "notes"
-                         ])
-                         ->setDefaultOrder('id','desc')
-                         ->setOrder([
-                            null,
-                            "branch_name",
-                            "contact_person",
-                            "contact_number",
-                            "address",
-                            "email_address",
-                            "notes"
-                         ])
-                         ->setOutput([
-                            $customersBranchModel->button(),
-                            "branch_name",
-                            "contact_person",
-                            "contact_number",
-                            "address",
-                            "email_address",
-                            "notes"
-                         ]);
+        $customersBranchTable
+            ->setTable($customersBranchModel->noticeTable($customers_id))
+            ->setSearch([
+                "branch_name",
+                "contact_person",
+                "contact_number",
+                "address",
+                "email_address",
+                "notes"
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                null,
+                "branch_name",
+                "contact_person",
+                "contact_number",
+                "address",
+                "email_address",
+                "notes"
+            ])
+            ->setOutput([
+                $customersBranchModel->buttons(),
+                "branch_name",
+                "contact_person",
+                "contact_number",
+                "address",
+                "email_address",
+                "notes"
+            ]);
 
         return $customersBranchTable->getDatatable();
     }
@@ -224,7 +222,6 @@ class Customers extends BaseController
             'message'   => 'Customer Branch has been saved successfully!'
         ];
 
-        // print_r($this->request->getVar()); return;
         // Using DB Transaction
         $this->transBegin();
 
@@ -273,11 +270,12 @@ class Customers extends BaseController
         ];
 
         try {
+            $cmodel = new CustomersModel();
             $model  = new CustomerBranchModel();
             $id     = $this->request->getVar('id');
-            // $item   = $model->select($model->allowedFields)->find($id);
+            $branch = $model->select($model->allowedFields)->find($id);
 
-            $data['data'] = $model->select($model->allowedFields)->find($id);;
+            $data['data'] = $branch + $cmodel->getCustomerName($branch['customer_id']);
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;

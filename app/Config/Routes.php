@@ -78,7 +78,7 @@ $routes->get('/executive-overview','ExecutiveOverview::index');
 // $routes->get('/delete-customer/(:num)','Customers::delete_customer/$1');
 // $routes->get('/customers-list','Customers::customers_list');
 
-// CUSTOMERS RECONSTRUCTED
+// CUSTOMERS RECONSTRUCTED - FORECAST
 $routes->group('customers',['filter' => 'checkauth'],static function($routes){
     $routes->get('/','Customers::index', ['as' => 'customers.home']);
     $routes->post('list','Customers::list',['as' => 'customers.list']);
@@ -95,7 +95,7 @@ $routes->group('customers',['filter' => 'checkauth'],static function($routes){
 
 
 // CUSTOMERS RESIDENTIAL
-$routes->group('customersresidential',['filter' => 'checkauth'],static function($routes){
+$routes->group('customers/residential',['filter' => 'checkauth'],static function($routes){
     $routes->get('/','CustomersResidential::index', ['as' => 'customersresidential.home']);
     $routes->post('list','CustomersResidential::list',['as' => 'customersresidential.list']);
     $routes->post('save','CustomersResidential::save',['as' => 'customersresidential.save']);

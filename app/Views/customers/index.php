@@ -10,9 +10,7 @@
             <table id="customer_table" class="table table-striped table-hover nowrap" data-url="<?= url_to('customers.list'); ?>">
                 <thead class="nowrap">
                     <tr>
-                        <th>Action</th>
-                        <th>Branches</th>
-                        <th>ID</th>
+                        <th>Actions</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>
                         <th>Address</th>

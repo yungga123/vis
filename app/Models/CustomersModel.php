@@ -109,31 +109,33 @@ class CustomersModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable() {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('customer_view');
+    public function getCustomerName($id)
+    {
+        return $this->select('customer_name')->find($id);
+    }
+
+    public function noticeTable() 
+    {
+        $builder = $this->db->table('customer_view');
         $builder->select("*");
         return $builder;
     }
 
-    public function button(){
-        $closureFun = function($row){
+    public function buttons()
+    {
+        $id = 'id';
+        $closureFun = function($row) use($id) {
             return <<<EOF
-                <button class="btn btn-warning btn-xs" onclick="edit({$row["id"]})" title="Edit"><i class="fas fa-edit"></i> Edit</button>
-                <button class="btn btn-danger btn-xs" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i> Delete</button>
-                
-            EOF; 
-        };
-        return $closureFun;
-    }
+                <button class="btn btn-sm btn-info" onclick="branchCustomerRetrieve({$row["$id"]})" title="View Branch"><i class="fas fa-eye"></i> </button>
 
-    public function buttonBranch(){
-        $closureFun = function($row){
-            return <<<EOF
-                <button class="btn btn-success btn-block btn-xs mt-1" title="Add Branch" onclick="getCustomers({$row['id']})">Add Branch</button>
-                <button class="btn btn-secondary btn-block btn-xs mt-1" onclick="branchCustomerRetrieve({$row['id']})" title="View Branch">View Branches</button>
-            EOF; 
+                <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["customer_name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
+
+                <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+
+                <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+            EOF;            
         };
+
         return $closureFun;
     }
 }
