@@ -1,7 +1,7 @@
 <div class="modal fade" id="modal_customers_residential" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="form_customers_residential" action="<?= url_to('customersresidential.save'); ?>" method="post" autocomplete="off">
+            <form id="form_customers_residential" class="with-label-indicator" action="<?= url_to('customersresidential.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="customerresidential_id" name="id" readonly>
                 <div class="modal-header">
@@ -25,18 +25,18 @@
                                     <div class="card-body row">
                                         <div class="col-sm-12">
                                             <div class="form-group">
-                                                <label>Customer Name</label>
-                                                <input name="customer_name" id="customer_name" type="text" class="form-control" placeholder="JC Amoranto / Vinculum Tech" value="">
+                                                <label class="required">Customer Name</label>
+                                                <input name="customer_name" id="customer_name" type="text" class="form-control" placeholder="JC Amoranto / Vinculum Tech" value="" required>
                                                 <small id="small_customer_name" class="form-text text-muted"></small>
                                             </div>
                                             <div class="form-group">
-                                                <label>Contact Person</label>
-                                                <input name="contact_person" id="contact_person" type="text" class="form-control" placeholder="Mr. JC" value="">
+                                                <label class="required">Contact Person</label>
+                                                <input name="contact_person" id="contact_person" type="text" class="form-control" placeholder="Mr. JC" value="" required>
                                                 <small id="small_contact_person" class="form-text text-muted"></small>
                                             </div>
                                             <div class="form-group">
-                                                <label>Additional Notes</label>
-                                                <input name="notes" id="notes" type="text" class="form-control" placeholder="Enter..." value="">
+                                                <label class="required">Additional Notes</label>
+                                                <input name="notes" id="notes" type="text" class="form-control" placeholder="Enter..." value="" required>
                                                 <small id="small_notes" class="form-text text-muted"></small>
                                             </div>
                                         </div>
@@ -50,8 +50,8 @@
                                     <div class="card-body row">
                                         <div class="col-sm-12">
                                             <div class="form-group">
-                                                <label>Contact Number</label>
-                                                <input name="contact_number" id="contact_number" type="text" class="form-control" placeholder="0999XXXXXXX / 888X-XXXX" value="">
+                                                <label class="required">Contact Number</label>
+                                                <input name="contact_number" id="contact_number" type="text" class="form-control" placeholder="0999XXXXXXX / 888X-XXXX" value="" required>
                                                 <small id="small_contact_number" class="form-text text-muted"></small>
                                             </div>
                                             <div class="form-group">
@@ -77,23 +77,23 @@
                                     <div class="card-body row">
                                         <div class="col-sm-12">
                                             <div class="form-group">
-                                                <label>Province</label>
-                                                <input name="address_province" id="address_province" type="text" id="province" class="form-control" placeholder="NCR" value="">
+                                                <label class="required">Province</label>
+                                                <input name="address_province" id="address_province" type="text" id="province" class="form-control" placeholder="NCR" value="" required>
                                                 <small id="small_address_province" class="form-text text-muted"></small>
                                             </div>
                                             <div class="form-group">
-                                                <label>City</label>
-                                                <input name="address_city" id="address_city" type="text" id="city" class="form-control" placeholder="Muntinlupa City" value="">
+                                                <label class="required">City</label>
+                                                <input name="address_city" id="address_city" type="text" id="city" class="form-control" placeholder="Muntinlupa City" value="" required>
                                                 <small id="small_address_city" class="form-text text-muted"></small>
                                             </div>
                                             <div class="form-group">
-                                                <label>Barangay</label>
-                                                <input name="address_brgy" id="address_brgy" type="text" id="barangay" class="form-control" placeholder="Putatan" value="">
+                                                <label class="required">Barangay</label>
+                                                <input name="address_brgy" id="address_brgy" type="text" id="barangay" class="form-control" placeholder="Putatan" value="" required>
                                                 <small id="small_address_brgy" class="form-text text-muted"></small>
                                             </div>
                                             <div class="form-group">
-                                                <label>Detailed Address</label>
-                                                <input name="address_sub" id="address_sub" type="text" class="form-control" placeholder="Soldier's Hills, Blk 35 Lot 14" value="">
+                                                <label class="required">Detailed Address</label>
+                                                <input name="address_sub" id="address_sub" type="text" class="form-control" placeholder="Soldier's Hills, Blk 35 Lot 14" value="" required>
                                                 <small id="small_address_sub" class="form-text text-muted"></small>
                                             </div>
                                         </div>

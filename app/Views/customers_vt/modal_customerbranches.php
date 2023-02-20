@@ -22,17 +22,6 @@
                                     <th>Notes</th>
                                 </tr>
                             </thead>
-                            <tfoot>
-                                <tr>
-                                    <th>Action</th>
-                                    <th>Branch Name</th>
-                                    <th>Contact Person</th>
-                                    <th>Contact Number</th>
-                                    <th>Address</th>
-                                    <th>Email Address</th>
-                                    <th>Notes</th>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
                 </div>
