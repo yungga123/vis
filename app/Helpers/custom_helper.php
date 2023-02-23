@@ -94,8 +94,8 @@ if (! function_exists('setup_modules'))
             'TASK_LEAD'             => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => 'Task/Lead Monitoring',
-                'url'       => '#',
-                'class'     => (url_is('employees') ? 'active' : ''),
+                'url'       => url_to('tasklead.home'),
+                'class'     => (url_is('tasklead') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
             'MANAGER_OF_SALES'      => [

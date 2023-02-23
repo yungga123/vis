@@ -112,31 +112,42 @@ $routes->get('/edit-customerbranch/(:num)','CustomerBranch::edit_customer_branch
 $routes->post('/edit-customerbranch/(:num)','CustomerBranch::edit_customer_branch/$1');
 $routes->get('/delete-customer-branch/(:num)','CustomerBranch::delete_customer_branch/$1');
 
-//TaskLead
-$routes->get('/tasklead','TaskLead::index');
-$routes->get('/tasklead-addproject','TaskLead::add_project');
-$routes->get('/tasklead-editproject/(:num)','TaskLead::edit_project/$1');
-$routes->post('/post-addproject','TaskLead::add_project_validate');
-$routes->post('/post-editproject','TaskLead::edit_project_validate');
-$routes->get('/project-list','TaskLead::project_list');
-$routes->get('/manager-project-list','TaskLead::manager_project_list');
-$routes->get('/project-list-booked','TaskLead::project_list_booked');
-$routes->get('/manager-project-list-booked','TaskLead::manager_project_list_booked');
-$routes->get('/project-table-booked','TaskLead::getProjectBookedList');
-$routes->get('/manager-project-table-booked','TaskLead::getProjectListBookedManager');
-$routes->get('/project-table','TaskLead::getProjectList');
-$routes->get('/manager-project-table','TaskLead::getProjectListManager');
-$routes->get('/delete-tasklead/(:num)','Tasklead::delete_tasklead/$1');
-$routes->get('/update-tasklead/(:num)/(:any)','Tasklead::update_project_status/$1/$2');
-$routes->get('/booked-status/(:num)','TaskLead::booked_status/$1');
-$routes->post('/post-booked-status','TaskLead::booked_status_validate');
-$routes->get('/project-booked-details/(:num)','TaskLead::project_booked_details/$1');
-$routes->post('/post-tasklead-upload/(:num)','Tasklead::upload/$1');
-$routes->get('/add-project','TaskLead::add_identified');
-$routes->post('/add-project','TaskLead::add_identified');
-$routes->post('post-update-project-status','TaskLead::update_project_status_validate');
-$routes->get('/add-project-existingcustomer','TaskLead::add_projectExistingCustomer');
-$routes->post('/add-project-existingcustomer','TaskLead::add_projectExistingCustomer');
+//TaskLead old
+// $routes->get('/tasklead','TaskLead::index');
+// $routes->get('/tasklead-addproject','TaskLead::add_project');
+// $routes->get('/tasklead-editproject/(:num)','TaskLead::edit_project/$1');
+// $routes->post('/post-addproject','TaskLead::add_project_validate');
+// $routes->post('/post-editproject','TaskLead::edit_project_validate');
+// $routes->get('/project-list','TaskLead::project_list');
+// $routes->get('/manager-project-list','TaskLead::manager_project_list');
+// $routes->get('/project-list-booked','TaskLead::project_list_booked');
+// $routes->get('/manager-project-list-booked','TaskLead::manager_project_list_booked');
+// $routes->get('/project-table-booked','TaskLead::getProjectBookedList');
+// $routes->get('/manager-project-table-booked','TaskLead::getProjectListBookedManager');
+// $routes->get('/project-table','TaskLead::getProjectList');
+// $routes->get('/manager-project-table','TaskLead::getProjectListManager');
+// $routes->get('/delete-tasklead/(:num)','Tasklead::delete_tasklead/$1');
+// $routes->get('/update-tasklead/(:num)/(:any)','Tasklead::update_project_status/$1/$2');
+// $routes->get('/booked-status/(:num)','TaskLead::booked_status/$1');
+// $routes->post('/post-booked-status','TaskLead::booked_status_validate');
+// $routes->get('/project-booked-details/(:num)','TaskLead::project_booked_details/$1');
+// $routes->post('/post-tasklead-upload/(:num)','Tasklead::upload/$1');
+// $routes->get('/add-project','TaskLead::add_identified');
+// $routes->post('/add-project','TaskLead::add_identified');
+// $routes->post('post-update-project-status','TaskLead::update_project_status_validate');
+// $routes->get('/add-project-existingcustomer','TaskLead::add_projectExistingCustomer');
+// $routes->post('/add-project-existingcustomer','TaskLead::add_projectExistingCustomer');
+
+//Task Lead Reconstructed
+$routes->group('tasklead',['filter' => 'checkauth'],static function($routes){
+    $routes->get('/','Tasklead::index', ['as' => 'tasklead.home']);
+    $routes->post('list','Tasklead::list',['as' => 'tasklead.list']);
+    $routes->post('save','Tasklead::save',['as' => 'tasklead.save']);
+    $routes->post('edit','Tasklead::edit',['as' => 'tasklead.edit']);
+    $routes->post('delete','Tasklead::delete',['as' => 'tasklead.delete']);
+    $routes->post('fetchcustomervt','Tasklead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
+    $routes->post('fetchcustomerforecast','Tasklead::getForecastCustomer',['as' => 'tasklead.getforecastcustomer']);
+});
 
 //SALES MANAGER
 $routes->get('/manager-of-sales','SalesManager::index');

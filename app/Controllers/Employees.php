@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\EmployeesModel;
+use Exception;
 use monken\TablesIgniter;
 
 class Employees extends BaseController
@@ -61,7 +62,7 @@ class Employees extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
-        $data['can_add']        = $this->_can_add;;
+        $data['can_add']        = $this->_can_add;
 
         return view('employees/index', $data);
     }
