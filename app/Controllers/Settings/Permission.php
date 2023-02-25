@@ -87,12 +87,12 @@ class Permission extends BaseController
                 'permissions',
             ])
             ->setOrder([
-                null,
                 'role_code',
                 'module_code',
                 'permissions',
-                'added_by',
-                'updated_by',
+                null,
+                // 'added_by',
+                // 'updated_by',
             ])
             ->setOutput([
                 $custom['role'],
