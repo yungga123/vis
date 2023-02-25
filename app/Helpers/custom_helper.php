@@ -40,7 +40,7 @@ if (! function_exists('get_nav_menus'))
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers')),
+                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead')),
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -72,49 +72,63 @@ if (! function_exists('setup_modules'))
             // 'DASHBOARD'             => 'Dashboard',
             'ACCOUNTS'              => [
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
-                'name'      => 'Accounts',
+                'name'      => get_modules('ACCOUNTS'),
                 'url'       => url_to('account.home'),
                 'class'     => (url_is('accounts') ? 'active' : ''),
                 'icon'      => 'fas fa-user-cog',
             ],
             'EMPLOYEES'             => [
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
-                'name'      => 'Employees',
+                'name'      => get_modules('EMPLOYEES'),
                 'url'       => url_to('employee.home'),
                 'class'     => (url_is('employees') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
             ],
-            'CUSTOMERS'             => [
+            // 'CUSTOMERS'             => [
+            //     'menu'      => 'SALES', // Leave empty if none
+            //     'name'      => get_modules('CUSTOMERS'),
+            //     'url'       => url_to('customers.home'),
+            //     'class'     => (url_is('customers') ? 'active' : ''),
+            //     'icon'      => 'far fa-address-card',
+            // ],
+            'CUSTOMERS_COMMERCIAL'             => [
                 'menu'      => 'SALES', // Leave empty if none
-                'name'      => 'Customers',
-                'url'       => url_to('customers.home'),
-                'class'     => (url_is('customers') ? 'active' : ''),
+                'name'      => get_modules('CUSTOMERS_COMMERCIAL'),
+                'url'       => url_to('customervt.home'),
+                'class'     => (url_is('customers/commercial') ? 'active' : ''),
                 'icon'      => 'far fa-address-card',
+            ],
+            'CUSTOMERS_RESIDENTIAL'             => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => get_modules('CUSTOMERS_RESIDENTIAL'),
+                'url'       => url_to('customersresidential.home'),
+                'class'     => (url_is('customers/residential') ? 'active' : ''),
+                'icon'      => 'far fa-address-book',
             ],
             'TASK_LEAD'             => [
                 'menu'      => 'SALES', // Leave empty if none
-                'name'      => 'Task/Lead Monitoring',
+                'name'      => get_modules('TASK_LEAD'),
                 'url'       => url_to('tasklead.home'),
                 'class'     => (url_is('tasklead') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
             'MANAGER_OF_SALES'      => [
                 'menu'      => 'SALES', // Leave empty if none
-                'name'      => 'Manager of Sales',
+                'name'      => get_modules('MANAGER_OF_SALES'),
                 'url'       => '#',
                 'class'     => (url_is('employees') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
-                'name'      => 'Mail Config',
+                'name'      => get_modules('SETTINGS_MAILCONFIG'),
                 'url'       => url_to('mail.home'),
                 'class'     => (url_is('settings/mail') ? 'active' : ''),
                 'icon'      => 'fas fa-envelope',
             ],
             'SETTINGS_PERMISSIONS'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
-                'name'      => 'Permissions',
+                'name'      => get_modules('SETTINGS_PERMISSIONS'),
                 'url'       => url_to('permission.home'),
                 'class'     => (url_is('settings/permissions') ? 'active' : ''),
                 'icon'      => 'fas fa-user-lock',

@@ -8,6 +8,7 @@ class CustomersVtModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'customers_vt';
+    protected $view             = 'customervt_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -113,32 +114,66 @@ class CustomersVtModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    public function getCustomerName($id)
+    {
+        return $this->select('customer_name')->find($id);
+    }
 
-    public function noticeTable() {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('customervt_view');
+    public function noticeTable() 
+    {
+        $builder = $this->db->table($this->view);
         $builder->select("*");
         return $builder;
     }
 
-    public function button(){
-        $closureFun = function($row){
-            return <<<EOF
-                <button class="btn btn-warning btn-xs" onclick="edit({$row["id"]})" title="Edit"><i class="fas fa-edit"></i> Edit</button>
-                <button class="btn btn-danger btn-xs" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i> Delete</button>
-                
-            EOF; 
-        };
-        return $closureFun;
-    }
+    public function buttons($permissions)
+    {
+        $id = 'id';
+        $closureFun = function($row) use($id, $permissions) {
+            if (is_admin()) {
+                return <<<EOF
+                    <button class="btn btn-sm btn-info" onclick="branchCustomervtRetrieve({$row["$id"]})" title="View Branch"><i class="fas fa-eye"></i> </button>
 
-    public function buttonBranch(){
-        $closureFun = function($row){
-            return <<<EOF
-                <button class="btn btn-success btn-block btn-xs mt-1" title="Add Branch" onclick="getCustomers({$row['id']})">Add Branch</button>
-                <button class="btn btn-secondary btn-block btn-xs mt-1" onclick="branchCustomervtRetrieve({$row['id']})" title="View Branch">View Branches</button>
-            EOF; 
+                    <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["customer_name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
+
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            $view = <<<EOF
+                <button class="btn btn-sm btn-info" onclick="branchCustomervtRetrieve({$row["$id"]})" title="View Branch"><i class="fas fa-eye"></i> </button>
+            EOF;
+
+            $add = '<button class="btn btn-sm btn-success" title="Cannot add" disabled><i class="fas fa-plus-square"></i> </button>';
+
+            if (check_permissions($permissions, 'ADD') && !is_admin()) {
+                $add = <<<EOF
+                    <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["customer_name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
+                EOF;
+            }
+
+            $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
+                $edit = <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+                EOF;
+            }
+
+            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
+                $delete = <<<EOF
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            return $view . $add . $edit . $delete;
+                        
         };
+
         return $closureFun;
     }
 }

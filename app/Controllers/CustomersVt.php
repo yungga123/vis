@@ -9,68 +9,115 @@ use monken\TablesIgniter;
 
 class CustomersVt extends BaseController
 {
+    /**
+     * Use to initialize PermissionModel class
+     * @var object
+     */
+    private $_model;
+
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->_model       = new CustomersVtModel(); // Current model
+        $this->_module_code = MODULE_CODES['customers_commercial']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+    }
+
+    /**
+     * Display the view
+     *
+     * @return view
+     */
     public function index()
     {
-        $data['title'] = 'Customers (Commercial)';
-        $data['page_title'] = 'Customers | List (Commercial)';
-        $data['can_add'] = true;
-        $data['with_dtTable'] = true;
-        $data['with_jszip'] = true;
-        $data['sweetalert2'] = true;
-        $data['custom_js'] = 'customersvt/list.js';
+        $data['title']          = 'Customers (Commercial)';
+        $data['page_title']     = 'Customers | List (Commercial)';
+        $data['can_add']        = $this->_can_add;
+        $data['with_dtTable']   = true;
+        $data['with_jszip']     = true;
+        $data['sweetalert2']    = true;
+        $data['exclude_toastr'] = true;
+        $data['custom_js']      = 'customersvt/list.js';
 
-        return view('customers_vt/index',$data);
+        return view('customers_vt/index', $data);
     }
 
+    /**
+     * Get list of customers
+     *
+     * @return array|dataTable
+     */
     public function list()
     {
-        $customersVtModel = new CustomersVtModel();
-        $customersVtTable = new TablesIgniter();
+        $table = new TablesIgniter();
 
-        $customersVtTable->setTable($customersVtModel->noticeTable())
-                         ->setSearch([
-                            "forecast",
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ])
-                         ->setDefaultOrder('id','desc')
-                         ->setOrder([
-                            null,
-                            null,
-                            "forecast",
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ])
-                         ->setOutput([
-                            $customersVtModel->button(),
-                            $customersVtModel->buttonBranch(),
-                            "forecast",
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ]);
+        $table
+            ->setTable($this->_model->noticeTable())
+            ->setSearch([
+                "forecast",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                null,
+                "forecast",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setOutput([
+                $this->_model->buttons($this->_permissions),
+                "forecast",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ]);
         
-        return $customersVtTable->getDatatable();
+        return $table->getDatatable();
 
     }
 
+    /**
+     * For saving data
+     *
+     * @return json
+     */
     public function save() 
     {
         $data = [
@@ -82,10 +129,8 @@ class CustomersVt extends BaseController
         $this->transBegin();
 
         try {
-            $model = new CustomersVtModel();
-
-            if (! $model->save($this->request->getVar())) {
-                $data['errors']     = $model->errors();
+            if (! $this->_model->save($this->request->getVar())) {
+                $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             }
@@ -96,7 +141,7 @@ class CustomersVt extends BaseController
 
             // Commit transaction
             $this->transCommit();
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             // Rollback transaction if there's an error
             $this->transRollback();
 
@@ -121,11 +166,9 @@ class CustomersVt extends BaseController
         ];
 
         try {
-            $model  = new CustomersVtModel();
             $id     = $this->request->getVar('id');
-            // $item   = $model->select($model->allowedFields)->find($id);
 
-            $data['data'] = $model->select($model->allowedFields)->find($id);;
+            $data['data'] = $this->_model->select($this->_model->allowedFields)->find($id);;
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
@@ -136,7 +179,7 @@ class CustomersVt extends BaseController
     }
 
     /**
-     * Saving process of items
+     * Deleting record
      *
      * @return json
      */
@@ -151,10 +194,8 @@ class CustomersVt extends BaseController
         $this->transBegin();
 
         try {
-            $model = new CustomersVtModel();
-
-            if (! $model->delete($this->request->getVar('id'))) {
-                $data['errors']     = $model->errors();
+            if (! $this->_model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             }
@@ -173,53 +214,55 @@ class CustomersVt extends BaseController
         return $this->response->setJSON($data);
     }
 
-    public function branchCustomervtList() {
+    /**
+     * Get list of customers branch
+     *
+     * @return array|dataTable
+     */
+    public function branchCustomervtList() 
+    {
         $customersVtBranchModel = new CustomersVtBranchModel();
         $customersVtBranchTable = new TablesIgniter();
         $customervt_id = $this->request->getGet('customervt_id');
 
-        $customersVtBranchTable->setTable($customersVtBranchModel->noticeTable($customervt_id))
-                         ->setSearch([
-                            "branch_name",
-                            "contact_person",
-                            "contact_number",
-                            "address",
-                            "email_address",
-                            "notes"
-                         ])
-                         ->setDefaultOrder('id','desc')
-                         ->setOrder([
-                            null,
-                            "branch_name",
-                            "contact_person",
-                            "contact_number",
-                            "address",
-                            "email_address",
-                            "notes"
-                         ])
-                         ->setOutput([
-                            $customersVtBranchModel->button(),
-                            "branch_name",
-                            "contact_person",
-                            "contact_number",
-                            "address",
-                            "email_address",
-                            "notes"
-                         ]);
+        $customersVtBranchTable
+            ->setTable($customersVtBranchModel->noticeTable($customervt_id))
+            ->setSearch([
+                "branch_name",
+                "contact_person",
+                "contact_number",
+                "address",
+                "email_address",
+                "notes"
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                null,
+                "branch_name",
+                "contact_person",
+                "contact_number",
+                "address",
+                "email_address",
+                "notes"
+            ])
+            ->setOutput([
+                $customersVtBranchModel->buttons($this->_permissions),
+                "branch_name",
+                "contact_person",
+                "contact_number",
+                "address",
+                "email_address",
+                "notes"
+            ]);
 
         return $customersVtBranchTable->getDatatable();
     }
 
-    public function getCustomers() {
-        $model = new CustomersVtModel();
-        $id = $this->request->getVar('gcustomer_id');
-        $data['status'] = STATUS_SUCCESS;
-        $data['data'] = $model->find($id);
-
-        print_r($id); return;
-        return $this->response->setJSON($data);
-    }
-
+    /**
+     * For saving data
+     *
+     * @return json
+     */
     public function saveBranch() 
     {
         $data = [
@@ -227,7 +270,6 @@ class CustomersVt extends BaseController
             'message'   => 'Customer Branch has been saved successfully!'
         ];
 
-        // print_r($this->request->getVar()); return;
         // Using DB Transaction
         $this->transBegin();
 
@@ -256,7 +298,7 @@ class CustomersVt extends BaseController
 
             // Commit transaction
             $this->transCommit();
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             // Rollback transaction if there's an error
             $this->transRollback();
 
@@ -268,6 +310,11 @@ class CustomersVt extends BaseController
         return $this->response->setJSON($data);
     }
 
+    /**
+     * Deleting record
+     *
+     * @return json
+     */
     public function editBranch() 
     {
         $data = [
@@ -278,9 +325,9 @@ class CustomersVt extends BaseController
         try {
             $model  = new CustomersVtBranchModel();
             $id     = $this->request->getVar('id');
-            // $item   = $model->select($model->allowedFields)->find($id);
+            $branch = $model->select($model->allowedFields)->find($id);
 
-            $data['data'] = $model->select($model->allowedFields)->find($id);;
+            $data['data'] = $branch + $this->_model->getCustomerName($branch['customer_id']);
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
@@ -290,6 +337,11 @@ class CustomersVt extends BaseController
         return $this->response->setJSON($data);
     }
 
+     /**
+     * Deleting record
+     *
+     * @return json
+     */
     public function deleteBranch() 
     {
         $data = [

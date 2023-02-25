@@ -7,16 +7,16 @@ $(document).ready(function () {
 	removeRoute = $("#remove_url").val();
 	elems = [
 		"forecast",
-        "customer_name",
-        "contact_person",
-        "address_province",
-        "address_city",
-        "address_brgy",
-        "address_sub",
-        "contact_number",
-        "email_address",
-        "source",
-        "notes"
+		"customer_name",
+		"contact_person",
+		"address_province",
+		"address_city",
+		"address_brgy",
+		"address_sub",
+		"contact_number",
+		"email_address",
+		"source",
+		"notes",
 	];
 
 	$("#btn_add_record").on("click", function () {
@@ -47,11 +47,11 @@ $(document).ready(function () {
 			}
 		}
 
-		showAlertInForm(elems, message, res.status, prefix = "small");
+		showAlertInForm(elems, message, res.status);
 	});
 });
 
-/* Get item details */
+/* Get record details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
@@ -65,15 +65,14 @@ function edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
+				$(`#${modal}`).modal("show");
+
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					$.each(res.data, (key, value) => {
-						//$(`input[name="${key}"]`).val(value);.
 						$("#" + key).val(value);
 					});
-					$(`#${modal}`).modal();
 				}
 			} else {
-				$(`#${modal}`).modal("hide");
 				notifMsgSwal(res.status, res.message, res.status);
 			}
 		})

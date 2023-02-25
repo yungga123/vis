@@ -142,13 +142,13 @@ define('MODULES', [
     'DASHBOARD'             => 'Dashboard',
     'ACCOUNTS'              => 'Accounts',
     'EMPLOYEES'             => 'Employees',
-    'CUSTOMERS'             => 'Customers (Forecast)',
+    // 'CUSTOMERS'             => 'Customers (Forecast)',
     'CUSTOMERS_COMMERCIAL'  => 'Customers (Commercial)',
     'CUSTOMERS_RESIDENTIAL' => 'Customers (Residential)',
     'TASK_LEAD'             => 'Task/Lead Monitoring',
     'MANAGER_OF_SALES'      => 'Manager of Sales',
-    'SETTINGS_MAILCONFIG'   => 'Settings | Mail Configuration',
-    'SETTINGS_PERMISSIONS'  => 'Settings | Permissions',
+    'SETTINGS_MAILCONFIG'   => 'Mail Config',
+    'SETTINGS_PERMISSIONS'  => 'Permissions',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -159,10 +159,10 @@ define('MODULE_CODES', [
     'accounts'              => 'ACCOUNTS',
     'employees'             => 'EMPLOYEES',
     'customers'             => 'CUSTOMERS',
-    'customersvt'           => 'CUSTOMERS_COMMERCIAL',
-    'customersresidential'  => 'CUSTOMERS_RESIDENTIAL',
+    'customers_commercial'  => 'CUSTOMERS_COMMERCIAL',
+    'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
     'task_lead'             => 'TASK_LEAD',
-    'sales'                 => 'MANAGER_OF_SALES',
+    'manager_sales'         => 'MANAGER_OF_SALES',
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
 ]);

@@ -8,6 +8,7 @@ class CustomersVtBranchModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'customervt_branch';
+    protected $view             = 'customervt_view_branch';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -110,21 +111,46 @@ class CustomersVtBranchModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable($customervt_id) {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('customervt_view_branch')->where('customer_id',$customervt_id);
+    public function noticeTable($customervt_id) 
+    {
+        $builder = $this->db->table($this->view);
+        $builder->where('customer_id', $customervt_id);
         $builder->select("*");
         return $builder;
     }
 
-    public function button(){
-        $closureFun = function($row){
-            return <<<EOF
-                <button class="btn btn-warning btn-xs" onclick="editBranch({$row["id"]})" data-toggle="modal" data-target="#modal_branchcustomervt" title="Edit"><i class="fas fa-edit"></i> Edit</button>
-                <button class="btn btn-danger btn-xs" onclick="removeBranch({$row["id"]})" title="Delete"><i class="fas fa-trash"></i> Delete</button>
-                
-            EOF; 
+    public function buttons($permissions)
+    {
+        $id = 'id';
+        $closureFun = function($row) use($id, $permissions) {
+            if (is_admin()) {
+                return <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="editBranch({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+
+                    <button class="btn btn-sm btn-danger" onclick="removeBranch({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
+                $edit = <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="editBranch({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+                EOF;
+            }
+
+            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
+                $delete = <<<EOF
+                    <button class="btn btn-sm btn-danger" onclick="removeBranch({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            return $edit . $delete;
+                        
         };
+
         return $closureFun;
     }
 }

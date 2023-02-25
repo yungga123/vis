@@ -8,60 +8,103 @@ use monken\TablesIgniter;
 
 class CustomersResidential extends BaseController
 {
-    public function index()
-    {
-        $data['title'] = 'Customers (Residential)';
-        $data['page_title'] = 'Customers | List (Residential)';
-        $data['can_add'] = true;
-        $data['with_dtTable'] = true;
-        $data['with_jszip'] = true;
-        $data['sweetalert2'] = true;
-        $data['custom_js'] = 'customers_residential/list.js';
+    /**
+     * Use to initialize PermissionModel class
+     * @var object
+     */
+    private $_model;
 
-        return view('customers_residential/index',$data);
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->_model       = new CustomersResidentialModel(); // Current model
+        $this->_module_code = MODULE_CODES['customers_residential']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
+    /**
+     * Display the view
+     *
+     * @return view
+     */
+    public function index()
+    {
+        $data['title']          = 'Customers (Residential)';
+        $data['page_title']     = 'Customers | List (Residential)';
+        $data['can_add']        = $this->_can_add;
+        $data['with_dtTable']   = true;
+        $data['with_jszip']     = true;
+        $data['sweetalert2']    = true;
+        $data['exclude_toastr'] = true;
+        $data['custom_js']      = 'customers_residential/list.js';
+
+        return view('customers_residential/index', $data);
+    }
+
+    /**
+     * Get list of customers
+     *
+     * @return array|dataTable
+     */
     public function list() {
-        $model = new CustomersResidentialModel();
         $table = new TablesIgniter();
 
-        $table->setTable($model->noticeTable())
-                         ->setSearch([
-                            "forecast",
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ])
-                         ->setDefaultOrder('id','desc')
-                         ->setOrder([
-                            null,
-                            "forecast",
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ])
-                         ->setOutput([
-                            $model->button(),
-                            "forecast",
-                            "id",
-                            "customer_name",
-                            "contact_person",
-                            "address",
-                            "contact_number",
-                            "email_address",
-                            "source",
-                            "notes"
-                         ]);
+        $table->setTable($this->_model->noticeTable())
+            ->setSearch([
+                "forecast",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                null,
+                "forecast",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ])
+            ->setOutput([
+                $this->_model->buttons($this->_permissions),
+                "forecast",
+                "customer_name",
+                "contact_person",
+                "address",
+                "contact_number",
+                "email_address",
+                "source",
+                "notes"
+            ]);
         
         return $table->getDatatable();
     }

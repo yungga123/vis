@@ -16,9 +16,8 @@
             <table id="customers_residential_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('customersresidential.list'); ?>">
                 <thead class="nowrap">
                     <tr>
-                        <th>Action</th>
-                        <th>Forecast</th>
-                        <th>ID</th>
+                        <th>Actions</th>
+                        <th>Forecast?</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>
                         <th>Address</th>
@@ -32,7 +31,6 @@
         </div>
     </div>
 </div>
-
 <?= $this->include('customers_residential/modal_addcustomerresidential') ?>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>

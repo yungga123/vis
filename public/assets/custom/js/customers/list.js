@@ -153,7 +153,6 @@ function branchCustomerRetrieve(id) {
 
 	let route = $("#" + branch_table).data("url") + "?customers_id=" + id;
 	loadDataTable(branch_table, route, METHOD.GET, null, true);
-	// refreshDataTable($("#" + table));
 }
 
 // Used in Select Customers from ADD BRANCH modal

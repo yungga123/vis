@@ -16,10 +16,8 @@
             <table id="customervt_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('customervt.list'); ?>">
                 <thead class="nowrap">
                     <tr>
-                        <th>Action</th>
-                        <th>Branches</th>
+                        <th>Actions</th>
                         <th>Forecast?</th>
-                        <th>ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>
                         <th>Address</th>
