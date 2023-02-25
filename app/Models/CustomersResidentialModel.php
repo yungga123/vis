@@ -143,7 +143,7 @@ class CustomersResidentialModel extends Model
                 EOF;
             }
 
-            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-edit"></i> </button>';
+            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
 
             if (check_permissions($permissions, 'DELETE') && !is_admin()) {
                 $delete = <<<EOF
