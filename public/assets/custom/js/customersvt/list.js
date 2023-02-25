@@ -6,6 +6,7 @@ $(document).ready(function(){
     editRoute = $("#edit_url").val();
 	removeRoute = $("#remove_url").val();
     elems = [
+		"forecast",
 		"customer_name", 
         "contact_person", 
         "address_province",
@@ -79,7 +80,8 @@ function edit(id) {
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					$.each(res.data, (key, value) => {
-						$(`input[name="${key}"]`).val(value);
+						//$(`input[name="${key}"]`).val(value);
+						$("#" + key).val(value);
 					});
 				}
 			} else {

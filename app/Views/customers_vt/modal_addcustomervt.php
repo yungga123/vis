@@ -25,8 +25,18 @@
                                     <div class="card-body row">
                                         <div class="col-sm-12">
                                             <div class="form-group">
-                                                <label class="required">Customer Name</label>
-                                                <input name="customer_name" id="customer_name" type="text" class="form-control" placeholder="JC Amoranto / Vinculum Tech" value="" required>
+                                                <label>Forecast?</label>
+                                                <select name="forecast" id="forecast" type="text" class="form-control">
+                                                    <option value="">---Please Select---</option>
+                                                    <option value="1">Yes</option>
+                                                    <option value="0">No</option>
+                                                </select>
+                                                <small id="small_forecast" class="form-text text-muted"></small>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Customer Name</label>
+                                                <input name="customer_name" id="customer_name" type="text" class="form-control" placeholder="JC Amoranto / Vinculum Tech" value="">
                                                 <small id="small_customer_name" class="form-text text-muted"></small>
                                             </div>
                                             <div class="form-group">

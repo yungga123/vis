@@ -42,6 +42,12 @@ class TaskleadHistory extends Migration
                 'type' => 'DATE',
                 'default' => null
             ],
+            'min_forecast_date' => [
+                'type' => 'DATE'
+            ],
+            'max_forecast_date' => [
+                'type' => 'DATE'
+            ],
             'remark_next_step' => [
                 'type' => 'TEXT'
             ],

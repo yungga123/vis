@@ -18,6 +18,7 @@
                     <tr>
                         <th>Action</th>
                         <th>Branches</th>
+                        <th>Forecast?</th>
                         <th>ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>

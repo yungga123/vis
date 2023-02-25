@@ -37,6 +37,7 @@ class CustomersResidentialModel extends Model
 
     // Validation
     protected $validationRules      = [
+        "forecast" => 'required',
         "customer_name" => 'required|max_length[500]',
         "contact_person" => 'required|max_length[500]',
         "address_province" => 'required|max_length[500]',
@@ -49,6 +50,10 @@ class CustomersResidentialModel extends Model
         "notes" => 'required|max_length[100]'
     ];
     protected $validationMessages   = [
+        "forecast" => [
+            "required" => "Please select if YES or NO."
+            
+        ],
         "customer_name" => [
             "required" => "Customer Name is required.",
             "max_length" => "Max length is 500.",

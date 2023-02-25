@@ -40,7 +40,7 @@ if (! function_exists('get_nav_menus'))
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential')),
+                'urls'      => (url_is('customers')),
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -86,30 +86,16 @@ if (! function_exists('setup_modules'))
             ],
             'CUSTOMERS'             => [
                 'menu'      => 'SALES', // Leave empty if none
-                'name'      => 'Customers (Forecast)',
+                'name'      => 'Customers',
                 'url'       => url_to('customers.home'),
                 'class'     => (url_is('customers') ? 'active' : ''),
-                'icon'      => 'far fa-address-book',
-            ],
-            'CUSTOMERS_COMMERCIAL'      => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => 'Customers (Commercial)',
-                'url'       => url_to('customervt.home'),
-                'class'     => (url_is('customers/commercial') ? 'active' : ''),
-                'icon'      => 'fas fa-building',
-            ],
-            'CUSTOMERS_RESIDENTIAL'      => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => 'Customers (Residential)',
-                'url'       => url_to('customersresidential.home'),
-                'class'     => (url_is('customers/residential') ? 'active' : ''),
-                'icon'      => 'fas fa-house-user',
+                'icon'      => 'far fa-address-card',
             ],
             'TASK_LEAD'             => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => 'Task/Lead Monitoring',
-                'url'       => '#',
-                'class'     => (url_is('employees') ? 'active' : ''),
+                'url'       => url_to('tasklead.home'),
+                'class'     => (url_is('tasklead') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
             'MANAGER_OF_SALES'      => [

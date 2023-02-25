@@ -29,6 +29,7 @@ class CustomersVt extends BaseController
 
         $customersVtTable->setTable($customersVtModel->noticeTable())
                          ->setSearch([
+                            "forecast",
                             "id",
                             "customer_name",
                             "contact_person",
@@ -42,6 +43,7 @@ class CustomersVt extends BaseController
                          ->setOrder([
                             null,
                             null,
+                            "forecast",
                             "id",
                             "customer_name",
                             "contact_person",
@@ -54,6 +56,7 @@ class CustomersVt extends BaseController
                          ->setOutput([
                             $customersVtModel->button(),
                             $customersVtModel->buttonBranch(),
+                            "forecast",
                             "id",
                             "customer_name",
                             "contact_person",

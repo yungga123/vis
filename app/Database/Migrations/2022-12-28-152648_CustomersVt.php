@@ -14,6 +14,9 @@ class CustomersVt extends Migration
                 'type' => 'INT',
                 'auto_increment' => true
             ],
+            'forecast' => [
+                'type' => 'BOOLEAN'
+            ],
             'customer_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500

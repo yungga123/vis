@@ -17,6 +17,7 @@
                 <thead class="nowrap">
                     <tr>
                         <th>Action</th>
+                        <th>Forecast</th>
                         <th>ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>
