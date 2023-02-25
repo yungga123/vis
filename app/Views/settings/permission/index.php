@@ -53,10 +53,11 @@
                     <div class="form-group">
                         <label class="required" for="module_code">Module</label>
                         <select class="form-control" name="module_code" id="module_code" style="width: 100%;" required>
-                        <option value="">Select Module</option>
-                        <?php foreach (get_modules() as $key => $val): ?>
-                            <option value="<?= $key ?>"><?= $val ?></option>
-                        <?php endforeach; ?>
+                            <option value="">Select Module</option>
+                            <?php $modules = get_modules(); unset($modules['DASHBOARD']);
+                            foreach ($modules as $key => $val): ?>
+                                <option value="<?= $key ?>"><?= $val ?></option>
+                            <?php endforeach; ?>
                         </select>
                         <small id="alert_module_code" class="text-danger"></small>
                     </div>

@@ -72,7 +72,7 @@
                                 <div class="form-group row">
                                     <label for="access_level" class="col-sm-2 col-form-label">Access Level</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="access_level" id="access_level" placeholder="Access Level" value="<?= esc(account_access_level(session()->get('access_level'))); ?>" readonly>
+                                        <input type="text" class="form-control" name="access_level" id="access_level" placeholder="Access Level" value="<?= esc(account_access_level(false, session('access_level'))); ?>" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
