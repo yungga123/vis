@@ -52,6 +52,9 @@ class CustomersVt extends BaseController
      */
     public function index()
     {
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+
         $data['title']          = 'Customers (Commercial)';
         $data['page_title']     = 'Customers | List (Commercial)';
         $data['can_add']        = $this->_can_add;

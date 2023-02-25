@@ -51,6 +51,9 @@ class CustomersResidential extends BaseController
      */
     public function index()
     {
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+
         $data['title']          = 'Customers (Residential)';
         $data['page_title']     = 'Customers | List (Residential)';
         $data['can_add']        = $this->_can_add;
