@@ -104,6 +104,7 @@ function edit(id) {
 					setOptionValue("#employment_status", res.data.employment_status);
 					setOptionValue("#date_hired", res.data.date_hired);
 					setOptionValue("#date_resigned", res.data.date_resigned);
+					$(`#${modal}`).modal("show");
 				}
 			} else {
 				$(`#${modal}`).modal("hide");

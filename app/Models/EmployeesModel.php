@@ -254,7 +254,7 @@ class EmployeesModel extends Model
         $closureFun = function($row) use($id, $permissions) {
             if (is_admin()) {
                 return <<<EOF
-                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  title="Edit"><i class="fas fa-edit"></i> </button> 
                     <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
                 EOF;
             }
@@ -268,7 +268,7 @@ class EmployeesModel extends Model
 
             if (check_permissions($permissions, 'EDIT') && !is_admin()) {
                 $edit = <<<EOF
-                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
                 EOF;
             }
 
