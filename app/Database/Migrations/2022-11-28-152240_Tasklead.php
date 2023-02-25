@@ -24,6 +24,10 @@ class Tasklead extends Migration
                 'type' => 'DECIMAL',
                 'constraint' => [18,2]
             ],
+            'customer_type' => [
+                'type' => 'VARCHAR',
+                'constraint' => 100
+            ],
             'existing_customer' => [
                 'type' => 'BOOLEAN',
             ],

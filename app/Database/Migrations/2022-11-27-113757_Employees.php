@@ -74,7 +74,6 @@ class Employees extends Migration
                 'constraint' => 500
             ],
             'email_address' => [
-                'name' => 'email_address',
                 'type' => 'VARCHAR',
                 'constraint' => 500,
                 'null' => true

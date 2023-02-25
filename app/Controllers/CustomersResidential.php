@@ -27,6 +27,7 @@ class CustomersResidential extends BaseController
 
         $table->setTable($model->noticeTable())
                          ->setSearch([
+                            "forecast",
                             "id",
                             "customer_name",
                             "contact_person",
@@ -39,6 +40,7 @@ class CustomersResidential extends BaseController
                          ->setDefaultOrder('id','desc')
                          ->setOrder([
                             null,
+                            "forecast",
                             "id",
                             "customer_name",
                             "contact_person",
@@ -50,6 +52,7 @@ class CustomersResidential extends BaseController
                          ])
                          ->setOutput([
                             $model->button(),
+                            "forecast",
                             "id",
                             "customer_name",
                             "contact_person",

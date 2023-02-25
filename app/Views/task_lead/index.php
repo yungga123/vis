@@ -16,6 +16,7 @@
                         <th>Quarter</th>
                         <th>Status</th>
                         <th>Status Percent</th>
+                        <th>Customer Type</th>
                         <th>Customer Name</th>
                         <th>Branch Name</th>
                         <th>Contact Number</th>

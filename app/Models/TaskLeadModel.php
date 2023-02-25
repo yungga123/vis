@@ -19,6 +19,7 @@ class TaskLeadModel extends Model
         "employee_id",
         "quarter", 
         "status",
+        "customer_type",
         "existing_customer",
         "customer_id",
         "branch_id",
@@ -43,6 +44,8 @@ class TaskLeadModel extends Model
 
     // Validation
     protected $validationRules      = [
+        "customer_type" => ["label" => "Customer Type", "rules" => "required"],
+        "existing_customer" => ["label" => "Existing Customer", "rules" => "required"],
         "quotation_num" => "max_length[100]",
         "quarter" => 'required',
         "status" => 'required',

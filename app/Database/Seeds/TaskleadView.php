@@ -23,6 +23,7 @@ class TaskleadView extends Seeder
             quarter,
             CONCAT(status,'%') as status,
             status_percent,
+            customer_type,
             existing_customer,
             customer_name,
             branch_name,

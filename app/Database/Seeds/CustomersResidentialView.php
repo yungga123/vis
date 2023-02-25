@@ -20,6 +20,7 @@ class CustomersResidentialView extends Seeder
                 customers_residential_view 
             AS SELECT
                 id,
+                IF(forecast=1,'YES','NO') as forecast,
                 customer_name,
                 contact_person,
                 CONCAT_WS(', ',address_province,address_city,address_brgy,address_sub) as address,

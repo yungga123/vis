@@ -30,6 +30,15 @@
                                 <small id="alert_status" class="text-danger"></small>
                             </div>
                             <div class="form-group">
+                                <label for="customer_type">Customer Type</label>
+                                <select name="customer_type" id="customer_type" class="form-control" placeholder="Enter...">
+                                    <option value="">---Please Select---</option>
+                                    <option value="Residential">Residential</option>
+                                    <option value="Commercial">Commercial</option>
+                                </select>
+                                <small id="alert_customer_type" class="text-danger"></small>
+                            </div>
+                            <div class="form-group">
                                 <label for="existing_customer">Existing Customer?</label>
                                 <select name="existing_customer" id="existing_customer" class="form-control" placeholder="Enter...">
                                     <option value="">---Please Select---</option>

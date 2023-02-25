@@ -15,6 +15,7 @@ class CustomersVtModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        "forecast",
         "customer_name", 
         "contact_person", 
         "address_province",
@@ -36,6 +37,7 @@ class CustomersVtModel extends Model
 
     // Validation
     protected $validationRules      = [
+        "forecast" => 'required',
         "customer_name" => 'required|max_length[500]',
         "contact_person" => 'required|max_length[500]',
         "address_province" => 'required|max_length[500]',
@@ -48,6 +50,9 @@ class CustomersVtModel extends Model
         "notes" => 'required|max_length[100]'
     ];
     protected $validationMessages   = [
+        "forecast" => [
+            "required" => "Please select if YES or NO"
+        ],
         "customer_name" => [
             "required" => "Customer Name is required.",
             "max_length" => "Max length is 500."

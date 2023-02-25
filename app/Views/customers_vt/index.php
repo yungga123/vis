@@ -18,6 +18,7 @@
                     <tr>
                         <th>Action</th>
                         <th>Branches</th>
+                        <th>Forecast?</th>
                         <th>ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>
@@ -28,20 +29,6 @@
                         <th>Notes</th>
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>Action</th>
-                        <th>Branches</th>
-                        <th>ID</th>
-                        <th>Customer Name</th>
-                        <th>Contact Person</th>
-                        <th>Address</th>
-                        <th>Contact Number</th>
-                        <th>Email Address</th>
-                        <th>Source</th>
-                        <th>Notes</th>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>

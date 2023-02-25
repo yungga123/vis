@@ -9,6 +9,7 @@ $(document).ready(function () {
 		"employee_id",
         "quarter", 
         "status",
+		"customer_type",
         "existing_customer",
         "customer_id",
         "branch_id",

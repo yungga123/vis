@@ -24,7 +24,7 @@ $(document).ready(function () {
 		$(`#${modal}`).removeClass("edit").addClass("add");
 		$(`#${modal} .modal-title`).text("Add New Item");
 		$(`#${form}`)[0].reset();
-		$("#inventory_id").val("");
+		$("#customerresidential_id").val("");
 
 		clearAlertInForm(elems);
 	});
@@ -67,7 +67,8 @@ function edit(id) {
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					$.each(res.data, (key, value) => {
-						$(`input[name="${key}"]`).val(value);
+						//$(`input[name="${key}"]`).val(value);.
+						$("#" + key).val(value);
 					});
 					$(`#${modal}`).modal();
 				}
