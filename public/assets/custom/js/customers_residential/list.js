@@ -30,8 +30,36 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
+	
 	const route = $("#" + table).data("url");
-	loadDataTable(table, route, METHOD.POST);
+	let custom_button = [
+		{
+			text: 'All',
+			action: function () {
+				//alert( 'Button FORECAST' );
+	
+				loadDataTable(table, route, METHOD.POST,options = {},destroy = true,custom_button);
+			}
+		},
+		{
+			text: 'Forecast',
+			action: function () {
+				//alert( 'Button FORECAST' );
+	
+				let url = $('#forecast_url').val() + "?forecast=YES";
+				loadDataTable(table, url, METHOD.GET,options = {},destroy = true,custom_button);
+			}
+		},
+		{
+			text: 'Official',
+			action: function () {
+				//alert( 'Button OFFICIAL' );
+				let url = $('#forecast_url').val() + "?forecast=NO";
+				loadDataTable(table, url, METHOD.GET,options = {},destroy = true,custom_button);
+			}
+		}];
+	
+		loadDataTable(table, route, METHOD.POST,options = {},destroy = false,custom_button);
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {

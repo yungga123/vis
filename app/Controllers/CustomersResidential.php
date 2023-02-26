@@ -73,10 +73,12 @@ class CustomersResidential extends BaseController
      */
     public function list() {
         $table = new TablesIgniter();
+        $where_forecast = $this->request->getVar('forecast');
 
-        $table->setTable($this->_model->noticeTable())
+        $table->setTable(($where_forecast) ? $this->_model->noticeTable()->where('forecast',$where_forecast) : $this->_model->noticeTable())
             ->setSearch([
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",
@@ -89,6 +91,7 @@ class CustomersResidential extends BaseController
             ->setOrder([
                 null,
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",
@@ -100,6 +103,7 @@ class CustomersResidential extends BaseController
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",

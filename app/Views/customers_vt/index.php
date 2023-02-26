@@ -13,11 +13,13 @@
         <div class="card-body">
             <input type="hidden" id="edit_url" value="<?= url_to('customervt.edit'); ?>" disabled>
             <input type="hidden" id="remove_url" value="<?= url_to('customervt.delete'); ?>" disabled>
+            <input type="hidden" id="forecast_url" value="<?= url_to('customervt.listget'); ?>" disabled>
             <table id="customervt_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('customervt.list'); ?>">
                 <thead class="nowrap">
                     <tr>
                         <th>Actions</th>
                         <th>Forecast?</th>
+                        <th>Customer ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>
                         <th>Address</th>
