@@ -379,8 +379,6 @@ function loadDataTable(
 		],
 		order = inObject(options, "order") ? [options.order] : [];
 
-	columnDefs.push();
-
 	dtTable = $("#" + table).DataTable({
 		destroy: destroy,
 		processing: true,
@@ -405,6 +403,20 @@ function loadDataTable(
 		ajax: {
 			url: route,
 			type: type.toUpperCase() !== METHOD.POST ? METHOD.GET : METHOD.POST,
+			data: function (d) {
+				if (inObject(options, "params") && !isEmpty(options.params)) {
+					d.params = options.params;
+				}
+			},
+		},
+		createdRow: function (row, data, dataIndex) {
+			if (data.length > 1) {
+				for (var i = 0; i < data.length; i++) {
+					if (isEmpty(data[i])) {
+						$(`td:eq(${i})`, row).text("N/A");
+					}
+				}
+			}
 		},
 		initComplete: function (settings, json) {
 			dtTable
