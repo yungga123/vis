@@ -73,42 +73,42 @@
                             </div>
                             <div class="form-group">
                                 <label for="quotation_num">Quotation Number</label>
-                                <input type="date" name="quotation_num" id="quotation_num" class="form-control" placeholder="Enter...">
+                                <input type="text" name="quotation_num" id="quotation_num" class="form-control" placeholder="Enter...">
                                 <small id="alert_quotation_num" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="forecast_close_date">Forecast Close Date</label>
-                                <input type="text" name="forecast_close_date" id="forecast_close_date" class="form-control" placeholder="Enter...">
+                                <input type="date" name="forecast_close_date" id="forecast_close_date" class="form-control" placeholder="Enter...">
                                 <small id="alert_forecast_close_date" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="min_forecast_date">Min. Forecast Date</label>
-                                <input type="text" name="min_forecast_date" id="min_forecast_date" class="form-control" placeholder="Enter...">
+                                <input type="date" name="min_forecast_date" id="min_forecast_date" class="form-control" placeholder="Enter...">
                                 <small id="alert_min_forecast_date" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="max_forecast_date">Max Forecast Date</label>
-                                <input type="text" name="max_forecast_date" id="max_forecast_date" class="form-control" placeholder="Enter..." value="">
+                                <input type="date" name="max_forecast_date" id="max_forecast_date" class="form-control" placeholder="Enter..." value="">
                                 <small id="alert_max_forecast_date" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="remark_next_step">Remark Next Step</label>
-                                <input type="text" name="remark_next_step" id="remark_next_step" class="form-control" placeholder="Enter..." value="">
+                                <input type="date" name="remark_next_step" id="remark_next_step" class="form-control" placeholder="Enter..." value="">
                                 <small id="alert_remark_next_step" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="close_deal_date">Close Deal Date</label>
-                                <input type="text" name="close_deal_date" id="close_deal_date" class="form-control" placeholder="Enter..." value="">
+                                <input type="date" name="close_deal_date" id="close_deal_date" class="form-control" placeholder="Enter..." value="">
                                 <small id="alert_close_deal_date" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="project_start_date">Project Start Date</label>
-                                <input type="text" name="project_start_date" id="project_start_date" class="form-control" placeholder="Enter..." value="">
+                                <input type="date" name="project_start_date" id="project_start_date" class="form-control" placeholder="Enter..." value="">
                                 <small id="alert_project_start_date" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="project_finish_date">Project Finish Date</label>
-                                <input type="text" name="project_finish_date" id="project_finish_date" class="form-control" placeholder="Enter..." value="">
+                                <input type="date" name="project_finish_date" id="project_finish_date" class="form-control" placeholder="Enter..." value="">
                                 <small id="alert_project_finish_date" class="text-danger"></small>
                             </div>
                         </div>

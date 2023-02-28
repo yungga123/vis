@@ -367,8 +367,7 @@ function loadDataTable(
 	route,
 	type = METHOD.GET,
 	options = {},
-	destroy = false,
-	custom_button = {}
+	destroy = false
 ) {
 	let columnDefs = [
 			inObject(options, "columnDefs")
@@ -399,7 +398,6 @@ function loadDataTable(
 				text: "Excel",
 			},
 			"colvis",
-			custom_button,
 		],
 		serverSide: true,
 		ajax: {

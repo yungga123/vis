@@ -58,12 +58,45 @@ $(document).ready(function () {
 
     // On Change in Existing Customer
     $('#existing_customer').change(function() {
-        if ($(this).val() == 1) {
-            appendCustomer("get_customervt_url");
-        } else {
-            appendCustomer("get_forecastcustomer_url");
-        } 
+
+		let customer_type = $("#customer_type").val();
+		let existing_customer = $(this).val();
+
+		$('#branch_id').empty();
+		$('#branch_id').attr('disabled',true);
+        
+
+        if (existing_customer == 1 && customer_type == "Commercial") {
+            appendCustomer("get_customervt_url",1);
+        } else if (existing_customer == 0 && customer_type == "Commercial") {
+            appendCustomer("get_customervt_url",0);
+        } else if (existing_customer == 1 && customer_type == "Residential") {
+			appendCustomer("get_customerresidential",1);
+		} else if (existing_customer == 0 && customer_type == "Residential") {
+			appendCustomer("get_customerresidential",0);
+		}
     });
+
+	$('#customer_id').change(function() {
+		let id = $(this).val();
+		let url = "get_customervtbranch_url";
+		let customer_type = $("#customer_type").val();
+
+		if (customer_type == "Commercial") {
+			appendBranch(url,id);
+		} else {
+			$('#branch_id').attr('disabled');
+            $('#branch_id').empty();
+		}
+	});
+
+	$("#customer_type").change(function() {
+		$('#branch_id').empty();
+		$('#branch_id').attr('disabled',true);
+		$('#existing_customer').val("");
+		$('#customer_id').empty();
+		$('#customer_id').attr('disabled',true);
+	});
 });
 
 /* Get item details */
@@ -112,14 +145,14 @@ function remove(id) {
 	);
 }
 
-function appendCustomer(id){
-    let route = $('#'+id).val();
+function appendCustomer(id,forecast){
+    let route = $('#'+id).val() + "?forecast="+ forecast;
     //let keys = '';
 
     $.ajax({
         url: route,
         dataType: "json",
-        type: "post",
+        type: "get",
         success: function(response){
 			$('#customer_id').removeAttr('disabled');
             $('#customer_id').empty();
@@ -135,6 +168,38 @@ function appendCustomer(id){
                 $('#customer_id').append($('<option>', {
                     value: value['id'],
                     text: value['customer_name']
+                }));
+            });
+        },
+        error: function(){
+            alert('Errors Occured');
+        }
+    });
+}
+
+function appendBranch(url,id) {
+	let route = $('#'+url).val() + "?id="+ id;
+    //let keys = '';
+
+    $.ajax({
+        url: route,
+        dataType: "json",
+        type: "get",
+        success: function(response){
+			$('#branch_id').removeAttr('disabled');
+            $('#branch_id').empty();
+            $('#branch_id').append($('<option>', {
+                value: "not",
+                text: "---Please Select---"
+            }));
+            $.each(response.data, (key,value) => {
+                // keys = Object.keys(value);
+                // console.log(keys);
+                // console.log(value['customer_name']);
+
+                $('#branch_id').append($('<option>', {
+                    value: value['id'],
+                    text: value['branch_name']
                 }));
             });
         },

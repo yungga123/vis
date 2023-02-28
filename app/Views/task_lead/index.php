@@ -6,7 +6,8 @@
             <input type="hidden" id="edit_url" value="<?= url_to('tasklead.edit'); ?>" disabled>
             <input type="hidden" id="remove_url" value="<?= url_to('tasklead.delete'); ?>" disabled>
             <input type="hidden" id="get_customervt_url" value="<?= url_to('tasklead.getcustomervt'); ?>" disabled>
-            <input type="hidden" id="get_forecastcustomer_url" value="<?= url_to('tasklead.getforecastcustomer'); ?>" disabled>
+            <input type="hidden" id="get_customervtbranch_url" value="<?= url_to('tasklead.getcustomervtbranch'); ?>" disabled>
+            <input type="hidden" id="get_customerresidential" value="<?= url_to('tasklead.getcustomerresidential'); ?>" disabled>
             <table id="tasklead_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('tasklead.list'); ?>">
                 <thead>
                     <tr> 

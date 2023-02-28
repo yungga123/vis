@@ -149,8 +149,10 @@ $routes->group('tasklead',['filter' => 'checkauth'],static function($routes){
     $routes->post('save','Tasklead::save',['as' => 'tasklead.save']);
     $routes->post('edit','Tasklead::edit',['as' => 'tasklead.edit']);
     $routes->post('delete','Tasklead::delete',['as' => 'tasklead.delete']);
-    $routes->post('fetchcustomervt','Tasklead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
-    $routes->post('fetchcustomerforecast','Tasklead::getForecastCustomer',['as' => 'tasklead.getforecastcustomer']);
+    $routes->get('fetchcustomervt','Tasklead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
+    // $routes->post('fetchcustomerforecast','Tasklead::getForecastCustomer',['as' => 'tasklead.getforecastcustomer']);
+    $routes->get('fetchcustomerresidential','TaskLead::getResidentialCustomers',['as' => 'tasklead.getcustomerresidential']);
+    $routes->get('fetchcustomervtbranch','Tasklead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
 });
 
 //SALES MANAGER
