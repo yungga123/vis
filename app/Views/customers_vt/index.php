@@ -7,6 +7,18 @@
         <div class="card-body">
             <a class="btn btn-success disabled" href="#" role="button">Commercial</a>
             <a class="btn btn-success" href="<?= url_to('customersresidential.home') ?>" role="button">Residential</a>
+            <div class="float-right">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="filterby">Filter by</label>
+                    </div>
+                    <select class="custom-select" name="filter" id="filterby">
+                        <option value="all" selected>All</option>
+                        <option value="YES">Forecast</option>
+                        <option value="NO">Official</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card">

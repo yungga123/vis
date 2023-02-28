@@ -73,9 +73,15 @@ class CustomersResidential extends BaseController
      */
     public function list() {
         $table = new TablesIgniter();
-        $where_forecast = $this->request->getVar('forecast');
+        $params = $this->request->getVar('params');
+        $builder = $this->_model->noticeTable();
 
-        $table->setTable(($where_forecast) ? $this->_model->noticeTable()->where('forecast',$where_forecast) : $this->_model->noticeTable())
+        if ($params && $params['filter'] !== 'all') {
+            $builder->where('forecast', $params['filter']);
+        }
+
+        $table
+            ->setTable($builder)
             ->setSearch([
                 "forecast",
                 "id",

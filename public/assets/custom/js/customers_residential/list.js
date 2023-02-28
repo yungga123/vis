@@ -19,6 +19,16 @@ $(document).ready(function () {
 		"notes",
 	];
 
+	/* Load dataTable */
+	const route = $("#" + table).data("url");
+	$("#filterby").on("change", function () {
+		const options = {
+			params: { filter: $(this).val() },
+		};
+		loadDataTable(table, route, METHOD.POST, options, true);
+	});
+	loadDataTable(table, route, METHOD.POST);
+
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
@@ -28,38 +38,6 @@ $(document).ready(function () {
 
 		clearAlertInForm(elems);
 	});
-
-	/* Load dataTable */
-	
-	const route = $("#" + table).data("url");
-	let custom_button = [
-		{
-			text: 'All',
-			action: function () {
-				//alert( 'Button FORECAST' );
-	
-				loadDataTable(table, route, METHOD.POST,options = {},destroy = true,custom_button);
-			}
-		},
-		{
-			text: 'Forecast',
-			action: function () {
-				//alert( 'Button FORECAST' );
-	
-				let url = $('#forecast_url').val() + "?forecast=YES";
-				loadDataTable(table, url, METHOD.GET,options = {},destroy = true,custom_button);
-			}
-		},
-		{
-			text: 'Official',
-			action: function () {
-				//alert( 'Button OFFICIAL' );
-				let url = $('#forecast_url').val() + "?forecast=NO";
-				loadDataTable(table, url, METHOD.GET,options = {},destroy = true,custom_button);
-			}
-		}];
-	
-		loadDataTable(table, route, METHOD.POST,options = {},destroy = false,custom_button);
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {

@@ -74,10 +74,16 @@ class CustomersVt extends BaseController
      */
     public function list()
     {
-        $table = new TablesIgniter();
-        $where_forecast = $this->request->getVar('forecast');
+        $table  = new TablesIgniter();
+        $params = $this->request->getVar('params');
+        $builder = $this->_model->noticeTable();
+
+        if ($params && $params['filter'] !== 'all') {
+            $builder->where('forecast', $params['filter']);
+        }
+
         $table
-            ->setTable(($where_forecast) ? $this->_model->noticeTable()->where('forecast',$where_forecast) : $this->_model->noticeTable())
+            ->setTable($builder)
             ->setSearch([
                 "forecast",
                 "id",
