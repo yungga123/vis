@@ -32,6 +32,20 @@ $(document).ready(function () {
 		$(`#${form}`)[0].reset();
 		$("#tasklead_id").val("");
 
+		$('.status').attr('hidden',false);
+		$('.customer_type').attr('hidden',false);
+		$('.existing_customer').attr('hidden',false);
+		$('.customer_id').attr('hidden',false);
+		$('.branch_id').attr('hidden',false);
+		$('.remark_next_step').attr('hidden',false);
+
+		$('#status').empty();
+		$('#status').append($('<option>', {
+			value: '10.00',
+			text: '10% -- Identified',
+		}));
+		$('#status').val("10.00");
+
 		clearAlertInForm(elems);
 	});
 

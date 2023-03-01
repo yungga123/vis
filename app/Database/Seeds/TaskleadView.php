@@ -60,7 +60,7 @@ class TaskleadView extends Seeder
         ON
             tasklead.branch_id=customer_branch.id
         WHERE
-            tasklead.deleted_at IS NULL AND status <> 100.00 AND existing_customer = 0
+            tasklead.deleted_at IS NULL AND status <> 100.00
         ");
     }
 }
