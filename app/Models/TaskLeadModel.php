@@ -149,7 +149,7 @@ class TaskLeadModel extends Model
     {
         $closureFun = function($row) {
             return <<<EOF
-                <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_tasklead" title="Edit"><i class="fas fa-edit"></i> </button> 
+                <button class="btn btn-sm btn-success" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-arrow-up"></i> </button> 
                 <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
             EOF;
         };

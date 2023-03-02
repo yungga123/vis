@@ -32,19 +32,23 @@ $(document).ready(function () {
 		$(`#${form}`)[0].reset();
 		$("#tasklead_id").val("");
 
-		$('.status').attr('hidden',false);
-		$('.customer_type').attr('hidden',false);
-		$('.existing_customer').attr('hidden',false);
-		$('.customer_id').attr('hidden',false);
-		$('.branch_id').attr('hidden',false);
-		$('.remark_next_step').attr('hidden',false);
+		hideElements();
 
-		$('#status').empty();
-		$('#status').append($('<option>', {
-			value: '10.00',
-			text: '10% -- Identified',
-		}));
+		let elements = [
+			'status',
+			'customer_type',
+			'existing_customer',
+			'customer_id',
+			'branch_id',
+			'remark_next_step'
+		];
+
+		$.each(elements, function(key,value){
+			$('.'+value).attr('hidden',false);
+		});
+
 		$('#status').val("10.00");
+		$('.status_text').val("10% -- Identified");
 
 		clearAlertInForm(elems);
 	});
@@ -68,6 +72,8 @@ $(document).ready(function () {
 		}
 
 		showAlertInForm(elems, message, res.status);
+		resetCustomer();
+		$(`#${modal}`).modal("hide");
 	});
 
     // On Change in Existing Customer
@@ -99,8 +105,9 @@ $(document).ready(function () {
 		if (customer_type == "Commercial") {
 			appendBranch(url,id);
 		} else {
-			$('#branch_id').attr('disabled');
-            $('#branch_id').empty();
+			$('#branch_id').empty();
+			$('#branch_id').attr('disabled',true);
+            
 		}
 	});
 
@@ -117,7 +124,7 @@ $(document).ready(function () {
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
-	$("#inventory_id").val(id);
+	$("#tasklead_id").val(id);
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -128,9 +135,25 @@ function edit(id) {
 
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
+					hideElements();
 					$.each(res.data, (key, value) => {
+						if (value == '0000-00-00' || value == '0.00') {
+							value = null;
+						}
 						$(`input[name="${key}"]`).val(value);
+						//console.log('Key:'+key,'Value:'+value);
+
+						if(key == 'status' && value == '10.00'){
+							$.each(elems, function(){
+								showElements();
+								$('.project').attr('hidden',false);
+								$('.remark_next_step').attr('hidden',false);
+								//console.log(elems);
+							});
+						}
 					});
+
+
 				}
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -222,5 +245,27 @@ function appendBranch(url,id) {
         }
     });
 }
+
+function resetCustomer() {
+	$('#customer_type').val("");
+	$('#existing_customer').val("");
+	$('#customer_id').empty();
+	$('#customer_id').attr('disabled',true);
+	$('#branch_id').empty();
+	$('#branch_id').attr('disabled',true);
+}
+
+function hideElements(){
+	$.each(elems,function(key,value){
+		$('.'+value).attr('hidden',true);
+	});
+}
+
+function showElements(){
+	$.each(elems,function(key,value){
+		$('.'+value).attr('hidden',false);
+	});
+}
+
 
 

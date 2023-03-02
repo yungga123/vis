@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal fade" id="modal_tasklead" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <form id="form_tasklead" action="<?= url_to('tasklead.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
@@ -13,7 +13,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <div class="form-group employee_id" hidden>
                                 <label for="employee_id">Employee ID</label>
                                 <input type="text" name="employee_id" id="employee_id" class="form-control" placeholder="Enter..." value="<?= session('employee_id') ?>" readonly>
@@ -26,7 +26,8 @@
                             </div>
                             <div class="form-group status" hidden>
                                 <label for="status">Status</label>
-                                <select name="status" id="status" class="form-control" placeholder="Enter..."></select>
+                                <input name="status" id="status" class="form-control" placeholder="Enter..." hidden>
+                                <input class="form-control status_text" type="text" readonly>
                                 <small id="alert_status" class="text-danger"></small>
                             </div>
                             <div class="form-group customer_type" hidden>
@@ -59,8 +60,6 @@
                                 <select name="branch_id" id="branch_id" class="form-control" placeholder="Enter..." disabled></select>
                                 <small id="alert_branch_id" class="text-danger"></small>
                             </div>
-                        </div>
-                        <div class="col-sm-6">
                             <div class="form-group project" hidden>
                                 <label for="project">Project</label>
                                 <input type="text" name="project" id="project" class="form-control" placeholder="Enter...">
