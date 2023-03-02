@@ -141,14 +141,16 @@ $routes->get('/delete-customer-branch/(:num)','CustomerBranch::delete_customer_b
 // $routes->post('/add-project-existingcustomer','TaskLead::add_projectExistingCustomer');
 
 //Task Lead Reconstructed
-$routes->group('tasklead',['filter' => 'checkauth'],static function($routes){
+$routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->get('/','Tasklead::index', ['as' => 'tasklead.home']);
-    $routes->post('list','Tasklead::list',['as' => 'tasklead.list']);
-    $routes->post('save','Tasklead::save',['as' => 'tasklead.save']);
-    $routes->post('edit','Tasklead::edit',['as' => 'tasklead.edit']);
-    $routes->post('delete','Tasklead::delete',['as' => 'tasklead.delete']);
-    $routes->post('fetchcustomervt','Tasklead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
-    $routes->post('fetchcustomerforecast','Tasklead::getForecastCustomer',['as' => 'tasklead.getforecastcustomer']);
+    $routes->post('list','Tasklead::list', ['as' => 'tasklead.list']);
+    $routes->post('save','Tasklead::save', ['as' => 'tasklead.save']);
+    $routes->post('edit','Tasklead::edit', ['as' => 'tasklead.edit']);
+    $routes->post('delete','Tasklead::delete', ['as' => 'tasklead.delete']);
+    $routes->post('fetchcustomervt','Tasklead::getVtCustomer', ['as' => 'tasklead.getcustomervt']);
+    $routes->post('fetchcustomerforecast','Tasklead::getForecastCustomer', ['as' => 'tasklead.getforecastcustomer']);
+    $routes->get('booked','TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
+    $routes->post('booked/list','TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
 });
 
 //SALES MANAGER
