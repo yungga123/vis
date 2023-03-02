@@ -80,16 +80,6 @@
                                 <input type="date" name="forecast_close_date" id="forecast_close_date" class="form-control" placeholder="Enter...">
                                 <small id="alert_forecast_close_date" class="text-danger"></small>
                             </div>
-                            <div class="form-group min_forecast_date" hidden>
-                                <label for="min_forecast_date">Min. Forecast Date</label>
-                                <input type="date" name="min_forecast_date" id="min_forecast_date" class="form-control" placeholder="Enter...">
-                                <small id="alert_min_forecast_date" class="text-danger"></small>
-                            </div>
-                            <div class="form-group max_forecast_date" hidden>
-                                <label for="max_forecast_date">Max Forecast Date</label>
-                                <input type="date" name="max_forecast_date" id="max_forecast_date" class="form-control" placeholder="Enter..." value="">
-                                <small id="alert_max_forecast_date" class="text-danger"></small>
-                            </div>
                             <div class="form-group remark_next_step" hidden>
                                 <label for="remark_next_step">Remark Next Step</label>
                                 <textarea name="remark_next_step" id="remark_next_step" class="form-control" placeholder="Enter..."></textarea>

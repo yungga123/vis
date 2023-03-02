@@ -54,8 +54,8 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	const route = $("#" + table).data("url");
-	loadDataTable(table, route, METHOD.POST);
+	const route = $("#" + table).data("url") + "?get_booked=100.00%";
+	loadDataTable(table, route, METHOD.GET);
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -65,15 +65,15 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable();
 			notifMsgSwal(res.status, message, res.status);
-
-			if ($(`#${modal}`).hasClass("edit")) {
-				$(`#${modal}`).modal("hide");
-			}
-		}
+			$(`#${modal}`).modal("hide");
+			// if ($(`#${modal}`).hasClass("edit")) {
+			// 	$(`#${modal}`).modal("hide");
+			// }
+		} 
 
 		showAlertInForm(elems, message, res.status);
 		resetCustomer();
-		$(`#${modal}`).modal("hide");
+		
 	});
 
     // On Change in Existing Customer
@@ -140,20 +140,72 @@ function edit(id) {
 						if (value == '0000-00-00' || value == '0.00') {
 							value = null;
 						}
-						$(`input[name="${key}"]`).val(value);
+						//$(`input[name="${key}"]`).val(value);
+						$("#"+key).val(value);
 						//console.log('Key:'+key,'Value:'+value);
 
+						if (key=='customer_id') {
+							$('#customer_id').attr('disabled',false);
+							$('#customer_id').empty();
+							$('#customer_id').append($('<option>', {
+								value: value,
+								text: value
+							}));
+							$('.customer_id').attr('hidden',true);
+						}
+
+						if (key=='branch_id') {
+							$('#branch_id').attr('disabled',false);
+							$('#branch_id').empty();
+							$('#branch_id').append($('<option>', {
+								value: value,
+								text: value
+							}));
+							$('.branch_id').attr('hidden',true);
+						}
+
 						if(key == 'status' && value == '10.00'){
-							$.each(elems, function(){
-								showElements();
-								$('.project').attr('hidden',false);
-								$('.remark_next_step').attr('hidden',false);
-								//console.log(elems);
-							});
+							$('.project').attr('hidden',false);
+							$('.remark_next_step').attr('hidden',false);
+							$('#status').val('30.00');
+							$(`#${modal} .modal-title`).text("Update tasklead to QUALIFIED");
+						}
+
+						if(key == 'status' && value == '30.00'){
+							$('.project_amount').attr('hidden',false);
+							$('.forecast_close_date').attr('hidden',false);
+							$('.remark_next_step').attr('hidden',false);
+							$('#status').val('50.00');
+							$(`#${modal} .modal-title`).text("Update tasklead to DEVELOPED SOLUTION");
+						}
+
+						if(key == 'status' && value == '50.00'){
+							$('.quotation_num').attr('hidden',false);
+							$('.remark_next_step').attr('hidden',false);
+							$('#status').val('70.00');
+							$(`#${modal} .modal-title`).text("Update tasklead to EVALUATION");
+						}
+
+						if(key == 'status' && value == '70.00'){
+							$('.remark_next_step').attr('hidden',false);
+							$('#status').val('90.00');
+							$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION");
+						}
+
+						if(key == 'status' && value == '90.00'){
+							$('.close_deal_date').attr('hidden',false);
+							$('.project_start_date').attr('hidden',false);
+							$('.project_finish_date').attr('hidden',false);
+							$('.remark_next_step').attr('hidden',false);
+							$('#status').val('100.00');
+							$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION");
 						}
 					});
 
-
+					if ($('#status').val()=='70.00'){
+						$('#quotation_num').val($('#get_quotation_num').val()+$('#tasklead_id').val());
+					}
+					
 				}
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -194,7 +246,7 @@ function appendCustomer(id,forecast){
 			$('#customer_id').removeAttr('disabled');
             $('#customer_id').empty();
             $('#customer_id').append($('<option>', {
-                value: "not",
+                value: "",
                 text: "---Please Select---"
             }));
             $.each(response.data, (key,value) => {
@@ -226,7 +278,7 @@ function appendBranch(url,id) {
 			$('#branch_id').removeAttr('disabled');
             $('#branch_id').empty();
             $('#branch_id').append($('<option>', {
-                value: "not",
+                value: "",
                 text: "---Please Select---"
             }));
             $.each(response.data, (key,value) => {
@@ -249,10 +301,12 @@ function appendBranch(url,id) {
 function resetCustomer() {
 	$('#customer_type').val("");
 	$('#existing_customer').val("");
+	$('#customer_id').val("");
 	$('#customer_id').empty();
 	$('#customer_id').attr('disabled',true);
 	$('#branch_id').empty();
 	$('#branch_id').attr('disabled',true);
+	$('#branch_id').val("");
 }
 
 function hideElements(){

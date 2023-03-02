@@ -71,14 +71,26 @@ class Tasklead extends BaseController
         $data['can_add']        = $this->_can_add;
         $data['quarter']        = $this->_time->getQuarter();
 
+        // get initials for the name (used for quotation)
+        $words = explode(' ',session('name'));
+        $inits = '';
+        foreach($words as $word){
+            $inits.=strtoupper(substr($word,0,1));
+        }
+        
+        $quotation_num = "Q".$inits.date('ym');
+        $data['quotation_num'] = $quotation_num;
+
         return view('task_lead/index', $data);
     }
 
     public function list()
     {
         $table = new TablesIgniter();
+        $booked = $this->request->getVar('get_booked');
 
-        $table->setTable($this->_model->noticeTable())
+
+        $table->setTable($this->_model->noticeTable()->where('status !=',$booked))
             ->setSearch([
                 "id",
                 "employee_name",
@@ -102,6 +114,7 @@ class Tasklead extends BaseController
                 "project_finish_date",
                 "project_duration"
             ])
+            ->setDefaultOrder('id','desc')
             ->setOrder([
                 null,
                 "id",
@@ -260,8 +273,6 @@ class Tasklead extends BaseController
 
         return $this->response->setJSON($data);
     }
-
-
 
 
 
