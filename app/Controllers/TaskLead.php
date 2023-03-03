@@ -88,9 +88,9 @@ class Tasklead extends BaseController
     {
         $table = new TablesIgniter();
         $booked = $this->request->getVar('get_booked');
+        $employee_id = $this->request->getVar('employee_id');
 
-
-        $table->setTable($this->_model->noticeTable()->where('status !=',$booked))
+        $table->setTable($employee_id ? $this->_model->noticeTable()->where('status !=',$booked)->where('employee_id',$employee_id) : $this->_model->noticeTable()->where('status !=',$booked))
             ->setSearch([
                 "id",
                 "employee_name",

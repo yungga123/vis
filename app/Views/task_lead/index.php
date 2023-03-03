@@ -9,6 +9,7 @@
             <input type="hidden" id="get_customervtbranch_url" value="<?= url_to('tasklead.getcustomervtbranch'); ?>" disabled>
             <input type="hidden" id="get_customerresidential" value="<?= url_to('tasklead.getcustomerresidential'); ?>" disabled>
             <input type="hidden" id="get_quotation_num" value="<?= isset($quotation_num) ? $quotation_num : "" ?>">
+            <input type="hidden" id="get_employee_id" value="<?= session('employee_id') ?>">
             <table id="tasklead_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('tasklead.list'); ?>">
                 <thead>
                     <tr> 
