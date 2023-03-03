@@ -23,6 +23,8 @@ class TaskleadBookedView extends Seeder
             quarter,
             CONCAT(status,'%') as status,
             status_percent,
+            customer_type,
+            existing_customer,
             customer_name,
             branch_name,
             customers_vt.contact_number as contact_number,
@@ -30,9 +32,9 @@ class TaskleadBookedView extends Seeder
             project_amount,
             quotation_num,
             DATE_FORMAT(forecast_close_date,'%b %d, %Y') as forecast_close_date,
-            DATE_FORMAT(min_forecast_date,'%b %d, %Y') as min_forecast_date,
-            DATE_FORMAT(max_forecast_date,'%b %d, %Y') as max_forecast_date,
-            IF(close_deal_date<max_forecast_date AND close_deal_date>min_forecast_date,'HIT','MISSED') as status1,
+            DATE_FORMAT(DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as min_forecast_date,
+            DATE_FORMAT(DATE_ADD(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as max_forecast_date,
+            IF(close_deal_date<DATE_ADD(forecast_close_date, INTERVAL 6 DAY) AND close_deal_date>DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'HIT','MISSED') as status1,
             remark_next_step,
             DATE_FORMAT(close_deal_date,'%b %d, %Y') as close_deal_date,
             DATE_FORMAT(project_start_date,'%b %d, %Y') as project_start_date,
@@ -58,7 +60,7 @@ class TaskleadBookedView extends Seeder
         ON
             tasklead.branch_id=customervt_branch.id
         WHERE
-            tasklead.deleted_at IS NULL AND status = 100.00
+            status = 100.00
         ");
     }
 }
