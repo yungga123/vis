@@ -46,7 +46,14 @@ $(document).ready(function () {
 		"bnotes",
 	];
 
+	/* Load dataTable */
 	const route = $("#" + table).data("url");
+	$("#filterby").on("change", function () {
+		const options = {
+			params: { filter: $(this).val() },
+		};
+		loadDataTable(table, route, METHOD.POST, options, true);
+	});
 	loadDataTable(table, route, METHOD.POST);
 
 	$("#btn_add_record").on("click", function () {

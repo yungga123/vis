@@ -74,12 +74,19 @@ class CustomersVt extends BaseController
      */
     public function list()
     {
-        $table = new TablesIgniter();
+        $table  = new TablesIgniter();
+        $params = $this->request->getVar('params');
+        $builder = $this->_model->noticeTable();
+
+        if ($params && $params['filter'] !== 'all') {
+            $builder->where('forecast', $params['filter']);
+        }
 
         $table
-            ->setTable($this->_model->noticeTable())
+            ->setTable($builder)
             ->setSearch([
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",
@@ -92,6 +99,7 @@ class CustomersVt extends BaseController
             ->setOrder([
                 null,
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",
@@ -103,6 +111,7 @@ class CustomersVt extends BaseController
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",

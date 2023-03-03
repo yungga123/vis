@@ -73,10 +73,18 @@ class CustomersResidential extends BaseController
      */
     public function list() {
         $table = new TablesIgniter();
+        $params = $this->request->getVar('params');
+        $builder = $this->_model->noticeTable();
 
-        $table->setTable($this->_model->noticeTable())
+        if ($params && $params['filter'] !== 'all') {
+            $builder->where('forecast', $params['filter']);
+        }
+
+        $table
+            ->setTable($builder)
             ->setSearch([
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",
@@ -89,6 +97,7 @@ class CustomersResidential extends BaseController
             ->setOrder([
                 null,
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",
@@ -100,6 +109,7 @@ class CustomersResidential extends BaseController
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
                 "forecast",
+                "id",
                 "customer_name",
                 "contact_person",
                 "address",

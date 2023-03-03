@@ -27,8 +27,6 @@ class TaskLeadModel extends Model
         "project_amount", 
         "quotation_num", 
         "forecast_close_date",
-        "min_forecast_date",
-        "max_forecast_date",
         "remark_next_step", 
         "close_deal_date", 
         "project_start_date", 
@@ -46,6 +44,7 @@ class TaskLeadModel extends Model
     protected $validationRules      = [
         "customer_type" => ["label" => "Customer Type", "rules" => "required"],
         "existing_customer" => ["label" => "Existing Customer", "rules" => "required"],
+        "customer_id" => ["label" => "Customer", "rules" => "required"],
         "quotation_num" => "max_length[100]",
         "quarter" => 'required',
         "status" => 'required',
@@ -149,7 +148,7 @@ class TaskLeadModel extends Model
     {
         $closureFun = function($row) {
             return <<<EOF
-                <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_tasklead" title="Edit"><i class="fas fa-edit"></i> </button> 
+                <button class="btn btn-sm btn-success" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-arrow-up"></i> </button> 
                 <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
             EOF;
         };

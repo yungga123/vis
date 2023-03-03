@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\CustomersModel;
 use App\Models\CustomersResidentialModel;
+use App\Models\CustomersVtBranchModel;
 use App\Models\CustomersVtModel;
 use App\Models\TaskLeadModel;
 use CodeIgniter\I18n\Time;
@@ -70,14 +71,26 @@ class Tasklead extends BaseController
         $data['can_add']        = $this->_can_add;
         $data['quarter']        = $this->_time->getQuarter();
 
+        // get initials for the name (used for quotation)
+        $words = explode(' ',session('name'));
+        $inits = '';
+        foreach($words as $word){
+            $inits.=strtoupper(substr($word,0,1));
+        }
+        
+        $quotation_num = "Q".$inits.date('ym');
+        $data['quotation_num'] = $quotation_num;
+
         return view('task_lead/index', $data);
     }
 
     public function list()
     {
         $table = new TablesIgniter();
+        $booked = $this->request->getVar('get_booked');
+        $employee_id = $this->request->getVar('employee_id');
 
-        $table->setTable($this->_model->noticeTable())
+        $table->setTable($employee_id ? $this->_model->noticeTable()->where('status !=',$booked)->where('employee_id',$employee_id) : $this->_model->noticeTable()->where('status !=',$booked))
             ->setSearch([
                 "id",
                 "employee_name",
@@ -101,6 +114,7 @@ class Tasklead extends BaseController
                 "project_finish_date",
                 "project_duration"
             ])
+            ->setDefaultOrder('id','desc')
             ->setOrder([
                 null,
                 "id",
@@ -262,27 +276,37 @@ class Tasklead extends BaseController
 
 
 
-
-
     public function getVtCustomer() {
         $model = new CustomersVtModel();
-        $data['data'] = $model->find();
+        $forecast = $this->request->getVar('forecast');
+        $data['data'] = $model->where('forecast', $forecast)->find();
         $data['success'] = true;
 
         return $this->response->setJSON($data);
     }
 
-    public function getForecastCustomer() {
-        $model = new CustomersModel();
-        $data['data'] = $model->find();
-        $data['success'] = true;
+    // public function getForecastCustomer() {
+    //     $model = new CustomersModel();
+    //     $forecast = $this->request->getVar('forecast');
+    //     $data['data'] = $forecast ? $model->where('forecast', $forecast)->find() : $model->find();
+    //     $data['success'] = true;
 
-        return $this->response->setJSON($data);
-    }
+    //     return $this->response->setJSON($data);
+    // }
 
     public function getResidentialCustomers() {
         $model = new CustomersResidentialModel();
-        $data['data'] = $model->find();
+        $forecast = $this->request->getVar('forecast');
+        $data['data'] = $model->where('forecast', $forecast)->find();
+        $data['success'] = true;
+
+        return $this->response->setJSON($data);
+    }
+
+    public function getCustomerVtBranch() {
+        $model = new CustomersVtBranchModel();
+        $id = $this->request->getVar('id');
+        $data['data'] = $model->where('customer_id',$id)->find();
         $data['success'] = true;
 
         return $this->response->setJSON($data);

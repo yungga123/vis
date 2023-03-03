@@ -86,6 +86,7 @@ $routes->group('customers',['filter' => 'checkauth'],static function($routes){
 $routes->group('customers/commercial',['filter' => 'checkauth'],static function($routes){
     $routes->get('/','CustomersVt::index', ['as' => 'customervt.home']);
     $routes->post('list','CustomersVt::list',['as' => 'customervt.list']);
+    $routes->get('list','CustomersVt::list',['as' => 'customervt.listget']);
     $routes->post('save','CustomersVt::save',['as' => 'customervt.save']);
     $routes->post('edit','CustomersVt::edit',['as' => 'customervt.edit']);
     $routes->post('delete','CustomersVt::delete',['as' => 'customervt.delete']);
@@ -100,6 +101,7 @@ $routes->group('customers/commercial',['filter' => 'checkauth'],static function(
 $routes->group('customers/residential',['filter' => 'checkauth'],static function($routes){
     $routes->get('/','CustomersResidential::index', ['as' => 'customersresidential.home']);
     $routes->post('list','CustomersResidential::list',['as' => 'customersresidential.list']);
+    $routes->get('list','CustomersResidential::list',['as' => 'customersresidential.listget']);
     $routes->post('save','CustomersResidential::save',['as' => 'customersresidential.save']);
     $routes->post('edit','CustomersResidential::edit',['as' => 'customersresidential.edit']);
     $routes->post('delete','CustomersResidential::delete',['as' => 'customersresidential.delete']);
@@ -143,14 +145,14 @@ $routes->get('/delete-customer-branch/(:num)','CustomerBranch::delete_customer_b
 //Task Lead Reconstructed
 $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->get('/','Tasklead::index', ['as' => 'tasklead.home']);
-    $routes->post('list','Tasklead::list', ['as' => 'tasklead.list']);
-    $routes->post('save','Tasklead::save', ['as' => 'tasklead.save']);
-    $routes->post('edit','Tasklead::edit', ['as' => 'tasklead.edit']);
-    $routes->post('delete','Tasklead::delete', ['as' => 'tasklead.delete']);
-    $routes->post('fetchcustomervt','Tasklead::getVtCustomer', ['as' => 'tasklead.getcustomervt']);
-    $routes->post('fetchcustomerforecast','Tasklead::getForecastCustomer', ['as' => 'tasklead.getforecastcustomer']);
-    $routes->get('booked','TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
-    $routes->post('booked/list','TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
+    $routes->get('list','Tasklead::list',['as' => 'tasklead.list']);
+    $routes->post('save','Tasklead::save',['as' => 'tasklead.save']);
+    $routes->post('edit','Tasklead::edit',['as' => 'tasklead.edit']);
+    $routes->post('delete','Tasklead::delete',['as' => 'tasklead.delete']);
+    $routes->get('fetchcustomervt','Tasklead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
+    // $routes->post('fetchcustomerforecast','Tasklead::getForecastCustomer',['as' => 'tasklead.getforecastcustomer']);
+    $routes->get('fetchcustomerresidential','TaskLead::getResidentialCustomers',['as' => 'tasklead.getcustomerresidential']);
+    $routes->get('fetchcustomervtbranch','Tasklead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
 });
 
 //SALES MANAGER

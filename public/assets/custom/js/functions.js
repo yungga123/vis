@@ -395,7 +395,7 @@ function loadDataTable(
 				exportOptions: {
 					columns: ":visible",
 				},
-				text: "Export to Excel",
+				text: "Excel",
 			},
 			"colvis",
 		],
