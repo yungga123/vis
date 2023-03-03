@@ -16,6 +16,7 @@
                 </thead>
             </table>
         </div>
+        
     </div>
 </div>
 <?= $this->include('templates/loading'); ?>

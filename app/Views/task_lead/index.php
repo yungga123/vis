@@ -40,7 +40,9 @@
             </table>
         </div>
         <div class="card-footer">
-            <!-- <a href="<?=site_url('employee-menu');?>" class="btn btn-secondary float-right"><i class="fas fa-undo"></i> RETURN TO MENU</a> -->
+            <div class="float-right">
+                <a class="btn btn-success" href="<?= url_to('tasklead.booked.home') ?>">View Booked Taskleads</a>
+            </div>
         </div>
     </div>
 </div>
