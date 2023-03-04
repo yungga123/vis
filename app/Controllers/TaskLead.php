@@ -201,11 +201,25 @@ class Tasklead extends BaseController
                 $data['message']    = "Validation error!";
             }
 
-            if ($this->request->getVar('id')) {
-                $data['message']    = 'Tasklead has been updated successfully!';
-            }
+            if (! empty($id)) {                
+                $data['message']    = 'Tasklead has been updated successfully!';                
+            } else $id = $this->_model->getInsertID();
 
-            $this->_taskleadHistoryModel->insert($this->request->getVar());
+            
+            $this->_taskleadHistoryModel->insert([
+                'tasklead_id' => $id,
+                'quarter' => $this->request->getVar('quarter'),
+                'status' => $this->request->getVar('status'),
+                'customer_id' => $this->request->getVar('customer_id'),
+                'project' => $this->request->getVar('project'),
+                'project_amount' => $this->request->getVar('project_amount'),
+                'quotation_num' => $this->request->getVar('quotation_num'),
+                'forecast_close_date' => $this->request->getVar('forecast_close_date'),
+                'remark_next_step' => $this->request->getVar('remark_next_step'),
+                'close_deal_date' => $this->request->getVar('close_deal_date'),
+                'project_start_date' => $this->request->getVar('project_start_date'),
+                'project_finish_date' => $this->request->getVar('project_finish_date')
+            ]);
             // Commit transaction
             $this->transCommit();
         } catch (Exception $e) {

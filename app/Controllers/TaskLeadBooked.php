@@ -54,8 +54,8 @@ class TaskLeadBooked extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
-        $data['title']          = 'Booked Project List';
-        $data['page_title']     = 'Booked Project List';
+        $data['title']          = 'Task Lead | Booked';
+        $data['page_title']     = 'Task Lead | Booked';
         $data['custom_js']      = 'tasklead/booked.js';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
