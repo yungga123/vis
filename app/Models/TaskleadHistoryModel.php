@@ -23,8 +23,6 @@ class TaskleadHistoryModel extends Model
         "project_amount",
         "quotation_num",
         "forecast_close_date",
-        "min_forecast_date",
-        "max_forecast_date",
         "remark_next_step",
         "close_deal_date",
         "project_start_date",

@@ -7,6 +7,7 @@ use App\Models\CustomersModel;
 use App\Models\CustomersResidentialModel;
 use App\Models\CustomersVtBranchModel;
 use App\Models\CustomersVtModel;
+use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
 use CodeIgniter\I18n\Time;
 use Exception;
@@ -49,6 +50,11 @@ class Tasklead extends BaseController
      * Class constructor
      */
 
+    private $_taskleadHistoryModel;
+    /**
+     * Class constructor
+     */
+
     
     public function __construct()
     {
@@ -57,6 +63,7 @@ class Tasklead extends BaseController
         $this->_module_code = MODULE_CODES['task_lead']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_taskleadHistoryModel = new TaskleadHistoryModel();
     }
 
     public function index()
@@ -198,6 +205,7 @@ class Tasklead extends BaseController
                 $data['message']    = 'Tasklead has been updated successfully!';
             }
 
+            $this->_taskleadHistoryModel->insert($this->request->getVar());
             // Commit transaction
             $this->transCommit();
         } catch (Exception $e) {
