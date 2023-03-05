@@ -1,5 +1,5 @@
-<?=$this->extend('templates/default');?>
-<?=$this->section('content');?>
+<?= $this->extend('templates/default'); ?>
+<?= $this->section('content'); ?>
 <div class="container-fluid">
     <div class="card">
         <div class="card-body">
@@ -10,9 +10,10 @@
             <input type="hidden" id="get_customerresidential" value="<?= url_to('tasklead.getcustomerresidential'); ?>" disabled>
             <input type="hidden" id="get_quotation_num" value="<?= isset($quotation_num) ? $quotation_num : "" ?>">
             <input type="hidden" id="get_employee_id" value="<?= session('employee_id') ?>">
+
             <table id="tasklead_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('tasklead.list'); ?>">
                 <thead>
-                    <tr> 
+                    <tr>
                         <th>Action</th>
                         <th>Tasklead ID</th>
                         <th>Employee Name</th>
@@ -48,4 +49,4 @@
 </div>
 <?= $this->include('task_lead/tasklead_form'); ?>
 <?= $this->include('templates/loading'); ?>
-<?=$this->endSection();?>
+<?= $this->endSection(); ?>

@@ -97,6 +97,7 @@ class Tasklead extends BaseController
         $booked = $this->request->getVar('get_booked');
         $employee_id = $this->request->getVar('employee_id');
 
+
         $table->setTable($employee_id ? $this->_model->noticeTable()->where('status !=',$booked)->where('employee_id',$employee_id) : $this->_model->noticeTable()->where('status !=',$booked))
             ->setSearch([
                 "id",
@@ -204,6 +205,29 @@ class Tasklead extends BaseController
             if (! empty($id)) {                
                 $data['message']    = 'Tasklead has been updated successfully!';                
             } else $id = $this->_model->getInsertID();
+
+
+            //update customer to existing customer if customer is forecast after booked
+            if ($this->request->getVar('existing_customer')==0 && $this->request->getVar('status')=='100.00' && $this->request->getVar('customer_type')=='Commercial') {
+                $customersVtModel = new CustomersVtModel();
+
+                $customersVtModel->update(
+                    $this->request->getVar('customer_id'),
+                    [
+                        'forecast' => 0
+                    ]
+                );
+            } elseif(($this->request->getVar('existing_customer')==0 && $this->request->getVar('status')=='100.00' && $this->request->getVar('customer_type')=='Residential')) {
+
+                $customersResidentialModel = new CustomersResidentialModel();
+
+                $customersResidentialModel->update(
+                    $this->request->getVar('customer_id'),
+                    [
+                        'forecast' => 0
+                    ]
+                );
+            }
 
             
             $this->_taskleadHistoryModel->insert([

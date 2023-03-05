@@ -56,6 +56,12 @@ $(document).ready(function () {
 
 	/* Load dataTable */
 	const route = $("#" + table).data("url") + "?get_booked=100.00%" + "&employee_id=" + employee_id;
+	$("#filterby").on("change", function () {
+		const options = {
+			params: { filter: $(this).val() },
+		};
+		loadDataTable(table, route, METHOD.POST, options, true);
+	});
 	loadDataTable(table, route, METHOD.GET);
 
 	/* Form for saving item */
@@ -88,13 +94,13 @@ $(document).ready(function () {
         
 
         if (existing_customer == 1 && customer_type == "Commercial") {
-            appendCustomer("get_customervt_url",1);
-        } else if (existing_customer == 0 && customer_type == "Commercial") {
             appendCustomer("get_customervt_url",0);
+        } else if (existing_customer == 0 && customer_type == "Commercial") {
+            appendCustomer("get_customervt_url",1);
         } else if (existing_customer == 1 && customer_type == "Residential") {
-			appendCustomer("get_customerresidential",1);
-		} else if (existing_customer == 0 && customer_type == "Residential") {
 			appendCustomer("get_customerresidential",0);
+		} else if (existing_customer == 0 && customer_type == "Residential") {
+			appendCustomer("get_customerresidential",1);
 		}
     });
 
