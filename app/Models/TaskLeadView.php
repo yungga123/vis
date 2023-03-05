@@ -58,9 +58,28 @@ class TaskLeadView extends Model
     {
         $custom = function($row) {
             return <<<EOF
-                <p><strong>Closed Deal:</strong> {$row['close_deal_date']}</p> 
-                <p><strong>Branch:</strong> {$row['branch_name']}</p> 
-                <p><strong>Project:</strong> {$row['project']}</p> 
+                <p><strong>Closed Deal:</strong> {$row['close_deal_date']}</p>
+                <p><strong>Project Start:</strong> {$row['project_start_date']}</p>
+                <p><strong>Project Finish:</strong> {$row['project_finish_date']}</p>
+            EOF;
+        };
+        
+        return $custom;
+    }
+
+    public function customerDetails()
+    {
+        $custom = function($row) {
+
+            $branch = $row['branch_name'] ? $row['branch_name'] : "<span class='text-danger'><i>Not Set</i></span>";
+
+            return <<<EOF
+                {$row['customer_name']}
+                <br>
+                <small class="text-muted">{$row['customer_type']} Customer</small>
+                <br>
+                <small class="text-muted">Branch: {$branch}</small>
+                <p><small class="text-muted">Project: {$row['project']}</small></p>
             EOF;
         };
         
@@ -71,7 +90,7 @@ class TaskLeadView extends Model
     {
         $closureFun = function($row) {
             return <<<EOF
-                <a href="#" class="btn btn-info" title="View more details"><i class="fas fa-eye"></i> View</a> 
+                <a href="#" class="btn btn-info" title="View more details" data-toggle="modal" data-target="#modal-booked-details" onclick="getBookedDetails({$row['id']})"><i class="fas fa-eye"></i> View</a> 
             EOF;
         };
 

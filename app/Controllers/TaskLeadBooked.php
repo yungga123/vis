@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\TaskleadHistorViewModel;
 use App\Models\TaskLeadView;
 use monken\TablesIgniter;
 
@@ -87,7 +88,7 @@ class TaskLeadBooked extends BaseController
             ->setOrder([
                 'id',
                 'employee_name',
-                'customer_name',
+                'customer_name', // As details
                 'status_percent',
                 'quarter', // As details
                 null,
@@ -95,12 +96,29 @@ class TaskLeadBooked extends BaseController
             ->setOutput([
                 'id',
                 'employee_name',
-                'customer_name',
+                $this->_model->customerDetails(),
                 'status_percent',
                 $this->_model->dtDetails(),
                 $this->_model->buttons(),
             ]);
 
         return $table->getDatatable();
+    }
+
+    public function get_booked_details() {
+        $id = $this->request->getVar('tasklead_id');
+        $data = $this->_model->noticeTable()->where('id',$id)->get()->getResult();
+
+        return $this->response->setJSON($data);
+    }
+
+    public function get_tasklead_history() {
+
+        $historyModel = new TaskleadHistorViewModel();
+
+        $id = $this->request->getVar('tasklead_id');
+        $data = $historyModel->where('tasklead_id',$id)->find();
+
+        return $this->response->setJSON($data);
     }
 }

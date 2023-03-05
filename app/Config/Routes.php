@@ -155,6 +155,8 @@ $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->get('fetchcustomervtbranch','Tasklead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
     $routes->get('booked','TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
     $routes->post('booked/list','TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
+    $routes->post('booked/project_details','TaskLeadBooked::get_booked_details',['as' => 'tasklead.booked.details']);
+    $routes->post('booked/history_details','TaskLeadBooked::get_tasklead_history',['as' => 'tasklead.booked.history']);
 });
 
 //SALES MANAGER
