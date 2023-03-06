@@ -15,7 +15,7 @@ $(document).ready(function () {
 				if (res.status === STATUS.SUCCESS) {
 					const msg = message + " You will be redirected in <b></b> second/s..";
 
-					swalNotifRedirect(res.status, msg, res.status, "/dashboard");
+					swalNotifRedirect(res.status, msg, res.status, res.redirect);
 					$(".btn-login").attr("disabled", true);
 				} else notifMsgSwal(res.status, message, res.status);
 

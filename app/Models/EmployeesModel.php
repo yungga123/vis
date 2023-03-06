@@ -245,6 +245,10 @@ class EmployeesModel extends Model
         $builder = $this->db->table($this->view);
         $builder->select("*");
 
+        if (! is_admin()) {
+            $builder->where('employee_id !=', 'SOFTWAREDEV');
+        }
+
         return $builder;
     }
 

@@ -52,6 +52,7 @@ class LoginPage extends BaseController
 
                     $data['status']     = STATUS_SUCCESS;
                     $data['message']    = 'You have successfully logged in!';
+                    $data['redirect']   = base_Url('/dashboard');
                 }
             } else {
                 $data['status']     = STATUS_ERROR;
