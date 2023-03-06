@@ -110,7 +110,7 @@ if (! function_exists('setup_modules'))
                 'name'      => get_modules('TASK_LEAD'),
                 'url'       => url_to('tasklead.home'),
                 'class'     => (url_is('tasklead') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
+                'icon'      => 'fas fa-tasks',
             ],
             // 'MANAGER_OF_SALES'      => [
             //     'menu'      => 'SALES', // Leave empty if none
