@@ -256,16 +256,13 @@ class EmployeesModel extends Model
     {
         $id = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
+            $disabled = session('employee_id') == $row["employee_id"] ? 'disabled' : '';
+
             if (is_admin()) {
                 return <<<EOF
                     <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  title="Edit"><i class="fas fa-edit"></i> </button> 
-                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete" $disabled><i class="fas fa-trash"></i></button>  
                 EOF;
-            }
-            
-            $disabled = '';
-            if (session('employee_id') === $row["employee_id"]) {
-                $disabled = 'disabled';
             }
 
             $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
