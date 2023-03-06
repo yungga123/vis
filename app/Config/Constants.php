@@ -146,7 +146,7 @@ define('MODULES', [
     'CUSTOMERS_COMMERCIAL'  => 'Customers (Commercial)',
     'CUSTOMERS_RESIDENTIAL' => 'Customers (Residential)',
     'TASK_LEAD'             => 'Task/Lead Monitoring',
-    'MANAGER_OF_SALES'      => 'Manager of Sales',
+    // 'MANAGER_OF_SALES'      => 'Manager of Sales',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
 ]);
@@ -162,22 +162,7 @@ define('MODULE_CODES', [
     'customers_commercial'  => 'CUSTOMERS_COMMERCIAL',
     'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
     'task_lead'             => 'TASK_LEAD',
-    'manager_sales'         => 'MANAGER_OF_SALES',
+    // 'manager_sales'         => 'MANAGER_OF_SALES',
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
-]);
-
-// Modules code based on the uri of the modules
-// (value should be the same key in MODULES)
-define('MODULE_CODES_URI', [
-    'dashboard'             => 'DASHBOARD',
-    'accounts'              => 'ACCOUNTS',
-    'employees'             => 'EMPLOYEES',
-    'customers'             => 'CUSTOMERS',
-    'customers/commercial'  => 'CUSTOMERS_COMMERCIAL',
-    'customers/residential' => 'CUSTOMERS_RESIDENTIAL',
-    'task_lead'             => 'TASK_LEAD',
-    'sales'                 => 'MANAGER_OF_SALES',
-    'settings/mail_config'  => 'SETTINGS_MAILCONFIG',
-    'settings/permissions'  => 'SETTINGS_PERMISSIONS',
 ]);

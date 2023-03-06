@@ -112,13 +112,13 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('tasklead') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
-            'MANAGER_OF_SALES'      => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('MANAGER_OF_SALES'),
-                'url'       => '#',
-                'class'     => (url_is('employees') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
-            ],
+            // 'MANAGER_OF_SALES'      => [
+            //     'menu'      => 'SALES', // Leave empty if none
+            //     'name'      => get_modules('MANAGER_OF_SALES'),
+            //     'url'       => '#',
+            //     'class'     => (url_is('employees') ? 'active' : ''),
+            //     'icon'      => 'far fa-circle',
+            // ],
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
                 'name'      => get_modules('SETTINGS_MAILCONFIG'),
