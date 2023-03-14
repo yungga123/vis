@@ -125,6 +125,10 @@ $(document).ready(function () {
 		$('#customer_id').empty();
 		$('#customer_id').attr('disabled',true);
 	});
+
+	$('#quotation_type').on('change',function(){
+		$('#quotation_num').val($(this).val()+$('#get_quotation_num').val()+$('#tasklead_id').val());
+	});
 });
 
 /* Get item details */
@@ -143,6 +147,7 @@ function edit(id) {
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					hideElements();
+					$('#quotation_type').attr('required',false);
 					$.each(res.data, (key, value) => {
 						if (value == '0000-00-00' || value == '0.00') {
 							value = null;
@@ -187,6 +192,7 @@ function edit(id) {
 						}
 
 						if(key == 'status' && value == '50.00'){
+							$('#quotation_type').attr('required',true);
 							$('.quotation_num').attr('hidden',false);
 							$('.remark_next_step').attr('hidden',false);
 							$('#status').val('70.00');
@@ -195,6 +201,7 @@ function edit(id) {
 
 						if(key == 'status' && value == '70.00'){
 							$('.remark_next_step').attr('hidden',false);
+							$('.project_amount').attr('hidden',false);
 							$('#status').val('90.00');
 							$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION");
 						}

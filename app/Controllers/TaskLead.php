@@ -86,7 +86,7 @@ class Tasklead extends BaseController
             $inits.=strtoupper(substr($word,0,1));
         }
         
-        $quotation_num = "Q".$inits.date('ym');
+        $quotation_num = $inits . date('ym');
         $data['quotation_num'] = $quotation_num;
 
         return view('task_lead/index', $data);

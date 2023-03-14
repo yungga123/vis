@@ -78,6 +78,7 @@
 
                                         <div class="post">
                                             <h3>Status: NEGOTIATION (90.00%)</h3>
+                                            <p class="history_project_amount2"></p>
                                             <p class="rns_90"></p>
                                         </div>
 

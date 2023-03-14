@@ -112,6 +112,7 @@ function getBookedDetails(id){
 				}
 
 				if(value.status=='90.00%'){
+					$('.history_project_amount2').html('Project Amount: '+value.project_amount);
 					$('.rns_90').html('Remark Next Step: '+value.remark_next_step);
 				}
 
