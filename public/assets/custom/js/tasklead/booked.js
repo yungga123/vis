@@ -25,18 +25,6 @@ $(document).ready(function () {
 
 		let formData = new FormData(this);    
 
-		// $.post($(this).attr('action'),
-		// formData,
-		// function(response){
-		// 	if (response.success == true){
-		// 		console.log('success');
-
-		// 	} else {
-		// 		//console.log(response.test_id);
-		// 		//console.log(formData);
-		// 		notifMsgSwal("Error!",response.errors,STATUS.ERROR);
-		// 	}
-		// });
 
 		$.ajax({
 			url: url,
@@ -50,10 +38,10 @@ $(document).ready(function () {
 				if (response.success == true){
 					//console.log('success');
 					notifMsgSwal("Success!",response.message,STATUS.SUCCESS);
+					getTaskleadFiles(id);
 					self[0].reset();
+					
 				} else {
-					//console.log(response.test_id);
-					//console.log(formData);
 					notifMsgSwal("Error!",response.errors,STATUS.ERROR);
 				}
 			},
