@@ -11,6 +11,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Projects Detail</h3>
+                        <input type="hidden" id="upload_id">
 
                     </div>
                     <div class="card-body">
@@ -77,6 +78,7 @@
 
                                         <div class="post">
                                             <h3>Status: NEGOTIATION (90.00%)</h3>
+                                            <p class="history_project_amount2"></p>
                                             <p class="rns_90"></p>
                                         </div>
 
@@ -136,12 +138,10 @@
 
                                 <h5 class="mt-5 text-muted">Project files</h5>
                                 <ul class="list-unstyled">
+                                        <div class="files">
 
-                                    <!-- </?php foreach ($map as $item) : ?>
-                                        <li>
-                                            <a href="</?= base_url('uploads/project-booked/' . $id . '/' . $item); ?>" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> </?= $item; ?></a>
-                                        </li>
-                                    </?php endforeach ?> -->
+                                        </div>
+                                        
 
                                 </ul>
                                 <div class="text-center mt-5 mb-3">
@@ -165,9 +165,11 @@
 </div>
 
 
+<?= $this->include('task_lead/upload_form') ?>
 
 
-<div class="modal fade" id="modal-addfile">
+
+<!-- <div class="modal fade" id="modal-addfile">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -177,7 +179,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <?= form_upload('project_file', '', ["id" => "project_file"]); ?>
+                </?= form_upload('project_file', '', ["id" => "project_file"]); ?>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -186,4 +188,4 @@
         </div>
 
     </div>
-</div>
+</div> -->

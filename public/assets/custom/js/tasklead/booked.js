@@ -1,7 +1,8 @@
-var table;
+var table,form_upload;
 
 $(document).ready(function () {
 	table = "tasklead_booked_table";
+	form_upload = "form_upload";
 
 	const route = $("#" + table).data("url"),
 		options = {
@@ -12,6 +13,40 @@ $(document).ready(function () {
 		};
 
 	loadDataTable(table, route, METHOD.POST, options);
+
+	
+	$('#'+form_upload).on('submit', function(e){
+		e.preventDefault();
+		let id = $('#upload_id').val();
+		//let file = $('#project_file').val();
+		let self = $(this);
+		let url = self.attr('action');
+		$('#tasklead_id').val(id);
+
+		let formData = new FormData(this);    
+
+
+		$.ajax({
+			url: url,
+			type: METHOD.POST,
+			data: formData,
+			dataType: "json",
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: function (response) {
+				if (response.success == true){
+					//console.log('success');
+					notifMsgSwal("Success!",response.message,STATUS.SUCCESS);
+					getTaskleadFiles(id);
+					self[0].reset();
+					
+				} else {
+					notifMsgSwal("Error!",response.errors,STATUS.ERROR);
+				}
+			},
+		});
+	})
 });
 
 function getBookedDetails(id){
@@ -26,6 +61,7 @@ function getBookedDetails(id){
 			$.each(res, function(key,value){
 				//console.log('value:'+value.id);
 				// use value.(table_name)
+				$('#upload_id').val(id);
 				$('.project_amount').html(value.project_amount);
 				$('.project_start_date').html(value.project_start_date);
 				$('.project_finish_date').html(value.project_finish_date);
@@ -39,7 +75,7 @@ function getBookedDetails(id){
 				$('.max_forecast_date').html(value.max_forecast_date);
 				$('.status1').html(value.status1);
 				$('.employee_name').html(value.employee_name);
-
+				getTaskleadFiles(id);
 			});
 		}
 	);
@@ -76,6 +112,7 @@ function getBookedDetails(id){
 				}
 
 				if(value.status=='90.00%'){
+					$('.history_project_amount2').html('Project Amount: '+value.project_amount);
 					$('.rns_90').html('Remark Next Step: '+value.remark_next_step);
 				}
 
@@ -91,4 +128,22 @@ function getBookedDetails(id){
 		}
 	);
 
+}
+
+function getTaskleadFiles(id) {
+	let url = $('#booked_files_url').val();
+	$.post(url,
+		{id:id},
+		function(response){
+			//console.log(response.map);
+			// <li>
+			// 	<a href="<?= base_url('uploads/project-booked/' . $id . '/' . $item); ?>" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> </a>
+			// </li>
+			$('.files').empty();
+			$.each(response.map,function(key,value){
+				//console.log(value);
+				
+				$('.files').append("<li><a href='"+response.link+"'class='btn-link text-secondary'><i class='far fa-fw fa-file-word'></i> "+value+"</a></li>");
+			});
+		});
 }

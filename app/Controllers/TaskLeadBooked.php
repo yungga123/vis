@@ -121,4 +121,77 @@ class TaskLeadBooked extends BaseController
 
         return $this->response->setJSON($data);
     }
+
+    public function upload() {
+
+        $data['success'] = false;
+        $data['errors'] = '';
+        $id = $this->request->getVar('upload_id');
+
+        $validationRule = [
+            'project_file' => [
+                'label' => 'File',
+                'rules' => 'uploaded[project_file]'
+                    . '|max_size[project_file,5000]'
+                    . '|ext_in[project_file,xlsx,jpg,jpeg,csv,docx,pdf]'
+            ],
+        ];
+        if (!$this->validate($validationRule)) {
+            //helper('filesystem');
+            $data['errors'] = $this->validator->getErrors();
+            $data['test_id'] = $id;
+            
+            // $taskleadView = new TaskLeadView();
+            // $data['title'] = 'Project Booked Details';
+            // $data['uri'] = service('uri');
+            // $data['project_detail'] = $taskleadView->find($id);
+
+            // $path = '../public/uploads/project-booked/' . $id;
+
+            // $data['map'] = directory_map($path);
+
+            return $this->response->setJSON($data);
+        }
+
+
+        $img = $this->request->getFile('project_file');
+
+        if (!$img->hasMoved()) {
+            //$filepath = WRITEPATH . 'uploads/' . $img->store($id,$img->getClientName());
+            $filename = $img->getClientName();
+            $filepath = '../public/uploads/project-booked/'.$id;
+            $img->move($filepath,$filename);
+
+            $data['message'] = 'File has been uploaded.';
+
+            // $data = ['uploaded_flleinfo' => new File($filepath)];
+            // $data['title'] = 'Upload File Success';
+            // $data['page_title'] = 'File upload success!';
+            // $data['href'] = site_url('project-list-booked');
+            // $data['uri'] = service('uri');
+            // $data['id'] = $id;
+
+            //  return view('templates/header', $data)
+            //  .view('task_lead/header')
+            //  .view('templates/navbar')
+            //  .view('templates/sidebar')
+            //  .view('templates/file-successpage')
+            //  .view('templates/footer')
+            //  .view('task_lead/script');
+        }
+        $data['success'] = true;
+        return $this->response->setJSON($data);
+    }
+
+    public function getTaskleadFiles() {
+        helper('filesystem');
+        $id = $this->request->getVar('id');
+
+        $path = '../public/uploads/project-booked/' . $id;
+
+        $data['link'] = base_url('assets/uploads/project-booked/');
+        $data['map'] = directory_map($path);
+
+        return $this->response->setJSON($data);
+    }
 }
