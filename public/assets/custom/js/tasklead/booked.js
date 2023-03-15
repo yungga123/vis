@@ -40,7 +40,7 @@ $(document).ready(function () {
 					notifMsgSwal("Success!",response.message,STATUS.SUCCESS);
 					getTaskleadFiles(id);
 					self[0].reset();
-					
+					$('#modal-addfile').modal('hide');
 				} else {
 					notifMsgSwal("Error!",response.errors,STATUS.ERROR);
 				}
@@ -143,7 +143,18 @@ function getTaskleadFiles(id) {
 			$.each(response.map,function(key,value){
 				//console.log(value);
 				
-				$('.files').append("<li><a href='"+response.link+"'class='btn-link text-secondary'><i class='far fa-fw fa-file-word'></i> "+value+"</a></li>");
+				$('.files').append("<li><a href='"+$('#download_url').val()+"?id="+$('#upload_id').val()+"&file="+value+"'class='btn-link text-secondary'><i class='far fa-fw fa-file-word'></i> "+value+"</a></li>");
 			});
 		});
+}
+
+function downloadFile(id) {
+	url = $('#download_url').val();
+	$.post(
+		url,
+		{id:id},
+		function(response){
+			notifMsgSwal("Success!",response.message,STATUS.SUCCESS);
+		}
+	);
 }

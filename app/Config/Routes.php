@@ -139,6 +139,7 @@ $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->post('booked/history_details','TaskLeadBooked::get_tasklead_history',['as' => 'tasklead.booked.history']);
     $routes->post('booked/upload','TaskLeadBooked::upload',['as' => 'tasklead.booked.upload']);
     $routes->post('booked/tasklead_files','TaskLeadBooked::getTaskleadFiles',['as' => 'tasklead.booked.files']);
+    $routes->get('booked/download','TaskLeadBooked::downloadFile',['as' => 'tasklead.booked.download']);
 });
 /* SALES */
 

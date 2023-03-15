@@ -33,7 +33,11 @@ class TaskLeadBooked extends BaseController
      * @var bool
      */
     private $_can_add;
+    /**
+     * Class constructor
+     */
 
+     private $_path_file;
     /**
      * Class constructor
      */
@@ -43,6 +47,7 @@ class TaskLeadBooked extends BaseController
         $this->_module_code = MODULE_CODES['task_lead']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_path_file   = 'F:/project-booked/';
     }
 
     /**
@@ -159,7 +164,7 @@ class TaskLeadBooked extends BaseController
         if (!$img->hasMoved()) {
             //$filepath = WRITEPATH . 'uploads/' . $img->store($id,$img->getClientName());
             $filename = $img->getClientName();
-            $filepath = '../public/uploads/project-booked/'.$id;
+            $filepath = $this->_path_file . $id;
             $img->move($filepath,$filename);
 
             $data['message'] = 'File has been uploaded.';
@@ -187,11 +192,22 @@ class TaskLeadBooked extends BaseController
         helper('filesystem');
         $id = $this->request->getVar('id');
 
-        $path = '../public/uploads/project-booked/' . $id;
+        $path = $this->_path_file . $id;
 
-        $data['link'] = base_url('assets/uploads/project-booked/');
+        //$data['link'] = base_url('assets/uploads/project-booked/');
         $data['map'] = directory_map($path);
 
         return $this->response->setJSON($data);
     }
+
+    public function downloadFile(){
+        $id = $this->request->getVar('id');
+        $file = $this->request->getVar('file');
+        //$path = base_url('assets/uploads/project-booked/') . $id . '/' . $file;
+        $path = $this->_path_file . $id . '/' . $file;
+        // $data['message'] = 'File is downloading...';
+        // $this->response->setJSON($data);
+        return $this->response->download($path,null);
+    }
+
 }
