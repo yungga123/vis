@@ -74,6 +74,7 @@ class Accounts extends BaseController
         $data['can_add']        = $this->_can_add;
         $data['employees']      = $employees;
         $data['access_level']   = $access_level;
+        $data['btn_add_lbl']    = 'Add New Account';
 
         return view('accounts/index', $data);
     }

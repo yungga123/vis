@@ -63,6 +63,7 @@ class CustomersVt extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['custom_js']      = 'customersvt/list.js';
+        $data['btn_add_lbl']    = 'Add New Client';
 
         return view('customers_vt/index', $data);
     }

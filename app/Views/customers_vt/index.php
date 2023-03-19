@@ -14,7 +14,7 @@
                     </div>
                     <select class="custom-select" name="filter" id="filterby">
                         <option value="all" selected>All</option>
-                        <option value="YES">Forecast</option>
+                        <option value="YES">New Clients</option>
                         <option value="NO">Official</option>
                     </select>
                 </div>
@@ -30,7 +30,7 @@
                 <thead class="nowrap">
                     <tr>
                         <th>Actions</th>
-                        <th>Forecast?</th>
+                        <th>New Client?</th>
                         <th>Customer ID</th>
                         <th>Customer Name</th>
                         <th>Contact Person</th>

@@ -71,13 +71,14 @@
                                 <small id="alert_project_amount" class="text-danger"></small>
                             </div>
                             <div class="form-group quotation_num" hidden>
+                                
+                                <label for="quotation_num">Quotation Number</label>
                                 <select class="form-control" id="quotation_type">
                                     <option value="">--Select Quotation Type---</option>
                                     <option value="Q1">Project</option>
                                     <option value="Q2">Service</option>
-                                    <option value="Q3">Maintenance</option>
+                                    <option value="Q3">Supplies</option>
                                 </select>
-                                <label for="quotation_num">Quotation Number</label>
                                 <input type="text" name="quotation_num" id="quotation_num" class="form-control" placeholder="Enter..." readonly>
                                 <small id="alert_quotation_num" class="text-danger"></small>
                             </div>

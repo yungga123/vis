@@ -180,30 +180,30 @@ function edit(id) {
 							$('.project').attr('hidden',false);
 							$('.remark_next_step').attr('hidden',false);
 							$('#status').val('30.00');
-							$(`#${modal} .modal-title`).text("Update tasklead to QUALIFIED");
+							$(`#${modal} .modal-title`).text("Update tasklead to QUALIFIED(30%)");
 						}
 
 						if(key == 'status' && value == '30.00'){
+							$('#quotation_type').attr('required',true);
+							$('.quotation_num').attr('hidden',false);
 							$('.project_amount').attr('hidden',false);
 							$('.forecast_close_date').attr('hidden',false);
 							$('.remark_next_step').attr('hidden',false);
 							$('#status').val('50.00');
-							$(`#${modal} .modal-title`).text("Update tasklead to DEVELOPED SOLUTION");
+							$(`#${modal} .modal-title`).text("Update tasklead to DEVELOPED SOLUTION(50%)");
 						}
 
 						if(key == 'status' && value == '50.00'){
-							$('#quotation_type').attr('required',true);
-							$('.quotation_num').attr('hidden',false);
 							$('.remark_next_step').attr('hidden',false);
 							$('#status').val('70.00');
-							$(`#${modal} .modal-title`).text("Update tasklead to EVALUATION");
+							$(`#${modal} .modal-title`).text("Update tasklead to EVALUATION(70%)");
 						}
 
 						if(key == 'status' && value == '70.00'){
 							$('.remark_next_step').attr('hidden',false);
 							$('.project_amount').attr('hidden',false);
 							$('#status').val('90.00');
-							$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION");
+							$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION(90%)");
 						}
 
 						if(key == 'status' && value == '90.00'){
@@ -212,11 +212,11 @@ function edit(id) {
 							$('.project_finish_date').attr('hidden',false);
 							$('.remark_next_step').attr('hidden',false);
 							$('#status').val('100.00');
-							$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION");
+							$(`#${modal} .modal-title`).text("Update tasklead to BOOKED(100%)");
 						}
 					});
 
-					if ($('#status').val()=='70.00'){
+					if ($('#status').val()=='50.00'){
 						$('#quotation_num').val($('#get_quotation_num').val()+$('#tasklead_id').val());
 					}
 					

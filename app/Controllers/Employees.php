@@ -63,6 +63,7 @@ class Employees extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['can_add']        = $this->_can_add;
+        $data['btn_add_lbl']    = 'Add New Employee';
 
         return view('employees/index', $data);
     }

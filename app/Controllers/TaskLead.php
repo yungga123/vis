@@ -78,6 +78,7 @@ class Tasklead extends BaseController
         $data['exclude_toastr'] = true;
         $data['can_add']        = $this->_can_add;
         $data['quarter']        = $this->_time->getQuarter();
+        $data['btn_add_lbl']    = 'Add New Tasklead';
 
         // get initials for the name (used for quotation)
         $words = explode(' ',session('name'));

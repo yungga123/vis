@@ -97,6 +97,7 @@ function getBookedDetails(id){
 				}
 
 				if(value.status=='50.00%'){
+					$('.history_quotation_num').html('Quotation Number: '+value.quotation_num);
 					$('.rns_50').html('Remark Next Step: '+value.remark_next_step);
 					$('.history_project_amount').html('Project Amount: '+value.project_amount);
 					$('.history_forecast_close_date').html('Forecast Close Date: '+value.forecast_close_date);
@@ -107,7 +108,7 @@ function getBookedDetails(id){
 
 				if(value.status=='70.00%'){
 					$('.rns_70').html('Remark Next Step: '+value.remark_next_step);
-					$('.history_quotation_num').html('Quotation Number: '+value.quotation_num);
+					
 					
 				}
 
