@@ -8,7 +8,7 @@
                 <div class="card-body box-profile">
                     <div class="text-center">
                     <img class="profile-user-img img-fluid img-circle"
-                        style="height: 100px;"
+                        style="height: 150px; width: 150px;"
                         src="<?= $profile_img; ?>"
                         alt="User profile picture">
                     </div>

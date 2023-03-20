@@ -154,7 +154,7 @@ function notifMsg(message, status = STATUS.SUCCESS, objMsg = false) {
  * @param {string} message  - message to display
  * @param {string} status   - status of notif - refer to 'STATUS' global variable
  */
-function notifMsgSwal(title, message, status) {
+function notifMsgSwal(title, message, status, scrollToTop) {
 	title = convertStatusToTitle(title);
 
 	if (!isEmpty(message) && isObject(message)) {

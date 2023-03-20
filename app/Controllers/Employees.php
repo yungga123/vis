@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\EmployeesModel;
+use App\Models\Accounts as ModelsAccounts;
 use Exception;
 use monken\TablesIgniter;
 
@@ -195,11 +196,17 @@ class Employees extends BaseController
             if (! $this->_model->save($this->request->getVar())) {
                 $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            }
-
-            if ($this->request->getVar('id')) {
-                $data['message']    = 'Employee has been updated successfully!';
+                $data['message']    = "Validation error! There are still required fields that need to be addressed. Please double check!";
+            } else {
+                if (! empty($id)) {
+                    $data['message']    = 'Employee has been updated successfully!';
+    
+                    if ($prev !== $curr) {
+                        $accountModel = new ModelsAccounts();
+                        $accountModel->where('employee_id', $prev)
+                            ->set(['employee_id' => $curr])->update();
+                    }
+                }
             }
 
             // Commit transaction

@@ -73,6 +73,10 @@ $(document).ready(function () {
 			}
 		}
 
+		if (inObject(res, "errors")) {
+			notifMsgSwal(res.status, res.message, res.status);
+		}
+
 		showAlertInForm(elems, message, res.status);
 	});
 });
@@ -96,7 +100,7 @@ function edit(id) {
 						$(`input[name="${key}"]`).val(value);
 					});
 
-					$("#employee_id").attr("readonly", true);
+					// $("#employee_id").attr("readonly", true);
 					$("#prev_employee_id").val(res.data.employee_id);
 					setOptionValue("#gender", res.data.gender);
 					setOptionValue("#civil_status", res.data.civil_status);
