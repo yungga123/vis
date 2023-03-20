@@ -8,7 +8,8 @@
                 <div class="card-body box-profile">
                     <div class="text-center">
                     <img class="profile-user-img img-fluid img-circle"
-                        src="<?= base_url($account['avatar']); ?>"
+                        style="height: 100px;"
+                        src="<?= $profile_img; ?>"
                         alt="User profile picture">
                     </div>
                     <h3 class="profile-username text-center"><?= esc(session()->get('name')); ?></h3>
@@ -24,6 +25,9 @@
                             Birthday <a class="float-right"><?= esc(ucwords($account['date_of_birth'])); ?></a>
                         </li>
                     </ul>
+                    <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#modal_profile_img">
+                        <b>Change Profile Image</b>
+                    </button>
                 </div>
                 <!-- /.card-body -->
             </div>
@@ -118,6 +122,34 @@
             <!-- /.card -->
         </div>
         <!-- /.col -->
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modal_profile_img" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form_profile_img" action="<?= url_to('account.profile.image'); ?>" method="post" enctype="multipart/form-data">
+                <?= csrf_field(); ?>                
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Profile Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="profile_img">Image Upload</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="profile_img" id="profile_img" required>
+                        <label class="custom-file-label" for="profile_img">Choose file...</label>
+                        <div><small class="text-danger" id="alert_profile_img"></small></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Upload</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 <?= $this->include('templates/loading'); ?>

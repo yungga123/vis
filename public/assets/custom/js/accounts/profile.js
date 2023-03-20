@@ -14,4 +14,23 @@ $(document).ready(function () {
 		closeLoading();
 		showAlertInForm(elems, message, res.status);
 	});
+
+	formSubmit(
+		$("#form_profile_img"),
+		"continue",
+		function (res, self) {
+			let message = res.errors ?? res.message;
+			const elems = ["profile_img"];
+
+			if (res.status !== STATUS.ERROR) {
+				self[0].reset();
+				swalNotifRedirect(res.status, message, res.status, "reload");
+			}
+
+			closeLoading();
+			showAlertInForm(elems, message, res.status);
+		},
+		METHOD.AJAX,
+		true
+	);
 });

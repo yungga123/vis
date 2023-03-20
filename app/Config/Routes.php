@@ -70,7 +70,8 @@ $routes->group('account', ['filter' => 'checkauth'], static function ($routes) {
 
     // Account Profile
     $routes->get('profile','AccountProfile::index', ['as' => 'account.profile']);
-    $routes->post('change-password','AccountProfile::change_password', ['as' => 'account.change_pass']);
+    $routes->post('change-password','AccountProfile::changePassword', ['as' => 'account.change_pass']);
+    $routes->post('change-profile-image','AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
 });
 
 //EMPLOYEES

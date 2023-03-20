@@ -19,7 +19,8 @@ class Accounts extends Model
         "employee_id",
         "username",
         "password",
-        "access_level"
+        "access_level",
+        "profile_img"
     ];
 
     // Dates
@@ -77,6 +78,15 @@ class Accounts extends Model
         }
         
         return false;
+    }
+
+    public function getProfileImg($username) 
+    {
+        $account = $this->select('profile_img')
+                    ->where('username', $username)
+                    ->first();
+
+        return $account['profile_img'];
     }
 
     public function findUser($user) 

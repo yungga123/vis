@@ -72,6 +72,12 @@ $(document).ready(function () {
 
 	if (isSwalLoaded()) console.log("Swal is loaded!");
 	else console.log("Swal is not loaded!");
+
+	// Custom file input initialization
+	$(".custom-file-input").on("change", function (e) {
+		const fileName = e.target.files[0].name;
+		$(this).next(".custom-file-label").text(fileName);
+	});
 });
 
 /* Show loading overlay - need to include the templates/loading view to work */

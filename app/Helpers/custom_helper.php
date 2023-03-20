@@ -362,7 +362,7 @@ if (! function_exists('get_avatar'))
 			'male' 		=> 'assets/dist/img/avatar5.png',
 		];
 
-		return $param ? $avatars[$param] : $avatars;
+		return $param ? $avatars[strtolower($param)] : $avatars;
 	}
 }
 
