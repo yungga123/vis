@@ -64,6 +64,7 @@
                                         <div class="post">
                                             <h3>Status: DEVELOPED SOLUTION (50.00%)</h3>
                                             <p class="rns_50"></p>
+                                            <p class="history_quotation_num"></p>
                                             <p class="history_project_amount"></p>
                                             <p class="history_forecast_close_date"></p>
                                             <p class="history_min_forecast_date"></p>
@@ -72,7 +73,6 @@
 
                                         <div class="post">
                                             <h3>Status: EVALUATION (70.00%)</h3>
-                                            <p class="history_quotation_num"></p>
                                             <p class="rns_70"></p>
                                         </div>
 

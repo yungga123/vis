@@ -28,6 +28,7 @@ $(document).ready(function () {
 		"email_address",
 		"source",
 		"notes",
+		"referred_by",
 	];
 
 	branch_table = "customervtbranch_table";
@@ -59,7 +60,7 @@ $(document).ready(function () {
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
-		$(`#${modal} .modal-title`).text("Add New Customer");
+		$(`#${modal} .modal-title`).text("Add New Client");
 		$(`#${form}`)[0].reset();
 		$("#customervt_id").val("");
 
@@ -111,7 +112,7 @@ $(document).ready(function () {
 /* Get record details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Customer");
+	$(`#${modal} .modal-title`).text("Edit Client");
 	$("#customervt_id").val(id);
 
 	clearAlertInForm(elems);

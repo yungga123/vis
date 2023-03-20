@@ -62,6 +62,7 @@ class CustomersResidential extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['custom_js']      = 'customers_residential/list.js';
+        $data['btn_add_lbl']    = 'Add New Client';
 
         return view('customers_residential/index', $data);
     }
@@ -91,7 +92,8 @@ class CustomersResidential extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ])
             ->setDefaultOrder('id','desc')
             ->setOrder([
@@ -104,7 +106,8 @@ class CustomersResidential extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
@@ -116,7 +119,8 @@ class CustomersResidential extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ]);
         
         return $table->getDatatable();

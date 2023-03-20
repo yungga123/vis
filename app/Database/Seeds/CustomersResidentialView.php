@@ -28,6 +28,7 @@ class CustomersResidentialView extends Seeder
                 email_address,
                 source,
                 notes,
+                referred_by,
                 deleted_at
             FROM
                 customers_residential

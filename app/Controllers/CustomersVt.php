@@ -63,6 +63,7 @@ class CustomersVt extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['custom_js']      = 'customersvt/list.js';
+        $data['btn_add_lbl']    = 'Add New Client';
 
         return view('customers_vt/index', $data);
     }
@@ -93,7 +94,8 @@ class CustomersVt extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ])
             ->setDefaultOrder('id','desc')
             ->setOrder([
@@ -106,7 +108,8 @@ class CustomersVt extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
@@ -118,7 +121,8 @@ class CustomersVt extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ]);
         
         return $table->getDatatable();
