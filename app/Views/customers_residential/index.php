@@ -39,6 +39,7 @@
                         <th>Email Address</th>
                         <th>Source</th>
                         <th>Notes</th>
+                        <th>Referred By</th>
                     </tr>
                 </thead>
             </table>

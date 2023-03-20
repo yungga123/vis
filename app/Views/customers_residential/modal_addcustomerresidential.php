@@ -20,7 +20,7 @@
                                 <div class="card-body row">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label class="required">Forecast</label>
+                                            <label class="required">New Client?</label>
                                             <select name="forecast" id="forecast" type="text" class="form-control">
                                                 <option value="">---Please Select---</option>
                                                 <option value="1">YES</option>
@@ -62,11 +62,7 @@
                                             <input name="email_address" id="email_address" type="text" class="form-control" placeholder="email@example.com" value="">
                                             <small id="alert_email_address" class="form-text text-muted"></small>
                                         </div>
-                                        <div class="form-group">
-                                            <label>Source of Contact</label>
-                                            <input name="source" id="source" type="text" class="form-control" placeholder="Viber, FB, Telegram, Whatsapp, etc..." value="">
-                                            <small id="alert_source" class="form-text text-muted"></small>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -100,6 +96,33 @@
                                         </div>
                                     </div>
 
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header text-center">
+                                    <b>Referrals</b>
+                                </div>
+                                <div class="card-body row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">Referred By</label>
+                                            <input name="referred_by" id="referred_by" type="text" id="province" class="form-control" placeholder="Enter referral here" value="" required>
+                                            <small id="alert_referred_by" class="form-text text-danger"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="required">Source of Contact</label>
+                                            <select name="source" id="source" type="text" id="province" class="form-control" placeholder="NCR" value="" required>
+                                                <option value="">---Please Select---</option>
+                                                <option value="BNI REFERRAL">BNI REFERRAL</option>
+                                                <option value="SOCIAL MEDIA">SOCIAL MEDIA</option>
+                                                <option value="WALK IN ">WALK IN </option>
+                                                <option value="SATURATION">SATURATION</option>
+                                                <option value="THIRD PARTY REFERRAL">THIRD PARTY REFERRAL</option>
+                                            </select>
+                                            <small id="alert_source" class="form-text text-danger"></small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -94,7 +94,8 @@ class CustomersVt extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ])
             ->setDefaultOrder('id','desc')
             ->setOrder([
@@ -107,7 +108,8 @@ class CustomersVt extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
@@ -119,7 +121,8 @@ class CustomersVt extends BaseController
                 "contact_number",
                 "email_address",
                 "source",
-                "notes"
+                "notes",
+                "referred_by"
             ]);
         
         return $table->getDatatable();

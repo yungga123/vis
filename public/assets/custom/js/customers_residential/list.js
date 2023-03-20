@@ -17,6 +17,7 @@ $(document).ready(function () {
 		"email_address",
 		"source",
 		"notes",
+		"referred_by"
 	];
 
 	/* Load dataTable */
@@ -32,7 +33,7 @@ $(document).ready(function () {
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
-		$(`#${modal} .modal-title`).text("Add New Item");
+		$(`#${modal} .modal-title`).text("Add New Client");
 		$(`#${form}`)[0].reset();
 		$("#customerresidential_id").val("");
 
@@ -60,7 +61,7 @@ $(document).ready(function () {
 /* Get record details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Item");
+	$(`#${modal} .modal-title`).text("Edit Client");
 	$("#customerresidential_id").val(id);
 
 	clearAlertInForm(elems);
