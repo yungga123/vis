@@ -49,8 +49,7 @@ class CustomersVtModel extends Model
         "contact_number" => 'required|max_length[500]',
         "email_address" => 'max_length[500]',
         "source" => 'max_length[100]',
-        "notes" => 'required|max_length[100]',
-        'referred_by' => 'required',
+        "notes" => 'required|max_length[100]'
     ];
     protected $validationMessages   = [
         "forecast" => [
@@ -100,11 +99,7 @@ class CustomersVtModel extends Model
             "required" => "Additional Notes is required.",
             "max_length" => "Max length is 100.",
             
-        ],
-        "referred_by" => [
-            "required" => "Referred By is required."
-            
-        ],
+        ]
 
     ];
     protected $skipValidation       = false;

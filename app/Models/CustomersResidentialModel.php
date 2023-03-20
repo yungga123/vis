@@ -50,7 +50,6 @@ class CustomersResidentialModel extends Model
         "email_address" => 'max_length[500]',
         "source" => 'max_length[100]',
         "notes" => 'required|max_length[100]',
-        'referred_by' => 'required',
     ];
     protected $validationMessages   = [
         "forecast" => [
@@ -101,10 +100,6 @@ class CustomersResidentialModel extends Model
         "notes" => [
             "required" => "Additional Notes is required.",
             "max_length" => "Max length is 100.",
-            
-        ],
-        "referred_by" => [
-            "required" => "Referred By is required."
             
         ],
     ];

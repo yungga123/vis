@@ -105,8 +105,8 @@
                                 <div class="card-body row">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label class="required">Referred By</label>
-                                            <input name="referred_by" id="referred_by" type="text" id="province" class="form-control" placeholder="Enter referral here" value="" required>
+                                            <label class="optional">Referred By</label>
+                                            <input name="referred_by" id="referred_by" type="text" id="province" class="form-control" placeholder="Enter referral here" value="">
                                             <small id="alert_referred_by" class="form-text text-danger"></small>
                                         </div>
 
