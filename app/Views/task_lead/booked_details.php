@@ -47,6 +47,9 @@
                                     <div class="col-12">
                                         <h4>Activity</h4>
                                         <div class="post">
+                                            
+                                        </div>
+                                        <!-- <div class="post">
                                             <h3>Status: IDENTIFIED (10.00%)</h3>
                                             <p>
                                             </p>
@@ -89,7 +92,7 @@
                                             <p class="history_project_start_date"></p>
                                             <p class="history_project_finish_date"></p>
                                             <p class="history_project_duration"></p>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>

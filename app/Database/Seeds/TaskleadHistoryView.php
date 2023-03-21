@@ -42,7 +42,7 @@ class TaskleadHistoryView extends Seeder
             DATE_FORMAT(project_finish_date,'%b %d, %Y') as project_finish_date,
             CONCAT(DATEDIFF(project_finish_date,project_start_date),' day/s') as project_duration,
             tasklead_history.deleted_at,
-            DATE_FORMAT(tasklead_history.created_at,'%M %d, %Y %h:%i%p') as created_at
+            DATE_FORMAT(tasklead_history.created_at,'%r') as created_at
             
         FROM 
             tasklead_history

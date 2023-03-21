@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal fade" id="modal_tasklead" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-md">
         <div class="modal-content">
             <form id="form_tasklead" action="<?= url_to('tasklead.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
@@ -111,6 +111,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <select id="change_tasklead" class="form-control">
+                        <option value="">---Change Lead---</option>
+                        <option value="30.00">QUALIFIED (30%)</option>
+                        <option value="50.00">DEVELOPED SOLUTION (50%)</option>
+                        <option value="70.00">EVALUATION (70%)</option>
+                        <option value="90.00">NEGOTIATION (90%)</option>
+                    </select>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-success">Save Changes</button>
                 </div>

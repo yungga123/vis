@@ -129,6 +129,39 @@ $(document).ready(function () {
 	$('#quotation_type').on('change',function(){
 		$('#quotation_num').val($(this).val()+$('#get_quotation_num').val()+$('#tasklead_id').val());
 	});
+
+	$('#change_tasklead').on('change',function(){
+		hideElements();
+		if ($(this).val() == '30.00') {
+			$('.project').attr('hidden',false);
+			$('.remark_next_step').attr('hidden',false);
+			$('#status').val('30.00');
+			$(`#${modal} .modal-title`).text("Update tasklead to QUALIFIED(30%)");
+		}
+
+		if ($(this).val() == '50.00') {
+			$('#quotation_type').attr('required',true);
+			$('.quotation_num').attr('hidden',false);
+			$('.project_amount').attr('hidden',false);
+			$('.remark_next_step').attr('hidden',false);
+			$('#status').val('50.00');
+			$(`#${modal} .modal-title`).text("Update tasklead to DEVELOPED SOLUTION(50%)");
+		}
+
+		if ($(this).val() == '70.00') {
+			$('.remark_next_step').attr('hidden',false);
+			$('.forecast_close_date').attr('hidden',false);
+			$('#status').val('70.00');
+			$(`#${modal} .modal-title`).text("Update tasklead to EVALUATION(70%)");
+		}
+
+		if ($(this).val() == '90.00') {
+			$('.remark_next_step').attr('hidden',false);
+			$('.project_amount').attr('hidden',false);
+			$('#status').val('90.00');
+			$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION(90%)");
+		}
+	});
 });
 
 /* Get item details */
@@ -152,9 +185,8 @@ function edit(id) {
 						if (value == '0000-00-00' || value == '0.00') {
 							value = null;
 						}
-						//$(`input[name="${key}"]`).val(value);
+
 						$("#"+key).val(value);
-						//console.log('Key:'+key,'Value:'+value);
 
 						if (key=='customer_id') {
 							$('#customer_id').attr('disabled',false);
@@ -187,7 +219,6 @@ function edit(id) {
 							$('#quotation_type').attr('required',true);
 							$('.quotation_num').attr('hidden',false);
 							$('.project_amount').attr('hidden',false);
-							$('.forecast_close_date').attr('hidden',false);
 							$('.remark_next_step').attr('hidden',false);
 							$('#status').val('50.00');
 							$(`#${modal} .modal-title`).text("Update tasklead to DEVELOPED SOLUTION(50%)");
@@ -195,6 +226,7 @@ function edit(id) {
 
 						if(key == 'status' && value == '50.00'){
 							$('.remark_next_step').attr('hidden',false);
+							$('.forecast_close_date').attr('hidden',false);
 							$('#status').val('70.00');
 							$(`#${modal} .modal-title`).text("Update tasklead to EVALUATION(70%)");
 						}

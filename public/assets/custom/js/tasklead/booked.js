@@ -87,42 +87,75 @@ function getBookedDetails(id){
 			$.each(res, function(key, value){
 				
 				if(value.status=='10.00%'){
-					$('.history_created_at').html('Created On: '+value.created_at);
-					$('.rns_10').html('Remark Next Step: '+value.remark_next_step);
+					// $('.history_created_at').html('Created On: '+value.created_at);
+					// $('.rns_10').html('Remark Next Step: '+value.remark_next_step);
+
+					$('.post').append('<h3>Status: IDENTIFIED (10%)</h3>');
+					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
+					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');
 				}
 
 				if(value.status=='30.00%'){
-					$('.history_project').html('Project: '+value.project);
-					$('.rns_30').html('Remark Next Step: '+value.remark_next_step);
+					// $('.history_project').html('Project: '+value.project);
+					// $('.rns_30').html('Remark Next Step: '+value.remark_next_step);
+					$('.post').append('<h3>Status: QUALIFIED (30%)</h3>');
+					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
+					$('.post').append('<p>Project: '+value.project+'</p>');
+					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');
 				}
 
 				if(value.status=='50.00%'){
-					$('.history_quotation_num').html('Quotation Number: '+value.quotation_num);
-					$('.rns_50').html('Remark Next Step: '+value.remark_next_step);
-					$('.history_project_amount').html('Project Amount: '+value.project_amount);
-					$('.history_forecast_close_date').html('Forecast Close Date: '+value.forecast_close_date);
-					$('.history_min_forecast_date').html('Min Forecast Date: '+value.min_forecast_date);
-					$('.history_max_forecast_date').html('Max Forecast Date: '+value.max_forecast_date);
+					// $('.history_quotation_num').html('Quotation Number: '+value.quotation_num);
+					// $('.rns_50').html('Remark Next Step: '+value.remark_next_step);
+					// $('.history_project_amount').html('Project Amount: '+value.project_amount);
+					// $('.history_forecast_close_date').html('Forecast Close Date: '+value.forecast_close_date);
+					// $('.history_min_forecast_date').html('Min Forecast Date: '+value.min_forecast_date);
+					// $('.history_max_forecast_date').html('Max Forecast Date: '+value.max_forecast_date);
+
+					$('.post').append('<h3>Status: DEVELOPED SOLUTION (50%)</h3>');
+					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
+					$('.post').append('<p>Quotation Num: '+value.quotation_num+'</p>');
+					$('.post').append('<p>Project Amount: '+value.project_amount+'</p>');
+					
+					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');
 					
 				}
 
 				if(value.status=='70.00%'){
-					$('.rns_70').html('Remark Next Step: '+value.remark_next_step);
-					
+					//$('.rns_70').html('Remark Next Step: '+value.remark_next_step);
+					$('.post').append('<h3>Status: EVALUATION (70%)</h3>');
+					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
+					$('.post').append('<p>Forecast Close Date: '+value.forecast_close_date+'</p>');
+					$('.post').append('<p>Min Forecast Date: '+value.min_forecast_date+'</p>');
+					$('.post').append('<p>Max Forecast Date: '+value.max_forecast_date+'</p>');
+					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');
 					
 				}
 
 				if(value.status=='90.00%'){
-					$('.history_project_amount2').html('Project Amount: '+value.project_amount);
-					$('.rns_90').html('Remark Next Step: '+value.remark_next_step);
+					// $('.history_project_amount2').html('Project Amount: '+value.project_amount);
+					// $('.rns_90').html('Remark Next Step: '+value.remark_next_step);
+
+					$('.post').append('<h3>Status: NEGOTIATION (90%)</h3>');
+					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
+					$('.post').append('<p>Project Amount: '+value.project_amount+'</p>');
+					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');
 				}
 
 				if(value.status=='100.00%'){
-					$('.rns_100').html('Remark Next Step: '+value.remark_next_step);
-					$('.history_close_deal_date').html('Close Deal Date: '+value.close_deal_date);
-					$('.history_project_start_date').html('Start Date: '+value.project_start_date);
-					$('.history_project_finish_date').html('End Date: '+value.project_finish_date);
-					$('.history_project_duration').html('Project Duration: '+value.project_duration);
+					// $('.rns_100').html('Remark Next Step: '+value.remark_next_step);
+					// $('.history_close_deal_date').html('Close Deal Date: '+value.close_deal_date);
+					// $('.history_project_start_date').html('Start Date: '+value.project_start_date);
+					// $('.history_project_finish_date').html('End Date: '+value.project_finish_date);
+					// $('.history_project_duration').html('Project Duration: '+value.project_duration);
+
+					$('.post').append('<h3>Status: BOOKED (100%)</h3>');
+					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
+					$('.post').append('<p>Close Deal Date: '+value.close_deal_date+'</p>');
+					$('.post').append('<p>Project Start Date: '+value.project_start_date+'</p>');
+					$('.post').append('<p>Project End Date: '+value.project_finish_date+'</p>');
+					$('.post').append('<p>Project Duration: '+value.project_duration+'</p>');
+					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');
 				}
 				
 			});
@@ -159,3 +192,4 @@ function downloadFile(id) {
 		}
 	);
 }
+
