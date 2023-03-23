@@ -115,8 +115,6 @@ function getBookedDetails(id){
 					$('.post').append('<h3>Status: DEVELOPED SOLUTION (50%)</h3>');
 					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
 					$('.post').append('<p>Quotation Num: '+value.quotation_num+'</p>');
-					$('.post').append('<p>Project Amount: '+value.project_amount+'</p>');
-					
 					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');
 					
 				}
@@ -126,6 +124,7 @@ function getBookedDetails(id){
 					$('.post').append('<h3>Status: EVALUATION (70%)</h3>');
 					$('.post').append('<p>Updated On: '+value.created_at+'</p>');
 					$('.post').append('<p>Forecast Close Date: '+value.forecast_close_date+'</p>');
+					$('.post').append('<p>Project Amount: '+value.project_amount+'</p>');
 					$('.post').append('<p>Min Forecast Date: '+value.min_forecast_date+'</p>');
 					$('.post').append('<p>Max Forecast Date: '+value.max_forecast_date+'</p>');
 					$('.post').append('<p>Remark Next Step: '+value.remark_next_step+'</p>');

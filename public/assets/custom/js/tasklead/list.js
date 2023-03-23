@@ -143,7 +143,7 @@ $(document).ready(function () {
 		if ($(this).val() == '50.00') {
 			$('#quotation_type').attr('required',true);
 			$('.quotation_num').attr('hidden',false);
-			$('.project_amount').attr('hidden',false);
+			
 			$('.remark_next_step').attr('hidden',false);
 			$('#status').val('50.00');
 			$(`#${modal} .modal-title`).text("Update tasklead to DEVELOPED SOLUTION(50%)");
@@ -151,6 +151,7 @@ $(document).ready(function () {
 
 		if ($(this).val() == '70.00') {
 			$('.remark_next_step').attr('hidden',false);
+			$('.project_amount').attr('hidden',false);
 			$('.forecast_close_date').attr('hidden',false);
 			$('#status').val('70.00');
 			$(`#${modal} .modal-title`).text("Update tasklead to EVALUATION(70%)");
@@ -219,7 +220,7 @@ function edit(id) {
 						if(key == 'status' && value == '30.00'){
 							$('#quotation_type').attr('required',true);
 							$('.quotation_num').attr('hidden',false);
-							$('.project_amount').attr('hidden',false);
+							
 							$('.remark_next_step').attr('hidden',false);
 							$('#status').val('50.00');
 							$(`#${modal} .modal-title`).text("Update tasklead to DEVELOPED SOLUTION(50%)");
@@ -227,6 +228,7 @@ function edit(id) {
 
 						if(key == 'status' && value == '50.00'){
 							$('.remark_next_step').attr('hidden',false);
+							$('.project_amount').attr('hidden',false);
 							$('.forecast_close_date').attr('hidden',false);
 							$('#status').val('70.00');
 							$(`#${modal} .modal-title`).text("Update tasklead to EVALUATION(70%)");
