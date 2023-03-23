@@ -132,6 +132,7 @@ $(document).ready(function () {
 
 	$('#change_tasklead').on('change',function(){
 		hideElements();
+		$('#quotation_type').attr('required',false);
 		if ($(this).val() == '30.00') {
 			$('.project').attr('hidden',false);
 			$('.remark_next_step').attr('hidden',false);
