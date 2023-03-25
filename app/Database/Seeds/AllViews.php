@@ -19,8 +19,8 @@ class AllViews extends Seeder
         $this->call('TaskleadView');
         $this->call('CustomerVtView');
         $this->call('CustomerVtBranchView');
-        $this->call('TaskleadViewExistingCustomer');
-
+        //$this->call('TaskleadViewExistingCustomer');
+        $this->call('CustomersResidentialView');
         
     }
 }

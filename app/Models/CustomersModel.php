@@ -109,21 +109,33 @@ class CustomersModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable() {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('customer_view');
+    public function getCustomerName($id)
+    {
+        return $this->select('customer_name')->find($id);
+    }
+
+    public function noticeTable() 
+    {
+        $builder = $this->db->table('customer_view');
         $builder->select("*");
         return $builder;
     }
 
-    public function buttonEdit(){
-        $closureFun = function($row){
+    public function buttons()
+    {
+        $id = 'id';
+        $closureFun = function($row) use($id) {
             return <<<EOF
-                <a href="edit-customer/{$row['id']}" class="btn btn-block btn-warning btn-xs" target="_blank"><i class="fas fa-edit"></i> Edit</a>
-                <button class="btn btn-block btn-danger btn-xs delete-customer" data-toggle="modal" data-target="#modal-delete-customer" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
-                <button class="btn btn-block btn-primary btn-xs"><i class="fas fa-code-branch"></i> View Branch</button>
-            EOF; 
+                <button class="btn btn-sm btn-info" onclick="branchCustomerRetrieve({$row["$id"]})" title="View Branch"><i class="fas fa-eye"></i> </button>
+
+                <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["customer_name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
+
+                <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+
+                <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+            EOF;            
         };
+
         return $closureFun;
     }
 }

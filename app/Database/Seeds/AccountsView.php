@@ -22,7 +22,8 @@ class AccountsView extends Seeder
                 CONCAT(employees.firstname,' ',employees.lastname) as employee_name,
                 username,
                 password,
-                access_level
+                access_level,
+                profile_img
             FROM
                 accounts
             LEFT JOIN

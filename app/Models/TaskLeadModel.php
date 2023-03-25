@@ -19,6 +19,7 @@ class TaskLeadModel extends Model
         "employee_id",
         "quarter", 
         "status",
+        "customer_type",
         "existing_customer",
         "customer_id",
         "branch_id",
@@ -26,8 +27,6 @@ class TaskLeadModel extends Model
         "project_amount", 
         "quotation_num", 
         "forecast_close_date",
-        "min_forecast_date",
-        "max_forecast_date",
         "remark_next_step", 
         "close_deal_date", 
         "project_start_date", 
@@ -43,6 +42,9 @@ class TaskLeadModel extends Model
 
     // Validation
     protected $validationRules      = [
+        "customer_type" => ["label" => "Customer Type", "rules" => "required"],
+        "existing_customer" => ["label" => "Existing Customer", "rules" => "required"],
+        "customer_id" => ["label" => "Customer", "rules" => "required"],
         "quotation_num" => "max_length[100]",
         "quarter" => 'required',
         "status" => 'required',
@@ -132,12 +134,23 @@ class TaskLeadModel extends Model
         return $builder;
     }
 
-    public function buttonEdit(){
-        $closureFun = function($row){
+    // public function buttonEdit(){
+    //     $closureFun = function($row){
+    //         return <<<EOF
+    //             <button class="btn btn-block btn-danger btn-xs delete-tasklead" data-toggle="modal" data-target="#modal-delete-tasklead" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
+    //             <button class="btn btn-block btn-success btn-xs update-tasklead" data-toggle="modal" data-target="#modal-update-tasklead" data-id="{$row['id']}" data-percent="{$row['status']}"><i class="far fa-arrow-alt-circle-up"></i> Forecast</button>
+    //         EOF; 
+    //     };
+    //     return $closureFun;
+    // }
+
+    public function buttons()
+    {
+        $closureFun = function($row) {
             return <<<EOF
-                <button class="btn btn-block btn-danger btn-xs delete-tasklead" data-toggle="modal" data-target="#modal-delete-tasklead" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
-                <button class="btn btn-block btn-success btn-xs update-tasklead" data-toggle="modal" data-target="#modal-update-tasklead" data-id="{$row['id']}" data-percent="{$row['status']}"><i class="far fa-arrow-alt-circle-up"></i> Forecast</button>
-            EOF; 
+                <button class="btn btn-sm btn-success" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-arrow-up"></i> </button> 
+                <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
+            EOF;
         };
         return $closureFun;
     }

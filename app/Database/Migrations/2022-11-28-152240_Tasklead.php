@@ -13,6 +13,10 @@ class Tasklead extends Migration
                 'type' => 'INT',
                 'auto_increment' => true
             ],
+            'employee_id' => [
+                'type' => 'VARCHAR',
+                'constraint' => 100
+            ],
             'quarter' => [
                 'type' => 'INT'
             ],
@@ -20,8 +24,19 @@ class Tasklead extends Migration
                 'type' => 'DECIMAL',
                 'constraint' => [18,2]
             ],
+            'customer_type' => [
+                'type' => 'VARCHAR',
+                'constraint' => 100
+            ],
+            'existing_customer' => [
+                'type' => 'BOOLEAN',
+            ],
             'customer_id' => [
                 'type' => 'INT'
+            ],
+            'branch_id' => [
+                'type' => 'VARCHAR',
+                'constraint' => 10
             ],
             'project' => [
                 'type' => 'VARCHAR',

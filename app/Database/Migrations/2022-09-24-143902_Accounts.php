@@ -14,7 +14,8 @@ class Accounts extends Migration
                 'auto_increment' => true
             ],
             'employee_id' => [
-                'type' => "INT"
+                'type' => 'VARCHAR',
+                'constraint' => 100
             ],
             'username' => [
                 'type' => "VARCHAR",

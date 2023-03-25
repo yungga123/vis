@@ -92,3 +92,77 @@ define('EVENT_PRIORITY_NORMAL', 100);
  * @deprecated Use \CodeIgniter\Events\Events::PRIORITY_HIGH instead.
  */
 define('EVENT_PRIORITY_HIGH', 10);
+
+/* Custom constant */
+// For status
+define('STATUS_SUCCESS', 'success');
+define('STATUS_ERROR', 'error');
+define('STATUS_INFO', 'info');
+
+/* Account Access Level (AAL) */
+// New
+defined('AAL_SUPER_ADMIN')  || define('AAL_SUPER_ADMIN', 'super_admin');
+defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
+defined('AAL_EXECUTIVE')    || define('AAL_EXECUTIVE', 'executive');
+defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+defined('AAL_OPERATION')    || define('AAL_OPERATION', 'operation');
+defined('AAL_SUPERVISOR')   || define('AAL_SUPERVISOR', 'supervisor');
+// defined('AAL_USER')         || define('AAL_USER', 'user');
+
+// Old
+// defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
+defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+defined('AAL_HR')           || define('AAL_HR', 'hr');
+defined('AAL_SALES')        || define('AAL_SALES', 'sales');
+defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
+defined('AAL_USER')         || define('AAL_USER', 'user');
+
+// Actions - add new here
+define('ACTIONS', [
+    'VIEW'      => 'View',
+    'ADD'       => 'Add',
+    'EDIT'      => 'Edit',
+    'DELETE'    => 'Delete',
+    // 'EXPORT'    => 'Export',
+    // 'IMPORT'    => 'Import',
+]);
+
+// Roles - add new here
+define('ROLES', [
+    'ADMIN'         => 'Administrator',
+    'EXECUTIVE'     => 'Executive',
+    'MANAGER'       => 'Manager',
+    'OPERATION'     => 'Admin/Operation',
+    'SUPERVISOR'    => 'Supervisory',
+    'USER'          => 'General User',
+]);
+
+// Modules - add new here
+define('MODULES', [
+    'DASHBOARD'             => 'Dashboard',
+    'ACCOUNTS'              => 'Accounts',
+    'EMPLOYEES'             => 'Employees',
+    // 'CUSTOMERS'             => 'Customers (Forecast)',
+    'CUSTOMERS_COMMERCIAL'  => 'Clients (Commercial)',
+    'CUSTOMERS_RESIDENTIAL' => 'Clients (Residential)',
+    'TASK_LEAD'             => 'Task/Lead Monitoring',
+    // 'MANAGER_OF_SALES'      => 'Manager of Sales',
+    'SETTINGS_MAILCONFIG'   => 'Mail Config',
+    'SETTINGS_PERMISSIONS'  => 'Permissions',
+]);
+
+// Modules code based on the specific identifier you set
+// (value should be the same key in MODULES)
+// Will be used in the constructor of the controller
+define('MODULE_CODES', [
+    'dashboard'             => 'DASHBOARD',
+    'accounts'              => 'ACCOUNTS',
+    'employees'             => 'EMPLOYEES',
+    'customers'             => 'CUSTOMERS',
+    'customers_commercial'  => 'CUSTOMERS_COMMERCIAL',
+    'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
+    'task_lead'             => 'TASK_LEAD',
+    // 'manager_sales'         => 'MANAGER_OF_SALES',
+    'mail_config'           => 'SETTINGS_MAILCONFIG',
+    'permissions'           => 'SETTINGS_PERMISSIONS',
+]);

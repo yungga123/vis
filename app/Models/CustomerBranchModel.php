@@ -109,4 +109,27 @@ class CustomerBranchModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function noticeTable($customers_id) 
+    {
+        $builder = $this->db->table('customer_view_branch');
+        $builder->where('customer_id', $customers_id);
+        $builder->select("*");
+
+        return $builder;
+    }
+
+    public function buttons()
+    {
+        $id = $this->primaryKey;
+        $closureFun = function($row) use($id) {
+            return <<<EOF
+                <button class="btn btn-sm btn-warning" onclick="editBranch({$row["$id"]})" title="Edit" data-toggle="modal" data-target="#modal_branchcustomer"><i class="fas fa-edit"></i> </button> 
+
+                <button class="btn btn-sm btn-danger" onclick="removeBranch({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>                
+            EOF; 
+        };
+
+        return $closureFun;
+    }
 }

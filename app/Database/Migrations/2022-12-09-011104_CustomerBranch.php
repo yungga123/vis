@@ -16,6 +16,10 @@ class CustomerBranch extends Migration
             'customer_id' => [
                 'type' => 'INT'
             ],
+            'branch_name' => [
+                'type' => 'VARCHAR',
+                'constraint' => 500
+            ],
             'address_province' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500
