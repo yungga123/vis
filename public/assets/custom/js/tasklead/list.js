@@ -133,6 +133,12 @@ $(document).ready(function () {
 	$('#change_tasklead').on('change',function(){
 		hideElements();
 		$('#quotation_type').attr('required',false);
+		if ($(this).val() == '10.00') {
+			$('#status').val('10.00');
+			$('.tasklead').prepend("<p>You are updating this lead to IDENTIFIED(10%). Press Save to update.</p>");
+			$(`#${modal} .modal-title`).text("Update tasklead to IDENTIFIED(10%)");
+		}
+
 		if ($(this).val() == '30.00') {
 			$('.project').attr('hidden',false);
 			$('.remark_next_step').attr('hidden',false);
@@ -362,6 +368,7 @@ function hideElements(){
 	$.each(elems,function(key,value){
 		$('.'+value).attr('hidden',true);
 	});
+	$('.tasklead').empty();
 }
 
 function showElements(){
