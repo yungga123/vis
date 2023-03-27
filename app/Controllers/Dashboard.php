@@ -56,7 +56,7 @@ class Dashboard extends BaseController
                     // Add module card menu
                     $html .= <<<EOF
                         <div class="col-lg-3 col-6" id="{$val}">
-                            <div class="small-box {$bgColor[$count]}">
+                            <div class="small-box bg-success">
                                 <div class="inner"><h4>{$module['name']}</h4></div>
                                 <div class="icon"><i class="{$module['icon']}"></i></div>
                                 <a href="{$module['url']}" class="small-box-footer">
