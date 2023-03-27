@@ -25,7 +25,6 @@ class EmployeesModel extends Model
         "date_of_birth",
         "place_of_birth",
         "postal_code",
-        "language",
         "address_province",
         "address_city",
         "address_brgy",
@@ -69,7 +68,6 @@ class EmployeesModel extends Model
         "date_of_birth"             => "required",
         "place_of_birth"            => "required|max_length[255]",
         "postal_code"               => "required|numeric",
-        "language"                  => "required|max_length[100]",
         "address_province"          => "required|max_length[150]",
         "address_city"              => "required|max_length[150]",
         "address_brgy"              => "required|max_length[150]",
@@ -127,10 +125,6 @@ class EmployeesModel extends Model
         "postal_code" => [ 
             "label" => "Postal Code",
             "required" => "Postal Code is required.",
-        ],
-        "language" => [ 
-            "label" => "Language",
-            "required" => "Language is required.",
         ],
         "address_province" => [ 
             "label" => "Province",

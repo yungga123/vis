@@ -16,7 +16,6 @@ $(document).ready(function () {
 		"date_of_birth",
 		"place_of_birth",
 		"postal_code",
-		"language",
 		"address_province",
 		"address_city",
 		"address_brgy",

@@ -258,7 +258,7 @@ if (! function_exists('get_roles'))
         
         if(! is_admin()) unset($roles['ADMIN']);
 
-		return $param ? $roles[$param] : $roles;
+		return $param ? $roles[strtoupper($param)] : $roles;
 	}
 }
 
@@ -275,7 +275,7 @@ if (! function_exists('get_modules'))
 
         // if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
 
-		return $param ? $modules[$param] : $modules;
+		return $param ? $modules[strtoupper($param)] : $modules;
 	}
 }
 
@@ -288,7 +288,7 @@ if (! function_exists('get_actions'))
 	{
 		$actions = ACTIONS;
 
-		return $param ? $actions[$param] : $actions;
+		return $param ? $actions[strtoupper($param)] : $actions;
 	}
 }
 
@@ -373,7 +373,7 @@ if (! function_exists('get_current_user_avatar'))
 {
 	function get_current_user_avatar(): string
 	{
-        $gender = strtolower(session('gender'));
-		return base_url(get_avatar($gender));
+        $profile = new \App\Controllers\AccountProfile();
+        return $profile->getProfileImg(session('gender'));
 	}
 }

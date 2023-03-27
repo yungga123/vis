@@ -40,7 +40,7 @@ class AccountProfile extends BaseController
         $data['custom_js']      = 'accounts/profile.js';
         $data['sweetalert2']    = true;
         $data['account']        = $this->_getAccountDetails();
-        $data['profile_img']    = $this->_getProfileImg(session('gender'));
+        $data['profile_img']    = $this->getProfileImg(session('gender'));
 
         return view('accounts/profile', $data);
     }
@@ -188,6 +188,23 @@ class AccountProfile extends BaseController
     }
 
     /**
+     * Get profile img
+     *
+     * @return string
+     */
+    public function getProfileImg($gender = null)
+    {
+        $profile_img = $this->_model->getProfileImg(session('username'));
+        $profile_img_res = base_url('uploads/profile/' . $profile_img);
+        
+        if (empty($profile_img)) {
+            $profile_img_res = base_url(get_avatar(strtolower($gender ?? 'male')));
+        }
+
+        return $profile_img_res;
+    }
+
+    /**
      * Rules for the required inputs
      *
      * @return array
@@ -240,22 +257,5 @@ class AccountProfile extends BaseController
         $account = $query->getRowArray();    
 
         return $account;
-    }
-
-    /**
-     * Get profile img
-     *
-     * @return string
-     */
-    private function _getProfileImg($gender = null)
-    {
-        $profile_img = $this->_model->getProfileImg(session('username'));
-        $profile_img_res = base_url('uploads/profile/' . $profile_img);
-        
-        if (empty($profile_img)) {
-            $profile_img_res = base_url(get_avatar(strtolower($gender ?? 'male')));
-        }
-
-        return $profile_img_res;
     }
 }
