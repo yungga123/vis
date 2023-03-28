@@ -98,9 +98,15 @@ class Tasklead extends BaseController
         $table = new TablesIgniter();
         $booked = $this->request->getVar('get_booked');
         $employee_id = $this->request->getVar('employee_id');
+        $access_level = $this->request->getVar('access_level');
 
+        $dataTable = $employee_id ? $this->_model->noticeTable()->where('status !=',$booked)->where('employee_id',$employee_id) : $this->_model->noticeTable()->where('status !=',$booked);
 
-        $table->setTable($employee_id ? $this->_model->noticeTable()->where('status !=',$booked)->where('employee_id',$employee_id) : $this->_model->noticeTable()->where('status !=',$booked))
+        if ($access_level == 'admin' || $access_level == 'executive' || $access_level == 'manager') {
+            $dataTable = $this->_model->noticeTable()->where('status !=', $booked);
+        }
+
+        $table->setTable($dataTable)
             ->setSearch([
                 "id",
                 "employee_name",
