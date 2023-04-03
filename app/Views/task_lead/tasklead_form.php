@@ -51,7 +51,7 @@
                             </div>
                             <div class="form-group customer_id" hidden>
                                 <label for="customer_id">Customer</label>
-                                <select name="customer_id" id="customer_id" class="form-control" placeholder="Enter..." disabled>
+                                <select name="customer_id" id="customer_id" class="form-control" placeholder="Enter..." disabled style="width: 100%;">
                                     
                                 </select>
                                 <small id="alert_customer_id" class="text-danger"></small>
