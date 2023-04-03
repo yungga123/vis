@@ -37,7 +37,7 @@
 
 <?php if (isset($select2) && $select2): ?>
 <!-- Select2 -->
-<script src="<?=base_url('assets')?>/plugins/select2/js/select2.min.js"></script>
+<script src="<?=base_url('assets')?>/plugins/select2/js/select2.full.min.js"></script>
 <?php endif;?>
 
 <!-- AdminLTE App -->

@@ -171,6 +171,11 @@ $(document).ready(function () {
 			$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION(90%)");
 		}
 	});
+
+	$('#customer_id').select2({
+		theme: 'bootstrap4',
+		dropdownParent: `#${modal}`
+	});
 });
 
 /* Get item details */
@@ -312,7 +317,7 @@ function appendCustomer(id,forecast){
 
                 $('#customer_id').append($('<option>', {
                     value: value['id'],
-                    text: value['customer_name']
+                    text: value['id']+' --- '+value['customer_name']
                 }));
             });
         },
@@ -344,7 +349,7 @@ function appendBranch(url,id) {
 
                 $('#branch_id').append($('<option>', {
                     value: value['id'],
-                    text: value['branch_name']
+                    text: value['id']+' --- '+value['branch_name']
                 }));
             });
         },
