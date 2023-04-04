@@ -19,10 +19,10 @@
                         <th>Tasklead ID</th>
                         <th>Employee Name</th>
                         <th>Quarter</th>
+                        <th>Percent</th>
                         <th>Status</th>
-                        <th>Status Percent</th>
-                        <th>Customer Type</th>
-                        <th>Customer Name</th>
+                        <th>Client Type</th>
+                        <th>Client Name</th>
                         <th>Branch Name</th>
                         <th>Contact Number</th>
                         <th>Project</th>

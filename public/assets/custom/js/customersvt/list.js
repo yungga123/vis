@@ -171,7 +171,7 @@ function addBranch(id, name) {
 
 	$(`#${branch_modal}`).modal("show");
 	$(`#${branch_modal}`).removeClass("edit").addClass("add");
-	$(`#${branch_modal} .modal-title`).text("Add Customer Branch");
+	$(`#${branch_modal} .modal-title`).text("Add Client Branch");
 
 	clearAlertInForm(branch_elems);
 }
@@ -181,7 +181,7 @@ function editBranch(id) {
 	const editRoute = $("#editBranch_url").val();
 
 	$(`#${branch_modal}`).removeClass("add").addClass("edit");
-	$(`#${branch_modal} .modal-title`).text("Edit Customer Branch");
+	$(`#${branch_modal} .modal-title`).text("Edit Client Branch");
 	$("#branch_id").val(id);
 
 	clearAlertInForm(branch_elems);

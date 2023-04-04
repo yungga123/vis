@@ -7,7 +7,7 @@
                 <input type="hidden" id="editBranch_url" value="<?= url_to('customervtbranch.edit') ?>">
                 <input type="hidden" id="removeBranch_url" value="<?= url_to('customervtbranch.delete') ?>">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Customer Branch</h5>
+                    <h5 class="modal-title">Add Client Branch</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -16,10 +16,10 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="card">
-                                <div class="card-header"><b>Customer Details</b></div>
+                                <div class="card-header"><b>Client Details</b></div>
                                 <div class="card-body">
                                     <div class="form-group">
-                                        <label class="required" for="bcustomer_id">Main Customer</label>
+                                        <label class="required" for="bcustomer_id">Main Client</label>
                                         <input type="hidden" class="form-control" name="customer_id" id="bcustomer_id" readonly>
                                         <input type="text" class="form-control" id="bcustomer_name" readonly>
                                         <small id="alert_bcustomer_id" class="form-text text-danger"></small>

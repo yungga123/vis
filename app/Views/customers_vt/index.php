@@ -31,8 +31,8 @@
                     <tr>
                         <th>Actions</th>
                         <th>New Client?</th>
-                        <th>Customer ID</th>
-                        <th>Customer Name</th>
+                        <th>Client ID</th>
+                        <th>Client Name</th>
                         <th>Contact Person</th>
                         <th>Address</th>
                         <th>Contact Number</th>
