@@ -248,6 +248,28 @@ if (! function_exists('is_admin'))
 }
 
 /**
+ * Check if current logged user is executive
+ */
+if (! function_exists('is_executive'))
+{
+	function is_executive(): bool
+	{
+        return session('access_level') === AAL_EXECUTIVE;
+	}
+}
+
+/**
+ * Check if current logged user is manager
+ */
+if (! function_exists('is_manager'))
+{
+	function is_manager(): bool
+	{
+        return session('access_level') === AAL_MANAGER;
+	}
+}
+
+/**
  * Get role / access level list
  */
 if (! function_exists('get_roles'))
