@@ -14,6 +14,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-12">
+                            <span class="tasklead"></span>
                             <div class="form-group employee_id" hidden>
                                 <label for="employee_id">Employee ID</label>
                                 <input type="text" name="employee_id" id="employee_id" class="form-control" placeholder="Enter..." value="<?= session('employee_id') ?>" readonly>
@@ -50,7 +51,7 @@
                             </div>
                             <div class="form-group customer_id" hidden>
                                 <label for="customer_id">Customer</label>
-                                <select name="customer_id" id="customer_id" class="form-control" placeholder="Enter..." disabled>
+                                <select name="customer_id" id="customer_id" class="form-control" placeholder="Enter..." disabled style="width: 100%;">
                                     
                                 </select>
                                 <small id="alert_customer_id" class="text-danger"></small>
@@ -113,6 +114,7 @@
                 <div class="modal-footer">
                     <select id="change_tasklead" class="form-control">
                         <option value="">---Change Lead---</option>
+                        <option value="10.00">IDENTIFIED (10%)</option>
                         <option value="30.00">QUALIFIED (30%)</option>
                         <option value="50.00">DEVELOPED SOLUTION (50%)</option>
                         <option value="70.00">EVALUATION (70%)</option>

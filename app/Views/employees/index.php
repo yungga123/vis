@@ -21,7 +21,6 @@
 								<th>Position</th>
 								<th>Employment Status</th>
 								<th>Date Hired</th>
-								<th>Language</th>
 								<th>Contact Number</th>
 								<th>Email Address</th>
 								<th>SSS Number</th>
@@ -109,14 +108,26 @@
 										<small id="alert_place_of_birth" class="form-text text-danger"></small>
 									</div>
 									<div class="form-group">
+										<label class="required" for="contact_number">Contact Number</label>
+										<input type="text" class="form-control" name="contact_number" id="contact_number" placeholder="Enter here...">
+										<small id="alert_contact_number" class="form-text text-danger"></small>
+									</div>
+									<div class="form-group">
+										<label class="required" for="email_address">Email Address</label>
+										<input type="text" class="form-control" name="email_address" id="email_address" placeholder="Enter here...">
+										<small id="alert_email_address" class="form-text text-danger"></small>
+									</div>
+								</div>
+							</div>
+
+							<!-- Address Information -->
+							<div class="card card-primary">
+								<div class="card-header text-center"><b>Employee Address Information</b></div>
+								<div class="card-body">
+									<div class="form-group">
 										<label class="required" for="postal_code">Postal Code</label>
 										<input type="text" class="form-control" name="postal_code" id="postal_code" placeholder="Enter here...">
 										<small id="alert_postal_code" class="form-text text-danger"></small>
-									</div>
-									<div class="form-group">
-										<label class="required" for="language">Language</label>
-										<input type="text" class="form-control" name="language" id="language" placeholder="Enter here...">
-										<small id="alert_language" class="form-text text-danger"></small>
 									</div>
 									<div class="form-group">
 										<label class="required" for="address_province">Province</label>
@@ -137,16 +148,6 @@
 										<label class="required" for="address_sub">Additional Address</label>
 										<input type="text" class="form-control" name="address_sub" id="address_sub" placeholder="Enter here...">
 										<small id="alert_address_sub" class="form-text text-danger"></small>
-									</div>
-									<div class="form-group">
-										<label class="required" for="contact_number">Contact Number</label>
-										<input type="text" class="form-control" name="contact_number" id="contact_number" placeholder="Enter here...">
-										<small id="alert_contact_number" class="form-text text-danger"></small>
-									</div>
-									<div class="form-group">
-										<label class="required" for="email_address">Email Address</label>
-										<input type="text" class="form-control" name="email_address" id="email_address" placeholder="Enter here...">
-										<small id="alert_email_address" class="form-text text-danger"></small>
 									</div>
 								</div>
 							</div>

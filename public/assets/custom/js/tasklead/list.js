@@ -1,4 +1,4 @@
-var table, modal, form, editRoute, removeRoute, elems, employee_id;
+var table, modal, form, editRoute, removeRoute, elems, employee_id, access_level;
 $(document).ready(function () {
 	table = "tasklead_table";
 	modal = "modal_tasklead";
@@ -6,6 +6,7 @@ $(document).ready(function () {
 	editRoute = $("#edit_url").val();
 	removeRoute = $("#remove_url").val();
 	employee_id = $('#get_employee_id').val();
+	access_level = $('#get_access_level').val();
 	elems = [
 		"employee_id",
         "quarter", 
@@ -55,7 +56,7 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	const route = $("#" + table).data("url") + "?get_booked=100.00%" + "&employee_id=" + employee_id;
+	const route = $("#" + table).data("url") + "?get_booked=100.00%" + "&employee_id=" + employee_id + "&access_level=" + access_level;
 	$("#filterby").on("change", function () {
 		const options = {
 			params: { filter: $(this).val() },
@@ -133,6 +134,12 @@ $(document).ready(function () {
 	$('#change_tasklead').on('change',function(){
 		hideElements();
 		$('#quotation_type').attr('required',false);
+		if ($(this).val() == '10.00') {
+			$('#status').val('10.00');
+			$('.tasklead').prepend("<p>You are updating this lead to IDENTIFIED(10%). Press Save to update.</p>");
+			$(`#${modal} .modal-title`).text("Update tasklead to IDENTIFIED(10%)");
+		}
+
 		if ($(this).val() == '30.00') {
 			$('.project').attr('hidden',false);
 			$('.remark_next_step').attr('hidden',false);
@@ -163,6 +170,11 @@ $(document).ready(function () {
 			$('#status').val('90.00');
 			$(`#${modal} .modal-title`).text("Update tasklead to NEGOTIATION(90%)");
 		}
+	});
+
+	$('#customer_id').select2({
+		theme: 'bootstrap4',
+		dropdownParent: `#${modal}`
 	});
 });
 
@@ -305,7 +317,7 @@ function appendCustomer(id,forecast){
 
                 $('#customer_id').append($('<option>', {
                     value: value['id'],
-                    text: value['customer_name']
+                    text: value['id']+' --- '+value['customer_name']
                 }));
             });
         },
@@ -337,7 +349,7 @@ function appendBranch(url,id) {
 
                 $('#branch_id').append($('<option>', {
                     value: value['id'],
-                    text: value['branch_name']
+                    text: value['id']+' --- '+value['branch_name']
                 }));
             });
         },
@@ -362,6 +374,7 @@ function hideElements(){
 	$.each(elems,function(key,value){
 		$('.'+value).attr('hidden',true);
 	});
+	$('.tasklead').empty();
 }
 
 function showElements(){
