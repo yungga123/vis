@@ -41,7 +41,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="required" for="item_name">Role</label>
+                        <label class="required" for="role_code">Role</label>
                         <select class="form-control" name="role_code" id="role_code" style="width: 100%;" required>
                         <option value="">Select Role</option>
                         <?php foreach (get_roles() as $key => $val): ?>

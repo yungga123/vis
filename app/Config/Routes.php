@@ -162,6 +162,15 @@ $routes->group('settings/permissions', ['filter' => 'checkauth'], static functio
     $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
 });
 
+//ROLES
+$routes->group('settings/roles', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Settings\Roles::index', ['as' => 'roles.home']);
+    $routes->post('list', 'Settings\Roles::list', ['as' => 'roles.list']);
+    $routes->post('save', 'Settings\Roles::save', ['as' => 'roles.save']);
+    $routes->post('edit', 'Settings\Roles::edit', ['as' => 'roles.edit']);
+    $routes->post('delete', 'Settings\Roles::delete', ['as' => 'roles.delete']);
+});
+
 /* Access denied */
 $routes->get('access-denied','Settings\Permission::denied', ['as' => 'access.denied']);
 /* SETTINGS */
