@@ -40,6 +40,15 @@
 <script src="<?=base_url('assets')?>/plugins/select2/js/select2.full.min.js"></script>
 <?php endif;?>
 
+
+<?php if (isset($highcharts) && $highcharts): ?>
+<!-- HighCharts -->
+<script src="<?=base_url('assets')?>/plugins/highcharts/highcharts.js"></script>
+<script src="<?=base_url('assets')?>/plugins/highcharts/modules/exporting.js"></script>
+<script src="<?=base_url('assets')?>/plugins/highcharts/modules/export-data.js"></script>
+<script src="<?=base_url('assets')?>/plugins/highcharts/modules/accessibility.js"></script>
+<?php endif;?>
+
 <!-- AdminLTE App -->
 <script src="<?=base_url('assets')?>/dist/js/adminlte.js"></script>
 

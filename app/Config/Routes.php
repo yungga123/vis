@@ -142,6 +142,11 @@ $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->post('booked/tasklead_files','TaskLeadBooked::getTaskleadFiles',['as' => 'tasklead.booked.files']);
     $routes->get('booked/download','TaskLeadBooked::downloadFile',['as' => 'tasklead.booked.download']);
 });
+
+// Sales Manager
+$routes->group('sales_manager', ['filter' => 'checkauth'], static function($routes){
+    $routes->get('/','SalesManager::index',['as' => 'sales_manager.home']);
+});
 /* SALES */
 
 /* SETTINGS */

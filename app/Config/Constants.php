@@ -146,7 +146,7 @@ define('MODULES', [
     'CUSTOMERS_COMMERCIAL'  => 'Clients (Commercial)',
     'CUSTOMERS_RESIDENTIAL' => 'Clients (Residential)',
     'TASK_LEAD'             => 'Task/Lead Monitoring',
-    // 'MANAGER_OF_SALES'      => 'Manager of Sales',
+    'MANAGER_OF_SALES'      => 'Manager of Sales',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
 ]);
@@ -162,7 +162,7 @@ define('MODULE_CODES', [
     'customers_commercial'  => 'CUSTOMERS_COMMERCIAL',
     'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
     'task_lead'             => 'TASK_LEAD',
-    // 'manager_sales'         => 'MANAGER_OF_SALES',
+    'manager_sales'         => 'MANAGER_OF_SALES',
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
 ]);
