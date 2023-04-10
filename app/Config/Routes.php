@@ -146,6 +146,7 @@ $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
 // Sales Manager
 $routes->group('sales_manager', ['filter' => 'checkauth'], static function($routes){
     $routes->get('/','SalesManager::index',['as' => 'sales_manager.home']);
+    $routes->post('taskleads','SalesManager::taskleads',['as' => 'sales_manager.taskleads']);
 });
 /* SALES */
 

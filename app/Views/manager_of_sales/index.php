@@ -2,6 +2,7 @@
 <?= $this->section('content'); ?>
 
 <div class="container-fluid">
+    <input type="hidden" id="tasklead_url" value="<?= url_to('sales_manager.taskleads') ?>">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -128,6 +129,47 @@
                         <div id="chart_q1"></div>
                         <p class="highcharts-description">
                             Displaying Quarter 1 Stats this year.
+                        </p>
+                    </figure>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <figure class="highcharts-figure">
+                        <div id="chart_q2"></div>
+                        <p class="highcharts-description">
+                            Displaying Quarter 2 Stats this year.
+                        </p>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+    <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <figure class="highcharts-figure">
+                        <div id="chart_q3"></div>
+                        <p class="highcharts-description">
+                            Displaying Quarter 3 Stats this year.
+                        </p>
+                    </figure>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <figure class="highcharts-figure">
+                        <div id="chart_q4"></div>
+                        <p class="highcharts-description">
+                            Displaying Quarter 4 Stats this year.
                         </p>
                     </figure>
                 </div>
