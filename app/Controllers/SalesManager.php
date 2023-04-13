@@ -25,7 +25,7 @@ class SalesManager extends BaseController
      * @var string
      */
 
-     private $_permissions;
+    private $_permissions;
 
     public function __construct()
     {
@@ -38,16 +38,20 @@ class SalesManager extends BaseController
 
     public function index()
     {
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+
         $data['title']          = 'Manager of Sales';
         $data['page_title']     = 'Manager of Sales';
         $data['custom_js']      = 'sales_manager/index.js';
         $data['custom_css']     = 'sales_manager/index.css';
         $data['highcharts']     = true;
 
+
         return view('manager_of_sales/index', $data);
     }
 
-    // Data
+    // Data for PIE CHARTS
     public function taskleads() 
     {
         $model = $this->_model;
@@ -63,6 +67,28 @@ class SalesManager extends BaseController
 
         return $this->response->setJSON($data);
 
+    }
+
+    // Data for Over-All Stats
+    public function taskleads_stats()
+    {
+        $model = $this->_model;
+
+        $data['booked'] = count($model->where('status',100.00)->find());
+        $data['negotiation'] = count($model->where('status',90.00)->find());
+        $data['evaluation'] = count($model->where('status',70.00)->find());
+        $data['dev_sol'] = count($model->where('status',50.00)->find());
+        $data['qualified'] = count($model->where('status',30.00)->find());
+        $data['identified'] = count($model->where('status',10.00)->find());
+
+        $data['booked_amt'] = $model->selectSum('project_amount')->where('status',100.00)->find();
+        $data['negotiation_amt'] = $model->selectSum('project_amount')->where('status',90.00)->find();
+        $data['evaluation_amt'] = $model->selectSum('project_amount')->where('status',70.00)->find();
+        $data['dev_sol_amt'] = $model->selectSum('project_amount')->where('status',50.00)->find();
+        $data['qualified_amt'] = $model->selectSum('project_amount')->where('status',30.00)->find();
+        $data['identified_amt'] = $model->selectSum('project_amount')->where('status',10.00)->find();
+
+        return $this->response->setJSON($data);
     }
 
     

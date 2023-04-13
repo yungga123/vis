@@ -3,6 +3,7 @@
 
 <div class="container-fluid">
     <input type="hidden" id="tasklead_url" value="<?= url_to('sales_manager.taskleads') ?>">
+    <input type="hidden" id="tasklead_stats_url" value="<?= url_to('sales_manager.taskleads_stats') ?>">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -25,34 +26,34 @@
                                         <tbody>
                                             <tr>
                                                 <td>Booked</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="booked_count">0</td>
+                                                <td class="booked_amt">0.00</td>
 
                                             </tr>
                                             <tr>
                                                 <td>Negotiation</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="negotiation_count">0</td>
+                                                <td class="negotiation_amt">0.00</td>
                                             </tr>
                                             <tr>
                                                 <td>Evaluation</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="evaluation_count">0</td>
+                                                <td class="evaluation_amt">0.00</td>
                                             </tr>
                                             <tr>
                                                 <td>Developed Solution</td>
-                                                <td>0</td>
+                                                <td class="dev_sol_count">0</td>
                                                 <td>0.00</td>
                                             </tr>
                                             <tr>
                                                 <td>Qualified</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="qualified_count">0</td>
+                                                <td class="qualified_amt">0.00</td>
                                             </tr>
                                             <tr>
                                                 <td>Identified</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="identified_count">0</td>
+                                                <td class="identified_amt">0.00</td>
                                             </tr>
                                         </tbody>
                                     </table>
