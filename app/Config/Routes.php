@@ -127,7 +127,7 @@ $routes->group('customers/residential',['filter' => 'checkauth'],static function
 //Task Lead
 $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->get('/','Tasklead::index', ['as' => 'tasklead.home']);
-    $routes->get('list','Tasklead::list',['as' => 'tasklead.list']);
+    $routes->post('list','Tasklead::list',['as' => 'tasklead.list']);
     $routes->post('save','Tasklead::save',['as' => 'tasklead.save']);
     $routes->post('edit','Tasklead::edit',['as' => 'tasklead.edit']);
     $routes->post('delete','Tasklead::delete',['as' => 'tasklead.delete']);

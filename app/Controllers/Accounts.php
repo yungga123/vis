@@ -166,7 +166,7 @@ class Accounts extends BaseController
                     // Turn protection on
                     $this->_model->protect(true);
                     // Send mail
-                    $data = $this->_sendMail($data);
+                    $data = $this->_sendMail($data, true);
                 } else {
                     $data['status']     = STATUS_ERROR;
                     $data['message']    = 'Employee has already an account for the selected access level!';
@@ -339,11 +339,11 @@ class Accounts extends BaseController
      * @param array $data
      * @return json
      */
-    private function _sendMail($data)
+    private function _sendMail($data, $is_add = false)
     {
         if (! empty($this->request->getVar('password'))) {
             // Send mail to employee
-            $res = $this->sendMail($this->request->getVar(), 'regular');
+            $res = $this->sendMail($this->request->getVar(), 'regular', $is_add);
             $msg = $res['message'];
 
             if ($res['status'] === STATUS_SUCCESS) {

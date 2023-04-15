@@ -139,7 +139,7 @@ class MailConfig extends BaseController
             $mail_config = $this->_model->getMailConfig();
 
             if (empty($mail_config)) {
-                exit('There is no mail config data.');
+                throw new Exception("There is no mail config data.", 1);
             }
 
             //Tell PHPMailer to use SMTP

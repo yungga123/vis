@@ -8,11 +8,13 @@
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="<?= get_current_user_avatar(); ?>" class="img-circle elevation-2" alt="User Image">
+            <div class="image" style="margin-top: 7px;">
+                <img style="height: 40px; width: 40px; border: 2px solid #adb5bd;"
+                src="<?= get_current_user_avatar(); ?>" class="img-circle elevation-2" alt="User Image">
             </div>
-            <div class="info">
+            <div class="info" style="line-height: 1.3rem;">
                 <a href="<?= url_to('account.profile') ?>" class="d-block" title="Click here to view profile."><strong><?= esc(session('name')); ?></strong></a>
+                <span style="color: #c2c7d0a8;"><?= get_roles(session('access_level')); ?></span>
             </div>
         </div>
         <!-- Sidebar Menu -->

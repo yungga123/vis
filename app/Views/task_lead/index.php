@@ -2,6 +2,25 @@
 <?= $this->section('content'); ?>
 <div class="container-fluid">
     <div class="card">
+        <div class="card-body pt-3 pb-0">
+            <div class="float-right" style="text-align: right;">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="filterby">Filter by Percent</label>
+                    </div>
+                    <select class="custom-select" name="filter" id="filterby">
+                        <option value="all" selected>All (Except 100%)</option>
+                        <option value="10.00%">10%</option>
+                        <option value="30.00%">30%</option>
+                        <option value="50.00%">50%</option>
+                        <option value="70.00%">70%</option>
+                        <option value="90.00%">90%</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
         <div class="card-body">
             <input type="hidden" id="edit_url" value="<?= url_to('tasklead.edit'); ?>" disabled>
             <input type="hidden" id="remove_url" value="<?= url_to('tasklead.delete'); ?>" disabled>
@@ -9,8 +28,6 @@
             <input type="hidden" id="get_customervtbranch_url" value="<?= url_to('tasklead.getcustomervtbranch'); ?>" disabled>
             <input type="hidden" id="get_customerresidential" value="<?= url_to('tasklead.getcustomerresidential'); ?>" disabled>
             <input type="hidden" id="get_quotation_num" value="<?= isset($quotation_num) ? $quotation_num : "" ?>">
-            <input type="hidden" id="get_employee_id" value="<?= session('employee_id') ?>">
-            <input type="hidden" id="get_access_level" value="<?= session('access_level') ?>">
 
             <table id="tasklead_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('tasklead.list'); ?>">
                 <thead>
@@ -19,10 +36,10 @@
                         <th>Tasklead ID</th>
                         <th>Employee Name</th>
                         <th>Quarter</th>
+                        <th>Percent</th>
                         <th>Status</th>
-                        <th>Status Percent</th>
-                        <th>Customer Type</th>
-                        <th>Customer Name</th>
+                        <th>Client Type</th>
+                        <th>Client Name</th>
                         <th>Branch Name</th>
                         <th>Contact Number</th>
                         <th>Project</th>
