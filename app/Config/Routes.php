@@ -148,6 +148,7 @@ $routes->group('sales_manager', ['filter' => 'checkauth'], static function($rout
     $routes->get('/','SalesManager::index',['as' => 'sales_manager.home']);
     $routes->post('taskleads','SalesManager::taskleads',['as' => 'sales_manager.taskleads']);
     $routes->post('tasklead_stats_url','SalesManager::taskleads_stats',['as' => 'sales_manager.taskleads_stats']);
+    $routes->post('tasklead_quarterly_url','SalesManager::taskleads_quarterly',['as' => 'sales_manager.taskleads_quarterly']);
 });
 /* SALES */
 

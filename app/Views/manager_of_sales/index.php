@@ -4,6 +4,7 @@
 <div class="container-fluid">
     <input type="hidden" id="tasklead_url" value="<?= url_to('sales_manager.taskleads') ?>">
     <input type="hidden" id="tasklead_stats_url" value="<?= url_to('sales_manager.taskleads_stats') ?>">
+    <input type="hidden" id="tasklead_quarterly_url" value="<?= url_to('sales_manager.taskleads_quarterly') ?>">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -81,34 +82,34 @@
                                         <tbody>
                                             <tr class="text-center">
                                                 <td>Q1</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="q1_booked">0</td>
+                                                <td class="q1_hit">0</td>
+                                                <td class="q1_miss">0</td>
+                                                <td class="q1_booked_amt">0.00</td>
                                                 <td>1,500,000.00</td>
                                             </tr>
                                             <tr class="text-center">
                                                 <td>Q2</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="q2_booked">0</td>
+                                                <td class="q2_hit">0</td>
+                                                <td class="q2_miss">0</td>
+                                                <td class="q2_booked_amt">0.00</td>
                                                 <td>1,500,000.00</td>
                                             </tr>
                                             <tr class="text-center">
                                                 <td>Q3</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="q3_booked">0</td>
+                                                <td class="q3_hit">0</td>
+                                                <td class="q3_miss">0</td>
+                                                <td class="q3_booked_amt">0.00</td>
                                                 <td>3,000,000.00</td>
                                             </tr>
                                             <tr class="text-center">
                                                 <td>Q4</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0</td>
-                                                <td>0.00</td>
+                                                <td class="q4_booked">0</td>
+                                                <td class="q4_hit">0</td>
+                                                <td class="q4_miss">0</td>
+                                                <td class="q4_booked_amt">0.00</td>
                                                 <td>3,000,000.00</td>
                                             </tr>
                                         </tbody>

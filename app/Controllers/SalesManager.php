@@ -91,5 +91,26 @@ class SalesManager extends BaseController
         return $this->response->setJSON($data);
     }
 
+    // Data for Quarterly Stats
+    public function taskleads_quarterly()
+    {
+        $model = $this->_model;
+
+        $quarter = $this->request->getVar('quarter');
+
+        $data['booked'] = $model->where('quarter',$quarter)->where('status',100.00)->find();
+        $data['negotiation'] = $model->where('quarter',$quarter)->where('status',90.00)->find();
+        $data['evaluation'] = $model->where('quarter',$quarter)->where('status',70.00)->find();
+        $data['dev_sol'] = $model->where('quarter',$quarter)->where('status',50.00)->find();
+        $data['qualified'] = $model->where('quarter',$quarter)->where('status',30.00)->find();
+        $data['identified'] = $model->where('quarter',$quarter)->where('status',10.00)->find();
+
+        $data['booked_amt'] = $model->selectSum('project_amount')->where('quarter',$quarter)->where('status',100.00)->find();
+        $data['status1'] = $model->select("IF(close_deal_date<DATE_ADD(forecast_close_date, INTERVAL 6 DAY) AND close_deal_date>DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'HIT','MISSED') as status1")->where('quarter',$quarter)->where('status',100.00)->find();
+
+        return $this->response->setJSON($data);
+
+    }
+
     
 }

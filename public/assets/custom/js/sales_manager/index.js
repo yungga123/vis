@@ -6,6 +6,10 @@ $(document).ready(function () {
   pieChart("chart_q4", 4);
 
   tasklead_stats();
+  taskleads_quarterly(1);
+  taskleads_quarterly(2);
+  taskleads_quarterly(3);
+  taskleads_quarterly(4);
 });
 
 function pieChart(chart, quarter) {
@@ -113,5 +117,49 @@ function tasklead_stats() {
 
     //console.log(res.booked_amt[0].project_amount);
 
+  });
+
+}
+
+function taskleads_quarterly(quarter)
+{
+  let url = $('#tasklead_quarterly_url').val();
+  $.post(url,{quarter: quarter}).done(function(res){
+    //console.log(res.status1);
+
+    let booked_amt = Number(res.booked_amt[0].project_amount);
+    
+
+    $(`.q${quarter}_booked_amt`).html(booked_amt.toLocaleString("en",{minimumFractionDigits: 2}));
+    $.each(res,function(key,val){
+      // console.log(val.length);
+      // console.log(key,val);
+
+      if (key == 'booked')
+      {
+        let hit = 0;
+        let miss = 0;
+        $(`.q${quarter}_booked`).html(val.length);
+        
+        $.each(res.status1,function(key1,val1){
+          //console.log(key1,val1);
+
+          
+          if (val1.status1=='HIT'){
+            hit++;
+          }
+          if (val1.status1=='MISSED'){
+            miss++;
+          }
+          
+        });
+
+        //console.log(hit,miss);
+
+        $(`.q${quarter}_hit`).html(hit);
+        $(`.q${quarter}_miss`).html(miss);
+      }
+
+    });
   });
 }
