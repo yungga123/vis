@@ -171,7 +171,6 @@ class Roles extends BaseController
             $id             = $this->request->getVar('id');
             $data['data']   = $this->_model->select($this->_model->allowedFields)->find($id);
 
-            log_message('error', 'Deleted by {username}', ['username' => session('username')]);
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
@@ -208,6 +207,8 @@ class Roles extends BaseController
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = STATUS_ERROR;
                     $data['message']    = "Validation error!";
+                } else {
+                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
                 }
             }
 

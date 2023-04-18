@@ -18,7 +18,6 @@ class RolesModel extends Model
         'description',
         'created_by',
         'updated_by',
-        'deleted_by',
     ];
 
     // Dates
