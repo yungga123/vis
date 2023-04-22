@@ -349,6 +349,18 @@ if (! function_exists('account_access_level'))
 				'operation' 	=> 'Admin/Operation',
 				'supervisor'	=> 'Supervisory',
 				'user'  		=> 'General User',
+                'supervisor_sales'     => 'Sales Supervisor',
+                'supervisor_inventory'     => 'Inventory',
+                'supervisor_project'     => 'Project Engineer',
+                'supervisor_purchasing'     => 'Purchasing',
+                'supervisor_hr'     => 'HR Staff',
+                'supervisor_it'     => 'IT Head',
+                'manager_technical'     => 'Technical Manager',
+                'manager_admin'     => 'Admin Manager',
+                'manager_sales'     => 'Sales Manager',
+                'manager_hr'     => 'HR Manager',
+                'manager_accounting'     => 'Accounting Manager',
+                'manager_finance'     => 'Finance Manager',
 			];
 
 		if (! empty($params)) {
