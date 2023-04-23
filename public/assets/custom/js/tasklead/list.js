@@ -41,6 +41,7 @@ $(document).ready(function () {
 			"customer_id",
 			"branch_id",
 			"remark_next_step",
+			"quarter"
 		];
 
 		$.each(elements, function (key, value) {

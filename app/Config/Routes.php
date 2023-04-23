@@ -150,6 +150,14 @@ $routes->group('sales_manager', ['filter' => 'checkauth'], static function($rout
     $routes->post('tasklead_stats_url','SalesManager::taskleads_stats',['as' => 'sales_manager.taskleads_stats']);
     $routes->post('tasklead_quarterly_url','SalesManager::taskleads_quarterly',['as' => 'sales_manager.taskleads_quarterly']);
 });
+
+// Sales Manager Individual
+$routes->group('sales_manager_indv', ['filter' => 'checkauth'], static function($routes){
+    $routes->get('/','SalesManagerIndividual::index',['as' => 'sales_manager_indv.home']);
+    $routes->post('taskleads','SalesManagerIndividual::taskleads',['as' => 'sales_manager_indv.taskleads']);
+    $routes->post('tasklead_stats_url','SalesManagerIndividual::taskleads_stats',['as' => 'sales_manager_indv.taskleads_stats']);
+    $routes->post('tasklead_quarterly_url','SalesManagerIndividual::taskleads_quarterly',['as' => 'sales_manager_indv.taskleads_quarterly']);
+});
 /* SALES */
 
 /* SETTINGS */

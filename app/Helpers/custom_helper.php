@@ -40,7 +40,7 @@ if (! function_exists('get_nav_menus'))
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead') || url_is('sales_manager')),
+                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead') || url_is('sales_manager') || url_is('sales_manager_indv')),
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -117,6 +117,13 @@ if (! function_exists('setup_modules'))
                 'name'      => get_modules('MANAGER_OF_SALES'),
                 'url'       => url_to('sales_manager.home'),
                 'class'     => (url_is('sales_manager') ? 'active' : ''),
+                'icon'      => 'far fa-circle',
+            ],
+            'MANAGER_OF_SALES_INDV'      => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => get_modules('MANAGER_OF_SALES_INDV'),
+                'url'       => url_to('sales_manager_indv.home'),
+                'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
             'SETTINGS_MAILCONFIG'   => [
