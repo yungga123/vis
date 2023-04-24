@@ -128,7 +128,7 @@ class PermissionModel extends Model
         };
 
         $role = function($row) {
-            return ROLES[$row['role_code']];
+            return get_roles($row['role_code']);
         };
         
         return compact('permission', 'module', 'role');
