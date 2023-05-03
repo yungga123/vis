@@ -1,5 +1,22 @@
 
+var table,
+	modal,
+	form,
+	elems,
+	prefix,
+	editRoute,
+	removeRoute;
+
 $(document).ready(function () {
+  form = "form_salestarget";
+  elems = [
+    'sales_id',
+    'q1_target',
+    'q2_target',
+    'q3_target',
+    'q4_target',
+  ];
+
   pieChart("chart_q1", 1);
   pieChart("chart_q2", 2);
   pieChart("chart_q3", 3);
@@ -10,6 +27,73 @@ $(document).ready(function () {
   taskleads_quarterly(2);
   taskleads_quarterly(3);
   taskleads_quarterly(4);
+
+  /* Form for saving sales_target */
+	formSubmit($("#" + form), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+
+		if (res.status !== STATUS.ERROR) {
+			self[0].reset();
+			//refreshDataTable($("#" + table));
+			notifMsgSwal(res.status, message, res.status);
+
+			// if ($(`#${modal}`).hasClass("edit")) {
+			// 	$(`#${modal}`).modal("hide");
+			// }
+		}
+
+		showAlertInForm(elems, message, res.status);
+	});
+
+  $(".modal_salestarget").on("click", function () {
+		// $(`#${modal}`).modal("show");
+		// $(`#${modal}`).removeClass("edit").addClass("add");
+		// $(`#${modal} .modal-title`).text("Add New Client");
+		$(`#${form}`)[0].reset();
+		$("#id").val("");
+
+		clearAlertInForm(elems);
+
+    let url = $('#employees_url').val();
+    let data = {};
+    $.post(
+      url,
+      data,
+      function(response){
+        //console.log(response);
+        $('#sales_id').empty();
+        $('#sales_id').append($('<option>', { 
+          value: "",
+          text : "---Please Select---"
+      }));
+        $.each(response.employees, function (key, val) {
+          
+          $('#sales_id').append($('<option>', { 
+              value: val.employee_id,
+              text : val.firstname + ' ' + val.lastname
+          }));
+
+          
+      });
+      }
+    );
+	});
+
+  $('#sales_id').on("change",function(){
+    let url = $('#employee_url').val();
+    let data = {
+      id: $(this).val()
+    }
+    $.post(
+      url,
+      data,
+      function(response){
+        response.employee.length == 1 ? $('#id').val(response.employee[0].id) : $('#id').val('');
+      }
+    );
+  });
+
+
 });
 
 function pieChart(chart, quarter) {
@@ -163,3 +247,8 @@ function taskleads_quarterly(quarter)
     });
   });
 }
+
+
+
+
+

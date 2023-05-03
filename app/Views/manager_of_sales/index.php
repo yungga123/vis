@@ -1,10 +1,14 @@
 <?= $this->extend('templates/default'); ?>
 <?= $this->section('content'); ?>
 
+
+<!-- Main DashBoard -->
 <div class="container-fluid">
     <input type="hidden" id="tasklead_url" value="<?= url_to('sales_manager.taskleads') ?>">
     <input type="hidden" id="tasklead_stats_url" value="<?= url_to('sales_manager.taskleads_stats') ?>">
     <input type="hidden" id="tasklead_quarterly_url" value="<?= url_to('sales_manager.taskleads_quarterly') ?>">
+    <input type="hidden" id="employees_url" value="<?= url_to('sales_target.employees') ?>">
+    <input type="hidden" id="employee_url" value="<?= url_to('sales_target.employee') ?>">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -66,6 +70,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Quarterly Stats</h3>
+                                    <span class="float-right"><button type="button" class="btn btn-success text-bold modal_salestarget" data-toggle="modal" data-target="#model_salesTarget"><i class="fas fa-bullseye"></i> SET SALES TARGET</button></span>
                                 </div>
                                 <div class="card-body">
                                     <table class="table table-bordered table-sm">
@@ -152,7 +157,7 @@
     </div>
 
     <div class="row">
-    <div class="col-sm-6">
+        <div class="col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <figure class="highcharts-figure">
@@ -179,6 +184,85 @@
         </div>
     </div>
 
+</div>
+
+
+<!-- Modal for Sales Target -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="model_salesTarget" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Set Sales Target</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="card">
+                    <div class="card-body">
+                        <form id="form_salestarget" class="with-label-indicator" action="<?= url_to('sales_target.save'); ?>" method="post" autocomplete="off">
+                            <?= csrf_field(); ?>
+                            <input type="hidden" id="id" name="id" readonly>
+                            <div class="row">
+
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="sales_id">Sales Personnel</label>
+                                        <select name="sales_id" id="sales_id" class="form-control" aria-describedby="alert_sales_id">
+                                            <option value="">--- PLEASE SELECT ---</option>
+                                        </select>
+                                        <small id="alert_sales_id" class="text-muted"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="q1_target">Q1 Target Amount</label>
+                                        <input type="text" name="q1_target" id="q1_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q1_target">
+                                        <small id="alert_q1_target" class="text-muted"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="q2_target">Q2 Target Amount</label>
+                                        <input type="text" name="q2_target" id="q2_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q2_target">
+                                        <small id="alert_q2_target" class="text-muted"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="q3_target">Q3 Target Amount</label>
+                                        <input type="text" name="q3_target" id="q3_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q3_target">
+                                        <small id="alert_q3_target" class="text-muted"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="q4_target">Q4 Target Amount</label>
+                                        <input type="text" name="q4_target" id="q4_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q4_target">
+                                        <small id="alert_q4_target" class="text-muted"></small>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="float-right">
+                            <button type="submit" class="btn btn-success text-bold"><i class="fas fa-check"></i> SAVE</button>
+                        </div>
+
+                    </div>
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger text-bold" data-dismiss="modal"><i class="fas fa-times"></i> CLOSE</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?= $this->endSection(); ?>
