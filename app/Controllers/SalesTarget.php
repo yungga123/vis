@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\EmployeesModel;
 use App\Models\SalesTargetModel;
+use monken\TablesIgniter;
 
 class SalesTarget extends BaseController
 {
@@ -17,6 +18,43 @@ class SalesTarget extends BaseController
     public function __construct()
     {
         $this->_model       = new SalesTargetModel(); // Current model
+    }
+
+    public function list()
+    {
+        $table  = new TablesIgniter();
+        $builder = $this->_model->noticeTable();
+
+        $table
+            ->setTable($builder)
+            ->setSearch([
+                "sales_id",
+                "employee_name",
+                "q1_target",
+                "q2_target",
+                "q3_target",
+                "q4_target"
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                "sales_id",
+                "employee_name",
+                "q1_target",
+                "q2_target",
+                "q3_target",
+                "q4_target"
+            ])
+            ->setOutput([
+                "sales_id",
+                "employee_name",
+                "q1_target",
+                "q2_target",
+                "q3_target",
+                "q4_target"
+            ]);
+        
+        return $table->getDatatable();
+
     }
 
 

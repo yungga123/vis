@@ -8,6 +8,7 @@ class SalesTargetModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'sales_target';
+    protected $view             = 'sales_target_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -67,4 +68,14 @@ class SalesTargetModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // For dataTables
+    public function noticeTable() 
+    {
+        $builder = $this->db->table($this->view);
+        $builder->select("*");
+
+        return $builder;
+    }
+
 }

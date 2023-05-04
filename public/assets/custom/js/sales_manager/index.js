@@ -9,6 +9,7 @@ var table,
 
 $(document).ready(function () {
   form = "form_salestarget";
+  table = "sales_target_table";
   elems = [
     'sales_id',
     'q1_target',
@@ -16,6 +17,10 @@ $(document).ready(function () {
     'q3_target',
     'q4_target',
   ];
+
+  /* Load dataTable */
+	const route = $("#" + table).data("url");
+	loadDataTable(table, route, METHOD.POST, { order: [1, "asc"] });
 
   pieChart("chart_q1", 1);
   pieChart("chart_q2", 2);
@@ -34,15 +39,16 @@ $(document).ready(function () {
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			//refreshDataTable($("#" + table));
+			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
-
+      
 			// if ($(`#${modal}`).hasClass("edit")) {
 			// 	$(`#${modal}`).modal("hide");
 			// }
 		}
 
 		showAlertInForm(elems, message, res.status);
+    
 	});
 
   $(".modal_salestarget").on("click", function () {
@@ -70,13 +76,15 @@ $(document).ready(function () {
           
           $('#sales_id').append($('<option>', { 
               value: val.employee_id,
-              text : val.firstname + ' ' + val.lastname
+              text : val.employee_id +' --- '+ val.firstname + ' ' + val.lastname
           }));
 
           
       });
       }
     );
+
+    refreshDataTable($("#" + table));
 	});
 
   $('#sales_id').on("change",function(){

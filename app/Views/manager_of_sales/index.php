@@ -204,6 +204,23 @@
 
                 <div class="card">
                     <div class="card-body">
+                        <table id="sales_target_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('sales_target.list'); ?>">
+                            <thead class="nowrap">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Employee Name</th>
+                                    <th>Q1 Target</th>
+                                    <th>Q2 Target</th>
+                                    <th>Q3 Target</th>
+                                    <th>Q4 Target</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
                         <form id="form_salestarget" class="with-label-indicator" action="<?= url_to('sales_target.save'); ?>" method="post" autocomplete="off">
                             <?= csrf_field(); ?>
                             <input type="hidden" id="id" name="id" readonly>

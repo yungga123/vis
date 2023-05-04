@@ -164,6 +164,7 @@ $routes->group('sales_target', ['filter' => 'checkauth'], static function($route
     $routes->post('save','SalesTarget::save',['as' => 'sales_target.save']);
     $routes->post('employees','SalesTarget::employees',['as' => 'sales_target.employees']);
     $routes->post('employee','SalesTarget::employee',['as' => 'sales_target.employee']);
+    $routes->post('list','SalesTarget::list',['as' => 'sales_target.list']);
 });
 /* SALES */
 

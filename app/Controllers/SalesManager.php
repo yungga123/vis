@@ -48,6 +48,8 @@ class SalesManager extends BaseController
         $data['custom_css']     = 'sales_manager/index.css';
         $data['highcharts']     = true;
         $data['sweetalert2']    = true;
+        $data['with_dtTable']   = true;
+        $data['with_jszip']     = true;
 
 
         return view('manager_of_sales/index', $data);
