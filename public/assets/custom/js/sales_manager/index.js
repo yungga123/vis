@@ -32,6 +32,7 @@ $(document).ready(function () {
   taskleads_quarterly(2);
   taskleads_quarterly(3);
   taskleads_quarterly(4);
+  totalSalesTarget();
 
   /* Form for saving sales_target */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -256,6 +257,31 @@ function taskleads_quarterly(quarter)
   });
 }
 
+
+function totalSalesTarget() {
+  let url = $('#target_sales_url').val();
+  let data = {};
+
+  $.post(
+    url,
+    data,
+    function(response){
+      //console.log(response.q1_total[0].q1_target);
+
+      let q1_target_sales = Number(response.q1_total[0].q1_target);
+      let q2_target_sales = Number(response.q2_total[0].q2_target);
+      let q3_target_sales = Number(response.q3_total[0].q3_target);
+      let q4_target_sales = Number(response.q4_total[0].q4_target);
+
+      $('.q1_target_sales').html(q1_target_sales.toLocaleString("en", {minimumFractionDigits: 2}));
+      $('.q2_target_sales').html(q2_target_sales.toLocaleString("en", {minimumFractionDigits: 2}));
+      $('.q3_target_sales').html(q3_target_sales.toLocaleString("en", {minimumFractionDigits: 2}));
+      $('.q4_target_sales').html(q4_target_sales.toLocaleString("en", {minimumFractionDigits: 2}));
+      
+    }
+  );
+
+}
 
 
 

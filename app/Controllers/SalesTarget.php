@@ -111,4 +111,33 @@ class SalesTarget extends BaseController
 
         return $this->response->setJSON($data);
     }
+
+    //Compute total Sales Target
+    public function totalSalesTarget() {
+        
+        $model = $this->_model;
+
+        $data['q1_total'] = $model->selectSum('q1_target')->find();
+        $data['q2_total'] = $model->selectSum('q2_target')->find();
+        $data['q3_total'] = $model->selectSum('q3_target')->find();
+        $data['q4_total'] = $model->selectSum('q4_target')->find();
+
+        return $this->response->setJSON($data);
+
+    }
+
+    //Individual Sales Target
+    public function indvSalesTarget() {
+        
+        $model = $this->_model;
+        $employee_id = session('employee_id');
+
+        $data['q1_target'] = $model->select('q1_target')->where('sales_id',$employee_id)->find();
+        $data['q2_target'] = $model->select('q2_target')->where('sales_id',$employee_id)->find();
+        $data['q3_target'] = $model->select('q3_target')->where('sales_id',$employee_id)->find();
+        $data['q4_target'] = $model->select('q4_target')->where('sales_id',$employee_id)->find();
+
+        return $this->response->setJSON($data);
+        
+    }
 }

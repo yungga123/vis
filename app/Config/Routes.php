@@ -165,6 +165,8 @@ $routes->group('sales_target', ['filter' => 'checkauth'], static function($route
     $routes->post('employees','SalesTarget::employees',['as' => 'sales_target.employees']);
     $routes->post('employee','SalesTarget::employee',['as' => 'sales_target.employee']);
     $routes->post('list','SalesTarget::list',['as' => 'sales_target.list']);
+    $routes->post('target_sales','SalesTarget::totalSalesTarget',['as' => 'sales_target.target_sales']);
+    $routes->post('indv_sales_target','SalesTarget::indvSalesTarget',['as' => 'sales_target.indv_sales_target']);
 });
 /* SALES */
 

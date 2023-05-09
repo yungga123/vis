@@ -9,6 +9,7 @@
     <input type="hidden" id="tasklead_quarterly_url" value="<?= url_to('sales_manager.taskleads_quarterly') ?>">
     <input type="hidden" id="employees_url" value="<?= url_to('sales_target.employees') ?>">
     <input type="hidden" id="employee_url" value="<?= url_to('sales_target.employee') ?>">
+    <input type="hidden" id="target_sales_url" value="<?= url_to('sales_target.target_sales') ?>">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -91,7 +92,7 @@
                                                 <td class="q1_hit">0</td>
                                                 <td class="q1_miss">0</td>
                                                 <td class="q1_booked_amt">0.00</td>
-                                                <td>1,500,000.00</td>
+                                                <td class="q1_target_sales">0</td>
                                             </tr>
                                             <tr class="text-center">
                                                 <td>Q2</td>
@@ -99,7 +100,7 @@
                                                 <td class="q2_hit">0</td>
                                                 <td class="q2_miss">0</td>
                                                 <td class="q2_booked_amt">0.00</td>
-                                                <td>1,500,000.00</td>
+                                                <td class="q2_target_sales">0</td>
                                             </tr>
                                             <tr class="text-center">
                                                 <td>Q3</td>
@@ -107,7 +108,7 @@
                                                 <td class="q3_hit">0</td>
                                                 <td class="q3_miss">0</td>
                                                 <td class="q3_booked_amt">0.00</td>
-                                                <td>3,000,000.00</td>
+                                                <td class="q3_target_sales">0</td>
                                             </tr>
                                             <tr class="text-center">
                                                 <td>Q4</td>
@@ -115,7 +116,7 @@
                                                 <td class="q4_hit">0</td>
                                                 <td class="q4_miss">0</td>
                                                 <td class="q4_booked_amt">0.00</td>
-                                                <td>3,000,000.00</td>
+                                                <td class="q4_target_sales">0</td>
                                             </tr>
                                         </tbody>
                                     </table>
