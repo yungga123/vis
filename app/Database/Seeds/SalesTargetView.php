@@ -4,7 +4,7 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 
-class SalesTarget extends Seeder
+class SalesTargetView extends Seeder
 {
     public function run()
     {
