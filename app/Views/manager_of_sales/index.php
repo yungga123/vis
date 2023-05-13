@@ -10,6 +10,7 @@
     <input type="hidden" id="employees_url" value="<?= url_to('sales_target.employees') ?>">
     <input type="hidden" id="employee_url" value="<?= url_to('sales_target.employee') ?>">
     <input type="hidden" id="target_sales_url" value="<?= url_to('sales_target.target_sales') ?>">
+    <input type="hidden" id="delete_salestarget" value="<?= url_to('sales_target.delete') ?>">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -77,6 +78,7 @@
                                     <table class="table table-bordered table-sm">
                                         <thead>
                                             <tr class="text-center">
+                                                
                                                 <th>Quarter</th>
                                                 <th>Booked</th>
                                                 <th>Hit</th>
@@ -208,6 +210,7 @@
                         <table id="sales_target_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('sales_target.list'); ?>">
                             <thead class="nowrap">
                                 <tr>
+                                    <th>Action</th>
                                     <th>ID</th>
                                     <th>Employee Name</th>
                                     <th>Q1 Target</th>
@@ -229,7 +232,7 @@
 
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="sales_id">Sales Personnel</label>
+                                        <label class="required" for="sales_id">Sales Personnel</label>
                                         <select name="sales_id" id="sales_id" class="form-control" aria-describedby="alert_sales_id">
                                             <option value="">--- PLEASE SELECT ---</option>
                                         </select>
@@ -237,26 +240,26 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="q1_target">Q1 Target Amount</label>
+                                        <label class="required" for="q1_target">Q1 Target Amount</label>
                                         <input type="text" name="q1_target" id="q1_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q1_target">
                                         <small id="alert_q1_target" class="text-muted"></small>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="q2_target">Q2 Target Amount</label>
+                                        <label class="required" for="q2_target">Q2 Target Amount</label>
                                         <input type="text" name="q2_target" id="q2_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q2_target">
                                         <small id="alert_q2_target" class="text-muted"></small>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="q3_target">Q3 Target Amount</label>
+                                        <label class="required" for="q3_target">Q3 Target Amount</label>
                                         <input type="text" name="q3_target" id="q3_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q3_target">
                                         <small id="alert_q3_target" class="text-muted"></small>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="q4_target">Q4 Target Amount</label>
+                                        <label class="required" for="q4_target">Q4 Target Amount</label>
                                         <input type="text" name="q4_target" id="q4_target" class="form-control" placeholder="Enter here..." aria-describedby="alert_q4_target">
                                         <small id="alert_q4_target" class="text-muted"></small>
                                     </div>

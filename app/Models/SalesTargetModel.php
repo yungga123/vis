@@ -78,4 +78,16 @@ class SalesTargetModel extends Model
         return $builder;
     }
 
+    public function buttons()
+    {
+        
+        $closureFun = function($row){
+            return <<<EOF
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-times"></i> REMOVE</button>  
+                EOF;
+        };
+
+        return $closureFun;
+    }
+
 }

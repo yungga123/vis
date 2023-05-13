@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\EmployeesModel;
 use App\Models\SalesTargetModel;
+use Exception;
 use monken\TablesIgniter;
 
 class SalesTarget extends BaseController
@@ -45,6 +46,7 @@ class SalesTarget extends BaseController
                 "q4_target"
             ])
             ->setOutput([
+                $this->_model->buttons(),
                 "sales_id",
                 "employee_name",
                 "q1_target",
@@ -108,6 +110,37 @@ class SalesTarget extends BaseController
 
         $id = $this->request->getVar('id');
         $data['employee'] = $this->_model->where('sales_id',$id)->find();
+
+        return $this->response->setJSON($data);
+    }
+
+    public function delete()
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Succesfully Deleted!!'
+        ];
+
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            if (! $this->_model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $this->_model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+            }
+
+            // Commit transaction
+            $this->transCommit();
+        } catch (Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
 
         return $this->response->setJSON($data);
     }

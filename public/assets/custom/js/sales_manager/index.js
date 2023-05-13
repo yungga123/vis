@@ -283,6 +283,30 @@ function totalSalesTarget() {
 
 }
 
+function remove(id) {
+
+  let url = $('#delete_salestarget').val();
+  let data = {id:id};
+
+  const swalMsg = "delete";
+	swalNotifConfirm(
+		function () {
+			$.post(url, data)
+				.then((res) => {
+					const message = res.errors ?? res.message;
+
+					refreshDataTable($("#" + table));
+					notifMsgSwal(res.status, message, res.status);
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		TITLE.WARNING,
+		swalMsg,
+		STATUS.WARNING
+	);
+
+}
+
 
 
 

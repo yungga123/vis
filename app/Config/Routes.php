@@ -167,6 +167,7 @@ $routes->group('sales_target', ['filter' => 'checkauth'], static function($route
     $routes->post('list','SalesTarget::list',['as' => 'sales_target.list']);
     $routes->post('target_sales','SalesTarget::totalSalesTarget',['as' => 'sales_target.target_sales']);
     $routes->post('indv_sales_target','SalesTarget::indvSalesTarget',['as' => 'sales_target.indv_sales_target']);
+    $routes->post('delete','SalesTarget::delete',['as' => 'sales_target.delete']);
 });
 /* SALES */
 
