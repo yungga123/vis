@@ -9,6 +9,7 @@ class TaskLeadModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'tasklead';
+    protected $view             = 'task_lead';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -19,6 +20,7 @@ class TaskLeadModel extends Model
         "employee_id",
         "quarter", 
         "status",
+        "customer_type",
         "existing_customer",
         "customer_id",
         "branch_id",
@@ -26,8 +28,6 @@ class TaskLeadModel extends Model
         "project_amount", 
         "quotation_num", 
         "forecast_close_date",
-        "min_forecast_date",
-        "max_forecast_date",
         "remark_next_step", 
         "close_deal_date", 
         "project_start_date", 
@@ -43,6 +43,9 @@ class TaskLeadModel extends Model
 
     // Validation
     protected $validationRules      = [
+        "customer_type" => ["label" => "Customer Type", "rules" => "required"],
+        "existing_customer" => ["label" => "Existing Customer", "rules" => "required"],
+        "customer_id" => ["label" => "Customer", "rules" => "required"],
         "quotation_num" => "max_length[100]",
         "quarter" => 'required',
         "status" => 'required',
@@ -90,10 +93,17 @@ class TaskLeadModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable(){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead');
-        $builder->select('*');
+    public function noticeTable()
+    {
+        $booked     = '100.00%';
+        $builder    = $this->db->table($this->view);
+        $builder->select('*')->where('status !=', $booked);
+
+        if (is_admin() || is_executive() || is_manager()) {
+        } else {
+            $builder->where('employee_id', session('employee_id'));
+        }
+
         return $builder;
     }
 
@@ -132,13 +142,38 @@ class TaskLeadModel extends Model
         return $builder;
     }
 
-    public function buttonEdit(){
-        $closureFun = function($row){
-            return <<<EOF
-                <button class="btn btn-block btn-danger btn-xs delete-tasklead" data-toggle="modal" data-target="#modal-delete-tasklead" data-id="{$row['id']}"><i class="fas fa-trash"></i> Delete</button>
-                <button class="btn btn-block btn-success btn-xs update-tasklead" data-toggle="modal" data-target="#modal-update-tasklead" data-id="{$row['id']}" data-percent="{$row['status']}"><i class="far fa-arrow-alt-circle-up"></i> Forecast</button>
-            EOF; 
+    public function buttons($permissions)
+    {
+        $id = 'id';
+        $closureFun = function($row) use($id, $permissions) {
+            if (is_admin()) {
+                return <<<EOF
+                    <button class="btn btn-sm btn-success" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-arrow-up"></i> </button> 
+
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
+                EOF;
+            }
+
+            $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
+                $edit = <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-edit"></i> </button> 
+                EOF;
+            }
+
+            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
+
+            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
+                $delete = <<<EOF
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            return $edit . $delete;
+                        
         };
+
         return $closureFun;
     }
 }

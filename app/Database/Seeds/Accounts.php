@@ -14,7 +14,7 @@ class Accounts extends Seeder
             [
                 'employee_id'   => "SOFTWAREDEV",
                 'username'      => 'yungga',
-                'password'      => 'yunggabells',
+                'password'      => password_hash('yunggabells', PASSWORD_DEFAULT),
                 'access_level'  => 'admin'
             ]
         ];
@@ -31,7 +31,6 @@ class Accounts extends Seeder
                 "date_of_birth"                 => "1997-01-14",
                 "place_of_birth"                => "Muntinlupa",
                 "postal_code"                   => "1772",
-                "language"                      => "Tagalog, English",
                 "address_province"              => "Metro Manila",
                 "address_city"                  => "Muntinlupa",
                 "address_brgy"                  => "Putatan",
@@ -51,7 +50,7 @@ class Accounts extends Seeder
                 "spouse_contact_no"             => "",
                 "no_of_children"                => "",
                 "spouse_address"                => "",
-                "position"                      => "",
+                "position"                      => "Programmer",
                 "employment_status"             => "",
                 "date_hired"                    => "",
                 "date_resigned"                 => "",

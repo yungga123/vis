@@ -3,1004 +3,366 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\CustomerBranchModel;
 use App\Models\CustomersModel;
+use App\Models\CustomersResidentialModel;
 use App\Models\CustomersVtBranchModel;
 use App\Models\CustomersVtModel;
-use App\Models\TaskleadHistorViewModel;
 use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
-use App\Models\TaskLeadView;
-use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Files\File;
 use CodeIgniter\I18n\Time;
-use Config\Services;
+use Exception;
 use monken\TablesIgniter;
 
-class TaskLead extends BaseController
+class Tasklead extends BaseController
 {
+    /**
+     * Use to initialize PermissionModel class
+     * @var object
+     */
+    private $_model;
 
-    use ResponseTrait;
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Class constructor
+     */
+
+     private $_time;
+
+    /**
+     * Class constructor
+     */
+
+    private $_taskleadHistoryModel;
+    /**
+     * Class constructor
+     */
+
+    
+    public function __construct()
+    {
+        $this->_time        = new Time();
+        $this->_model       = new TaskLeadModel(); // Current model
+        $this->_module_code = MODULE_CODES['task_lead']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_taskleadHistoryModel = new TaskleadHistoryModel();
+    }
+
     public function index()
     {
-        if (session('logged_in') == true) {
+        $data['title']          = 'Task Lead';
+        $data['page_title']     = 'Task Lead | List';
+        $data['custom_js']      = 'tasklead/list.js';
+        $data['with_dtTable']   = true;
+        $data['with_jszip']     = true;
+        $data['sweetalert2']    = true;
+        $data['exclude_toastr'] = true;
+        $data['select2']        = true;
+        $data['can_add']        = $this->_can_add;
+        $data['quarter']        = $this->_time->getQuarter();
+        $data['btn_add_lbl']    = 'Add New Tasklead';
 
-            $customersModel = new CustomersModel();
-            $customersVtModel = new CustomersVtModel();
-            $data['title'] = 'Task/Leads Monitoring';
-            $data['page_title'] = 'Task/Leads Monitoring';
-            $data['uri'] = service('uri');
-            $data['customers'] = $customersModel->find();
-            $data['customersVt'] = $customersVtModel->find();
-
-            return view('task_lead/task_lead_menu',$data);
-        } else {
-            return redirect()->to('login');
+        // get initials for the name (used for quotation)
+        $words = explode(' ',session('name'));
+        $inits = '';
+        foreach($words as $word){
+            $inits.=strtoupper(substr($word,0,1));
         }
+        
+        $quotation_num = $inits . date('ym');
+        $data['quotation_num'] = $quotation_num;
+
+        return view('task_lead/index', $data);
     }
 
-    public function add_project()
+    public function list()
     {
-        if (session('logged_in') == true) {
-            $time = new Time('now');
+        $table = new TablesIgniter();
+        $params = $this->request->getVar('params');
+        $builder = $this->_model->noticeTable();
 
-            $selectedCustomer = $this->request->getGet('forecast_custmer');
-            $customersModel = new CustomersModel();
-            $customersBranchModel = new CustomerBranchModel();
-            $data['title'] = 'Add Project';
-            $data['page_title'] = 'Add Project';
-            $data['customers'] = $customersModel->findAll();
-            $data['uri'] = service('uri');
-            $data['date_quarter'] = $time->getQuarter();
-            $data['customers_branch'] = $customersBranchModel->where('customer_id',$selectedCustomer)->find();
-            $data['selectedCustomer'] = $selectedCustomer;
-
-
-            return view('task_lead/add_project',$data);
-        } else {
-            return redirect()->to('login');
+        if ($params && $params['filter'] !== 'all') {
+            $builder->where('status', $params['filter']);
         }
+
+        $table->setTable($builder)
+            ->setSearch([
+                "id",
+                "employee_name",
+                "quarter",
+                "status",
+                "status_percent",
+                "customer_type",
+                "customer_name",
+                "branch_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status1",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_duration"
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                null,
+                "id",
+                "employee_name",
+                "quarter",
+                "status",
+                "status_percent",
+                "customer_type",
+                "customer_name",
+                "branch_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status1",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_duration"
+            ])
+            ->setOutput([
+                $this->_model->buttons($this->_permissions),
+                "id",
+                "employee_name",
+                "quarter",
+                "status",
+                "status_percent",
+                "customer_type",
+                "customer_name",
+                "branch_name",
+                "contact_number",
+                "project",
+                "project_amount",
+                "quotation_num",
+                "forecast_close_date",
+                "min_forecast_date",
+                "max_forecast_date",
+                "status1",
+                "remark_next_step",
+                "close_deal_date",
+                "project_start_date",
+                "project_finish_date",
+                "project_duration"
+            ]);
+
+        return $table->getDatatable();
     }
 
-    public function add_projectExistingCustomer()
+     /**
+     * Saving process of employees (inserting and updating employees)
+     *
+     * @return json
+     */
+    public function save() 
     {
-        if (session('logged_in') == true) {
-
-            if ($this->request->getMethod()=="post") {
-                $taskleadModel = new TaskLeadModel();
-                $taskleadHistoryModel = new TaskleadHistoryModel();
-                $validate = [
-                    "success" => false,
-                    "messages" => ''
-                ];
-
-                $data = [
-                    "employee_id" => $this->request->getPost('employee_id'),
-                    "quotation_num" => $this->request->getPost('quotation_num'),
-                    "quarter" => $this->request->getPost('quarter'),
-                    "status" => $this->request->getPost('status'),
-                    "customer_id" => $this->request->getPost('customer_id'),
-                    "branch_id" => $this->request->getPost('branch_id'),
-                    "project" => $this->request->getPost('project'),
-                    "project_amount" => $this->request->getPost('project_amount'),
-                    "remark_next_step" => $this->request->getPost('remark_next_step'),
-                    "forecast_close_date" => $this->request->getPost('forecast_close_date'),
-                    "min_forecast_date" => $this->request->getPost('min_forecast_date'),
-                    "max_forecast_date" => $this->request->getPost('max_forecast_date'),
-                    "existing_customer" => 1,
-                ];
-
-                if (!$taskleadModel->insert($data)) {
-                    $validate['messages'] = $taskleadModel->errors();
-                } else {
-                    $validate['success'] = true;
-                    $db = \Config\Database::connect();
-                    $query = $db->query("SELECT * FROM tasklead ORDER BY id DESC LIMIT 1");
-                    $result = $query->getResultObject();
-                    
-
-                    $taskleadHistoryModel->insert([
-                        "tasklead_id" => $result[0]->id,
-                        "quarter" => $data["quarter"],
-                        "status" => $data["status"],
-                        "remark_next_step" => $data["remark_next_step"],
-                    ]);
-                }
-
-                return json_encode($validate);
-            }
-
-
-            $time = new Time('now');
-            $selectedCustomer = $this->request->getGet('existing_customer');
-            $customersVtModel = new CustomersVtModel();
-            $customersVtBranchModel = new CustomersVtBranchModel();
-            $data['title'] = 'Add Project';
-            $data['page_title'] = 'Add Project';
-            $data['customers'] = $customersVtModel->findAll();
-            $data['uri'] = service('uri');
-            $data['date_quarter'] = $time->getQuarter();
-            $data['customers_branch'] = $customersVtBranchModel->where('customer_id',$selectedCustomer)->find();
-            $data['selectedCustomer'] = $selectedCustomer;
-
-
-            return view('task_lead/add_project',$data);
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function add_project_validate()
-    {
-        $taskleadModel = new TaskLeadModel();
-        $taskleadHistoryModel = new TaskleadHistoryModel();
-        $validate = [
-            "success" => false,
-            "messages" => ''
-        ];
-
         $data = [
-            "employee_id" => $this->request->getPost('employee_id'),
-            "quotation_num" => $this->request->getPost('quotation_num'),
-            "quarter" => $this->request->getPost('quarter'),
-            "status" => $this->request->getPost('status'),
-            "customer_id" => $this->request->getPost('customer_id'),
-            "branch_id" => $this->request->getPost('branch_id'),
-            "project" => $this->request->getPost('project'),
-            "project_amount" => $this->request->getPost('project_amount'),
-            "remark_next_step" => $this->request->getPost('remark_next_step'),
-            "forecast_close_date" => $this->request->getPost('forecast_close_date'),
-            "min_forecast_date" => $this->request->getPost('min_forecast_date'),
-            "max_forecast_date" => $this->request->getPost('max_forecast_date'),
-            "existing_customer" => 0,
-
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Employee has been added successfully!'
         ];
 
-        if (!$taskleadModel->insert($data)) {
-            $validate['messages'] = $taskleadModel->errors();
-        } else {
-            $validate['success'] = true;
-            $db = \Config\Database::connect();
-            $query = $db->query("SELECT * FROM tasklead ORDER BY id DESC LIMIT 1");
-            $result = $query->getResultObject();
-            
+        // Using DB Transaction
+        $this->transBegin();
 
-            $taskleadHistoryModel->insert([
-                "tasklead_id" => $result[0]->id,
-                "quarter" => $data["quarter"],
-                "status" => $data["status"],
-                "remark_next_step" => $data["remark_next_step"],
+        try {
+            $id     = $this->request->getVar('id');
+            $rules  = $this->_model->getValidationRules();
+
+            $this->_model->setValidationRules($rules);
+
+            if (! $this->_model->save($this->request->getVar())) {
+                $data['errors']     = $this->_model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+            }
+
+            if (! empty($id)) {                
+                $data['message']    = 'Tasklead has been updated successfully!';                
+            } else $id = $this->_model->getInsertID();
+
+
+            //update customer to existing customer if customer is forecast after booked
+            if ($this->request->getVar('existing_customer')==0 && $this->request->getVar('status')=='100.00' && $this->request->getVar('customer_type')=='Commercial') {
+                $customersVtModel = new CustomersVtModel();
+
+                $customersVtModel->update(
+                    $this->request->getVar('customer_id'),
+                    [
+                        'forecast' => 0
+                    ]
+                );
+            } elseif(($this->request->getVar('existing_customer')==0 && $this->request->getVar('status')=='100.00' && $this->request->getVar('customer_type')=='Residential')) {
+
+                $customersResidentialModel = new CustomersResidentialModel();
+
+                $customersResidentialModel->update(
+                    $this->request->getVar('customer_id'),
+                    [
+                        'forecast' => 0
+                    ]
+                );
+            }
+
+            
+            $this->_taskleadHistoryModel->insert([
+                'tasklead_id' => $id,
+                'quarter' => $this->request->getVar('quarter'),
+                'status' => $this->request->getVar('status'),
+                'customer_id' => $this->request->getVar('customer_id'),
+                'project' => $this->request->getVar('project'),
+                'project_amount' => $this->request->getVar('project_amount'),
+                'quotation_num' => $this->request->getVar('quotation_num'),
+                'forecast_close_date' => $this->request->getVar('forecast_close_date'),
+                'remark_next_step' => $this->request->getVar('remark_next_step'),
+                'close_deal_date' => $this->request->getVar('close_deal_date'),
+                'project_start_date' => $this->request->getVar('project_start_date'),
+                'project_finish_date' => $this->request->getVar('project_finish_date')
             ]);
+            // Commit transaction
+            $this->transCommit();
+        } catch (Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
         }
 
-        echo json_encode($validate);
+        return $this->response->setJSON($data);
     }
 
-    public function edit_project_validate()
+    /**
+     * For getting the employee data using the id
+     *
+     * @return json
+     */
+    public function edit() 
     {
-        $taskleadModel = new TaskLeadModel();
-        $taskleadHistoryModel = new TaskleadHistoryModel();
-        $validate = [
-            "success" => false,
-            "messages" => ''
-        ];
-
-        $id = $this->request->getPost('id');
         $data = [
-            "quotation_num" => $this->request->getPost('quotation_num'),
-            "quarter" => $this->request->getPost('quarter'),
-            "status" => $this->request->getPost('status'),
-            "customer_id" => $this->request->getPost('customer_id'),
-            "branch_id" => $this->request->getPost('branch_id'),
-            "project" => $this->request->getPost('project'),
-            "project_amount" => $this->request->getPost('project_amount'),
-            "remark_next_step" => $this->request->getPost('remark_next_step'),
-            "forecast_close_date" => $this->request->getPost('forecast_close_date'),
-            "min_forecast_date" => $this->request->getPost('min_forecast_date'),
-            "max_forecast_date" => $this->request->getPost('max_forecast_date'),
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Tasklead has been retrieved!'
         ];
 
-        if (!$taskleadModel->update($id, $data)) {
-            $validate['messages'] = $taskleadModel->errors();
-        } else {
-            $validate['success'] = true;
+        try {
+            $id     = $this->request->getVar('id');
+            $fields = $this->_model->allowedFields;
+
+            $data['data'] = $this->_model->select($fields)->find($id);;
+        } catch (\Exception$e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
         }
 
-        echo json_encode($validate);
+        return $this->response->setJSON($data);
     }
 
-    public function project_list()
+    /**
+     * Deletion of employee
+     *
+     * @return json
+     */
+    public function delete() 
     {
-        if (session('logged_in') == true) {
-            $data['title'] = 'Project List';
-            $data['page_title'] = 'Project List';
-            $data['uri'] = service('uri');
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Tasklead has been deleted successfully!'
+        ];
 
-            return view('task_lead/project_list',$data);
-        } else {
-            return redirect()->to('login');
-        }
-    }
+        // Using DB Transaction
+        $this->transBegin();
 
-    public function manager_project_list()
-    {
-
-        if (session('logged_in') == true && (session('access') == 'manager' || session('access') == 'admin')) {
-            $data['title'] = 'Managers Project List';
-            $data['page_title'] = 'Managers Project List';
-            $data['uri'] = service('uri');
-
-            return view('task_lead/project_list',$data);
-        } elseif (session('logged_in') == true) {
-            $data['title'] = 'Invalid Access';
-            $data['page_title'] = 'Invalid Access';
-            $data['href'] = site_url('tasklead');
-            $data['uri'] = service('uri');
-
-
-            return view('templates/offlimits',$data);
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function project_list_booked()
-    {
-        if (session('logged_in') == true) {
-            //$taskleadModel = new TaskLeadModel();
-            $taskleadView = new TaskLeadView();
-
-            $request = service('request');
-            $searchData = $request->getGet();
-
-            $data['page'] = isset($_GET['page']) ? $_GET['page'] : 1;
-            $data['perPage'] = 10;
-            $data['total'] = $taskleadView->countAll();
-            $search = "";
-            if (isset($searchData) && isset($searchData['search'])) {
-                $search = $searchData['search'];
+        try {
+            if (! $this->_model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $this->_model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
             }
 
-            if ($search == '') {
-                $paginateData = $taskleadView->where('employee_name',session('name'))->orderBy('id', 'desc')->paginate($data['perPage']);
-            } else {
-                $paginateData = $taskleadView->orLike('id', $search)
-                    ->orLike('employee_name', $search)
-                    ->orLike('customer_name', $search)
-                    ->orderBy('id', 'desc')
-                    ->paginate($data['perPage']);
-            }
+            // Commit transaction
+            $this->transCommit();
+        } catch (Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
 
-            $data['title'] = 'Booked Project List';
-            $data['page_title'] = 'Booked Project List';
-            $data['uri'] = service('uri');
-            $data['booked_projects'] = $paginateData;
-            $data['pager'] = $taskleadView->pager;
-            $data['search'] = $search;
-
-            return view('task_lead/project_list_booked',$data);
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function manager_project_list_booked()
-    {
-
-        if (session('logged_in') == true && (session('access') == 'manager' || session('access') == 'admin')) {
-
-            $taskleadView = new TaskLeadView();
-
-            $request = service('request');
-            $searchData = $request->getGet();
-
-            $data['page'] = isset($_GET['page']) ? $_GET['page'] : 1;
-            $data['perPage'] = 10;
-            $data['total'] = $taskleadView->countAll();
-            $search = "";
-            if (isset($searchData) && isset($searchData['search'])) {
-                $search = $searchData['search'];
-            }
-
-            if ($search == '') {
-                $paginateData = $taskleadView->orderBy('id', 'desc')->paginate($data['perPage']);
-            } else {
-                $paginateData = $taskleadView->orLike('id', $search)
-                    ->orLike('employee_name', $search)
-                    ->orLike('customer_name', $search)
-                    ->orderBy('id', 'desc')
-                    ->paginate($data['perPage']);
-            }
-
-            $data['title'] = 'Booked Managers Project List';
-            $data['page_title'] = 'Booked Managers Project List';
-            $data['uri'] = service('uri');
-            $data['booked_projects'] = $paginateData;
-            $data['pager'] = $taskleadView->pager;
-            $data['search'] = $search;
-
-            return view('task_lead/project_list_booked',$data);
-        } elseif (session('logged_in') == true) {
-            $data['title'] = 'Invalid Access';
-            $data['page_title'] = 'Invalid Access';
-            $data['href'] = site_url('tasklead');
-            $data['uri'] = service('uri');
-
-            return view('templates/offlimits',$data);
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function getProjectListManager()
-    {
-        $taskleadModel = new TaskLeadModel();
-
-        if ($this->request->getGet('existing_customer')==1) {
-            $project_table = $taskleadModel->noticeTableExistingCustomer();
-        } else {
-            $project_table = $taskleadModel->noticeTable();
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
         }
 
-        $taskleadTable = new TablesIgniter();
-        $taskleadTable->setTable($project_table)
-            ->setDefaultOrder("id", "DESC")
-            ->setOrder([
-                "id",
-                null,
-                "quarter",
-                "employee_name",
-                "status_percent",
-                "status",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_start_date"
-            ])
-            ->setSearch([
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "id",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "remark_next_step",
-                "status",
-                "status1"
-            ])
-            ->setOutput([
-                "id",
-                $taskleadModel->buttonEdit(),
-                "employee_name",
-                "quarter",
-                "status",
-                "status_percent",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status1",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_duration"
-            ]);
-        return $taskleadTable->getDatatable();
+        return $this->response->setJSON($data);
     }
 
-    public function getProjectList()
-    {
-        $taskleadModel = new TaskLeadModel();
 
-        if ($this->request->getGet('existing_customer')==1) {
-            $project_table = $taskleadModel->noticeTableWhereExistingCustomer(session('employee_id'));
-        } else {
-            $project_table = $taskleadModel->noticeTableWhere(session('employee_id'));
-        }
 
-        $taskleadTable = new TablesIgniter();
-        $taskleadTable->setTable($project_table)
-            ->setDefaultOrder("id", "DESC")
-            ->setOrder([
-                "id",
-                null,
-                "quarter",
-                "employee_name",
-                "status_percent",
-                "status",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_start_date"
-            ])
-            ->setSearch([
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "id",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "remark_next_step",
-                "status",
-                "status1"
-            ])
-            ->setOutput([
-                "id",
-                $taskleadModel->buttonEdit(),
-                "employee_name",
-                "quarter",
-                "status",
-                "status_percent",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status1",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_duration"
-            ]);
-        return $taskleadTable->getDatatable();
+    public function getVtCustomer() {
+        $model = new CustomersVtModel();
+        $forecast = $this->request->getVar('forecast');
+        $data['data'] = $model->where('forecast', $forecast)->find();
+        $data['success'] = true;
+
+        return $this->response->setJSON($data);
     }
 
-    public function getProjectListBookedManager()
-    {
-        $taskleadModel = new TaskLeadModel();
+    // public function getForecastCustomer() {
+    //     $model = new CustomersModel();
+    //     $forecast = $this->request->getVar('forecast');
+    //     $data['data'] = $forecast ? $model->where('forecast', $forecast)->find() : $model->find();
+    //     $data['success'] = true;
 
-        $taskleadTable = new TablesIgniter();
-        $taskleadTable->setTable($taskleadModel->noticeTableBooked())
-            ->setDefaultOrder("id", "DESC")
-            ->setOrder([
-                "id",
-                null,
-                "quarter",
-                "employee_name",
-                "status_percent",
-                "status",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_start_date"
-            ])
-            ->setSearch([
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "id",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "remark_next_step",
-                "status",
-                "status1"
-            ])
-            ->setOutput([
-                "id",
-                $taskleadModel->buttonEdit(),
-                "employee_name",
-                "quarter",
-                "status",
-                "status_percent",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status1",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_duration"
-            ]);
-        return $taskleadTable->getDatatable();
-    }
-
-    public function getProjectBookedList()
-    {
-        $taskleadModel = new TaskLeadModel();
-
-        $taskleadTable = new TablesIgniter();
-        $taskleadTable->setTable($taskleadModel->noticeTableBookedWhere(session('employee_id')))
-            ->setDefaultOrder("id", "DESC")
-            ->setOrder([
-                "id",
-                null,
-                "quarter",
-                "employee_name",
-                "status_percent",
-                "status",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_start_date"
-            ])
-            ->setSearch([
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "id",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "remark_next_step",
-                "status",
-                "status1"
-            ])
-            ->setOutput([
-                "id",
-                $taskleadModel->buttonEdit(),
-                "employee_name",
-                "quarter",
-                "status",
-                "status_percent",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status1",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_duration"
-            ]);
-        return $taskleadTable->getDatatable();
-    }
-
-    // public function edit_project($id)
-    // {
-    //     if (session('logged_in') == true) {
-
-    //         $taskleadModel = new TaskLeadModel();
-    //         $customersModel = new CustomersModel();
-    //         $customersBranchModel = new CustomerBranchModel();
-
-    //         $customersVtModel = new CustomersVtModel();
-    //         $customersVtBranchModel = new CustomersVtBranchModel();
-
-    //         $project_details = $taskleadModel->find($id);
-
-
-    //         $data['title'] = 'Update a project';
-    //         $data['page_title'] = 'Update project';
-
-    //         if ($project_details['existing_customer']) {
-    //             $data['customers'] = $customersVtModel->findAll();
-    //             $data['customers_branch'] = $customersVtBranchModel->where('customer_id',$project_details['customer_id'])->find();
-    //         } else {
-    //             $data['customers'] = $customersModel->findAll();
-    //             $data['customers_branch'] = $customersBranchModel->where('customer_id',$project_details['customer_id'])->find();
-    //         }
-            
-            
-    //         $data['project_details'] = $project_details;
-    //         $data['id'] = $id;
-    //         $data['uri'] = service('uri');
-
-    //         return view('task_lead/add_project',$data);
-    //     } else {
-    //         return redirect()->to('login');
-    //     }
+    //     return $this->response->setJSON($data);
     // }
 
-    public function update_project_status($id, $status)
-    {
-        if (session('logged_in') == true) {
+    public function getResidentialCustomers() {
+        $model = new CustomersResidentialModel();
+        $forecast = $this->request->getVar('forecast');
+        $data['data'] = $model->where('forecast', $forecast)->find();
+        $data['success'] = true;
 
-            $taskleadModel = new TaskLeadModel();
-            $taskleadHistoryModel = new TaskleadHistoryModel();
-            $taskleadData = $taskleadModel->find($id);
-
-            $data['title'] = 'Update Tasklead Status';
-            $data['page_title'] = 'Update Tasklead Status';
-            $data['uri'] = service('uri');
-            $data['href'] = site_url('project-list');
-            $data['taskleadData'] = $taskleadData;
-            
-
-            $data_model = [
-                'status' => $status
-            ];
-
-
-            switch ($status) {
-
-                case '30.00': // QUALIFiED
-                    
-                    $status_text = "<h1 class='text-secondary'>QUALIFIED (30%)</h1>";
-                    $quotation_num = "";
-
-                    $data['status'] = $status;
-                    $data['status_text'] = $status_text;
-                    $data['id'] = $id;
-                    $data['quotation_num'] = $quotation_num;
-
-                    
-
-                    return view('task_lead/booked_tasklead',$data);
-                    break;
-
-                case '50.00': // DEVELOPED SOLUTION
-                    $status_text = "<h1 class='text-warning'>DEVELOPED SOLUTION (50%)</h1>";
-
-                    $name = session('name');
-                    $pos = strpos($name," ") + 1;
-                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
-
-                    $data['status'] = $status;
-                    $data['status_text'] = $status_text;
-                    $data['id'] = $id;
-                    $data['quotation_num'] = $quotation_num;
-
-                    
-
-                    return view('task_lead/booked_tasklead',$data);
-
-                    break;
-
-                case '70.00': // EVALUATION
-                    $status_text = "<h1 class='text-info'>EVALUATION (70%)</h1>";
-
-                    $name = session('name');
-                    $pos = strpos($name," ") + 1;
-                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
-
-                    $data['status'] = $status;
-                    $data['status_text'] = $status_text;
-                    $data['id'] = $id;
-                    $data['quotation_num'] = $quotation_num;
-
-                    
-
-                    return view('task_lead/booked_tasklead',$data);
-
-                    break;
-
-                case '90.00': // NEGOTIATION
-                    $status_text = "<h1 class='text-primary'>NEGOTIATION (90%)</h1>";
-
-                    $name = session('name');
-                    $pos = strpos($name," ") + 1;
-                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
-
-                    $data['status'] = $status;
-                    $data['status_text'] = $status_text;
-                    $data['id'] = $id;
-                    $data['quotation_num'] = $quotation_num;
-
-                    
-
-                    return view('task_lead/booked_tasklead',$data);
-
-                    break;
-
-                case '100.00':
-                    $status_text = "<h1 class='text-success'>BOOKED (100%)</h1>";
-
-                    $name = session('name');
-                    $pos = strpos($name," ") + 1;
-                    $quotation_num = "QTN" . $name[0].$name[$pos] . date('ym') . $id;
-
-                    $data['status'] = $status;
-                    $data['status_text'] = $status_text;
-                    $data['id'] = $id;
-                    $data['quotation_num'] = $quotation_num;
-
-                    
-
-                    return view('task_lead/booked_tasklead',$data);
-
-
-                    break;
-
-                default:
-                    $status_text = "";
-                    $quotation_num = "";
-
-                    
-                    break;
-            }
-
-
-        } else {
-            return redirect()->to('login');
-        }
+        return $this->response->setJSON($data);
     }
 
-    public function update_project_status_validate()
-    {
-        $taskleadModel = new TaskLeadModel();
-        $taskleadHistoryModel = new TaskleadHistoryModel();
-        $validate = [
-            "success" => false,
-            "messages" => ''
-        ];
+    public function getCustomerVtBranch() {
+        $model = new CustomersVtBranchModel();
+        $id = $this->request->getVar('id');
+        $data['data'] = $model->where('customer_id',$id)->find();
+        $data['success'] = true;
 
-        $id = $this->request->getPost('id');
-        $data = [
-            "quotation_num" => $this->request->getPost('quotation_num'),//
-            "status" => $this->request->getPost('status'),//
-            "project" => $this->request->getPost('project'), //
-            "project_amount" => $this->request->getPost('project_amount'),//
-            "remark_next_step" => $this->request->getPost('remark_next_step'), //
-            "forecast_close_date" => $this->request->getPost('forecast_close_date'),//
-            "min_forecast_date" => $this->request->getPost('min_forecast_date'),//
-            "max_forecast_date" => $this->request->getPost('max_forecast_date'),//
-            "close_deal_date" => $this->request->getPost('close_deal_date'),//
-            "project_start_date" => $this->request->getPost('project_start_date'),//
-            "project_finish_date" => $this->request->getPost('project_finish_date'),//
-        ];
-
-        $insert_data = [
-            "tasklead_id" => $id,
-            "quotation_num" => $this->request->getPost('quotation_num'),//
-            "status" => $this->request->getPost('status'),//
-            "project" => $this->request->getPost('project'), //
-            "project_amount" => $this->request->getPost('project_amount'),//
-            "remark_next_step" => $this->request->getPost('remark_next_step'), //
-            "forecast_close_date" => $this->request->getPost('forecast_close_date'),//
-            "min_forecast_date" => $this->request->getPost('min_forecast_date'),//
-            "max_forecast_date" => $this->request->getPost('max_forecast_date'),//
-            "close_deal_date" => $this->request->getPost('close_deal_date'),//
-            "project_start_date" => $this->request->getPost('project_start_date'),//
-            "project_finish_date" => $this->request->getPost('project_finish_date'),//
-        ];
-
-        if (!$taskleadModel->update($id, $data)) {
-            $validate['messages'] = $taskleadModel->errors();
-        } else {
-            $validate['success'] = true;
-            $taskleadHistoryModel->insert($insert_data);
-
-            $existingCustomer = $this->request->getPost('existing_customer');
-
-            if ($data['status']=='100.00' && !$existingCustomer) {
-                
-                //ADD MAIN CUSTOMER
-
-                $customersModel = new CustomersModel();
-                $customersVtModel = new CustomersVtModel();
-                
-
-                $taskleadData = $taskleadModel->find($id);
-                $customerID = $taskleadData['customer_id'];
-                $customersData = $customersModel->find($customerID);
-
-                $customersVTInsert = [
-                    "customer_name" => $customersData['customer_name'],
-                    "contact_person" => $customersData['contact_person'],
-                    "address_province" => $customersData['address_province'],
-                    "address_city" => $customersData['address_city'],
-                    "address_brgy" => $customersData['address_brgy'],
-                    "address_sub" => $customersData['address_sub'],
-                    "contact_number" => $customersData['contact_number'],
-                    "email_address" => $customersData['email_address'],
-                    "source" => $customersData['source'],
-                    "notes" => $customersData['notes'],
-                ];
-                
-                $customersVtModel->insert($customersVTInsert);
-                
-
-                $customersVtLastData = $customersVtModel->orderBy('id','desc')->limit(1)->find();
-                $taskleadModel->update($id,[
-                    "customer_id" => $customersVtLastData[0]['id']
-                ]);
-                $customersModel->delete($customerID);
-
-                 // ADD CUSTOMER BRANCH
-                if ($taskleadData['branch_id']) {
-                    $customersBranchModel = new CustomerBranchModel();
-                    $customersVTBranchModel = new CustomersVtBranchModel();
-                    $customerBranchID = $taskleadData['branch_id'];
-                    $customersBranchData = $customersBranchModel->find($customerBranchID);
-                    $customersVTBranchInsert = [
-                        "customer_id" => $customersBranchData['customer_id'],
-                        "branch_name" => $customersBranchData['branch_name'],
-                        "address_province" => $customersBranchData['address_province'],
-                        "address_city" => $customersBranchData['address_city'],
-                        "address_brgy" => $customersBranchData['address_brgy'],
-                        "address_sub" => $customersBranchData['address_sub'],
-                        "contact_number" => $customersBranchData['contact_number'],
-                        "contact_person" => $customersBranchData['contact_person'],
-                        "email_address" => $customersBranchData['email_address'],
-                        "notes" => $customersBranchData['notes'],
-                    ];
-                    $customersVTBranchModel->insert($customersVTBranchInsert);
-                    
-                    $customersVtBranchLastData = $customersVTBranchModel->orderBy('id', 'desc')->limit(1)->find();
-                    $taskleadModel->update($id, [
-                        "branch_id" => $customersVtBranchLastData[0]['id']
-                    ]);
-                    $customersVTBranchModel->delete($customerBranchID);
-                }
-
-            }
-        }
-
-        echo json_encode($validate);
+        return $this->response->setJSON($data);
     }
 
-
-    public function delete_tasklead($id)
-    {
-        if (session('logged_in') == true) {
-
-            $taskleadModel = new TaskLeadModel();
-
-            $data['title'] = 'Delete Task/Lead';
-            $data['page_title'] = 'Delete Task/Lead';
-            $data['uri'] = service('uri');
-            $data['href'] = site_url('project-list');
-            $taskleadModel->delete($id);
-
-            echo view('templates/header', $data);
-            echo view('task_lead/header');
-            echo view('templates/navbar');
-            echo view('templates/sidebar');
-            echo view('templates/deletepage');
-            echo view('templates/footer');
-            echo view('task_lead/script');
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function project_booked_details($id)
-    {
-        if (session('logged_in') == true) {
-            helper('filesystem');
-            $taskleadModel = new TaskLeadModel();
-            $taskleadView = new TaskLeadView();
-            $taskleadHistoryViewModel = new TaskleadHistorViewModel();
-            $data['title'] = 'Project Booked Details';
-            $data['page_title'] = 'Project Booked Details';
-            $data['uri'] = service('uri');
-            $data['project_detail'] = $taskleadView->find($id);
-            $data['errors'] = [];
-            $data['id'] = $id;
-            $data['tasklead_history'] = $taskleadHistoryViewModel->where('tasklead_id', $id)->findAll();
-            $data['tasklead_data'] = $taskleadModel->find($id);
-
-            $path = '../public/uploads/project-booked/' . $id;
-
-            $data['map'] = directory_map($path);
-
-            return view('task_lead/project_booked_details',$data);
-        } else {
-            return redirect()->to('login');
-        }
-    }
-
-    public function upload($id)
-    {
-        if (session('logged_in') == true) {
-            $validationRule = [
-                'project_file' => [
-                    'label' => 'File',
-                    'rules' => 'uploaded[project_file]'
-                        . '|max_size[project_file,5000]'
-                        . '|ext_in[project_file,xlsx,jpg,jpeg,csv,docx,pdf]'
-                ],
-            ];
-            if (!$this->validate($validationRule)) {
-                helper('filesystem');
-                $data = ['errors' => $this->validator->getErrors()];
-                
-                $taskleadView = new TaskLeadView();
-                $data['title'] = 'Project Booked Details';
-                $data['uri'] = service('uri');
-                $data['project_detail'] = $taskleadView->find($id);
-
-                $path = '../public/uploads/project-booked/' . $id;
-
-                $data['map'] = directory_map($path);
-
-                return view('templates/header', $data)
-                    .view('task_lead/header')
-                    .view('templates/navbar')
-                    .view('templates/sidebar')
-                    .view('task_lead/project_booked_details')
-                    .view('templates/footer')
-                    .view('task_lead/script');
-            }
-
-            $img = $this->request->getFile('project_file');
-
-            if (!$img->hasMoved()) {
-                //$filepath = WRITEPATH . 'uploads/' . $img->store($id,$img->getClientName());
-                $filename = $img->getClientName();
-                $filepath = '../public/uploads/project-booked/'.$id;
-                $img->move($filepath,$filename);
-
-                $data = ['uploaded_flleinfo' => new File($filepath)];
-                $data['title'] = 'Upload File Success';
-                $data['page_title'] = 'File upload success!';
-                $data['href'] = site_url('project-list-booked');
-                $data['uri'] = service('uri');
-                $data['id'] = $id;
-
-                 return view('templates/header', $data)
-                 .view('task_lead/header')
-                 .view('templates/navbar')
-                 .view('templates/sidebar')
-                 .view('templates/file-successpage')
-                 .view('templates/footer')
-                 .view('task_lead/script');
-            }
-
-
-        } else {
-            return redirect()->to('login');
-        }
-    }
+    
 }

@@ -30,7 +30,6 @@ class EmployeesView extends Seeder
                 employment_status,
                 DATE_FORMAT(date_hired,'%b %d, %Y') as date_hired,
                 DATE_FORMAT(date_resigned,'%b %d, %Y') as date_resigned,
-                language,
                 contact_number,
                 email_address,
                 sss_no,

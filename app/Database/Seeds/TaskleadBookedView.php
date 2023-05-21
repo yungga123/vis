@@ -23,16 +23,18 @@ class TaskleadBookedView extends Seeder
             quarter,
             CONCAT(status,'%') as status,
             status_percent,
-            customer_name,
+            customer_type,
+            existing_customer,
+            IF(customer_type='Commercial',customers_vt.customer_name,customers_residential.customer_name) as customer_name,
             branch_name,
             customers_vt.contact_number as contact_number,
             project,
             project_amount,
             quotation_num,
             DATE_FORMAT(forecast_close_date,'%b %d, %Y') as forecast_close_date,
-            DATE_FORMAT(min_forecast_date,'%b %d, %Y') as min_forecast_date,
-            DATE_FORMAT(max_forecast_date,'%b %d, %Y') as max_forecast_date,
-            IF(close_deal_date<max_forecast_date AND close_deal_date>min_forecast_date,'HIT','MISSED') as status1,
+            DATE_FORMAT(DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as min_forecast_date,
+            DATE_FORMAT(DATE_ADD(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as max_forecast_date,
+            IF(close_deal_date<DATE_ADD(forecast_close_date, INTERVAL 6 DAY) AND close_deal_date>DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'HIT','MISSED') as status1,
             remark_next_step,
             DATE_FORMAT(close_deal_date,'%b %d, %Y') as close_deal_date,
             DATE_FORMAT(project_start_date,'%b %d, %Y') as project_start_date,
@@ -46,6 +48,10 @@ class TaskleadBookedView extends Seeder
         ON
             tasklead.customer_id=customers_vt.id
         LEFT JOIN
+            customers_residential
+        ON
+            tasklead.customer_id=customers_residential.id
+        LEFT JOIN
             tasklead_status
         ON
             tasklead.status=tasklead_status.percent
@@ -58,7 +64,7 @@ class TaskleadBookedView extends Seeder
         ON
             tasklead.branch_id=customervt_branch.id
         WHERE
-            tasklead.deleted_at IS NULL AND status = 100.00
+            status = 100.00
         ");
     }
 }

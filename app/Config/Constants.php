@@ -92,3 +92,103 @@ define('EVENT_PRIORITY_NORMAL', 100);
  * @deprecated Use \CodeIgniter\Events\Events::PRIORITY_HIGH instead.
  */
 define('EVENT_PRIORITY_HIGH', 10);
+
+/* Custom constant */
+// For status
+define('STATUS_SUCCESS', 'success');
+define('STATUS_ERROR', 'error');
+define('STATUS_INFO', 'info');
+
+/* Account Access Level (AAL) */
+// New
+defined('AAL_SUPER_ADMIN')  || define('AAL_SUPER_ADMIN', 'super_admin');
+defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
+defined('AAL_EXECUTIVE')    || define('AAL_EXECUTIVE', 'executive');
+defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+defined('AAL_OPERATION')    || define('AAL_OPERATION', 'operation');
+defined('AAL_SUPERVISOR')   || define('AAL_SUPERVISOR', 'supervisor');
+defined('AAL_SUPERVISOR_SALES')   || define('AAL_SUPERVISOR_SALES', 'supervisor_sales');
+defined('AAL_SUPERVISOR_INVENTORY')   || define('AAL_SUPERVISOR_INVENTORY', 'supervisor_inventory');
+defined('AAL_SUPERVISOR_PROJECT')   || define('AAL_SUPERVISOR_PROJECT', 'supervisor_project');
+defined('AAL_SUPERVISOR_PURCHASING')   || define('AAL_SUPERVISOR_PURCHASING', 'supervisor_purchasing');
+defined('AAL_SUPERVISOR_HR')   || define('AAL_SUPERVISOR_HR', 'supervisor_hr');
+defined('AAL_SUPERVISOR_IT')   || define('AAL_SUPERVISOR_IT', 'supervisor_it');
+defined('AAL_MANAGER_TECHNICAL')   || define('AAL_MANAGER_TECHNICAL', 'manager_technical');
+defined('AAL_MANAGER_ADMIN')   || define('AAL_MANAGER_ADMIN', 'manager_admin');
+defined('AAL_MANAGER_SALES')   || define('AAL_MANAGER_SALES', 'manager_sales');
+defined('AAL_MANAGER_HR')   || define('AAL_MANAGER_HR', 'manager_hr');
+defined('AAL_MANAGER_ACCOUNTING')   || define('AAL_MANAGER_ACCOUNTING', 'manager_accounting');
+defined('AAL_MANAGER_FINANCE')   || define('AAL_MANAGER_FINANCE', 'manager_finance');
+// defined('AAL_USER')         || define('AAL_USER', 'user');
+
+// Old
+// defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
+defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+defined('AAL_HR')           || define('AAL_HR', 'hr');
+defined('AAL_SALES')        || define('AAL_SALES', 'sales');
+defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
+defined('AAL_USER')         || define('AAL_USER', 'user');
+
+// Actions - add new here
+define('ACTIONS', [
+    'VIEW'      => 'View',
+    'ADD'       => 'Add',
+    'EDIT'      => 'Edit',
+    'DELETE'    => 'Delete',
+    // 'EXPORT'    => 'Export',
+    // 'IMPORT'    => 'Import',
+]);
+
+// Roles - add new here
+define('ROLES', [
+    'ADMIN'                 => 'Administrator',
+    'EXECUTIVE'             => 'Executive',
+    'MANAGER'               => 'Manager',
+    'MANAGER_TECHNICAL'     => 'Technical Manager',
+    'MANAGER_ADMIN'         => 'Admin Manager',
+    'MANAGER_SALES'         => 'Sales Manager',
+    'MANAGER_HR'            => 'HR Manager',
+    'MANAGER_ACCOUNTING'    => 'Accounting Manager',
+    'MANAGER_FINANCE'       => 'Finance Manager',
+    'OPERATION'             => 'Admin/Operation',
+    'SUPERVISOR'            => 'Supervisory',
+    'SUPERVISOR_SALES'      => 'Sales Supervisor',
+    'SUPERVISOR_INVENTORY'  => 'Inventory',
+    'SUPERVISOR_PROJECT'    => 'Project Engineer',
+    'SUPERVISOR_PURCHASING' => 'Purchasing',
+    'SUPERVISOR_HR'         => 'HR Staff',
+    'SUPERVISOR_IT'         => 'IT Head',
+    'USER'                  => 'General User',
+]);
+
+// Modules - add new here
+define('MODULES', [
+    'DASHBOARD'             => 'Dashboard',
+    'ACCOUNTS'              => 'Accounts',
+    'EMPLOYEES'             => 'Employees',
+    // 'CUSTOMERS'             => 'Customers (Forecast)',
+    'CUSTOMERS_COMMERCIAL'  => 'Clients (Commercial)',
+    'CUSTOMERS_RESIDENTIAL' => 'Clients (Residential)',
+    'TASK_LEAD'             => 'Task/Lead Monitoring',
+    'MANAGER_OF_SALES'      => 'Manager of Sales',
+    'SETTINGS_MAILCONFIG'   => 'Mail Config',
+    'SETTINGS_PERMISSIONS'  => 'Permissions',
+    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
+]);
+
+// Modules code based on the specific identifier you set
+// (value should be the same key in MODULES)
+// Will be used in the constructor of the controller
+define('MODULE_CODES', [
+    'dashboard'             => 'DASHBOARD',
+    'accounts'              => 'ACCOUNTS',
+    'employees'             => 'EMPLOYEES',
+    'customers'             => 'CUSTOMERS',
+    'customers_commercial'  => 'CUSTOMERS_COMMERCIAL',
+    'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
+    'task_lead'             => 'TASK_LEAD',
+    'manager_sales'         => 'MANAGER_OF_SALES',
+    'mail_config'           => 'SETTINGS_MAILCONFIG',
+    'permissions'           => 'SETTINGS_PERMISSIONS',
+    'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
+]);

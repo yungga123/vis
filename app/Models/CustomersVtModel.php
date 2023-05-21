@@ -8,6 +8,7 @@ class CustomersVtModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'customers_vt';
+    protected $view             = 'customervt_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -15,6 +16,7 @@ class CustomersVtModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        "forecast",
         "customer_name", 
         "contact_person", 
         "address_province",
@@ -24,7 +26,8 @@ class CustomersVtModel extends Model
         "contact_number", 
         "email_address", 
         "source", 
-        "notes"
+        "notes",
+        "referred_by",
     ];
 
     // Dates
@@ -36,6 +39,7 @@ class CustomersVtModel extends Model
 
     // Validation
     protected $validationRules      = [
+        "forecast" => 'required',
         "customer_name" => 'required|max_length[500]',
         "contact_person" => 'required|max_length[500]',
         "address_province" => 'required|max_length[500]',
@@ -48,6 +52,9 @@ class CustomersVtModel extends Model
         "notes" => 'required|max_length[100]'
     ];
     protected $validationMessages   = [
+        "forecast" => [
+            "required" => "Please select if YES or NO"
+        ],
         "customer_name" => [
             "required" => "Customer Name is required.",
             "max_length" => "Max length is 500."
@@ -93,6 +100,7 @@ class CustomersVtModel extends Model
             "max_length" => "Max length is 100.",
             
         ]
+
     ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
@@ -107,4 +115,67 @@ class CustomersVtModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getCustomerName($id)
+    {
+        return $this->select('customer_name')->find($id);
+    }
+
+    public function noticeTable() 
+    {
+        $builder = $this->db->table($this->view);
+        $builder->select("*");
+        return $builder;
+    }
+
+    public function buttons($permissions)
+    {
+        $id = 'id';
+        $closureFun = function($row) use($id, $permissions) {
+            if (is_admin()) {
+                return <<<EOF
+                    <button class="btn btn-sm btn-info" onclick="branchCustomervtRetrieve({$row["$id"]})" title="View Branch"><i class="fas fa-eye"></i> </button>
+
+                    <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["customer_name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
+
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            $view = <<<EOF
+                <button class="btn btn-sm btn-info" onclick="branchCustomervtRetrieve({$row["$id"]})" title="View Branch"><i class="fas fa-eye"></i> </button>
+            EOF;
+
+            $add = '<button class="btn btn-sm btn-success" title="Cannot add" disabled><i class="fas fa-plus-square"></i> </button>';
+
+            if (check_permissions($permissions, 'ADD') && !is_admin()) {
+                $add = <<<EOF
+                    <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["customer_name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
+                EOF;
+            }
+
+            $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
+
+            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
+                $edit = <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" title="Edit"><i class="fas fa-edit"></i> </button> 
+                EOF;
+            }
+
+            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
+
+            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
+                $delete = <<<EOF
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            return $view . $add . $edit . $delete;
+                        
+        };
+
+        return $closureFun;
+    }
 }
