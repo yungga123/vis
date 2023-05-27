@@ -429,3 +429,14 @@ if (! function_exists('get_current_user_avatar'))
         return $profile->getProfileImg(session('gender'));
 	}
 }
+
+/**
+ * Check string if contains the passed value
+ */
+if (! function_exists('check_string_contains'))
+{
+	function check_string_contains(string $string, string $val): bool
+	{
+        return (strpos($string, $val) !== false);
+	}
+}
