@@ -158,6 +158,17 @@ $routes->group('sales_manager_indv', ['filter' => 'checkauth'], static function(
     $routes->post('tasklead_stats_url','SalesManagerIndividual::taskleads_stats',['as' => 'sales_manager_indv.taskleads_stats']);
     $routes->post('tasklead_quarterly_url','SalesManagerIndividual::taskleads_quarterly',['as' => 'sales_manager_indv.taskleads_quarterly']);
 });
+
+// Sales Target
+$routes->group('sales_target', ['filter' => 'checkauth'], static function($routes){
+    $routes->post('save','SalesTarget::save',['as' => 'sales_target.save']);
+    $routes->post('employees','SalesTarget::employees',['as' => 'sales_target.employees']);
+    $routes->post('employee','SalesTarget::employee',['as' => 'sales_target.employee']);
+    $routes->post('list','SalesTarget::list',['as' => 'sales_target.list']);
+    $routes->post('target_sales','SalesTarget::totalSalesTarget',['as' => 'sales_target.target_sales']);
+    $routes->post('indv_sales_target','SalesTarget::indvSalesTarget',['as' => 'sales_target.indv_sales_target']);
+    $routes->post('delete','SalesTarget::delete',['as' => 'sales_target.delete']);
+});
 /* SALES */
 
 /* SETTINGS */

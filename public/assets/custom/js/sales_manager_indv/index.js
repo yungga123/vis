@@ -10,6 +10,8 @@ $(document).ready(function () {
   taskleads_quarterly(2);
   taskleads_quarterly(3);
   taskleads_quarterly(4);
+
+  indv_sales_target();
 });
 
 function pieChart(chart, quarter) {
@@ -162,4 +164,30 @@ function taskleads_quarterly(quarter)
 
     });
   });
+}
+
+
+function indv_sales_target()
+{
+  let url = $('#indv_sales_target_url').val();
+  let data = {};
+
+  $.post(
+    url,
+    data,
+    function(response) {
+      //console.log(response.q1_target[0].q1_target);
+
+      let q1_sales_target = Number(response.q1_target[0].q1_target);
+      let q2_sales_target = Number(response.q2_target[0].q2_target);
+      let q3_sales_target = Number(response.q3_target[0].q3_target);
+      let q4_sales_target = Number(response.q4_target[0].q4_target);
+
+      $('.q1_sales_target').html(q1_sales_target.toLocaleString("en", {minimumFractionDigits:2}));
+      $('.q2_sales_target').html(q2_sales_target.toLocaleString("en", {minimumFractionDigits:2}));
+      $('.q3_sales_target').html(q3_sales_target.toLocaleString("en", {minimumFractionDigits:2}));
+      $('.q4_sales_target').html(q4_sales_target.toLocaleString("en", {minimumFractionDigits:2}));
+      
+    }
+  );
 }

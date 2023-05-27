@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\TaskLeadModel;
-use App\Models\TaskLeadView;
 
 class SalesManager extends BaseController
 {
@@ -41,11 +40,16 @@ class SalesManager extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
+        
+
         $data['title']          = 'Manager of Sales';
         $data['page_title']     = 'Manager of Sales';
         $data['custom_js']      = 'sales_manager/index.js';
         $data['custom_css']     = 'sales_manager/index.css';
         $data['highcharts']     = true;
+        $data['sweetalert2']    = true;
+        $data['with_dtTable']   = true;
+        $data['with_jszip']     = true;
 
 
         return view('manager_of_sales/index', $data);
@@ -112,5 +116,6 @@ class SalesManager extends BaseController
 
     }
 
+    
     
 }
