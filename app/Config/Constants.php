@@ -119,15 +119,15 @@ defined('AAL_MANAGER_SALES')   || define('AAL_MANAGER_SALES', 'manager_sales');
 defined('AAL_MANAGER_HR')   || define('AAL_MANAGER_HR', 'manager_hr');
 defined('AAL_MANAGER_ACCOUNTING')   || define('AAL_MANAGER_ACCOUNTING', 'manager_accounting');
 defined('AAL_MANAGER_FINANCE')   || define('AAL_MANAGER_FINANCE', 'manager_finance');
-// defined('AAL_USER')         || define('AAL_USER', 'user');
+defined('AAL_USER')         || define('AAL_USER', 'user');
 
 // Old
 // defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
-defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
-defined('AAL_HR')           || define('AAL_HR', 'hr');
-defined('AAL_SALES')        || define('AAL_SALES', 'sales');
-defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
-defined('AAL_USER')         || define('AAL_USER', 'user');
+// defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+// defined('AAL_HR')           || define('AAL_HR', 'hr');
+// defined('AAL_SALES')        || define('AAL_SALES', 'sales');
+// defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
+// defined('AAL_USER')         || define('AAL_USER', 'user');
 
 // Actions - add new here
 define('ACTIONS', [

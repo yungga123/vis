@@ -132,6 +132,18 @@ class Roles extends BaseController
                 $inputs['updated_by']   = session('username');
                 $data['message']        = 'Role has been updated successfully!';
             } else {
+                $role_type = $this->request->getVar('role_type');
+
+                if ($role_type === 'manager') {
+                    if (! check_string_contains($role_code, 'MANAGER_')) {
+                        $inputs['role_code'] = 'MANAGER_' . $role_code;
+                    }
+                } else if ($role_type === 'supervisor') {                    
+                    if (! check_string_contains($role_code, 'SUPERVISOR_')) {
+                        $inputs['role_code'] = 'SUPERVISOR_' . $role_code;
+                    }
+                }
+                
                 $inputs['created_by']   = session('username');
             }
 

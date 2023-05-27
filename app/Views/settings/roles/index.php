@@ -35,10 +35,20 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="form-group" id="role_type_wrapper">
+                        <label class="required" for="role_type">Role Type</label>
+                        <select class="form-control" name="role_type" id="role_type" style="width: 100%;" required>
+                            <option value="others" selected>Others</option>
+                            <option value="manager">Managerial</option>
+                            <option value="supervisor">Supervisory</option>
+                        </select>
+                        <small id="alert_role_type" class="text-danger"></small>
+                    </div>
                     <div class="form-group">
                         <label class="required" for="role_code">Role Code</label>
                         <input type="text" name="role_code" id="role_code" class="form-control text-uppercase" placeholder="Enter role code">
                         <input type="hidden" name="prev_role_code" id="prev_role_code" readonly>
+                        <small id="role_type_info" class="text-info"></small>
                         <small id="alert_role_code" class="text-danger"></small>
                     </div>
                     <div class="form-group">

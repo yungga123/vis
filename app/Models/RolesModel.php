@@ -71,7 +71,7 @@ class RolesModel extends Model
     // Check if role has already dependency in permissions or accounts
     public function getSpecificRoleCode($role_id) 
     {
-        $role = $this->select('role_code')->first($role_id);
+        $role = $this->select('role_code')->find($role_id);
 
         return (! empty($role)) ? $role['role_code'] : null;
     }
