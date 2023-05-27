@@ -171,9 +171,10 @@ define('MODULES', [
     'CUSTOMERS_RESIDENTIAL' => 'Clients (Residential)',
     'TASK_LEAD'             => 'Task/Lead Monitoring',
     'MANAGER_OF_SALES'      => 'Manager of Sales',
+    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
-    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
+    'SETTINGS_ROLES'        => 'Roles',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -188,7 +189,8 @@ define('MODULE_CODES', [
     'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
     'task_lead'             => 'TASK_LEAD',
     'manager_sales'         => 'MANAGER_OF_SALES',
+    'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
-    'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
+    'roles'                 => 'SETTINGS_ROLES',
 ]);

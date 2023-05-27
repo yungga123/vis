@@ -52,7 +52,7 @@ if (! function_exists('get_nav_menus'))
             'SETTINGS'          => [
                 'name'      => 'Settings',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('settings/mail') || url_is('settings/permissions')),
+                'urls'      => (url_is('settings/mail') || url_is('settings/permissions') || url_is('settings/roles')),
                 'icon'      => 'fas fa-cog',
             ],
         ];
@@ -69,7 +69,6 @@ if (! function_exists('setup_modules'))
 	function setup_modules(string $param = null)
 	{
 		$modules = [
-            // 'DASHBOARD'             => 'Dashboard',
             'ACCOUNTS'              => [
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('ACCOUNTS'),
@@ -139,6 +138,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('permission.home'),
                 'class'     => (url_is('settings/permissions') ? 'active' : ''),
                 'icon'      => 'fas fa-user-lock',
+            ],
+            'SETTINGS_ROLES'   => [
+                'menu'      => 'SETTINGS', // Leave empty if none
+                'name'      => get_modules('SETTINGS_ROLES'),
+                'url'       => url_to('roles.home'),
+                'class'     => (url_is('settings/roles') ? 'active' : ''),
+                'icon'      => 'fas fa-user-tag',
             ],
         ];
 
@@ -250,7 +256,7 @@ if (! function_exists('is_admin'))
 {
 	function is_admin(): bool
 	{
-        return session('access_level') === AAL_ADMIN;
+        return strtoupper(session('access_level')) === strtoupper(AAL_ADMIN);
 	}
 }
 
@@ -261,7 +267,7 @@ if (! function_exists('is_executive'))
 {
 	function is_executive(): bool
 	{
-        return session('access_level') === AAL_EXECUTIVE;
+        return strtoupper(session('access_level')) === strtoupper(AAL_EXECUTIVE);
 	}
 }
 
@@ -272,7 +278,7 @@ if (! function_exists('is_manager'))
 {
 	function is_manager(): bool
 	{
-        return session('access_level') === AAL_MANAGER;
+        return strtoupper(session('access_level')) === strtoupper(AAL_MANAGER);
 	}
 }
 
@@ -283,11 +289,16 @@ if (! function_exists('get_roles'))
 {
 	function get_roles(string|null $param = null): string|array
 	{
-		$roles = ROLES;
+		$model = new \App\Models\RolesModel();
+        $roles = $model->getRoles();
         
-        if(! is_admin()) unset($roles['ADMIN']);
+        if (! empty($roles)) {
+            if(! is_admin()) unset($roles['ADMIN']);
 
-		return $param ? $roles[strtoupper($param)] : $roles;
+		    return $param ? $roles[strtoupper($param)] : $roles;
+        }
+        
+        return false;
 	}
 }
 
