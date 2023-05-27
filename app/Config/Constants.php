@@ -123,7 +123,7 @@ defined('AAL_MANAGER_FINANCE')   || define('AAL_MANAGER_FINANCE', 'manager_finan
 
 // Old
 // defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
-defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+// defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
 defined('AAL_HR')           || define('AAL_HR', 'hr');
 defined('AAL_SALES')        || define('AAL_SALES', 'sales');
 defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');

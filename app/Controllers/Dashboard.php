@@ -16,7 +16,7 @@ class Dashboard extends BaseController
         $data['title']          = 'Dashboard';
         $data['page_title']     = 'Dashboard';
         $data['exclude_toastr'] = true;
-        $data['module_cards']   = $this->moduleCardMenu();
+        $data['modules']        = $this->moduleBoxMenu();
 
         return view('dashboard/dashboard', $data);
     }
@@ -26,7 +26,7 @@ class Dashboard extends BaseController
      *
      * @return string (html)
      */
-    public function moduleCardMenu()
+    public function moduleBoxMenu()
     {
         $html       = '';
         $modules    = $this->modules;
@@ -38,41 +38,51 @@ class Dashboard extends BaseController
             'bg-secondary', 
         ];
 
+        $hr_html        = '';
+        $sales_html     = '';
+        $settings_html  = '';
+
         if (! empty($modules) && is_array($modules)) {
             // Sort modules ascending
             sort($modules);
-            
-            $count = 0;
+
             foreach ($modules as $val) {
                 // Not include DASHBOARD module
                 if ($val !== 'DASHBOARD') {
                     $module = setup_modules($val);
 
-                    if ($count === 0 || $count === 4) {
-                        $html .= $count === 4 ? '</div><div class="row">' : '<div class="row">';
-                        $count = 0;
-                    }
-
                     // Add module card menu
-                    $html .= <<<EOF
-                        <div class="col-lg-3 col-6" id="{$val}">
-                            <div class="small-box bg-success">
-                                <div class="inner"><h4>{$module['name']}</h4></div>
-                                <div class="icon"><i class="{$module['icon']}"></i></div>
-                                <a href="{$module['url']}" class="small-box-footer">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
+                    $card = <<<EOF
+                        <div class="small-box bg-success">
+                            <div class="inner"><h4>{$module['name']}</h4></div>
+                            <div class="icon"><i class="{$module['icon']}"></i></div>
+                            <a href="{$module['url']}" class="small-box-footer">
+                                More info <i class="fas fa-arrow-circle-right"></i>
+                            </a>
                         </div>
                     EOF;
-                    $count += 1;
-                    shuffle($bgColor);
+
+                    switch ($module['menu']) {
+                        case 'HUMAN_RESOURCE':
+                            $hr_html .= $card;
+                            break;
+                        case 'SALES':
+                            $sales_html .= $card;
+                            break;
+                        case 'SETTINGS':
+                            $settings_html .= $card;
+                            break;
+                    }
                 }
             }
         } else {
-            $html = '<h3>No module card to be displayed!</h3>';
+            $html = '<h2>No module card to be displayed!</h2>';
         }
 
-        return $html;
+        return (! empty($html)) ? $html : [
+            'hr_modules'        => $hr_html,
+            'sales_modules'     => $sales_html,
+            'settings_modules'  => $settings_html,
+        ];
     }
 }
