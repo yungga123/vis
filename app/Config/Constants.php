@@ -121,25 +121,16 @@ defined('AAL_MANAGER_ACCOUNTING')   || define('AAL_MANAGER_ACCOUNTING', 'manager
 defined('AAL_MANAGER_FINANCE')   || define('AAL_MANAGER_FINANCE', 'manager_finance');
 defined('AAL_USER')         || define('AAL_USER', 'user');
 
-// Old
-// defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
-// defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
-// defined('AAL_HR')           || define('AAL_HR', 'hr');
-// defined('AAL_SALES')        || define('AAL_SALES', 'sales');
-// defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
-// defined('AAL_USER')         || define('AAL_USER', 'user');
-
 // Actions - add new here
 define('ACTIONS', [
     'VIEW'      => 'View',
     'ADD'       => 'Add',
     'EDIT'      => 'Edit',
     'DELETE'    => 'Delete',
-    // 'EXPORT'    => 'Export',
-    // 'IMPORT'    => 'Import',
 ]);
 
-// Roles - add new here
+// Roles - No need to add new roles here
+// Adding new roles will be on the dashboard
 define('ROLES', [
     'ADMIN'                 => 'Administrator',
     'EXECUTIVE'             => 'Executive',
@@ -173,6 +164,7 @@ define('MODULES', [
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
+    'SETTINGS_ROLES'        => 'Roles',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -189,4 +181,5 @@ define('MODULE_CODES', [
     'manager_sales'         => 'MANAGER_OF_SALES',
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
+    'roles'                 => 'SETTINGS_ROLES',
 ]);
