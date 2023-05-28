@@ -22,7 +22,12 @@
                             </div>
                             <div class="form-group quarter" hidden>
                                 <label for="quarter">Quarter</label>
-                                <input type="text" name="quarter" id="quarter" class="form-control" placeholder="Enter..." value="<?= $quarter ?>" readonly>
+                                <select type="text" name="quarter" id="quarter" class="form-control">
+                                    <option value="1" <?= ($quarter==1) ? "selected" : "" ?>>1st Quarter</option>
+                                    <option value="2" <?= ($quarter==2) ? "selected" : "" ?>>2nd Quarter</option>
+                                    <option value="3" <?= ($quarter==3) ? "selected" : "" ?>>3rd Quarter</option>
+                                    <option value="4" <?= ($quarter==4) ? "selected" : "" ?>>4th Quarter</option>
+                                </select>
                                 <small id="alert_quarter" class="text-danger"></small>
                             </div>
                             <div class="form-group status" hidden>

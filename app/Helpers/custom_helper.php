@@ -40,7 +40,7 @@ if (! function_exists('get_nav_menus'))
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead')),
+                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead') || url_is('sales_manager') || url_is('sales_manager_indv')),
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -111,13 +111,20 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('tasklead') ? 'active' : ''),
                 'icon'      => 'fas fa-tasks',
             ],
-            // 'MANAGER_OF_SALES'      => [
-            //     'menu'      => 'SALES', // Leave empty if none
-            //     'name'      => get_modules('MANAGER_OF_SALES'),
-            //     'url'       => '#',
-            //     'class'     => (url_is('employees') ? 'active' : ''),
-            //     'icon'      => 'far fa-circle',
-            // ],
+            'MANAGER_OF_SALES'      => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => get_modules('MANAGER_OF_SALES'),
+                'url'       => url_to('sales_manager.home'),
+                'class'     => (url_is('sales_manager') ? 'active' : ''),
+                'icon'      => 'far fa-circle',
+            ],
+            'MANAGER_OF_SALES_INDV'      => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => get_modules('MANAGER_OF_SALES_INDV'),
+                'url'       => url_to('sales_manager_indv.home'),
+                'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
+                'icon'      => 'far fa-circle',
+            ],
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
                 'name'      => get_modules('SETTINGS_MAILCONFIG'),
@@ -360,6 +367,18 @@ if (! function_exists('account_access_level'))
 				'operation' 	=> 'Admin/Operation',
 				'supervisor'	=> 'Supervisory',
 				'user'  		=> 'General User',
+                'supervisor_sales'     => 'Sales Supervisor',
+                'supervisor_inventory'     => 'Inventory',
+                'supervisor_project'     => 'Project Engineer',
+                'supervisor_purchasing'     => 'Purchasing',
+                'supervisor_hr'     => 'HR Staff',
+                'supervisor_it'     => 'IT Head',
+                'manager_technical'     => 'Technical Manager',
+                'manager_admin'     => 'Admin Manager',
+                'manager_sales'     => 'Sales Manager',
+                'manager_hr'     => 'HR Manager',
+                'manager_accounting'     => 'Accounting Manager',
+                'manager_finance'     => 'Finance Manager',
 			];
 
 		if (! empty($params)) {
