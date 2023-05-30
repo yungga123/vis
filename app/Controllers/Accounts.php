@@ -93,7 +93,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 'access_level',
             ])
             ->setDefaultOrder('employee_name','asc')
@@ -101,7 +100,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 'access_level',
                 null,
             ])
@@ -109,7 +107,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 $this->_model->dtAccessLevel(),
                 $this->_model->buttons($this->_permissions),
             ]);

@@ -84,13 +84,6 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('employees') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
             ],
-            // 'CUSTOMERS'             => [
-            //     'menu'      => 'SALES', // Leave empty if none
-            //     'name'      => get_modules('CUSTOMERS'),
-            //     'url'       => url_to('customers.home'),
-            //     'class'     => (url_is('customers') ? 'active' : ''),
-            //     'icon'      => 'far fa-address-card',
-            // ],
             'CUSTOMERS_COMMERCIAL'             => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('CUSTOMERS_COMMERCIAL'),
@@ -416,5 +409,16 @@ if (! function_exists('get_current_user_avatar'))
 	{
         $profile = new \App\Controllers\AccountProfile();
         return $profile->getProfileImg(session('gender'));
+	}
+}
+
+/**
+ * Check string if contains the passed value
+ */
+if (! function_exists('check_string_contains'))
+{
+	function check_string_contains(string $string, string $val): bool
+	{
+        return (strpos($string, $val) !== false);
 	}
 }
