@@ -174,6 +174,7 @@ define('MODULES', [
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
+    'PURCHASING_SUPPLIERS'  => 'List of Suppliers',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -191,4 +192,5 @@ define('MODULE_CODES', [
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
     'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
+    'suppliers'             => 'PURCHASING_SUPPLIERS',
 ]);

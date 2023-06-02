@@ -55,6 +55,12 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('settings/mail') || url_is('settings/permissions')),
                 'icon'      => 'fas fa-cog',
             ],
+            'PURCHASING'          => [
+                'name'      => 'Purchasing',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => (url_is('suppliers')),
+                'icon'      => 'fas fa-money-check',
+            ],
         ];
 
         return $menu[$param];
@@ -124,6 +130,13 @@ if (! function_exists('setup_modules'))
                 'name'      => get_modules('MANAGER_OF_SALES_INDV'),
                 'url'       => url_to('sales_manager_indv.home'),
                 'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
+                'icon'      => 'far fa-circle',
+            ],
+            'PURCHASING_SUPPLIERS'      => [
+                'menu'      => 'PURCHASING', // Leave empty if none
+                'name'      => get_modules('PURCHASING_SUPPLIERS'),
+                'url'       => url_to('sales_manager_indv.home'),
+                'class'     => (url_is('purchasing') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
             'SETTINGS_MAILCONFIG'   => [
