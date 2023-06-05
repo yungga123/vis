@@ -54,6 +54,11 @@
 
 <!-- Load custom js -->
 <script src="<?=base_url('assets')?>/custom/js/functions.js"></script>
+<?php if (isset($routes) && !empty($routes)): ?>
+		<script type="text/javascript">
+      var router = JSON.parse('<?= $routes ?>');
+    </script>
+<?php endif; ?>
 <?php
 if (isset($custom_js) && !empty($custom_js)):
     $custom_js = is_string($custom_js) ? [$custom_js] : $custom_js;

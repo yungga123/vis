@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\InventoryModel;
+use App\Models\InventoryDropdownModel;
 use monken\TablesIgniter;
 
 /**
@@ -12,20 +13,84 @@ use monken\TablesIgniter;
 class Inventory extends BaseController
 {
     /**
-     * Display the inventory view
+     * Use to initialize corresponding model
+     * @var object
+     */
+    private $_model;
+
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Use to initialize inventory dropdowns model
+     * @var object
+     */
+    private $_mdropdown;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->_model       = new InventoryModel(); // Current model
+        $this->_module_code = MODULE_CODES['inventory']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_mdropdown   = new InventoryDropdownModel();
+    }
+
+    /**
+     * Display the view
      *
      * @return view
      */
     public function index()
     {
-        $data['title']          = 'Inventory | List of Items';
-        $data['page_title']     = 'Inventory | List of Items';
-        $data['can_add']        = true;
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+
+        $dropdowns_link         = '<small><a href="'. url_to('inventory.dropdown.home') .'" title="Click here to go to Inventory Dropdowns">Inventory Dropdowns</a></small>';
+        $data['title']          = 'Inventory | Masterlist';
+        $data['page_title']     = 'Inventory | Masterlist - '. $dropdowns_link;
+        $data['can_add']        = $this->_can_add;
+        $data['can_edit']       = $this->checkPermissions($this->_permissions, 'EDIT');
+        $data['can_item_in']    = $this->checkPermissions($this->_permissions, 'ITEM_IN');
+        $data['can_item_out']   = $this->checkPermissions($this->_permissions, 'ITEM_OUT');
         $data['btn_add_lbl']    = 'Add New Item';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
-        $data['custom_js']      = 'inventory/list.js';
         $data['sweetalert2']    = true;
+        $data['select2']        = true;
+        $data['custom_js']      = 'inventory/list.js';
+        $data['routes']         = json_encode([
+            'inventory' => [
+                'list'      => url_to('inventory.list'),
+                'save'      => url_to('inventory.save'),
+                'edit'      => url_to('inventory.edit'),
+                'delete'    => url_to('inventory.delete'),
+            ],
+            'dropdown' => [
+                'show'      => url_to('inventory.dropdown.show'),
+                'save'      => url_to('inventory.dropdown.save'),
+            ],
+        ]);
+        $data['categories']     = $this->inventoryCategoriesOptions();
 
         return view('inventory/index', $data);
     }
@@ -37,55 +102,46 @@ class Inventory extends BaseController
      */
     public function list()
     {
-        $model = new InventoryModel();
         $table = new TablesIgniter();
+        $request = $this->request->getVar();
 
-        $table->setTable($model->noticeTable())
+        $table->setTable($this->_model->noticeTable($request))
             ->setSearch([
-                'item_name',
+                'id',
+                'category',
+                'sub_category',
                 'item_brand',
-                'item_type',
-                // 'item_sdp',
-                // 'item_srp',
-                // 'project_price',
-                // 'stocks',
-                // 'stock_unit',
-                // 'date_of_purchase',
-                'supplier',
-                'location',
+                'item_model',
+                'item_description',
                 'encoder',
             ])
             ->setOrder([
                 null,
-                'item_name',
+                'id',
+                'category',
+                'sub_category',
                 'item_brand',
-                'item_type',
-                'item_sdp',
-                'item_srp',
-                'project_price',
+                'item_model',
+                'item_description',
+                'item_size',
+                'total',
                 'stocks',
                 'stock_unit',
-                'date_of_purchase',
-                'supplier',
-                'location',
                 'encoder',
-                'created_at',
             ])
             ->setOutput([
-                $model->buttons(),
-                'item_name',
+                $this->_model->buttons($this->_permissions),
+                'id',
+                'category',
+                'sub_category',
                 'item_brand',
-                'item_type',
-                'item_sdp',
-                'item_srp',
-                'project_price',
+                'item_model',
+                'item_description',
+                'item_size',
+                'total',
                 'stocks',
                 'stock_unit',
-                'date_of_purchase',
-                'supplier',
-                'location',
                 'encoder',
-                'created_at',
             ]);
 
         return $table->getDatatable();
@@ -107,10 +163,8 @@ class Inventory extends BaseController
         $this->transBegin();
 
         try {
-            $model = new InventoryModel();
-
-            if (! $model->save($this->request->getVar())) {
-                $data['errors']     = $model->errors();
+            if (! $this->_model->save($this->request->getVar())) {
+                $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             }
@@ -146,11 +200,8 @@ class Inventory extends BaseController
         ];
 
         try {
-            $model  = new InventoryModel();
-            $id     = $this->request->getVar('id');
-            // $item   = $model->select($model->allowedFields)->find($id);
-
-            $data['data'] = $model->select($model->allowedFields)->find($id);;
+            $id             = $this->request->getVar('id');
+            $data['data']   = $this->_model->getInventories($id);
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
@@ -176,10 +227,8 @@ class Inventory extends BaseController
         $this->transBegin();
 
         try {
-            $model = new InventoryModel();
-
-            if (! $model->delete($this->request->getVar('id'))) {
-                $data['errors']     = $model->errors();
+            if (! $this->_model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
             }
@@ -196,5 +245,35 @@ class Inventory extends BaseController
         }
 
         return $this->response->setJSON($data);
+    }
+
+    private function inventoryCategoriesOptions()
+    {
+        $option     = '';
+        $others     = '';
+        $columns    = 'dropdown_id, dropdown, other_category_type';
+        $categories = $this->_mdropdown->getDropdowns('CATEGORY', $columns, true);
+
+        if (! empty($categories)) {
+            foreach ($categories as $category) {
+                if (empty($category['other_category_type'])) {
+                    $option     .= '
+                        <option value="'. $category['dropdown_id'] .'">
+                            '. $category['dropdown'] .'
+                        </option>
+                    ';
+                } else {
+                    $others     .= '
+                        <option value="'. $category['dropdown_id'] .'">
+                            '. $category['dropdown'] .'
+                        </option>
+                    ';
+                }
+            }
+
+            $option .= '<optgroup label="Other Categories">'. $others .'</optgroup>';
+        }
+
+        return $option;
     }
 }

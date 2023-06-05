@@ -36,11 +36,21 @@ if (! function_exists('get_nav_menus'))
 {
 	function get_nav_menus(string $param): array
 	{
+        $is_sales = (
+            url_is('customers') || 
+            url_is('customers/commercial') || 
+            url_is('customers/residential') || 
+            url_is('tasklead') || 
+            url_is('sales_manager') || 
+            url_is('sales_manager_indv') || 
+            url_is('inventory') ||
+            url_is('inventory/dropdowns')
+        );
 		$menu = [
             'SALES'            => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead') || url_is('sales_manager') || url_is('sales_manager_indv')),
+                'urls'      => $is_sales,
                 'icon'      => 'far fa-credit-card',
             ],
             'HUMAN_RESOURCE'   => [
@@ -125,6 +135,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('sales_manager_indv.home'),
                 'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
+            ],
+            'INVENTORY'     => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => get_modules('INVENTORY'),
+                'url'       => url_to('inventory.home'),
+                'class'     => (url_is('inventory') || url_is('inventory/dropdowns') ? 'active' : ''),
+                'icon'      => 'fas fa-shopping-cart',
             ],
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
@@ -416,5 +433,41 @@ if (! function_exists('get_current_user_avatar'))
 	{
         $profile = new \App\Controllers\AccountProfile();
         return $profile->getProfileImg(session('gender'));
+	}
+}
+
+/**
+ * Get inventory dropdowns
+ */
+if (! function_exists('inventory_categories_options'))
+{
+	function inventory_categories_options($model, $is_all = true) 
+	{
+		$option     = '';
+        $others     = '';
+        $columns    = 'dropdown_id, dropdown, other_category_type';
+        $categories = $model->getDropdowns('CATEGORY', $columns, $all);
+
+        if (! empty($categories)) {
+            foreach ($categories as $category) {
+                if (empty($category['other_category_type'])) {
+                    $option     .= '
+                        <option value="'. $category['dropdown_id'] .'">
+                            '. $category['dropdown'] .'
+                        </option>
+                    ';
+                } else {
+                    $others     .= '
+                        <option value="'. $category['dropdown_id'] .'">
+                            '. $category['dropdown'] .'
+                        </option>
+                    ';
+                }
+            }
+
+            $option .= '<optgroup label="Other Categories">'. $others .'</optgroup>';
+        }
+
+        return $option;
 	}
 }
