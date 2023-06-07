@@ -8,6 +8,7 @@ class SuppliersModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'suppliers';
+    protected $view             = 'suppliers_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -15,15 +16,15 @@ class SuppliersModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'supplier_name',
-        'supplier_type',
-        'contact_person',
-        'contact_number',
-        'viber',
-        'payment_terms',
-        'payment_mode',
-        'product',
-        'remarks',
+        "supplier_name",
+        "supplier_type",
+        "contact_person",
+        "contact_number",
+        "viber",
+        "payment_terms",
+        "payment_mode",
+        "product",
+        "remarks",
     ];
 
     // Dates
@@ -82,4 +83,23 @@ class SuppliersModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function noticeTable()
+    {
+        $builder    = $this->db->table($this->view);
+        $builder->select('*');
+
+        return $builder;
+    }
+
+    public function buttons()
+    {
+        $closureFun = function($row) {
+            return <<<EOF
+                <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_add_supplier" title="Edit"><i class="fas fa-edit"></i> </button> 
+                <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button> 
+            EOF;
+        };
+        return $closureFun;
+    }
 }

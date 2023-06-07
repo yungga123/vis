@@ -135,8 +135,8 @@ if (! function_exists('setup_modules'))
             'PURCHASING_SUPPLIERS'      => [
                 'menu'      => 'PURCHASING', // Leave empty if none
                 'name'      => get_modules('PURCHASING_SUPPLIERS'),
-                'url'       => url_to('sales_manager_indv.home'),
-                'class'     => (url_is('purchasing') ? 'active' : ''),
+                'url'       => url_to('suppliers.home'),
+                'class'     => (url_is('suppliers') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
             'SETTINGS_MAILCONFIG'   => [
