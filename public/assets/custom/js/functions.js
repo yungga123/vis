@@ -20,7 +20,13 @@ var STATUS = {
 		POST: "POST",
 		AJAX: "AJAX",
 	},
-	dtTable;
+	dtTable,
+	ACTIONS = {
+		VIEW: "View",
+		ADD: "Add",
+		EDIT: "Edit",
+		DELETE: "Delete",
+	};
 
 $(document).ready(function () {
 	$.ajaxSetup({

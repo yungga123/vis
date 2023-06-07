@@ -44,7 +44,8 @@ if (! function_exists('get_nav_menus'))
             url_is('sales_manager') || 
             url_is('sales_manager_indv') || 
             url_is('inventory') ||
-            url_is('inventory/dropdowns')
+            url_is('inventory/dropdowns') ||
+            url_is('inventory/logs')
         );
 		$menu = [
             'SALES'            => [
@@ -132,7 +133,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('INVENTORY'),
                 'url'       => url_to('inventory.home'),
-                'class'     => (url_is('inventory') || url_is('inventory/dropdowns') ? 'active' : ''),
+                'class'     => (url_is('inventory') || url_is('inventory/dropdowns') || url_is('inventory/logs') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-cart',
             ],
             'SETTINGS_MAILCONFIG'   => [
@@ -334,9 +335,11 @@ if (! function_exists('get_modules'))
  */
 if (! function_exists('get_actions'))
 {
-	function get_actions(string|null $param = null): string|array
+	function get_actions(string|null $param = null, bool $in_out = false): string|array
 	{
 		$actions = ACTIONS;
+
+        if ($in_out) $actions += ['ITEM_IN' => 'Item In', 'ITEM_OUT' => 'Item Out'];
 
 		return $param ? $actions[strtoupper($param)] : $actions;
 	}
@@ -349,7 +352,7 @@ if (! function_exists('check_permissions'))
 {
 	function check_permissions(array $permissions, string $needle): bool
 	{
-		return in_array($needle, $permissions) ? true : false;
+		return in_array($needle, $permissions) || is_admin();
 	}
 }
 
@@ -445,7 +448,7 @@ if (! function_exists('get_current_user_avatar'))
  */
 if (! function_exists('inventory_categories_options'))
 {
-	function inventory_categories_options($model, $is_all = true) 
+	function inventory_categories_options($model, $all = true) 
 	{
 		$option     = '';
         $others     = '';
@@ -484,5 +487,83 @@ if (! function_exists('check_string_contains'))
 	function check_string_contains(string $string, string $val): bool
 	{
         return (strpos($string, $val) !== false);
+	}
+}
+
+/**
+ * DataTable html button format
+ */
+if (! function_exists('dt_button_html'))
+{
+	function dt_button_html(array $options, bool $dropdown = false): string
+	{     
+        $wfull  = $dropdown ? 'w-100' : '';  
+        $html   = <<<EOF
+            <button class="btn btn-sm {$options['button']} {$wfull}" {$options['condition']}>
+                <i class="{$options['icon']}"></i> {$options['text']}
+            </button>
+        EOF;
+
+        return $dropdown 
+            ? '<div class="dropdown-item">'. $html .'</div>'
+            : $html;
+	}
+}
+
+/**
+ * DataTable buttons actions format
+ */
+if (! function_exists('dt_button_actions'))
+{
+	function dt_button_actions(array $row, string $id, array $permissions, bool $dropdown = false): string
+	{
+        $options    = [
+            'edit' => [
+                'text'      => '',
+                'button'    => 'btn-warning',
+                'icon'      => 'fas fa-edit',
+                'condition' => 'title="Cannot edit" disabled',
+            ],
+            'delete' => [
+                'text'      => '',
+                'button'    => 'btn-danger',
+                'icon'      => 'fas fa-trash',
+                'condition' => 'title="Cannot delete" disabled',
+            ],
+        ];
+            
+        if (check_permissions($permissions, 'EDIT')) {
+            $options['edit']['text']        = $dropdown ? 'Edit' : '';
+            $options['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
+        }
+            
+        if (check_permissions($permissions, 'DELETE')) {
+            $options['delete']['text']        = $dropdown ? 'Delete' : '';
+            $options['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
+        }
+
+        $html = dt_button_html($options['edit'], $dropdown);
+        $html .= dt_button_html($options['delete'], $dropdown);
+
+        return $html;
+	}
+}
+
+/**
+ * DataTable buttons dropdown html format
+ */
+if (! function_exists('dt_buttons_dropdown'))
+{
+	function dt_buttons_dropdown(string $buttons, bool $dropdown = false): string
+	{   
+        $buttons = $dropdown ? $buttons : '<div class="dropdown-item">'.$buttons.'</div>';
+        return <<<EOF
+            <div class="">
+                <button class="btn btn-info btn-sm dropdown-toggle rounded" type="button" data-toggle="dropdown" aria-expanded="false"><i class="fas fa-info-circle"></i> Actions</button>
+                <div class="dropdown-menu">
+                    {$buttons}
+                </div>
+            </div>
+        EOF;
 	}
 }

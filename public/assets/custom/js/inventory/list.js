@@ -7,7 +7,6 @@ var table,
 	otherCategoryType = null,
 	otherCategoryTypeSelector = null;
 
-// TODO - IN & OUT of items (need gmeet)
 $(document).ready(function () {
 	table = "inventory_table";
 	modal = "modal_inventory";

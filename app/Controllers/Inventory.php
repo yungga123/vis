@@ -69,15 +69,12 @@ class Inventory extends BaseController
         $data['title']          = 'Inventory | Masterlist';
         $data['page_title']     = 'Inventory | Masterlist - '. $dropdowns_link;
         $data['can_add']        = $this->_can_add;
-        $data['can_edit']       = $this->checkPermissions($this->_permissions, 'EDIT');
-        $data['can_item_in']    = $this->checkPermissions($this->_permissions, 'ITEM_IN');
-        $data['can_item_out']   = $this->checkPermissions($this->_permissions, 'ITEM_OUT');
         $data['btn_add_lbl']    = 'Add New Item';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'inventory/list.js';
+        $data['custom_js']      = ['inventory/list.js', 'inventory/logs.js'];
         $data['routes']         = json_encode([
             'inventory' => [
                 'list'      => url_to('inventory.list'),
@@ -89,8 +86,11 @@ class Inventory extends BaseController
                 'show'      => url_to('inventory.dropdown.show'),
                 'save'      => url_to('inventory.dropdown.save'),
             ],
+            'logs' => [
+                'save'      => url_to('inventory.logs.save'),
+            ],
         ]);
-        $data['categories']     = $this->inventoryCategoriesOptions();
+        $data['categories']     = inventory_categories_options($this->_mdropdown, true);
 
         return view('inventory/index', $data);
     }
@@ -245,35 +245,5 @@ class Inventory extends BaseController
         }
 
         return $this->response->setJSON($data);
-    }
-
-    private function inventoryCategoriesOptions()
-    {
-        $option     = '';
-        $others     = '';
-        $columns    = 'dropdown_id, dropdown, other_category_type';
-        $categories = $this->_mdropdown->getDropdowns('CATEGORY', $columns, true);
-
-        if (! empty($categories)) {
-            foreach ($categories as $category) {
-                if (empty($category['other_category_type'])) {
-                    $option     .= '
-                        <option value="'. $category['dropdown_id'] .'">
-                            '. $category['dropdown'] .'
-                        </option>
-                    ';
-                } else {
-                    $others     .= '
-                        <option value="'. $category['dropdown_id'] .'">
-                            '. $category['dropdown'] .'
-                        </option>
-                    ';
-                }
-            }
-
-            $option .= '<optgroup label="Other Categories">'. $others .'</optgroup>';
-        }
-
-        return $option;
     }
 }

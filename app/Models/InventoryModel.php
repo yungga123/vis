@@ -138,6 +138,7 @@ class InventoryModel extends Model
     {
         $columns = implode(',', $this->allowedFields);
         $columns = $columns . "
+            ,IF(item_brand IS NULL or TRIM(item_brand) = '', 'N/A', (SELECT dropdown FROM inventory_dropdowns AS db WHERE item_brand = db.dropdown_id)) AS item_brand_name,
             ,(SELECT CONCAT(ev.firstname, ' ', ev.lastname) FROM employees AS ev WHERE encoder = ev.employee_id) AS encoder_name             
         ";
 
@@ -200,38 +201,41 @@ class InventoryModel extends Model
         }
 
         $builder->where('deleted_at', null);
-        // log_message('error', $builder->getCompiledSelect(false));
         return $builder;
     }
 
+    // DataTable action buttons
     public function buttons($permissions)
     {
         $id = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
-            if (is_admin()) {
-                return <<<EOF
-                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" title="Edit"><i class="fas fa-edit"></i> </button> 
-                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
-                EOF;
+            $dropdown   = false;
+            $buttons    = dt_button_actions($row, $id, $permissions, $dropdown); 
+
+            if (check_permissions($permissions, 'ITEM_IN')) {
+                // Item In
+                $data = json_encode($row);
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? 'Item In' : '',
+                    'button'    => 'btn-primary',
+                    'icon'      => 'fas fa-plus-circle',
+                    'condition' => 'onclick="itemIn('.$row["$id"].')" title="Item In"',
+                ], $dropdown);
             }
 
-            $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
-
-            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
-                $edit = <<<EOF
-                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" title="Edit"><i class="fas fa-edit"></i> </button> 
-                EOF;
+            if (check_permissions($permissions, 'ITEM_OUT')) {
+                // Item Out
+                $data = json_encode($row);
+                $stock = "{$row['stocks']}";
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? 'Item Out' : '',
+                    'button'    => 'btn-secondary',
+                    'icon'      => 'fas fa-minus-circle',
+                    'condition' => 'onclick="itemOut('.$row["$id"].', '.$stock.')" title="Item Out"',
+                ], $dropdown);
             }
 
-            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
-
-            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
-                $delete = <<<EOF
-                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
-                EOF;
-            }
-
-            return $edit. $delete;
+            return dt_buttons_dropdown($buttons);
         };
         
         return $closureFun;

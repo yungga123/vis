@@ -220,6 +220,11 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('dropdown/save', 'InventoryDropdown::save', ['as' => 'inventory.dropdown.save']);
     $routes->post('dropdown/edit', 'InventoryDropdown::edit', ['as' => 'inventory.dropdown.edit']);
     $routes->post('dropdown/delete', 'InventoryDropdown::delete', ['as' => 'inventory.dropdown.delete']);
+
+    // Logs (Item In and Out)
+    $routes->get('logs', 'InventoryLogs::index', ['as' => 'inventory.logs.home']);
+    $routes->post('logs/save', 'InventoryLogs::save', ['as' => 'inventory.logs.save']);
+    $routes->post('logs/list', 'InventoryLogs::list', ['as' => 'inventory.logs.list']);
 });
 
 
