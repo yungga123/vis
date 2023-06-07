@@ -71,9 +71,6 @@ class InventoryLogs extends BaseController
         $data['select2']        = true;
         $data['custom_js']      = ['inventory/logs.js'];
         $data['routes']         = json_encode([
-            'inventory' => [
-                'edit'      => url_to('inventory.edit'),
-            ],
             'dropdown' => [
                 'show'      => url_to('inventory.dropdown.show'),
             ],
@@ -199,8 +196,6 @@ class InventoryLogs extends BaseController
                 'stock_unit',
                 'encoder',
             ]);
-
-        log_message('error', $this->_model->db->getLastQuery());
 
         return $table->getDatatable();
     }

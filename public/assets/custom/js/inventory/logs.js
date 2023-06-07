@@ -18,6 +18,10 @@ $(document).ready(function () {
 	];
 
 	select2Init();
+	$("#filter_category").on("select2:select", function (e) {
+		let selector = "#filter_sub_category";
+		dropdownInit(selector, $(this).val());
+	});
 
 	/* Load dataTable */
 	loadDataTable(tableLogs, router.logs.list, METHOD.POST);
@@ -74,6 +78,28 @@ function filterData(reset = false) {
 		);
 	}
 	closeLoading();
+}
+
+/* Dropdown initialization */
+function dropdownInit(select, type) {
+	$.post(router.dropdown.show, { dropdown_type: type })
+		.then((res) => {
+			if (res.status === STATUS.SUCCESS) {
+				let dropdowns = "";
+				if (inObject(res, "data") && !isEmpty(res.data)) {
+					dropdowns = $.map(res.data, function (val, key) {
+						return `<option value="${val.dropdown_id}">${val.dropdown}</option>`;
+					}).join("");
+				}
+
+				if (isSelect2Initialized(select)) $(select).select2("destroy");
+				$(select).html("").append(dropdowns);
+				$(select).select2().val("").trigger("change");
+			} else {
+				console.log(res.message);
+			}
+		})
+		.catch((err) => catchErrMsg(err));
 }
 
 /* Item In */

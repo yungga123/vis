@@ -32,9 +32,6 @@ $(document).ready(function () {
 	$("#filter_category").on("select2:select", function (e) {
 		let selector = "#filter_sub_category";
 		dropdownInit(selector, $(this).val());
-
-		if (!document.querySelector(selector).hasAttribute("multiple"))
-			$(selector).attr("multiple", true);
 	});
 
 	$("#category").on("select2:select", function (e) {

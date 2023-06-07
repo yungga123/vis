@@ -98,9 +98,12 @@ class InventoryLogsModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    protected function joinInventory($builder, $joinType = 'left')
+    // Join to main table inventory
+    protected function joinInventory($builder, $alias = null, $joinType = 'left')
     {
-        return $builder->join($this->inventoryTable . ' AS inv', 'inventory_id = inv.id', $joinType);
+        $table = $alias ? $this->inventoryTable . ' AS '. $alias: $this->inventoryTable;
+        $id = $alias ? "{$alias}.id" : 'id';
+        return $builder->join($table, "inventory_id = $id", $joinType);
     }
 
     // Set the value for created_by before inserting
@@ -134,34 +137,41 @@ class InventoryLogsModel extends Model
     // For DataTables
     public function noticeTable($request) 
     {
+        $invAlias = 'inv';
         $builder = $this->db->table($this->table);
         $builder->select("
             inventory_logs_id,
             inventory_id,
-            (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE inv.category = db.dropdown_id) AS category,
-            (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE inv.sub_category = db.dropdown_id) AS sub_category,
-            IF(inv.item_brand IS NULL or TRIM(inv.item_brand) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE inv.item_brand = db.dropdown_id)) AS item_brand,
-            inv.item_model,
-            inv.item_description,
-            IF(inv.item_size IS NULL or TRIM(inv.item_size) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE inv.item_size = db.dropdown_id)) AS item_size,
+            (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.category = db.dropdown_id) AS category,
+            (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.sub_category = db.dropdown_id) AS sub_category,
+            IF($invAlias.item_brand IS NULL or TRIM($invAlias.item_brand) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.item_brand = db.dropdown_id)) AS item_brand,
+            $invAlias.item_model,
+            $invAlias.item_description,
+            IF($invAlias.item_size IS NULL or TRIM($invAlias.item_size) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.item_size = db.dropdown_id)) AS item_size,
             {$this->table}.item_sdp,
             {$this->table}.stocks,
-            IF(inv.stock_unit IS NULL or TRIM(inv.stock_unit) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE inv.stock_unit = db.dropdown_id)) AS stock_unit,
+            IF($invAlias.stock_unit IS NULL or TRIM($invAlias.stock_unit) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.stock_unit = db.dropdown_id)) AS stock_unit,
             action,
             (SELECT CONCAT(firstname, ' ', lastname) FROM employees AS ev WHERE created_by = ev.employee_id) AS encoder
         ");
 
-        $this->joinInventory($builder);        
+        $this->joinInventory($builder, $invAlias);        
 
         if (isset($request['params'])) {
             $params = $request['params'];
 
-            if (! empty($params['action']) && $params['action'] !== 'all') $builder->where('action', $params['action']);
-            if (! empty($params['category'])) $builder->whereIn('category', $params['category']);
+            if (! empty($params['action']) && $params['action'] !== 'all') 
+                $builder->where("{$this->table}.action", $params['action']);
+
+            if (! empty($params['category'])) {
+                $ids = implode(',', $params['category']);
+                $builder->where("$invAlias.category IN({$ids})");
+            }
+
             if (! empty($params['sub_dropdown'])) {
                 $ids    = implode(',', $params['sub_dropdown']);
                 $in     = "IN({$ids})";
-                $where  = "(sub_category {$in} OR item_size {$in} OR stock_unit {$in})";
+                $where  = "($invAlias.sub_category {$in} OR {$this->table}.item_size {$in} OR {$this->table}.stock_unit {$in})";
 
                 $builder->where($where);
             }
