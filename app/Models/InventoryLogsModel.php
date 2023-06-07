@@ -164,14 +164,17 @@ class InventoryLogsModel extends Model
                 $builder->where("{$this->table}.action", $params['action']);
 
             if (! empty($params['category'])) {
-                $ids = implode(',', $params['category']);
-                $builder->where("$invAlias.category IN({$ids})");
+                $category_ids   = array_filter($params['category'], function($val) {
+                    if (!str_contains($val, 'other__')) return $val;
+                });
+    
+                if (! empty($category_ids)) $builder->whereIn("$invAlias.category", $category_ids);
             }
 
             if (! empty($params['sub_dropdown'])) {
                 $ids    = implode(',', $params['sub_dropdown']);
                 $in     = "IN({$ids})";
-                $where  = "($invAlias.sub_category {$in} OR {$this->table}.item_size {$in} OR {$this->table}.stock_unit {$in})";
+                $where  = "($invAlias.sub_category {$in} OR $invAlias.item_brand {$in} OR {$this->table}.item_size {$in} OR {$this->table}.stock_unit {$in})";
 
                 $builder->where($where);
             }
@@ -185,10 +188,10 @@ class InventoryLogsModel extends Model
     {
         $closureFun = function($row) {
             $text = get_actions($row['action'], true);
-            $class = $row['action'] === 'ITEM_IN' ? 'bg-primary' : 'bg-secondary';
+            $class = $row['action'] === 'ITEM_IN' ? 'badge-primary' : 'badge-secondary';
 
             return <<<EOF
-                <span class="text-white p-1 {$class} rounded flat">{$text}</span>
+                <span class="badge {$class}" style="font-size: 90%; font-weight: 500;">{$text}</span>
             EOF;
 
         };

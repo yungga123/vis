@@ -11,7 +11,7 @@
                                 <th>Role</th>
                                 <th>Module</th>
                                 <th>Permissions</th>
-                                <th width="10%">Action</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                     </table>

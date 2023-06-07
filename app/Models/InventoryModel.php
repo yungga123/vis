@@ -188,13 +188,16 @@ class InventoryModel extends Model
         ");
 
         if (isset($request['params'])) {
-            $params = $request['params'];
-            $builder->whereIn('category', $params['category']);
+            $params         = $request['params'];
+            $category_ids   = array_filter($params['category'], function($val) {
+                if (!str_contains($val, 'other__')) return $val;
+            });
 
+            if (! empty($category_ids)) $builder->whereIn('category', $category_ids);
             if (! empty($params['sub_dropdown'])) {
                 $ids    = implode(',', $params['sub_dropdown']);
                 $in     = "IN({$ids})";
-                $where  = "(sub_category {$in} OR item_size {$in} OR stock_unit {$in})";
+                $where  = "(sub_category {$in} OR item_brand {$in} OR item_size {$in} OR stock_unit {$in})";
 
                 $builder->where($where);
             }

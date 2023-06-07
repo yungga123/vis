@@ -22,8 +22,8 @@
                                 <select class="custom-select select2 round-left-0" id="filter_sub_category" data-placeholder="Select a Sub-Dropdowns" multiple>
                                 </select>
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
-                                    <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterData(true)" type="button" title="Reset filter">Reset</button>
+                                    <button class="btn btn-outline-primary px-3" onclick="filterDataLogs()" type="button" title="Search filter">Filter</button>
+                                    <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterDataLogs(true)" type="button" title="Reset filter">Reset</button>
                                 </div>
                             </div>
                         </div>

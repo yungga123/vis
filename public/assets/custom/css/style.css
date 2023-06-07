@@ -11,10 +11,20 @@ form.with-label-indicator .form-group label.required::after {
 	color: red;
 }
 
-.table.table-hover.table-striped thead {
+/* .table.table-hover.table-striped thead {
 	margin-top: 20px !important;
 	background-color: #17a2b8 !important;
 	color: #fff !important;
+} */
+
+.dataTables_wrapper .table,
+.dataTables_scrollHead .dataTables_scrollHeadInner {
+	width: 100% !important;
+}
+
+.dataTables_wrapper .table thead th {
+	font-weight: 600;
+	color: #6c757d;
 }
 
 .dataTables_scrollHead {

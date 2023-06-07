@@ -465,7 +465,7 @@ if (! function_exists('inventory_categories_options'))
                     ';
                 } else {
                     $others     .= '
-                        <option value="'. $category['dropdown_id'] .'">
+                        <option value="other__'. $category['dropdown_id'] .'">
                             '. $category['dropdown'] .'
                         </option>
                     ';
@@ -565,5 +565,27 @@ if (! function_exists('dt_buttons_dropdown'))
                 </div>
             </div>
         EOF;
+	}
+}
+
+/**
+ * Clear variable based on the passed params
+ */
+if (! function_exists('remove_string'))
+{
+	function remove_string(string|array $subject, string $search, string $replace = ''): string|array
+	{
+        if (is_array($subject)) {
+            $arr = [];
+            foreach ($subject as $val) {
+                $arr[] = str_replace($search, $replace, $val);
+            }
+
+            $subject = $arr;
+        } else {
+            $subject = str_replace($search, $replace, $subject);
+        }
+
+        return $subject;
 	}
 }

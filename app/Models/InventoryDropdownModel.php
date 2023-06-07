@@ -145,10 +145,11 @@ class InventoryDropdownModel extends Model
     // Get specific dropdown base on type
     public function getDropdowns($param, $columns = null, $all_categories = false) 
     {
-        $is_category = ($param === 'CATEGORY' || $param == 0);
-        $columns = $columns ?? 'dropdown_id, dropdown';
-        $field = is_numeric($param) ? 'parent_id' : 'dropdown_type';
-        $builder = $this->select($columns);
+        $param          = remove_string($param, 'other__');
+        $is_category    = ($param === 'CATEGORY' || $param == 0);
+        $columns        = $columns ?? 'dropdown_id, dropdown';
+        $field          = is_numeric($param) ? 'parent_id' : 'dropdown_type';
+        $builder        = $this->select($columns);
         
         if(is_array($param)) {
             $field = is_numeric($param[0]) ? 'parent_id' : $field;

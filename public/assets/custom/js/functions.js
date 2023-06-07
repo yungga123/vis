@@ -434,16 +434,16 @@ function loadDataTable(
 
 	dtTable = $("#" + table).DataTable({
 		dom: `
-			<'row'
+			<'row px-3 pt-3'
 				<'col-sm-12 col-md-8'<'d-flex justify-content-start'lB>>
 				<'col-sm-12 col-md-4'f>
 			>
 			<'row'<'col-sm-12'tr>>
-			<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
+			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
 		processing: true,
 		scrollX: true,
-		autoWidth: true,
+		autoWidth: false,
 		columnDefs: columnDefs,
 		order: order,
 		language: {
@@ -484,6 +484,8 @@ function loadDataTable(
 			}
 		},
 		initComplete: function (settings, json) {
+			$(".dataTables_wrapper").parent().addClass("p-0");
+			$(".dataTables_wrapper .table").css({ width: "100%" });
 			$(".dataTables_length").addClass("mr-2");
 			$(".dataTables_filter input").removeClass("form-control-sm");
 			$(".dataTables_length select").removeClass(

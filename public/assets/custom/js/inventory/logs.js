@@ -20,7 +20,7 @@ $(document).ready(function () {
 	select2Init();
 	$("#filter_category").on("select2:select", function (e) {
 		let selector = "#filter_sub_category";
-		dropdownInit(selector, $(this).val());
+		dropdownInitLogs(selector, $(this).val());
 	});
 
 	/* Load dataTable */
@@ -45,7 +45,7 @@ $(document).ready(function () {
 });
 
 /* For filtering and reseting */
-function filterData(reset = false) {
+function filterDataLogs(reset = false) {
 	let logs_type = $("#filter_action :selected").val(),
 		category = getSelect2Selection("#filter_category");
 
@@ -81,7 +81,7 @@ function filterData(reset = false) {
 }
 
 /* Dropdown initialization */
-function dropdownInit(select, type) {
+function dropdownInitLogs(select, type) {
 	$.post(router.dropdown.show, { dropdown_type: type })
 		.then((res) => {
 			if (res.status === STATUS.SUCCESS) {
@@ -133,8 +133,8 @@ function itemIn(id) {
 				$("#location_logs").val(res.data.location);
 				$("#supplier_logs").val(res.data.supplier);
 				$("#encoder_logs").val(res.data.encoder_name);
-				dropdownInit("#item_size_logs", "SIZE", res.data.item_size, true);
-				dropdownInit("#stock_unit_logs", "UNIT", res.data.stock_unit, true);
+				dropdownInitLogs("#item_size_logs", "SIZE", res.data.item_size, true);
+				dropdownInitLogs("#stock_unit_logs", "UNIT", res.data.stock_unit, true);
 				toggleModalLogs();
 			} else {
 				toggleModalLogs(true);
