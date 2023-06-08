@@ -57,7 +57,7 @@ class Suppliers extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
-        //$data['select2']        = true;
+        $data['select2']        = true;
         $data['can_add']        = $this->_can_add;
         $data['btn_add_lbl']    = 'Add New Supplier';
 

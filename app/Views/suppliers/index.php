@@ -3,6 +3,8 @@
 
 <div class="container-fluid">
 
+    <input type="hidden" id="edit_url" value="<?= url_to('suppliers.edit') ?>" readonly>
+    <input type="hidden" id="remove_url" value="<?= url_to('suppliers.delete') ?>" readonly>
     <!-- Suppliers List Card -->
     <div class="card">
         <div class="card-body">
@@ -11,6 +13,7 @@
             <table id="supplier_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('suppliers.list'); ?>">
                 <thead>
                     <tr>
+                        <th>Action</th>
                         <th>Supplier ID</th>
                         <th>Supplier Name</th>
                         <th>Supplier Type</th>
@@ -21,6 +24,7 @@
                         <th>Mode of Payment</th>
                         <th>Product</th>
                         <th>Remarks</th>
+                        
                     </tr>
                 </thead>
             </table>
@@ -33,7 +37,7 @@
 
 <!-- Supplier Add Form (MODAL) -->
 <div class="modal fade" id="modal_add_supplier" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="form_add_supplier" action="<?= url_to('suppliers.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
@@ -125,8 +129,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-outline-success">Save Changes</button>
                 </div>
             </form>
         </div>

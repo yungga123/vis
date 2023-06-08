@@ -4,8 +4,8 @@ $(document).ready(function(){
     table = "supplier_table";
 	modal = "modal_add_supplier";
 	form = "form_add_supplier";
-	//editRoute = $("#edit_url").val();
-	//removeRoute = $("#remove_url").val();
+	editRoute = $("#edit_url").val();
+	removeRoute = $("#remove_url").val();
 	elems = [
 		"supplier_name",
         "supplier_type",
