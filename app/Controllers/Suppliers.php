@@ -37,8 +37,6 @@ class Suppliers extends BaseController
      * Class constructor
      */
 
-
-
     
     public function __construct()
     {

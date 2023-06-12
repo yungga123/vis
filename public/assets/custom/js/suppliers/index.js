@@ -48,6 +48,13 @@ $(document).ready(function(){
 
 		showAlertInForm(elems, message, res.status);
 	});
+
+	//Initialize Select2 for Supplier Type
+    $('#supplier_type').select2({
+		theme: 'bootstrap4'
+	});
+
+	
 });
 
 /* Get supplier details */
