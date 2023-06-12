@@ -141,6 +141,7 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('inventory.home'),
                 'class'     => (url_is('inventory') || url_is('inventory/dropdowns') || url_is('inventory/logs') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-cart',
+            ],
             'PURCHASING_SUPPLIERS'      => [
                 'menu'      => 'PURCHASING', // Leave empty if none
                 'name'      => get_modules('PURCHASING_SUPPLIERS'),
