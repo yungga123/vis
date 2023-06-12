@@ -66,6 +66,12 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('settings/mail') || url_is('settings/permissions') || url_is('settings/roles')),
                 'icon'      => 'fas fa-cog',
             ],
+            'PURCHASING'          => [
+                'name'      => 'Purchasing',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => (url_is('suppliers')),
+                'icon'      => 'fas fa-money-check',
+            ],
         ];
 
         return $menu[$param];
@@ -135,6 +141,12 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('inventory.home'),
                 'class'     => (url_is('inventory') || url_is('inventory/dropdowns') || url_is('inventory/logs') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-cart',
+            'PURCHASING_SUPPLIERS'      => [
+                'menu'      => 'PURCHASING', // Leave empty if none
+                'name'      => get_modules('PURCHASING_SUPPLIERS'),
+                'url'       => url_to('suppliers.home'),
+                'class'     => (url_is('suppliers') ? 'active' : ''),
+                'icon'      => 'far fa-circle',
             ],
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
