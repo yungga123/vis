@@ -1,40 +1,49 @@
-var table, modal, form, elems;
+var table, modal, form, editRoute, removeRoute, elems;
 
 $(document).ready(function () {
-	table = "permission_table";
-	modal = "permission_modal";
-	form = "permission_form";
+	table = "roles_table";
+	modal = "roles_modal";
+	form = "roles_form";
 	editRoute = $("#edit_url").val();
 	removeRoute = $("#remove_url").val();
-	elems = ["role_code", "module_code", "permissions"];
-
-	select2Init("#permissions");
+	elems = ["role_code", "description"];
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
-		$(`#${modal} .modal-title`).text("Add Permission");
+		$(`#${modal} .modal-title`).text("Add Role");
 		$(`#${form}`)[0].reset();
-		$("#permission_id").val("");
-		$("#permissions").val("").change();
+		$("#role_id").val("");
+		$("#prev_role_code").val("");
+		$("#role_type").change();
+		$("#role_type_wrapper").removeClass('d-none');
 
 		clearAlertInForm(elems);
 	});
 
-	$("#module_code").on("change", function () {
-		changePermissionsOptions($(this).val() === "INVENTORY");
+	$("#role_type").on("change", function () {
+		let info = "";
+
+		if ($(this).val() === 'manager') {
+			info = "Role code will automatically be added a prefix <strong>MANAGER_</strong> upon saving!";
+		} else if ($(this).val() === 'supervisor') {
+			info = "Role code will automatically be added a prefix <strong>SUPERVISOR_</strong> upon saving!";
+		}
+
+		$("#role_type_info").html(info);
 	});
 
 	/* Load dataTable */
-	const options = {
-		columnDefs: {
-			orderable: false,
-			targets: -1,
-		},
-		order: [0, "asc"],
-	};
+	const route = $("#" + table).data("url"),
+		options = {
+			columnDefs: {
+				orderable: false,
+				targets: -1,
+			},
+			order: [0, "asc"],
+		};
 
-	loadDataTable(table, router.permission.list, METHOD.POST, options);
+	loadDataTable(table, route, METHOD.POST, options);
 
 	/* Form for saving employee */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -42,8 +51,9 @@ $(document).ready(function () {
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			$("#id").val("");
-			$("#permissions").val("").trigger("change");
+			$("#role_id").val("");
+			$("#prev_role_code").val("");
+			$("#role_type_info").html("");
 
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
@@ -61,21 +71,24 @@ $(document).ready(function () {
 function edit(id) {
 	$(`#${modal}`).modal("show");
 	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Permission");
-	$("#permission_id").val(id);
+	$(`#${modal} .modal-title`).text("Edit Role");
+	$("#role_id").val(id);
+	$("#role_type_wrapper").addClass('d-none');
+	$("#role_type_info").html("Managerial or Supervisory level should have prefix <strong>MANAGER_</strong> or <strong>SUPERVISOR_</strong> respectively. Otherwise, none!");
 
 	clearAlertInForm(elems);
 	showLoading();
 
-	$.post(router.permission.edit, { id: id })
+	$.post(editRoute, { id: id })
 		.then((res) => {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
-					setOptionValue("#role_code", res.data.role_code);
-					setOptionValue("#module_code", res.data.module_code);
-					$("#permissions").val(res.data.permissions).change();
+					$.each(res.data, (key, value) => {
+						$(`input[name="${key}"]`).val(value);
+					});
+					$("#prev_role_code").val(res.data.role_code);
 				}
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -90,7 +103,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(router.permission.delete, { id: id })
+			$.post(removeRoute, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
@@ -103,26 +116,4 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
-}
-
-/* For changing permissions options */
-function changePermissionsOptions(withItemInAndOut = false) {
-	let options = "",
-		select = "#permissions";
-
-	$.each(
-		ACTIONS,
-		(key, val) => (options += `<option value="${key}">${val}</option>`)
-	);
-
-	if (withItemInAndOut) {
-		options += `
-			<option value="ITEM_IN">Item In</option>
-			<option value="ITEM_OUT">Item Out</option>
-		`;
-	}
-
-	if (isSelect2Initialized(select)) $(select).select2("destroy");
-	$(select).html("").append(options);
-	$(select).select2().val("").trigger("change");
 }

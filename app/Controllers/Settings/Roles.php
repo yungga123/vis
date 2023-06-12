@@ -3,16 +3,13 @@
 namespace App\Controllers\Settings;
 
 use App\Controllers\BaseController;
-use App\Models\PermissionModel;
+use App\Models\RolesModel;
 use monken\TablesIgniter;
 
-/**
- * Controller for Permission
- */
-class Permission extends BaseController
+class Roles extends BaseController
 {
     /**
-     * Use to initialize PermissionModel class
+     * Use to initialize RolesModel class
      * @var object
      */
     private $_model;
@@ -41,8 +38,8 @@ class Permission extends BaseController
      */
     public function __construct()
     {
-        $this->_model       = new PermissionModel(); // Current model
-        $this->_module_code = MODULE_CODES['permissions']; // Current module
+        $this->_model       = new RolesModel(); // Current model
+        $this->_module_code = MODULE_CODES['roles']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
@@ -57,52 +54,40 @@ class Permission extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
         
-        $data['title']          = 'Settings | Permissions';
-        $data['page_title']     = 'Settings | Permissions';
+        $data['title']          = 'Settings | Roles';
+        $data['page_title']     = 'Settings | Roles';
         $data['can_add']        = is_admin() ? true : $this->_can_add;
-        $data['btn_add_lbl']    = $this->_can_add ? 'Add Permission' : '';
+        $data['btn_add_lbl']    = $this->_can_add ? 'Add Role' : '';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
-        $data['custom_js']      = 'settings/permission.js';
+        $data['custom_js']      = 'settings/roles.js';
         $data['sweetalert2']    = true;
-        $data['select2']        = true;
-        $data['routes']         = json_encode([
-            'permission' => [
-                'list'      => url_to('permission.list'),
-                'edit'      => url_to('permission.edit'),
-                'delete'    => url_to('permission.delete'),
-            ],
-        ]);
 
-        return view('settings/permission/index', $data);
+        return view('settings/roles/index', $data);
     }
 
     /**
-     * Get list of permissions
+     * Get list of roles
      *
      * @return array|dataTable
      */
     public function list()
     {
         $table  = new TablesIgniter();
-        $custom = $this->_model->dtCustomizeData();
 
         $table->setTable($this->_model->noticeTable())
             ->setSearch([
                 'role_code',
-                'module_code',
-                'permissions',
+                'description',
             ])
             ->setOrder([
                 'role_code',
-                'module_code',
-                'permissions',
+                'description',
                 null,
             ])
             ->setOutput([
-                $custom['role'],
-                $custom['module'],
-                $custom['permission'],
+                'role_code',
+                'description',
                 $this->_model->buttons($this->_permissions),
             ]);
 
@@ -110,7 +95,7 @@ class Permission extends BaseController
     }
 
     /**
-     * Saving process of permissions (inserting and updating permissions)
+     * Saving process of roles (inserting and updating roles)
      *
      * @return json
      */
@@ -118,42 +103,54 @@ class Permission extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Permission has been added successfully!'
+            'message'   => 'Role has been added successfully!'
         ];
 
         // Using DB Transaction
         $this->transBegin();
 
         try {
-            $id             = $this->request->getVar('id');
-            $role_code      = $this->request->getVar('role_code');
-            $module_code    = $this->request->getVar('module_code');
-            $permissions    = $this->request->getVar('permissions');
-            $record         = $this->_model->checkRoleAndModule($role_code, $module_code);
+            $id         = $this->request->getVar('id');
+            $role_code  = strtoupper($this->request->getVar('role_code'));
+            $inputs     = [
+                'role_code'    => $role_code,
+                'description'  => ucwords(strtolower($this->request->getVar('description')))
+            ];
 
-            if (! empty($record) && empty($id)) {        
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = 'Selected Role and Module had already a record! Use that to edit.'; 
+            if (! empty($id)) {                
+                $prev_role_code  = strtoupper($this->request->getVar('prev_role_code'));
+
+                if ($role_code == $prev_role_code) {
+                    // Change validation rules of role_code for update
+                    $rules = $this->_model->getValidationRules();
+
+                    $rules['role_code'] = 'required|min_length[2]|max_length[50]|alpha_dash';
+                    $this->_model->setValidationRules($rules);
+                }
+
+                $inputs['role_id']      = $id;
+                $inputs['updated_by']   = session('username');
+                $data['message']        = 'Role has been updated successfully!';
             } else {
-                $inputs = [
-                    'role_code'    => $this->request->getVar('role_code'),
-                    'module_code'  => $this->request->getVar('module_code'),
-                    'permissions'  => is_array($permissions) ? implode(',', $permissions) : $permissions,
-                ];
+                $role_type = $this->request->getVar('role_type');
 
-                if (! empty($id)) {
-                    $inputs['permission_id']    = $id;
-                    $inputs['updated_by']       = session('username');
-                    $data['message']            = 'Permission has been updated successfully!';
-                } else {
-                    $inputs['added_by']         = session('username');
+                if ($role_type === 'manager') {
+                    if (! check_string_contains($role_code, 'MANAGER_')) {
+                        $inputs['role_code'] = 'MANAGER_' . $role_code;
+                    }
+                } else if ($role_type === 'supervisor') {                    
+                    if (! check_string_contains($role_code, 'SUPERVISOR_')) {
+                        $inputs['role_code'] = 'SUPERVISOR_' . $role_code;
+                    }
                 }
+                
+                $inputs['created_by']   = session('username');
+            }
 
-                if (! $this->_model->save($inputs)) {
-                    $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
-                }
+            if (! $this->_model->save($inputs)) {
+                $data['errors']     = $this->_model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
             }
 
             // Commit transaction
@@ -179,15 +176,13 @@ class Permission extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Permission has been retrieved!'
+            'message'   => 'Role has been retrieved!'
         ];
 
         try {
-            $id     = $this->request->getVar('id');
-            $record = $this->_model->select($this->_model->allowedFields)->find($id);
-            $record['permissions'] = explode(',', $record['permissions']);
+            $id             = $this->request->getVar('id');
+            $data['data']   = $this->_model->select($this->_model->allowedFields)->find($id);
 
-            $data['data'] = $record;
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
@@ -206,17 +201,27 @@ class Permission extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Permission has been deleted successfully!'
+            'message'   => 'Role has been deleted successfully!'
         ];
 
         // Using DB Transaction
         $this->transBegin();
 
         try {
-            if (! $this->_model->delete($this->request->getVar('id'))) {
-                $data['errors']     = $this->_model->errors();
+            $id         = $this->request->getVar('id');
+            $role_code  = $this->_model->getSpecificRoleCode($id);
+
+            if ($this->_model->roleHasDependecy($role_code)) {
                 $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['message']    = "Role can't be deleted! This role was already used in either <b>Permissions</b> or <b>Accounts</b> modules.";
+            } else {
+                if (! $this->_model->delete($id)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                } else {
+                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
+                }
             }
 
             // Commit transaction

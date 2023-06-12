@@ -20,7 +20,13 @@ var STATUS = {
 		POST: "POST",
 		AJAX: "AJAX",
 	},
-	dtTable;
+	dtTable,
+	ACTIONS = {
+		VIEW: "View",
+		ADD: "Add",
+		EDIT: "Edit",
+		DELETE: "Delete",
+	};
 
 $(document).ready(function () {
 	$.ajaxSetup({
@@ -42,6 +48,12 @@ $(document).ready(function () {
 					6000
 				);
 			}, 100);
+		}
+	});
+
+	$(document).on("hidden.bs.modal", function (event) {
+		if ($(".modal:visible").length && !$("body").hasClass("modal-open")) {
+			$("body").addClass("modal-open");
 		}
 	});
 
@@ -275,9 +287,14 @@ function showAlertInForm(elems, errors, status, prefix = "alert", swal = true) {
 
 	if (isObject(errors) && !isEmpty(errors)) {
 		$.each(errors, (key, value) => {
+			let select2 = $("#" + key).hasClass("select2") ? " select2-success" : "";
+			let select2Err = $("#" + key).hasClass("select2")
+				? " select2-danger"
+				: "";
+
 			$("#" + key)
-				.removeClass("is-valid")
-				.addClass("is-invalid");
+				.removeClass("is-valid" + select2)
+				.addClass("is-invalid" + select2Err);
 			$(`#${prefix}_${key}`).html(value);
 		});
 	}
@@ -298,12 +315,18 @@ function clearAlertInForm(elems, status, prefix = "alert") {
 	if (Array.isArray(elems) && !isEmpty(elems)) {
 		for (let i = 0; i < elems.length; i++) {
 			const elem = elems[i];
+			let select2 = $("#" + elem).hasClass("select2") ? " select2-success" : "";
+			let select2Err = $("#" + elem).hasClass("select2")
+				? " select2-danger"
+				: "";
+
 			$("#" + elem)
-				.removeClass("is-invalid")
-				.removeClass("is-valid");
+				.removeClass("is-invalid" + select2Err)
+				.removeClass("is-valid" + select2);
 			$(`#${prefix}_${elem}`).html("");
 
-			if (status === STATUS.SUCCESS) $("#" + elem).addClass("is-valid");
+			if (status === STATUS.SUCCESS)
+				$("#" + elem).addClass("is-valid" + select2);
 		}
 	}
 }
@@ -383,9 +406,40 @@ function loadDataTable(
 						orderable: false,
 				  },
 		],
-		order = inObject(options, "order") ? [options.order] : [];
+		order = inObject(options, "order") ? [options.order] : [],
+		buttons = [
+			{
+				extend: "excel",
+				titleAttr: "Export to Excel",
+				exportOptions: {
+					columns: ":visible",
+				},
+				className: "mr-1 rounded btn-outline-success",
+				text: "<i class='fas fa-file-excel'></i> Excel",
+			},
+			{
+				extend: "colvis",
+				className: "mr-1 rounded btn-outline-primary",
+				text: "<i class='fas fa-eye'></i> Column Visibility",
+			},
+		];
+
+	if (inObject(options, "buttons") && !isEmpty(options.buttons)) {
+		if (isArray(options.buttons)) {
+			for (let index = 0; index < options.buttons.length; index++) {
+				buttons.push(options.buttons[index]);
+			}
+		} else buttons.push(options.buttons);
+	}
 
 	dtTable = $("#" + table).DataTable({
+		dom: `
+			<'row px-3 pt-3'
+				<'col-sm-12 col-md-8'<'d-flex justify-content-start'lB>>
+				<'col-sm-12 col-md-4'f>
+			>
+			<'row'<'col-sm-12'tr>>
+			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
 		processing: true,
 		scrollX: true,
@@ -394,17 +448,22 @@ function loadDataTable(
 		order: order,
 		language: {
 			emptyTable: "No records found...",
+			searchPlaceholder: "Search...",
+			search: "",
+			lengthMenu: "_MENU_",
 		},
-		buttons: [
-			{
-				extend: "excel",
-				exportOptions: {
-					columns: ":visible",
-				},
-				text: "Excel",
-			},
-			"colvis",
+		lengthMenu: [
+			[10, 25, 50, 100],
+			["Show 10 rows", "Show 25 rows", "Show 50 rows", "Show 100 rows"],
 		],
+		buttons: {
+			buttons: buttons,
+			dom: {
+				button: {
+					className: "btn",
+				},
+			},
+		},
 		serverSide: true,
 		ajax: {
 			url: route,
@@ -425,10 +484,14 @@ function loadDataTable(
 			}
 		},
 		initComplete: function (settings, json) {
-			dtTable
-				.buttons()
-				.container()
-				.appendTo(`#${table}_wrapper .col-md-6:eq(0)`);
+			$(".dataTables_wrapper").parent().addClass("p-0");
+			$(".dataTables_wrapper .table").css({ width: "100%" });
+			$(".dataTables_length").addClass("mr-2");
+			$(".dataTables_filter input").removeClass("form-control-sm");
+			$(".dataTables_length select").removeClass(
+				"custom-select-sm form-control-sm"
+			);
+			$(".dt-buttons").removeClass("btn-group");
 		},
 	});
 }
@@ -469,7 +532,30 @@ function passwordShowHideInit(
 /* Initialize select2 */
 function select2Init(selector) {
 	selector = selector || ".select2";
-	$(`${selector}`).select2();
+	$(selector).select2();
+}
+
+/* Check if select2 was initialized */
+function isSelect2Initialized(selector, initIfNot = false) {
+	let isInitialized = $(selector).hasClass("select2-hidden-accessible");
+
+	if (initIfNot && !isInitialized) $(selector).select2();
+	return isInitialized;
+}
+
+/* Clear select2 selection */
+function clearSelect2Selection(selector) {
+	$(selector).val("").trigger("change");
+}
+
+/* Set select2 selection */
+function setSelect2Selection(selector, val) {
+	$(selector).val(val).trigger("change");
+}
+
+/* Get select2 selection */
+function getSelect2Selection(selector, isText = false) {
+	return isText ? $(selector + " :selected").text() : $(selector).val();
 }
 
 /* To set option value dynamically */
@@ -492,6 +578,14 @@ function isEmpty(value) {
 /* Check if param is Object or not - from stackoverflow */
 function isObject(obj) {
 	return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+
+	/* Another approach */
+	// return (Object.prototype.toString.call(obj) === '[object Object]');
+}
+
+/* Check if param is Array or not - from stackoverflow */
+function isArray(param) {
+	return Array.isArray(param);
 
 	/* Another approach */
 	// return (Object.prototype.toString.call(obj) === '[object Object]');
