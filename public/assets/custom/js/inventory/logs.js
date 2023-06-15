@@ -156,8 +156,6 @@ function itemIn(id, stock) {
 				$("#location_logs").val(res.data.location);
 				$("#supplier_logs").val(res.data.supplier);
 				toggleModalLogs();
-
-				toggleModalLogs();
 			} else {
 				toggleModalLogs(true);
 				notifMsgSwal(res.status, res.message, res.status);
@@ -187,7 +185,6 @@ function itemOut(id, stock) {
 
 			if (res.status === STATUS.SUCCESS) {
 				const itemDetails = itemDetailsHtml(id, stock, res.data, "out");
-
 				$(modalLogs + " .modal-title").text(
 					"Item Out - " + res.data.item_description
 				);

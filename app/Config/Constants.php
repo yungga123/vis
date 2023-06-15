@@ -166,6 +166,8 @@ define('MODULES', [
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'SETTINGS_ROLES'        => 'Roles',
+    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
+    'PURCHASING_SUPPLIERS'  => 'Suppliers',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -184,4 +186,6 @@ define('MODULE_CODES', [
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
     'roles'                 => 'SETTINGS_ROLES',
+    'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
+    'suppliers'             => 'PURCHASING_SUPPLIERS',
 ]);

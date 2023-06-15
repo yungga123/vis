@@ -63,6 +63,12 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('settings/mail') || url_is('settings/permissions') || url_is('settings/roles')),
                 'icon'      => 'fas fa-cog',
             ],
+            'PURCHASING'          => [
+                'name'      => 'Purchasing',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => (url_is('suppliers')),
+                'icon'      => 'fas fa-money-check',
+            ],
         ];
 
         return $menu[$param];
