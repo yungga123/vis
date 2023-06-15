@@ -42,10 +42,7 @@ if (! function_exists('get_nav_menus'))
             url_is('customers/residential') || 
             url_is('tasklead') || 
             url_is('sales_manager') || 
-            url_is('sales_manager_indv') || 
-            url_is('inventory') ||
-            url_is('inventory/dropdowns') ||
-            url_is('inventory/logs')
+            url_is('sales_manager_indv')
         );
 		$menu = [
             'SALES'            => [
@@ -130,7 +127,7 @@ if (! function_exists('setup_modules'))
                 'icon'      => 'far fa-circle',
             ],
             'INVENTORY'     => [
-                'menu'      => 'SALES', // Leave empty if none
+                'menu'      => '', // Leave empty if none
                 'name'      => get_modules('INVENTORY'),
                 'url'       => url_to('inventory.home'),
                 'class'     => (url_is('inventory') || url_is('inventory/dropdowns') || url_is('inventory/logs') ? 'active' : ''),

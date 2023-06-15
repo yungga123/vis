@@ -87,7 +87,7 @@ $(document).ready(function () {
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			refreshDataTable();
+			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
 			$("#dropdown_id").val("");
 			$("#other_category_type").val("");

@@ -12,7 +12,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-sm-6 mt-2">
+                        <div class="col-sm-6 mt-2 d-none">
                             <input type="hidden" id="action_logs" name="action_logs" readonly>
                             <div class="form-group">
                                 <label class="required" for="inventory_id">Item Number</label>
@@ -46,7 +46,7 @@
                                 <small id="alert_project_price_logs" class="text-danger"></small>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 d-none">
                             <div class="form-group">
                                 <label for="item_size_logs">Item Size</label>
                                 <select name="item_size_logs" id="item_size_logs" class="custom-select select2 mt-2" data-placeholder="Select Item Size" style="width: 100%;">
@@ -90,7 +90,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="item-out-wrapper"></div>
+                    <div class="item-details-wrapper"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

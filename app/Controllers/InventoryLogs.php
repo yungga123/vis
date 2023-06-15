@@ -105,13 +105,13 @@ class InventoryLogs extends BaseController
             $request    = $this->request->getVar();
             $inputs     = [
                 'inventory_id'      => $request['inventory_id'],
-                'item_size'         => $request['item_size_logs_out'] ?? $request['item_size_logs'],
+                'item_size'         => $request['item_size_logs_out'] ?? $request['item_size_logs'] ?? 0,
                 'item_sdp'          => $request['item_sdp_logs'],
                 'item_srp'          => $request['item_srp_logs'],
                 'project_price'     => $request['project_price_logs'],
                 'stocks'            => $request['quantity'] ?? $request['stocks_logs'],
                 'parent_stocks'     => $request['parent_stocks'],
-                'stock_unit'        => $request['stock_unit_logs_out'] ?? $request['stock_unit_logs'],
+                'stock_unit'        => $request['stock_unit_logs_out'] ?? $request['stock_unit_logs'] ?? 0,
                 'date_of_purchase'  => $request['date_of_purchase_logs'],
                 'location'          => $request['location_logs'],
                 'supplier'          => $request['supplier_logs'],

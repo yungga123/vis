@@ -16,10 +16,10 @@
                         </div>
                         <div class="col-10 pl-0">
                             <div class="input-group" style="flex-wrap: nowrap; width: 100%;">
-                                <select class="custom-select select2 mr-1" id="filter_category" data-placeholder="Select a Category" multiple>
+                                <select class="custom-select select2 mr-1" id="filter_category_logs" data-placeholder="Select a Category" multiple>
                                     <?= $categories ?>
                                 </select>
-                                <select class="custom-select select2 round-left-0" id="filter_sub_category" data-placeholder="Select a Sub-Dropdowns" multiple>
+                                <select class="custom-select select2 round-left-0" id="filter_sub_category_logs" data-placeholder="Select a Sub-Dropdowns" multiple>
                                 </select>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-primary px-3" onclick="filterDataLogs()" type="button" title="Search filter">Filter</button>
