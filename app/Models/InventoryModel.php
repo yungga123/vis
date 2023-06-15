@@ -214,6 +214,7 @@ class InventoryModel extends Model
         $closureFun = function($row) use($id, $permissions) {
             $dropdown   = false;
             $buttons    = dt_button_actions($row, $id, $permissions, $dropdown); 
+            $stock      = "{$row['stocks']}";
 
             if (check_permissions($permissions, 'ITEM_IN')) {
                 // Item In
@@ -222,14 +223,13 @@ class InventoryModel extends Model
                     'text'      => $dropdown ? 'Item In' : '',
                     'button'    => 'btn-primary',
                     'icon'      => 'fas fa-plus-circle',
-                    'condition' => 'onclick="itemIn('.$row["$id"].')" title="Item In"',
+                    'condition' => 'onclick="itemIn('.$row["$id"].', '.$stock.')" title="Item In"',
                 ], $dropdown);
             }
 
             if (check_permissions($permissions, 'ITEM_OUT')) {
                 // Item Out
                 $data = json_encode($row);
-                $stock = "{$row['stocks']}";
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? 'Item Out' : '',
                     'button'    => 'btn-secondary',

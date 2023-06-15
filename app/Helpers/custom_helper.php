@@ -42,10 +42,7 @@ if (! function_exists('get_nav_menus'))
             url_is('customers/residential') || 
             url_is('tasklead') || 
             url_is('sales_manager') || 
-            url_is('sales_manager_indv') || 
-            url_is('inventory') ||
-            url_is('inventory/dropdowns') ||
-            url_is('inventory/logs')
+            url_is('sales_manager_indv')
         );
 		$menu = [
             'SALES'            => [
@@ -136,17 +133,11 @@ if (! function_exists('setup_modules'))
                 'icon'      => 'far fa-circle',
             ],
             'INVENTORY'     => [
-                'menu'      => 'SALES', // Leave empty if none
+                'menu'      => '', // Leave empty if none
                 'name'      => get_modules('INVENTORY'),
                 'url'       => url_to('inventory.home'),
                 'class'     => (url_is('inventory') || url_is('inventory/dropdowns') || url_is('inventory/logs') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-cart',
-            'PURCHASING_SUPPLIERS'      => [
-                'menu'      => 'PURCHASING', // Leave empty if none
-                'name'      => get_modules('PURCHASING_SUPPLIERS'),
-                'url'       => url_to('suppliers.home'),
-                'class'     => (url_is('suppliers') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
             ],
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none

@@ -228,16 +228,6 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
 });
 
 
-//SUPPLIERS
-$routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Suppliers::index', ['as' => 'suppliers.home']);
-    $routes->post('list', 'Suppliers::list', ['as' => 'suppliers.list']);
-    $routes->post('save', 'Suppliers::save', ['as' => 'suppliers.save']);
-    $routes->post('edit', 'Suppliers::edit', ['as' => 'suppliers.edit']);
-    $routes->post('delete', 'Suppliers::delete', ['as' => 'suppliers.delete']);
-});
-
-
 /***************** PHASE 2 *****************/
 
 /*
