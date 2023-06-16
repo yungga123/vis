@@ -235,7 +235,14 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('save', 'Suppliers::save', ['as' => 'suppliers.save']);
     $routes->post('edit', 'Suppliers::edit', ['as' => 'suppliers.edit']);
     $routes->post('delete', 'Suppliers::delete', ['as' => 'suppliers.delete']);
+
+    //DROPDOWNS
+    $routes->post('dropdowns','SuppliersDropdown::index', ['as' => 'suppliers.dropdown.home']);
+
+    
 });
+
+
 
 
 /***************** PHASE 2 *****************/

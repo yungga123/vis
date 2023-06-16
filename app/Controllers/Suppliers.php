@@ -50,7 +50,7 @@ class Suppliers extends BaseController
     {
         $data['title']          = 'Suppliers';
         $data['page_title']     = 'Suppliers | List';
-        $data['custom_js']      = 'suppliers/index.js';
+        $data['custom_js']      = ['suppliers/index.js','suppliers_dropdown/index.js'];
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;

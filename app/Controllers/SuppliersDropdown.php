@@ -61,4 +61,111 @@ class SuppliersDropdown extends BaseController
 
         return view('suppliers_dropdown/index', $data);
     }
+
+    /**
+     * Saving process of suppliers (inserting and updating suppliers)
+     *
+     * @return json
+     */
+    public function save() 
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Supplier Dropdown has been saved successfully!'
+        ];
+
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            $model = $this->_model;
+
+            if (! $model->save($this->request->getVar())) {
+                $data['errors']     = $model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+            }
+
+            if ($this->request->getVar('id')) {
+                $data['message']    = 'Supplier Dropdown has been updated successfully!';
+            }
+
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception$e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
+
+        return $this->response->setJSON($data);
+    }
+    
+    /**
+     * For getting the supplier data using the id
+     *
+     * @return json
+     */
+    public function edit() 
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Supplier Dropdown has been retrieved!'
+        ];
+
+        try {
+            $model  = $this->_model;
+            $id     = $this->request->getVar('id');
+            // $item   = $model->select($model->allowedFields)->find($id);
+
+            $data['data'] = $model->select($model->allowedFields)->find($id);;
+        } catch (\Exception$e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    /**
+     * Delete process of suppliers
+     *
+     * @return json
+     */
+    public function delete() 
+    {
+        $data = [
+            'status'    => STATUS_SUCCESS,
+            'message'   => 'Supplier Dropdown has been deleted successfully!'
+        ];
+
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            $model = $this->_model;
+
+            if (! $model->delete($this->request->getVar('id'))) {
+                $data['errors']     = $model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
+            }
+
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception$e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $data['status']     = STATUS_ERROR;
+            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+        }
+
+        return $this->response->setJSON($data);
+    }
 }

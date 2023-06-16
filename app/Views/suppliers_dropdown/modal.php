@@ -1,5 +1,5 @@
-<!-- Supplier Add Form (MODAL) -->
-<div class="modal fade" id="modal_add_supplier" aria-hidden="true">
+<!-- Supplier Dropdown Add Form (MODAL) -->
+<div class="modal fade" id="modal_add_supplier_dropdown" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="form_add_supplier" action="<?= url_to('suppliers.save'); ?>" method="post" autocomplete="off">
