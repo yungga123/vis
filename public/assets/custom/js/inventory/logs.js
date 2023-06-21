@@ -114,30 +114,6 @@ function itemIn(id, stock) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				// $(modalLogs + " .modal-title").text(
-				// 	"Item In - " + res.data.item_description
-				// );
-				// $(modalLogs + " .modal-dialog").addClass("modal-lg");
-				// $(modalLogs + " .modal-body .row").removeClass("d-none");
-				// $(modalLogs + " .modal-body .item-out-wrapper").html("");
-
-				// $("#inventory_parent_id").val(id);
-				// $("#action_logs").val("ITEM_IN");
-				// $("#item_description_logs").val(res.data.item_description);
-				// $("#item_brand_logs").val(res.data.item_brand_name);
-				// $("#item_model_logs").val(res.data.item_model);
-				// $("#item_sdp_logs").val(res.data.item_sdp);
-				// $("#item_srp_logs").val(res.data.item_srp);
-				// $("#project_price_logs").val(res.data.project_price);
-				// // $("#stocks_logs").val(res.data.stocks);
-				// $("#parent_stocks").val(res.data.stocks);
-				// $("#date_of_purchase_logs").val(res.data.date_of_purchase);
-				// $("#location_logs").val(res.data.location);
-				// $("#supplier_logs").val(res.data.supplier);
-				// $("#encoder_logs").val(res.data.encoder_name);
-				// dropdownInitLogs("#item_size_logs", "SIZE", res.data.item_size, true);
-				// dropdownInitLogs("#stock_unit_logs", "UNIT", res.data.stock_unit, true);
-
 				const itemDetails = itemDetailsHtml(id, stock, res.data, "in");
 
 				$(modalLogs + " .modal-title").text(
@@ -213,8 +189,28 @@ function itemOut(id, stock) {
 function itemDetailsHtml(id, stock, data, action) {
 	action = action || "in";
 
-	let max = action === "in" ? "" : stock;
-	let details = `
+	const max = action === "in" ? "" : stock;
+	const itemStatusFields =
+		action === "out"
+			? ""
+			: `	
+		<tr>
+			<th>Status:</th>
+			<td>
+				<select name="status_logs" id="status_logs" class="form-control" required>
+					<option value="PURCHASE">Purchase</option>
+					<option value="RETURN">Return</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th>Status Date:</th>
+			<td>
+				<input type="date" class="form-control" name="status_date_logs" id="status_date_logs" required/>
+			</td>
+		</tr>
+	`;
+	const details = `
 		<h4 class="text-center">Item Details</h4>
 		<table class="table">
 			<tbody>
@@ -249,6 +245,7 @@ function itemDetailsHtml(id, stock, data, action) {
 						<small id="alert_quantity_logs" class="text-danger"></small>
 					</td>
 				</tr>
+				${itemStatusFields}
 			</tbody>
 		</table>
 		<input type="hidden" name="item_size_logs_${stock}" value="${

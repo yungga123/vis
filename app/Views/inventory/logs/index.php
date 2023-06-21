@@ -44,6 +44,8 @@
                                 <th>Item Size</th>
                                 <th>Stocks</th>
                                 <th>Unit</th>
+                                <th>Status</th>
+                                <th>Status Date</th>
                                 <th>Encoder</th>
                             </tr>
                         </thead>

@@ -111,7 +111,7 @@ class InventoryModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['beforeInsert'];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['afterInsert'];
     protected $beforeUpdate   = ['beforeInsert'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
@@ -129,6 +129,35 @@ class InventoryModel extends Model
             $data['data']['stock_unit'] = '';
         }
         $data['data']['encoder'] = session('employee_id');
+
+        return $data;
+    }
+
+    // Insert item in logs if has quantity or stock entered
+    protected function afterInsert(array $data)
+    {
+        if ($data['result']) {
+            $id         = $this->insertID;
+            $arr        = $data['data'];
+            $inputs     = [
+                'inventory_id'      => $id,
+                'item_size'         => $arr['item_size'],
+                'item_sdp'          => $arr['item_sdp'],
+                'item_srp'          => $arr['item_srp'],
+                'project_price'     => $arr['project_price'],
+                'stocks'            => $arr['quantity'] ?? $arr['stocks'],
+                'parent_stocks'     => $arr['quantity'] ?? $arr['stocks'],
+                'stock_unit'        => $arr['stock_unit'],
+                'date_of_purchase'  => $arr['date_of_purchase'],
+                'location'          => $arr['location'],
+                'supplier'          => $arr['supplier'],
+                'status'            => 'PURCHASE',
+                'action'            => 'ITEM_IN',
+                'created_by'        => session('employee_id'),
+            ];
+
+            $this->db->table('inventory_logs')->insert($inputs);
+        }
 
         return $data;
     }
@@ -169,8 +198,8 @@ class InventoryModel extends Model
     }
     
      // For DataTables
-     public function noticeTable($request) 
-     {
+    public function noticeTable($request) 
+    {
         $builder = $this->db->table($this->table);
         $builder->select("
             id,

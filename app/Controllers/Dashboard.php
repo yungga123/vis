@@ -42,6 +42,7 @@ class Dashboard extends BaseController
         $sales_html     = '';
         $clients_html   = '';
         $settings_html  = '';
+        $inventory_html = '';
         $client_modules = ['CUSTOMERS_COMMERCIAL', 'CUSTOMERS_RESIDENTIAL'];
 
         if (! empty($modules) && is_array($modules)) {
@@ -77,7 +78,9 @@ class Dashboard extends BaseController
                             break;
                         case 'SETTINGS':
                             $settings_html .= $card;
-                            break;
+                        default:
+                            if ($val === 'INVENTORY') $inventory_html .= $card;
+                        break;
                     }
                 }
             }
@@ -89,6 +92,7 @@ class Dashboard extends BaseController
             'hr_modules'        => $this->cardHtml($hr_html, 'Human Resource', 'info'),
             'clients_modules'   => $this->cardHtml($clients_html, 'Clients', 'primary'),
             'sales_modules'     => $this->cardHtml($sales_html, 'Sales', 'success'),
+            'inventory_modules' => $this->cardHtml($inventory_html, 'Inventory', 'secondary'),
             'settings_modules'  => $this->cardHtml($settings_html, 'Settings', 'danger'),
         ];
     }

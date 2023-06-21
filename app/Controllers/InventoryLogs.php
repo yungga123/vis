@@ -115,10 +115,12 @@ class InventoryLogs extends BaseController
                 'date_of_purchase'  => $request['date_of_purchase_logs'],
                 'location'          => $request['location_logs'],
                 'supplier'          => $request['supplier_logs'],
+                'status'            => $request['status_logs'] ?? NULL,
+                'status_date'       => $request['status_date_logs'] ?? NULL,
                 'action'            => $request['action_logs'],
             ];
 
-            
+            log_message('error', 'data logs => '. json_encode($inputs));
             if (! $this->_model->save($inputs)) {
                 $errors = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
@@ -180,6 +182,8 @@ class InventoryLogs extends BaseController
                 'item_size',
                 'stocks',
                 'stock_unit',
+                'status',
+                'status_date',
                 'encoder',
             ])
             ->setOutput([
@@ -194,6 +198,8 @@ class InventoryLogs extends BaseController
                 'item_size',
                 'stocks',
                 'stock_unit',
+                'status',
+                'status_date',
                 'encoder',
             ]);
 

@@ -167,7 +167,7 @@ define('MODULES', [
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'SETTINGS_ROLES'        => 'Roles',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
-    'PURCHASING_SUPPLIERS'  => 'Suppliers',
+    // 'PURCHASING_SUPPLIERS'  => 'Suppliers',
 ]);
 
 // Modules code based on the specific identifier you set
