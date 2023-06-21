@@ -120,7 +120,6 @@ class InventoryLogs extends BaseController
                 'action'            => $request['action_logs'],
             ];
 
-            log_message('error', 'data logs => '. json_encode($inputs));
             if (! $this->_model->save($inputs)) {
                 $errors = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
