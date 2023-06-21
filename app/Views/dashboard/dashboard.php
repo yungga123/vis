@@ -7,6 +7,7 @@
 					echo $modules['hr_modules'];
 					echo $modules['clients_modules'];
 					echo $modules['sales_modules'];
+					echo $modules['inventory_modules'];
 					echo $modules['settings_modules'];
 				?>
 			</div>

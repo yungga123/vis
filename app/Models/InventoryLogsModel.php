@@ -30,6 +30,8 @@ class InventoryLogsModel extends Model
         'supplier',
         'location',
         'action',
+        'status',
+        'status_date',
         'created_by',
     ];
 
@@ -151,6 +153,8 @@ class InventoryLogsModel extends Model
             {$this->table}.item_sdp,
             {$this->table}.stocks,
             IF($invAlias.stock_unit IS NULL or TRIM($invAlias.stock_unit) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.stock_unit = db.dropdown_id)) AS stock_unit,
+            status,
+            DATE_FORMAT(status_date, '%b %e, %Y') AS status_date,
             action,
             (SELECT CONCAT(firstname, ' ', lastname) FROM employees AS ev WHERE created_by = ev.employee_id) AS encoder
         ");
@@ -181,6 +185,7 @@ class InventoryLogsModel extends Model
         }
 
         $builder->where('inventory_logs.deleted_at', null);
+        $builder->orderBy('inventory_logs.'. $this->primaryKey, 'DESC');
         return $builder;
     }
 
