@@ -14,7 +14,12 @@ class SuppliersDropdownModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        'dropdown',
+        'dropdown_type',
+        'parent_id',
+        'created_by'
+    ];
 
     // Dates
     protected $useTimestamps = true;
@@ -24,8 +29,23 @@ class SuppliersDropdownModel extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        'dropdown'      => [
+            'label' => 'Suppliers Dropdown',
+            'rules' => 'required'
+        ],
+        'dropdown_type'      => [
+            'label' => 'Dropdown Type',
+            'rules' => 'required'
+        ],
+        'created_by'      => [
+            'label' => 'Created By',
+            'rules' => 'required'
+        ]
+    ];
+    protected $validationMessages   = [
+
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 

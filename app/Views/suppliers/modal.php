@@ -32,7 +32,7 @@
                                     <option value="">---Please Select---</option>
                                 </select>
                                 <small id="alert_supplier_type" class="text-muted"></small>
-                                <span><a href="javascript:void(0)">Add here!</a> to add type of supplier selection. <a href="javascript:void(0)">Go here!</a> to manage the dropdowns.</span>
+                                <span><a href="#" onclick="showDropdownModal()">Add here!</a> to add type of supplier selection. <a href="javascript:void(0)">Go here!</a> to manage the dropdowns.</span>
                                 
                             </div>
 
