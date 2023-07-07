@@ -58,6 +58,11 @@ class Suppliers extends BaseController
         $data['select2']        = true;
         $data['can_add']        = $this->_can_add;
         $data['btn_add_lbl']    = 'Add New Supplier';
+        $data['routes']         = json_encode([
+            'dropdown' => [
+                'show'      => url_to('suppliers.dropdown.show'),
+            ],
+        ]);
 
 
         return view('suppliers/index', $data);

@@ -2,7 +2,7 @@
 <div class="modal fade" id="modal_add_supplierDd" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="form_add_supplier" action="<?= url_to('suppliers.save'); ?>" method="post" autocomplete="off">
+            <form id="form_add_supplierDd" action="<?= url_to('suppliers.dropdown.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="supplier_dropdown_id" name="id" readonly>
                 <div class="modal-header">
@@ -24,8 +24,8 @@
                                 <input type="text" name="dropdown" id="dropdown" class="form-control" placeholder="Enter here...">
                                 <small id="alert_dropdown" class="text-muted"></small>
                             </div>
-                            <input type="text" id="dropdown_type" name="dropdown_type" value="Suppliers">
-                            <input type="text" id="created_by" name="created_by" value="<?= session('employee_id')  ?>">
+                            <input type="hidden" id="dropdown_type" name="dropdown_type" value="Suppliers">
+                            <input type="hidden" id="created_by" name="created_by" value="<?= session('employee_id')  ?>">
 
 
                         </div>

@@ -24,7 +24,7 @@ $(document).ready(function(){
 		$(`#${modal} .modal-title`).text("Add New Supplier");
 		$(`#${form}`)[0].reset();
 		$("#supplier_id").val("");
-
+		fetchDropdowns();
 		clearAlertInForm(elems);
 	});
 

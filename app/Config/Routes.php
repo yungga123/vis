@@ -238,7 +238,8 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
 
     //DROPDOWNS
     $routes->post('dropdowns','SuppliersDropdown::index', ['as' => 'suppliers.dropdown.home']);
-
+    $routes->post('dropdowns/save','SuppliersDropdown::save', ['as' => 'suppliers.dropdown.save']);
+    $routes->post('dropdowns/show','SuppliersDropdown::fetchDropdowns', ['as' => 'suppliers.dropdown.show']);
     
 });
 

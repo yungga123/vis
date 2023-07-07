@@ -55,6 +55,7 @@ class SuppliersDropdown extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
+        
         //$data['can_add']        = $this->_can_add;
         //$data['btn_add_lbl']    = 'Add New Supplier';
 
@@ -165,6 +166,12 @@ class SuppliersDropdown extends BaseController
             $data['status']     = STATUS_ERROR;
             $data['message']    = 'Error while processing data! Please contact your system administrator.';
         }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function fetchDropdowns() {
+        $data['dropdowns'] = $this->_model->where('dropdown_type','Suppliers')->find();
 
         return $this->response->setJSON($data);
     }
