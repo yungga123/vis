@@ -28,6 +28,7 @@ class Dashboard extends BaseController
      */
     public function moduleBoxMenu()
     {
+        $counter    = 0;
         $html       = '';
         $modules    = $this->modules;
         $bgColor    = [
@@ -49,9 +50,12 @@ class Dashboard extends BaseController
             // Sort modules ascending
             sort($modules);
 
+            $setup_modules = array_keys(setup_modules());
+
             foreach ($modules as $val) {
                 // Not include DASHBOARD module
-                if ($val !== 'DASHBOARD') {
+                
+                if ($val !== 'DASHBOARD' && in_array($val, $setup_modules)) {
                     $module = setup_modules($val);
 
                     // Add module card menu
@@ -82,13 +86,15 @@ class Dashboard extends BaseController
                             if ($val === 'INVENTORY') $inventory_html .= $card;
                         break;
                     }
+
+                    $counter++;
                 }
             }
         } else {
             $html = '<h2>No module card to be displayed!</h2>';
         }
 
-        return (! empty($html)) ? $html : [
+        return (! empty($html) && $counter === 0) ? $html : [
             'hr_modules'        => $this->cardHtml($hr_html, 'Human Resource', 'info'),
             'clients_modules'   => $this->cardHtml($clients_html, 'Clients', 'primary'),
             'sales_modules'     => $this->cardHtml($sales_html, 'Sales', 'success'),
