@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\SuppliersDropdownModel;
+use monken\TablesIgniter;
 
 class SuppliersDropdown extends BaseController
 {
@@ -55,12 +56,47 @@ class SuppliersDropdown extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
+        // $data['routes']         = json_encode([
+        //     'suppliers_dropdown' => [
+        //         'save' => url_to('suppliers_dropdown.save'),
+        //         'edit' => url_to('suppliers_dropdown.edit'),
+        //         'delete' => url_to('suppliers_dropdown.delete'),
+        //     ],
+        // ]);
         
         //$data['can_add']        = $this->_can_add;
         //$data['btn_add_lbl']    = 'Add New Supplier';
 
 
         return view('suppliers_dropdown/index', $data);
+    }
+
+    public function list()
+    {
+        $table = new TablesIgniter();
+        $builder = $this->_model->noticeTable();
+
+        $table->setTable($builder)
+            ->setSearch([
+                "id",
+                "dropdown",
+                "dropdown_type",
+            ])
+            ->setDefaultOrder('id','desc')
+            ->setOrder([
+                null,
+                "id",
+                "dropdown",
+                "dropdown_type",
+            ])
+            ->setOutput([
+                $this->_model->buttons(),
+                "id",
+                "dropdown",
+                "dropdown_type",
+            ]);
+
+        return $table->getDatatable();
     }
 
     /**

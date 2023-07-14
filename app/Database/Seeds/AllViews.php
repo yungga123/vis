@@ -23,6 +23,7 @@ class AllViews extends Seeder
         $this->call('CustomersResidentialView');
         $this->call('SalesTargetView');
         $this->call('SuppliersView');
+        $this->call('SuppliersDropdownView');
         
     }
 }

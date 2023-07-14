@@ -237,7 +237,8 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('delete', 'Suppliers::delete', ['as' => 'suppliers.delete']);
 
     //DROPDOWNS
-    $routes->post('dropdowns','SuppliersDropdown::index', ['as' => 'suppliers.dropdown.home']);
+    $routes->get('dropdowns','SuppliersDropdown::index', ['as' => 'suppliers.dropdown.home']);
+    $routes->post('dropdowns/list','SuppliersDropdown::list', ['as' => 'suppliers.dropdown.list']);
     $routes->post('dropdowns/save','SuppliersDropdown::save', ['as' => 'suppliers.dropdown.save']);
     $routes->post('dropdowns/show','SuppliersDropdown::fetchDropdowns', ['as' => 'suppliers.dropdown.show']);
     

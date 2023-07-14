@@ -59,11 +59,13 @@ $(document).ready(function(){
 
 /* Get supplier details */
 function edit(id) {
+	fetchDropdowns();
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Supplier");
 	$("#supplier_id").val(id);
 
 	clearAlertInForm(elems);
+	
 	showLoading();
 
 	$.post(editRoute, { id: id })
@@ -71,6 +73,7 @@ function edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
+				
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					$.each(res.data, (key, value) => {
 						$(`input[name="${key}"]`).val(value);

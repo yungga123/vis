@@ -1,12 +1,16 @@
-var formDd, modalDd;
+var formDd, modalDd, tableDd;
 
 $(document).ready(function () {
-
+    tableDd = "supplier_dropdowns_table";
     formDd = "form_add_supplierDd";
     modalDd = "modal_add_supplierDd";
     elemsDd = [
         "dropdown"
     ];
+
+    /* Load dataTable */
+	const route = $("#" + tableDd).data("url");
+	loadDataTable(tableDd, route, METHOD.POST);
 
     /* Form for saving item */
     formSubmit($("#" + formDd), "continue", function (res, self) {
@@ -50,7 +54,7 @@ function fetchDropdowns() {
             $.each(response.dropdowns, function (key, val) { 
                 //console.log(val.dropdown);
                 
-                $('#supplier_type').append("<option>"+val.dropdown+"</option>");
+                $('#supplier_type').append("<option value='"+val.dropdown+"'>"+val.dropdown+"</option>");
             });
         }
     });
