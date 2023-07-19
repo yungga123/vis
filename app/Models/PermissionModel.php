@@ -107,16 +107,17 @@ class PermissionModel extends Model
             $bg = 'rounded-pill text-white pl-2 pr-2 pt-1 pb-1';
 
             foreach ($permissions as $val) {
+                $action = get_actions($val, true);
                 if ($val == 'VIEW') {
-                    $span .= '<span class="bg-info '. $bg .'">VIEW</span>';
+                    $span .= '<span class="bg-info '. $bg .'">'. $action .'</span>';
                 } elseif ($val == 'ADD') {
-                    $span .= '<span class="bg-primary '. $bg .'">ADD</span>';
+                    $span .= '<span class="bg-primary '. $bg .'">'. $action .'</span>';
                 } elseif ($val == 'EDIT') {
-                    $span .= '<span class="bg-warning '. $bg .'">EDIT</span>';
+                    $span .= '<span class="bg-warning '. $bg .'">'. $action .'</span>';
                 } elseif ($val == 'DELETE') {
-                    $span .= '<span class="bg-danger '. $bg .'">DELETE</span>';
+                    $span .= '<span class="bg-danger '. $bg .'">'. $action .'</span>';
                 } else {
-                    $span .= '<span class="bg-secondary '. $bg .'">'. $val .'</span>';
+                    $span .= '<span class="bg-secondary '. $bg .'">'. $action .'</span>';
                 }
             }
 
@@ -128,7 +129,7 @@ class PermissionModel extends Model
         };
 
         $role = function($row) {
-            return ROLES[$row['role_code']];
+            return get_roles($row['role_code']);
         };
         
         return compact('permission', 'module', 'role');

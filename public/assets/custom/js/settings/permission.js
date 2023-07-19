@@ -1,4 +1,4 @@
-var table, modal, form, editRoute, removeRoute, elems;
+var table, modal, form, elems;
 
 $(document).ready(function () {
 	table = "permission_table";
@@ -21,17 +21,20 @@ $(document).ready(function () {
 		clearAlertInForm(elems);
 	});
 
-	/* Load dataTable */
-	const route = $("#" + table).data("url"),
-		options = {
-			columnDefs: {
-				orderable: false,
-				targets: -1,
-			},
-			order: [0, "asc"],
-		};
+	$("#module_code").on("change", function () {
+		changePermissionsOptions($(this).val() === "INVENTORY");
+	});
 
-	loadDataTable(table, route, METHOD.POST, options);
+	/* Load dataTable */
+	const options = {
+		columnDefs: {
+			orderable: false,
+			targets: -1,
+		},
+		order: [0, "asc"],
+	};
+
+	loadDataTable(table, router.permission.list, METHOD.POST, options);
 
 	/* Form for saving employee */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -64,7 +67,7 @@ function edit(id) {
 	clearAlertInForm(elems);
 	showLoading();
 
-	$.post(editRoute, { id: id })
+	$.post(router.permission.edit, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -87,7 +90,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(removeRoute, { id: id })
+			$.post(router.permission.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
@@ -100,4 +103,26 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+/* For changing permissions options */
+function changePermissionsOptions(withItemInAndOut = false) {
+	let options = "",
+		select = "#permissions";
+
+	$.each(
+		ACTIONS,
+		(key, val) => (options += `<option value="${key}">${val}</option>`)
+	);
+
+	if (withItemInAndOut) {
+		options += `
+			<option value="ITEM_IN">Item In</option>
+			<option value="ITEM_OUT">Item Out</option>
+		`;
+	}
+
+	if (isSelect2Initialized(select)) $(select).select2("destroy");
+	$(select).html("").append(options);
+	$(select).select2().val("").trigger("change");
 }
