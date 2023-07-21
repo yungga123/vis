@@ -3,8 +3,8 @@
 
 <div class="container-fluid">
 
-    <input type="hidden" id="edit_url" value="" readonly>
-    <input type="hidden" id="remove_url" value="" readonly>
+    <input type="hidden" id="edit_url" value="<?= url_to('suppliers.dropdown.edit') ?>" readonly>
+    <input type="hidden" id="remove_url" value="<?= url_to('suppliers.dropdown.delete') ?>" readonly>
     <!-- Suppliers List Card -->
     <div class="card">
         <div class="card-body">

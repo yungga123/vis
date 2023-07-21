@@ -39,6 +39,56 @@ function showDropdownModal() {
     fetchDropdowns();
 }
 
+/* Get supplier details */
+function edit(id) {
+	fetchDropdowns();
+	$(`#${modal}`).removeClass("add").addClass("edit");
+	$(`#${modal} .modal-title`).text("Edit Supplier");
+	$("#supplier_id").val(id);
+
+	clearAlertInForm(elemsDd);
+	
+	showLoading();
+
+	$.post(editRoute, { id: id })
+		.then((res) => {
+			closeLoading();
+
+			if (res.status === STATUS.SUCCESS) {
+				
+				if (inObject(res, "data") && !isEmpty(res.data)) {
+					$.each(res.data, (key, value) => {
+						$(`input[name="${key}"]`).val(value);
+					});
+				}
+			} else {
+				$(`#${modal}`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status);
+			}
+		})
+		.catch((err) => catchErrMsg(err));
+}
+
+function remove(id) {
+	const swalMsg = "delete";
+	swalNotifConfirm(
+		function () {
+			$.post(removeRoute, { id: id })
+				.then((res) => {
+					const message = res.errors ?? res.message;
+
+					refreshDataTable();
+					notifMsgSwal(res.status, message, res.status);
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		TITLE.WARNING,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
+
 function fetchDropdowns() {
     let url = router.dropdown.show;
     $('#supplier_type').empty();

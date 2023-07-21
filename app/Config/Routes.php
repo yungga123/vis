@@ -240,6 +240,8 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->get('dropdowns','SuppliersDropdown::index', ['as' => 'suppliers.dropdown.home']);
     $routes->post('dropdowns/list','SuppliersDropdown::list', ['as' => 'suppliers.dropdown.list']);
     $routes->post('dropdowns/save','SuppliersDropdown::save', ['as' => 'suppliers.dropdown.save']);
+    $routes->post('dropdowns/edit','SuppliersDropdown::edit', ['as' => 'suppliers.dropdown.edit']);
+    $routes->post('dropdowns/delete','SuppliersDropdown::delete', ['as' => 'suppliers.dropdown.delete']);
     $routes->post('dropdowns/show','SuppliersDropdown::fetchDropdowns', ['as' => 'suppliers.dropdown.show']);
     
 });
