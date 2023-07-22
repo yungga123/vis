@@ -86,6 +86,7 @@
                                     <option value="Q3">Supplies</option>
                                 </select>
                                 <input type="text" name="quotation_num" id="quotation_num" class="form-control" placeholder="Enter..." readonly>
+                                <input type="text" name="tasklead_type" id="tasklead_type" class="form-control" placeholder="Enter..." readonly>
                                 <small id="alert_quotation_num" class="text-danger"></small>
                             </div>
                             <div class="form-group forecast_close_date" hidden>
