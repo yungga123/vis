@@ -27,7 +27,7 @@
 
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
-<script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
+
 <?php endif;?>
 
 <?php if (isset($sweetalert2) && $sweetalert2): ?>
@@ -54,6 +54,19 @@
 
 <!-- Load custom js -->
 <script src="<?=base_url('assets')?>/custom/js/functions.js"></script>
+<!-- Load routes options -->
+<?php if (isset($routes) && !empty($routes)): ?>
+		<script type="text/javascript">
+      var router = JSON.parse('<?= $routes ?>');
+    </script>
+<?php endif; ?>
+<!-- Load php to js options - data that need to pass from php to js -->
+<?php if (isset($php_to_js_options) && !empty($php_to_js_options)): ?>
+		<script type="text/javascript">
+      // php to js options
+      var $pjOptions = JSON.parse('<?= $php_to_js_options ?>');
+    </script>
+<?php endif; ?>
 <?php
 if (isset($custom_js) && !empty($custom_js)):
     $custom_js = is_string($custom_js) ? [$custom_js] : $custom_js;

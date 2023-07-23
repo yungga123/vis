@@ -23,6 +23,7 @@ $(document).ready(function () {
 		"close_deal_date",
 		"project_start_date",
 		"project_finish_date",
+		"tasklead_type"
 	];
 
 	$("#btn_add_record").on("click", function () {
@@ -123,6 +124,7 @@ $(document).ready(function () {
 		$("#quotation_num").val(
 			$(this).val() + $("#get_quotation_num").val() + $("#tasklead_id").val()
 		);
+		$('#tasklead_type').val($('#quotation_type option:selected').text());
 	});
 
 	$("#change_tasklead").on("change", function () {

@@ -71,6 +71,7 @@ class Accounts extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
+        $data['select2']        = true;
         $data['can_add']        = $this->_can_add;
         $data['employees']      = $employees;
         $data['access_level']   = $access_level;
@@ -93,7 +94,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 'access_level',
             ])
             ->setDefaultOrder('employee_name','asc')
@@ -101,7 +101,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 'access_level',
                 null,
             ])
@@ -109,7 +108,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 $this->_model->dtAccessLevel(),
                 $this->_model->buttons($this->_permissions),
             ]);
@@ -205,7 +203,7 @@ class Accounts extends BaseController
 
         try {
             $id     = $this->request->getVar('id');
-            $fields = 'employee_id, username, access_level';
+            $fields = 'employee_id, username, UPPER(access_level) as access_level';
             // $fields = $this->_model->allowedFields;
 
             $data['data'] = $this->_model->select($fields)->find($id);;
