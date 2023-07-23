@@ -119,22 +119,27 @@ defined('AAL_MANAGER_SALES')   || define('AAL_MANAGER_SALES', 'manager_sales');
 defined('AAL_MANAGER_HR')   || define('AAL_MANAGER_HR', 'manager_hr');
 defined('AAL_MANAGER_ACCOUNTING')   || define('AAL_MANAGER_ACCOUNTING', 'manager_accounting');
 defined('AAL_MANAGER_FINANCE')   || define('AAL_MANAGER_FINANCE', 'manager_finance');
+// defined('AAL_USER')         || define('AAL_USER', 'user');
+
+// Old
+// defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
+defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
+defined('AAL_HR')           || define('AAL_HR', 'hr');
+defined('AAL_SALES')        || define('AAL_SALES', 'sales');
+defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
 defined('AAL_USER')         || define('AAL_USER', 'user');
 
 // Actions - add new here
 define('ACTIONS', [
-    'VIEW'          => 'View',
-    'ADD'           => 'Add',
-    'EDIT'          => 'Edit',
-    'DELETE'        => 'Delete',
-    'ACCEPT'        => 'Accept',
-    'DISCARD'       => 'Discard',
-    'FILE'          => 'File',
-    'RESCHEDULE'    => 'Reschedule',
+    'VIEW'      => 'View',
+    'ADD'       => 'Add',
+    'EDIT'      => 'Edit',
+    'DELETE'    => 'Delete',
+    // 'EXPORT'    => 'Export',
+    // 'IMPORT'    => 'Import',
 ]);
 
-// Roles - No need to add new roles here
-// Adding new roles will be on the dashboard
+// Roles - add new here
 define('ROLES', [
     'ADMIN'                 => 'Administrator',
     'EXECUTIVE'             => 'Executive',
@@ -161,18 +166,14 @@ define('MODULES', [
     'DASHBOARD'             => 'Dashboard',
     'ACCOUNTS'              => 'Accounts',
     'EMPLOYEES'             => 'Employees',
+    // 'CUSTOMERS'             => 'Customers (Forecast)',
     'CUSTOMERS_COMMERCIAL'  => 'Clients (Commercial)',
     'CUSTOMERS_RESIDENTIAL' => 'Clients (Residential)',
     'TASK_LEAD'             => 'Task/Lead Monitoring',
     'MANAGER_OF_SALES'      => 'Manager of Sales',
-    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
-    'INVENTORY'             => 'Inventory',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
-    'SETTINGS_ROLES'        => 'Roles',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
-    'PURCHASING_SUPPLIERS'  => 'Suppliers',
-    'ADMIN_JOB_ORDER'       => 'Job Order',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -182,16 +183,12 @@ define('MODULE_CODES', [
     'dashboard'             => 'DASHBOARD',
     'accounts'              => 'ACCOUNTS',
     'employees'             => 'EMPLOYEES',
+    'customers'             => 'CUSTOMERS',
     'customers_commercial'  => 'CUSTOMERS_COMMERCIAL',
     'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
     'task_lead'             => 'TASK_LEAD',
     'manager_sales'         => 'MANAGER_OF_SALES',
-    'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
-    'inventory'             => 'INVENTORY',
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
-    'roles'                 => 'SETTINGS_ROLES',
     'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
-    'suppliers'             => 'PURCHASING_SUPPLIERS',
-    'job_order'             => 'ADMIN_JOB_ORDER',
 ]);

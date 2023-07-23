@@ -13,7 +13,7 @@
                                 <th>Employee ID</th>
                                 <th>Employee Name</th>
                                 <th>Username</th>
-                                <th>Role</th>
+                                <th>Access Level</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -39,8 +39,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="required" for="employee_id">Employee Name</label>
-                        <!-- <select name="employee_id" id="employee_id" class="form-control" data-value=""> -->
-                        <select class="select2" name="employee_id" id="employee_id" data-placeholder="Select Employee" style="width: 100%;" required>
+                        <select name="employee_id" id="employee_id" class="form-control" data-value="<?= $account_data['employee_id'] ?? ''; ?>">
                             <option value="">---Please Select---</option>
                             <?php foreach ($employees as $item) : ?>
                                 <option value="<?= $item['employee_id']; ?>"><?= $item['employee_id'] . ' - ' . $item['firstname'] . ' ' . $item['lastname'] ?></option>
@@ -65,7 +64,7 @@
                         <label class="required"  for="access_level">Access Level</label>
                         <select name="access_level" id="access_level" class="form-control" data-value="<?= $account_data['access_level'] ?? ''; ?>">
                             <option value="">---Please Select---</option>
-                            <?php foreach (get_roles() as $key => $val): ?>
+                            <?php foreach ($access_level as $key => $val): ?>
                                 <option value="<?= $key; ?>"><?= $val; ?></option>
                             <?php endforeach; ?>
                         </select>

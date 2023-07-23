@@ -31,8 +31,7 @@ class TaskLeadModel extends Model
         "remark_next_step", 
         "close_deal_date", 
         "project_start_date", 
-        "project_finish_date",
-        "tasklead_type",
+        "project_finish_date"
     ];
 
     // Dates

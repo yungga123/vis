@@ -66,13 +66,6 @@ class Permission extends BaseController
         $data['custom_js']      = 'settings/permission.js';
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['routes']         = json_encode([
-            'permission' => [
-                'list'      => url_to('permission.list'),
-                'edit'      => url_to('permission.edit'),
-                'delete'    => url_to('permission.delete'),
-            ],
-        ]);
 
         return view('settings/permission/index', $data);
     }
@@ -98,12 +91,18 @@ class Permission extends BaseController
                 'module_code',
                 'permissions',
                 null,
+                // 'added_by',
+                // 'updated_by',
             ])
             ->setOutput([
                 $custom['role'],
                 $custom['module'],
                 $custom['permission'],
                 $this->_model->buttons($this->_permissions),
+                // 'added_by',
+                // 'updated_by',
+                // 'created_at',
+                // 'updated_at',
             ]);
 
         return $table->getDatatable();

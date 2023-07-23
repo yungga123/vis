@@ -31,7 +31,6 @@ class TaskleadBookedView extends Seeder
             project,
             project_amount,
             quotation_num,
-            tasklead_type,
             DATE_FORMAT(forecast_close_date,'%b %d, %Y') as forecast_close_date,
             DATE_FORMAT(DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as min_forecast_date,
             DATE_FORMAT(DATE_ADD(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as max_forecast_date,

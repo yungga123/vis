@@ -4,14 +4,20 @@
     <div class="row">
         <div class="col-12">                    
             <div class="card">
-                <div class="card-body">
-                    <table id="permission_table" class="table table-hover table-striped nowrap" width="100%">
+                <div class="card-body">                    
+                    <input type="hidden" id="edit_url" value="<?= url_to('permission.edit'); ?>" disabled>
+                    <input type="hidden" id="remove_url" value="<?= url_to('permission.delete'); ?>" disabled>
+                    <table id="permission_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('permission.list'); ?>">
                         <thead class="nowrap">
                             <tr>
                                 <th>Role</th>
                                 <th>Module</th>
                                 <th>Permissions</th>
-                                <th>Action</th>
+                                <th width="10%">Action</th>
+                                <!-- <th>Added By</th>
+                                <th>Updated By</th>
+                                <th>Created At</th>
+                                <th>Updated At</th> -->
                             </tr>
                         </thead>
                     </table>
@@ -35,9 +41,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="required" for="role_code">Role</label>
+                        <label class="required" for="item_name">Role</label>
                         <select class="form-control" name="role_code" id="role_code" style="width: 100%;" required>
                         <option value="">Select Role</option>
+                        
+                            <!-- <option value="</?= $key ?>"></?= $val ?></option> -->
                             <optgroup label="Managerial Level">
                                 <?php foreach (get_roles() as $key => $val): ?>
                                     <?php if (str_contains($key,'MANAGER')) : ?>
@@ -52,13 +60,15 @@
                                     <?php endif ?>
                                 <?php endforeach; ?>
                             </optgroup>
+
                             <optgroup label="Others">
                                 <?php foreach (get_roles() as $key => $val): ?>
                                     <?php if (!str_contains($key,'SUPERVISOR') && !str_contains($key,'MANAGER')) : ?>
                                         <option value="<?= $key ?>"><?= $val ?></option>
                                     <?php endif ?>
                                 <?php endforeach; ?>
-                            </optgroup>                        
+                            </optgroup>
+                        
                         </select>
                         <small id="alert_role_code" class="text-danger"></small>
                     </div>
