@@ -442,7 +442,7 @@ function loadDataTable(
 			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
 		processing: true,
-		scrollX: true,
+		// scrollX: true,
 		autoWidth: false,
 		columnDefs: columnDefs,
 		order: order,
@@ -492,6 +492,11 @@ function loadDataTable(
 				"custom-select-sm form-control-sm"
 			);
 			$(".dt-buttons").removeClass("btn-group");
+
+			// To fix not align header and body
+			$("#" + table).wrap(
+				"<div style='overflow: auto; width: 100%; position: relative;'></div>"
+			);
 		},
 	});
 }
