@@ -126,14 +126,14 @@ $routes->group('customers/residential',['filter' => 'checkauth'],static function
 
 //Task Lead
 $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
-    $routes->get('/','Tasklead::index', ['as' => 'tasklead.home']);
-    $routes->post('list','Tasklead::list',['as' => 'tasklead.list']);
-    $routes->post('save','Tasklead::save',['as' => 'tasklead.save']);
-    $routes->post('edit','Tasklead::edit',['as' => 'tasklead.edit']);
-    $routes->post('delete','Tasklead::delete',['as' => 'tasklead.delete']);
-    $routes->get('fetchcustomervt','Tasklead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
+    $routes->get('/','TaskLead::index', ['as' => 'tasklead.home']);
+    $routes->post('list','TaskLead::list',['as' => 'tasklead.list']);
+    $routes->post('save','TaskLead::save',['as' => 'tasklead.save']);
+    $routes->post('edit','TaskLead::edit',['as' => 'tasklead.edit']);
+    $routes->post('delete','TaskLead::delete',['as' => 'tasklead.delete']);
+    $routes->get('fetchcustomervt','TaskLead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
     $routes->get('fetchcustomerresidential','TaskLead::getResidentialCustomers',['as' => 'tasklead.getcustomerresidential']);
-    $routes->get('fetchcustomervtbranch','Tasklead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
+    $routes->get('fetchcustomervtbranch','TaskLead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
     $routes->get('booked','TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
     $routes->post('booked/list','TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
     $routes->post('booked/project_details','TaskLeadBooked::get_booked_details',['as' => 'tasklead.booked.details']);
@@ -141,6 +141,7 @@ $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->post('booked/upload','TaskLeadBooked::upload',['as' => 'tasklead.booked.upload']);
     $routes->post('booked/tasklead_files','TaskLeadBooked::getTaskleadFiles',['as' => 'tasklead.booked.files']);
     $routes->get('booked/download','TaskLeadBooked::downloadFile',['as' => 'tasklead.booked.download']);
+    $routes->get('booked/show/(:num)','TaskLeadBooked::show', ['as' => 'tasklead.booked.show/$1']);
 });
 
 // Sales Manager
@@ -227,6 +228,22 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('logs/list', 'InventoryLogs::list', ['as' => 'inventory.logs.list']);
 });
 
+/* ADMIN */
+// Common
+$routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->post('quotations', 'Admin\Common::searchQuotation', ['as' => 'admin.common.quotations']);
+});
+
+// JOB ORDERS
+$routes->group('job-orders', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Admin\JobOrder::index', ['as' => 'job_order.home']);
+    $routes->post('list', 'Admin\JobOrder::list', ['as' => 'job_order.list']);
+    $routes->post('save', 'Admin\JobOrder::save', ['as' => 'job_order.save']);
+    $routes->post('fetch', 'Admin\JobOrder::fetch', ['as' => 'job_order.fetch']);
+    $routes->post('delete', 'Admin\JobOrder::delete', ['as' => 'job_order.delete']);
+    $routes->post('status', 'Admin\JobOrder::change', ['as' => 'job_order.status']);
+});
+/* ADMIN */
 
 /***************** PHASE 2 *****************/
 
