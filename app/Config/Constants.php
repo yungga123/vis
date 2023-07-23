@@ -123,10 +123,14 @@ defined('AAL_USER')         || define('AAL_USER', 'user');
 
 // Actions - add new here
 define('ACTIONS', [
-    'VIEW'      => 'View',
-    'ADD'       => 'Add',
-    'EDIT'      => 'Edit',
-    'DELETE'    => 'Delete',
+    'VIEW'          => 'View',
+    'ADD'           => 'Add',
+    'EDIT'          => 'Edit',
+    'DELETE'        => 'Delete',
+    'ACCEPT'        => 'Accept',
+    'DISCARD'       => 'Discard',
+    'FILE'          => 'File',
+    'RESCHEDULE'    => 'Reschedule',
 ]);
 
 // Roles - No need to add new roles here
@@ -168,6 +172,7 @@ define('MODULES', [
     'SETTINGS_ROLES'        => 'Roles',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
     'PURCHASING_SUPPLIERS'  => 'Suppliers',
+    'ADMIN_JOB_ORDER'       => 'Job Order',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -188,4 +193,5 @@ define('MODULE_CODES', [
     'roles'                 => 'SETTINGS_ROLES',
     'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
     'suppliers'             => 'PURCHASING_SUPPLIERS',
+    'job_order'             => 'ADMIN_JOB_ORDER',
 ]);
