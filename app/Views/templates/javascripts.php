@@ -54,9 +54,17 @@
 
 <!-- Load custom js -->
 <script src="<?=base_url('assets')?>/custom/js/functions.js"></script>
+<!-- Load routes options -->
 <?php if (isset($routes) && !empty($routes)): ?>
 		<script type="text/javascript">
       var router = JSON.parse('<?= $routes ?>');
+    </script>
+<?php endif; ?>
+<!-- Load php to js options - data that need to pass from php to js -->
+<?php if (isset($php_to_js_options) && !empty($php_to_js_options)): ?>
+		<script type="text/javascript">
+      // php to js options
+      var $pjOptions = JSON.parse('<?= $php_to_js_options ?>');
     </script>
 <?php endif; ?>
 <?php

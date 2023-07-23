@@ -201,7 +201,7 @@ function swalNotifConfirm(
 	if (message === "delete") {
 		message = "Are you really sure you want to delete this?";
 		confirmText = "Yes, delete it!";
-	} else if ((message = "continue")) {
+	} else if (message === "continue") {
 		message = "Are you really sure you want to continue?";
 		color = "#007bff";
 	}
@@ -442,7 +442,7 @@ function loadDataTable(
 			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
 		processing: true,
-		scrollX: true,
+		// scrollX: true,
 		autoWidth: false,
 		columnDefs: columnDefs,
 		order: order,
@@ -492,6 +492,11 @@ function loadDataTable(
 				"custom-select-sm form-control-sm"
 			);
 			$(".dt-buttons").removeClass("btn-group");
+
+			// To fix not align header and body
+			$("#" + table).wrap(
+				"<div style='overflow: auto; width: 100%; position: relative;'></div>"
+			);
 		},
 	});
 }
@@ -563,6 +568,14 @@ function setOptionValue(selector, val) {
 	$(`${selector}`).val(val).change();
 }
 
+/* To format options for select2 */
+function formatOptionsForSelect2(options) {
+	return $.map(options, (val, i) => ({
+		id: i,
+		text: strCapitalize(val),
+	}));
+}
+
 /* Check if value is empty - from stackoverflow */
 function isEmpty(value) {
 	return (
@@ -618,4 +631,42 @@ function isToastrLoaded() {
 /* Check if is swal is loaded */
 function isSwalLoaded() {
 	return window.Swal != undefined;
+}
+
+/* Source: https://flexiple.com/javascript/javascript-capitalize-first-letter/ */
+/* Capitalize first letter of string/word */
+function strCapitalize(str) {
+	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/* Transform string to upper case */
+function strUpper(str) {
+	return str.toUpperCase();
+}
+
+/* Transform string to lower case */
+function strLower(str) {
+	return str.toLowerCase();
+}
+
+/* Transform every words to upper case */
+function strUpperWords(str) {
+	const arr = str.split(" ");
+
+	for (var i = 0; i < arr.length; i++) {
+		arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+	}
+
+	return arr.join(" ");
+}
+
+/* Transform every words to lower case */
+function strUpperWords(str) {
+	const arr = str.split(" ");
+
+	for (var i = 0; i < arr.length; i++) {
+		arr[i] = arr[i].charAt(0).toLowerCase() + arr[i].slice(1);
+	}
+
+	return arr.join(" ");
 }
