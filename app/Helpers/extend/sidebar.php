@@ -59,7 +59,7 @@ if (! function_exists('get_nav_menus'))
             'ADMIN'          => [
                 'name'      => 'Admin',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('job-orders')),
+                'urls'      => (url_is('job-orders') || url_is('schedules')),
                 'icon'      => 'fas fa-users-cog',
             ],
         ];
@@ -159,6 +159,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('job_order.home'),
                 'class'     => (url_is('job-orders') ? 'active' : ''),
                 'icon'      => 'fas fa-user-md',
+            ],
+            'ADMIN_SCHEDULES'   => [
+                'menu'      => 'ADMIN', // Leave empty if none
+                'name'      => get_modules('ADMIN_SCHEDULES'),
+                'url'       => url_to('schedule.home'),
+                'class'     => (url_is('schedules') ? 'active' : ''),
+                'icon'      => 'fas fa-calendar-alt',
             ],
         ];
 

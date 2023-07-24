@@ -243,6 +243,14 @@ $routes->group('job-orders', ['filter' => 'checkauth'], static function ($routes
     $routes->post('delete', 'Admin\JobOrder::delete', ['as' => 'job_order.delete']);
     $routes->post('status', 'Admin\JobOrder::change', ['as' => 'job_order.status']);
 });
+
+// SCHEDULES
+$routes->group('schedules', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Admin\Schedule::index', ['as' => 'schedule.home']);
+    $routes->get('list', 'Admin\Schedule::list', ['as' => 'schedule.list']);
+    $routes->post('save', 'Admin\Schedule::save', ['as' => 'schedule.save']);
+    $routes->post('delete', 'Admin\Schedule::delete', ['as' => 'schedule.delete']);
+});
 /* ADMIN */
 
 /***************** PHASE 2 *****************/

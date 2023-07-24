@@ -172,7 +172,8 @@ define('MODULES', [
     'SETTINGS_ROLES'        => 'Roles',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
     'PURCHASING_SUPPLIERS'  => 'Suppliers',
-    'ADMIN_JOB_ORDER'       => 'Job Order',
+    'ADMIN_JOB_ORDER'       => 'Job Orders',
+    'ADMIN_SCHEDULES'       => 'Schedules',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -194,4 +195,5 @@ define('MODULE_CODES', [
     'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
     'suppliers'             => 'PURCHASING_SUPPLIERS',
     'job_order'             => 'ADMIN_JOB_ORDER',
+    'schedules'             => 'ADMIN_SCHEDULES',
 ]);
