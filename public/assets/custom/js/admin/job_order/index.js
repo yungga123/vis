@@ -68,6 +68,9 @@ $(document).ready(function () {
 		clearAlertInForm(elems);
 	});
 
+	/* Initialize employee_id select2 */
+	select2Init("#employee_id_status", "Select person incharge");
+
 	/* Form for saving job order */
 	formSubmit($("#" + form), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
@@ -142,11 +145,13 @@ function filterData(reset = false) {
 function loadQDetails(data) {
 	let html = "",
 		id = "",
-		quotation = "";
+		quotation = "",
+		employee_id = "";
 
 	if (data.quotation) {
 		id = data.id;
 		quotation = data.quotation;
+		employee_id = data.employee_id;
 		html = `
 			<h5 class="text-center">Details</h5>
 			<table class="table table-bordered">
@@ -176,6 +181,8 @@ function loadQDetails(data) {
 
 	$("#tasklead_id").val(id);
 	$("#quotation").val(quotation);
+	$("#employee_id").val(employee_id);
+
 	$(".q-details").html(html);
 }
 
@@ -213,6 +220,7 @@ function edit(id) {
 
 				setTimeout(() => {
 					$("#tasklead_id").val(res.data.tasklead_id);
+					$("#employee_id").val(res.data.employee_id);
 					$("#quotation").val(res.data.quotation);
 				}, 500);
 
@@ -264,7 +272,7 @@ function status(id, changeTo, status) {
 			swalMsg += `<div>This JO will be reverted back to ${changeTo}!</div>`;
 		}
 
-		const data = { id: id, status: status };
+		const data = { id: id, status: changeTo };
 
 		swalNotifConfirm(
 			function () {
@@ -297,7 +305,7 @@ function status(id, changeTo, status) {
 		$.post(router.job_order.fetch, { id: id, status: true })
 			.then((res) => {
 				$("#date_committed_status").val(res.data.date_committed);
-				$("#manager").val(res.data.manager);
+				setSelect2Selection("#employee_id_status", res.data.employee_id);
 				$("#type").val(res.data.type);
 				$("#remarks").val(res.data.remarks);
 			})

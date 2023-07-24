@@ -161,6 +161,7 @@ class JobOrder extends BaseController
             $id         = $this->request->getVar('id');
             $inputs = [
                 'tasklead_id'       => $this->request->getVar('tasklead_id'),
+                'employee_id'       => $this->request->getVar('employee_id'),
                 'quotation'         => $this->request->getVar('quotation'),
                 'work_type'         => $this->request->getVar('work_type'),
                 'comments'          => $this->request->getVar('comments'),
@@ -220,7 +221,7 @@ class JobOrder extends BaseController
                     job_orders.remarks,
                     job_orders.date_committed,
                     task_lead_booked.tasklead_type AS type,
-                    task_lead_booked.employee_name AS manager,
+                    task_lead_booked.employee_id,
                 ';                
                 $record     = $this->_model->getJobOrders($id, $columns);
             } else {
@@ -295,6 +296,7 @@ class JobOrder extends BaseController
             $inputs = ['status' => $status];
 
             if ($this->request->getVar('is_form')) { 
+                $inputs['employee_id']      = $this->request->getVar('employee_id');
                 $inputs['date_committed']   = $this->request->getVar('date_committed');
                 $inputs['remarks']          = $this->request->getVar('remarks');
             }

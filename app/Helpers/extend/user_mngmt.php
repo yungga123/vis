@@ -193,3 +193,23 @@ if (! function_exists('get_current_user_avatar'))
         return $profile->getProfileImg(session('gender'));
 	}
 }
+
+if (! function_exists('get_employees'))
+{
+	/**
+	 * Get employees - default columns (id, name) only
+	 * @param int|null $id [optional]
+	 * @param string|array $columns [optional]
+	 */
+	function get_employees(int $id = null, string|array $columns = []): array 
+	{
+		$columns 	= !empty($columns) ? $columns : "employee_id, CONCAT(firstname,' ',lastname) AS employee_name";
+		$model 		= new \App\Models\EmployeesModel();
+        $builder 	= $model->select($columns);
+
+		$builder->where('employee_id !=', 'SOFTWAREDEV');
+		$builder->orderBy('employee_name ASC');
+		
+		return $id ? $builder->find() : $builder->findAll();
+	}
+}
