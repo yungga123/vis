@@ -531,7 +531,7 @@ function passwordShowHideInit(
 }
 
 /*
- * Small functions
+ * Initializations and others
  */
 
 /* Initialize select2 */
@@ -576,6 +576,119 @@ function formatOptionsForSelect2(options) {
 	}));
 }
 
+/**
+ * Initialize date range picker
+ * with custom callbacks for on apply and cancel events
+ *
+ * @param {string} selector 			- id or class name with '#' or '.' identifier
+ * @param {object} options    			- options for date range picker
+ * @param {function} onApplyCallback  	- on apply callback
+ * @param {function} onCancelCallback 	- on cancel callback
+ */
+function initDateRangePicker(
+	selector,
+	options,
+	onApplyCallback,
+	onCancelCallback
+) {
+	options = options || {};
+	$(selector).daterangepicker(options);
+	$(selector).on("apply.daterangepicker", function (ev, picker) {
+		if (!picker.autoUpdateInput) {
+			$(this).val(
+				picker.startDate.format(picker.locale.format) +
+					" - " +
+					picker.endDate.format(picker.locale.format)
+			);
+		}
+
+		if (isFunction(onApplyCallback)) onApplyCallback(ev, picker);
+	});
+	$(selector).on("cancel.daterangepicker", function (ev, picker) {
+		$(this).val("");
+		if (isFunction(onCancelCallback)) onCancelCallback(ev, picker);
+	});
+}
+
+/**
+ * Initialize full calendar for schedule
+ *
+ * @param {string} elemName 		id or class name without identifier
+ * @param {object} eventsData		calendar event data [object | json]
+ * @param {object} options   		set other options for the calendar
+ * @returns {object}				_calendar variable object
+ */
+function initFullCalendar(elemName, eventsData, options) {
+	const calendarEl = document.getElementById(elemName);
+
+	const headerToolbar = inObject(options, "headerToolbar")
+		? options.headerToolbar
+		: {
+				left: "prev,next today",
+				center: "title",
+				right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+		  };
+
+	// Check if has eventPopHover callback otherwise call the default
+	const eventPopHover =
+		inObject(options, "eventPopHover") && isFunction(options.eventPopHover)
+			? options.eventPopHover
+			: (info) => {
+					$(info.el).popover({
+						container: "body",
+						placement: "top",
+						trigger: "hover",
+						title: info.event.title,
+						content: info.event.extendedProps.description,
+					});
+			  };
+
+	// Check if has eventClick callback otherwise call the default
+	const eventClick =
+		inObject(options, "eventClick") && isFunction(options.eventClick)
+			? options.eventClick
+			: (info) => {
+					// Please don't change the 'fcEventClick' function name
+					// You need to define fcEventClick function in your module
+					// to get the info from the event
+					if (isFunctionExist(fcEventClick)) fcEventClick(info);
+			  };
+
+	var _calendar = new FullCalendar.Calendar(calendarEl, {
+		themeSystem: "bootstrap",
+		initialView: "dayGridMonth",
+		displayEventTime: true,
+		editable: true,
+		height: "auto",
+		headerToolbar: headerToolbar,
+		views: {
+			dayGridMonth: { buttonText: "Month" },
+			timeGridWeek: { buttonText: "Week" },
+			timeGridDay: { buttonText: "Day" },
+			listMonth: { buttonText: "List" },
+		},
+		events: eventsData,
+		dayMaxEvents: true, // allow "more" link when too many events
+		navLinks: true,
+		eventDidMount: eventPopHover,
+		eventClick: eventClick,
+	});
+
+	_calendar.render();
+
+	// You can use the return object to refresh
+	// or add additional methods or functions to the calendar
+	return _calendar;
+}
+
+/* Refreshing Full Calendar */
+function refreshFullCalendar(elem) {
+	elem.refetchEvents();
+}
+
+/*
+ * More generic functions
+ */
 /* Check if value is empty - from stackoverflow */
 function isEmpty(value) {
 	return (
@@ -611,11 +724,22 @@ function isString(param) {
 
 /* Check if Object key exist */
 function inObject(obj, key) {
+	if (isEmpty(obj)) return false;
 	return isObject(obj) ? Object.prototype.hasOwnProperty.call(obj, key) : false;
 
 	/* Another methods */
 	// return (key in obj); // Using 'in'
 	// return obj.hasOwnProperty(key); // Same as above
+}
+
+/* Check if param is function */
+function isFunction(param) {
+	return typeof param === "function";
+}
+
+/* Check if function exist */
+function isFunctionExist(param) {
+	return isFunction(param);
 }
 
 /* Check if param is Object or not - from stackoverflow */

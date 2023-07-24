@@ -142,3 +142,53 @@ if (! function_exists('get_quotation_type'))
         return $param ? $options[$param] : $options;
 	}
 }
+
+if (! function_exists('get_schedule_type'))
+{
+    /**
+     * Get schedule type of Schedule module
+     */
+	function get_schedule_type(string $param = ''): string|array
+	{
+        $options = [
+            'installation'  => [
+                'text'      => 'Installation',
+                'color'     => '#0073b7', //Blue
+            ],
+            'service'       => [
+                'text'      => 'Service',
+                'color'     => '#f39c12', //yellow
+            ],
+            'supplies'      => [
+                'text'      => 'Supplies',
+                'color'     => '#3c8dbc', //Primary (light-blue)
+            ],
+            'payables'      => [
+                'text'      => 'Payables',
+                'color'     => '#f56954', //red
+            ],
+            'holiday'       => [
+                'text'      => 'Holiday/Event',
+                'color'     => '#00a65a', //Success (green)
+            ],
+            'meetings'      => [
+                'text'      => 'Meetings',
+                'color'     => '#adb5bd', //Gray
+            ],
+            'deployment'      => [
+                'text'      => 'Deployment',
+                'color'     => '#00c0ef' //Info (aqua)
+            ],
+            'project'       => [
+                'text'      => 'Project',
+                'color'     => '#6610f2', //Indigo
+            ],
+            'turnover'      => [
+                'text'      => 'Project Turn-Over',
+                'color'     => '#3d9970' //Olive
+            ],
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}

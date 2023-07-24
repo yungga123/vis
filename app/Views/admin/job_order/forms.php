@@ -24,7 +24,7 @@
                         <select class="custom-select select2" id="select2Quotation" style="width: 100%;">
                         </select>
                         <div class="d-none" id="orig_qn"></div>
-                        <small id="alert_quotation" class="text-danger">sdfsdfsdfsd</small>
+                        <small id="alert_quotation" class="text-danger"></small>
                     </div>
                     <div class="form-group q-details"></div>
                     <div class="row">

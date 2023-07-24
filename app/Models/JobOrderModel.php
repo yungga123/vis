@@ -76,7 +76,7 @@ class JobOrderModel extends Model
     protected $beforeInsert   = [];
     protected $afterInsert    = [];
     protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
+    protected $afterUpdate    = ['addToScheduleAfterJOAccepted'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
@@ -139,6 +139,33 @@ class JobOrderModel extends Model
 
         if ($join) $this->_join($builder);
         return $id ? $builder->find($id) : $builder->findAll();
+    }
+
+    // After JO accepted, add corresponding new record to schedules table
+    public function addToScheduleAfterJOAccepted(array $data)
+    {
+        if ($data['result']) {
+            if ($data['data']['status'] === 'accepted') {
+                $id         = $data['id'][0];
+                $columns    = "
+                    {$this->tableJoined}.customer_name AS client,
+                    {$this->tableJoined}.tasklead_type AS type,
+                    {$this->table}.comments,
+                ";
+                $job_order  = $this->getJobOrders($id, $columns);
+
+                $this->db->table('schedules')->insert([
+                    'job_order_id'  => $id,
+                    'title'         => $job_order['client'],
+                    'description'   => $job_order['comments'],
+                    'type'          => $job_order['type'],
+                    'start'         => $data['data']['date_committed'],
+                    'created_by'    => session('username'),
+                ]);
+            }
+        }
+
+        return $data;
     }
 
     // For dataTables
