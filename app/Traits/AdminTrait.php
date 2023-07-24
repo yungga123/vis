@@ -39,4 +39,19 @@ trait AdminTrait
             'total'  => $total
         ];     
     }
+
+    /* Schedule type legend */
+    public function scheduleTypeLegend()
+    {
+        $html   = '';
+        $types  = get_schedule_type();
+
+        foreach ($types as $key => $val) {
+            $html .= <<<EOF
+                <div class="external-event text-white" style="background-color: {$val['color']};">{$val['text']}</div>
+            EOF;
+        }
+
+        return $html;
+    }
 }

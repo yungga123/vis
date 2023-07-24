@@ -43,3 +43,11 @@ form.with-label-indicator .form-group label.required::after {
 .dataTables_wrapper .dataTables_filter input {
 	width: 90% !important;
 }
+
+.fc .fc-header-toolbar .fc-today-button {
+	text-transform: capitalize;
+}
+
+.external-event {
+	cursor: inherit;
+}
