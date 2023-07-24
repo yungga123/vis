@@ -535,9 +535,12 @@ function passwordShowHideInit(
  */
 
 /* Initialize select2 */
-function select2Init(selector) {
+function select2Init(selector, placeholder) {
 	selector = selector || ".select2";
-	$(selector).select2();
+	$(selector).select2({
+		placeholder: placeholder || "Select an option",
+		allowClear: true,
+	});
 }
 
 /* Check if select2 was initialized */

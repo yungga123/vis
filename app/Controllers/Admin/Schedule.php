@@ -172,7 +172,7 @@ class Schedule extends BaseController
                         'borderColor'       => $color,
                         'extendedProps'     => [
                             'description'   => $val['description'],
-                            'type'          => $val['type'],
+                            'type'          => strtolower($val['type']),
                             'typeText'      => $type['text'],
                         ],
                     ]; 

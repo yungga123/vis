@@ -9,6 +9,7 @@ trait AdminTrait
     {
         $fields = $fields ? $fields : '
             id,
+            employee_id,
             quotation_num as quotation,
             employee_name as manager,
             customer_name as client,

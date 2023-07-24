@@ -189,6 +189,6 @@ if (! function_exists('get_schedule_type'))
             ],
         ];
 
-        return $param ? $options[$param] : $options;
+        return $param ? $options[strtolower($param)] : $options;
 	}
 }
