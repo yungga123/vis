@@ -20,6 +20,7 @@
                         <input type="hidden" name="id" id="job_order_id" readonly>
                         <input type="hidden" name="tasklead_id" id="tasklead_id" readonly>
                         <input type="hidden" name="quotation" id="quotation" readonly>
+                        <input type="hidden" name="employee_id" id="employee_id" readonly>
                         <label class="required" for="select2Quotation">Quotation Number</label>
                         <select class="custom-select select2" id="select2Quotation" style="width: 100%;">
                         </select>
@@ -110,8 +111,14 @@
                             <small id="alert_date_committed_status" class="text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label for="manager">Manager / Incharge</label>
-                            <input type="text" name="manager" id="manager" class="form-control" readonly>
+                            <label class="required" for="employee_id">Manager / Incharge</label>
+                            <select class="custom-select select2" name="employee_id" id="employee_id_status" placeholder="Please a manager" style="width: 100%;">
+                                <?php if (! empty(get_employees())): ?>
+                                <?php foreach (get_employees() as $val): ?>
+                                    <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
+                                <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="type">Type</label>

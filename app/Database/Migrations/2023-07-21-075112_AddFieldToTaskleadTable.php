@@ -22,6 +22,6 @@ class AddFieldToTaskleadTable extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn(self::TABLE, 'status');
+        $this->forge->dropColumn(self::TABLE, 'tasklead_type');
     }
 }

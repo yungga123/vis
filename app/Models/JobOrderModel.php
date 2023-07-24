@@ -18,6 +18,7 @@ class JobOrderModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'tasklead_id',
+        'employee_id',
         'status',
         'work_type',
         'comments',
@@ -54,10 +55,6 @@ class JobOrderModel extends Model
             'rules' => 'required|date',
             'label' => 'date requested'
         ],
-        'date_committed' => [
-            'rules' => 'required|date',
-            'label' => 'date committed'
-        ],
         'date_reported' => [
             'rules' => 'required|date',
             'label' => 'date reported'
@@ -88,11 +85,14 @@ class JobOrderModel extends Model
         $columns = "
             {$this->table}.id,
             {$this->table}.tasklead_id,
+            {$this->table}.employee_id,
             {$this->table}.status,
             {$this->tableJoined}.quotation_num AS quotation,
             {$this->tableJoined}.tasklead_type AS type,
             {$this->tableJoined}.customer_name AS client,
-            {$this->tableJoined}.employee_name AS manager,
+            (SELECT CONCAT(emp.firstname,' ',emp.lastname) AS employee_name 
+                FROM employees AS emp WHERE emp.employee_id = {$this->table}.employee_id
+            ) AS manager,
             {$this->table}.work_type,
             {$this->table}.comments,            
             {$this->table}.warranty,
@@ -158,8 +158,9 @@ class JobOrderModel extends Model
                     'job_order_id'  => $id,
                     'title'         => $job_order['client'],
                     'description'   => $job_order['comments'],
-                    'type'          => $job_order['type'],
+                    'type'          => strtolower($job_order['type']),
                     'start'         => $data['data']['date_committed'],
+                    'end'           => $data['data']['date_committed'] .' 23:00', // set to 11pm
                     'created_by'    => session('username'),
                 ]);
             }
