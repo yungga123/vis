@@ -535,12 +535,23 @@ function passwordShowHideInit(
  */
 
 /* Initialize select2 */
-function select2Init(selector, placeholder) {
+function select2Init(selector, placeholder, data) {
 	selector = selector || ".select2";
 	$(selector).select2({
 		placeholder: placeholder || "Select an option",
 		allowClear: true,
+		data: data || {},
 	});
+}
+
+/* Re-initialize select2 and new selection */
+function select2Reinit(select, placeholder, newData) {
+	$(select).html("");
+	$(select).select2("destroy");
+
+	select2Init(select, placeholder, newData);
+
+	$(select).trigger("change");
 }
 
 /* Check if select2 was initialized */

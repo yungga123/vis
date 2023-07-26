@@ -73,6 +73,9 @@ class Permission extends BaseController
                 'delete'    => url_to('permission.delete'),
             ],
         ]);
+        $data['php_to_js_options'] = json_encode([
+            'actions'    => get_actions(null, true),
+        ]);
 
         return view('settings/permission/index', $data);
     }

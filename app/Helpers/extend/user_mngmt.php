@@ -49,7 +49,7 @@ if (! function_exists('get_roles'))
 	/**
 	 * Get role / access level list
 	 */
-	function get_roles(string|null $param = null): string|array
+	function get_roles(string $param = null): string|array
 	{
 		$model = new \App\Models\RolesModel();
         $roles = $model->getRoles();
@@ -60,7 +60,7 @@ if (! function_exists('get_roles'))
 		    return $param ? $roles[strtoupper($param)] : $roles;
         }
         
-        return false;
+        return [];
 	}
 }
 
@@ -86,11 +86,18 @@ if (! function_exists('get_actions'))
 	/**
 	 * Get the action list
 	 */
-	function get_actions(string|null $param = null, bool $in_out = false): string|array
+	function get_actions(string $param = null, bool $withOthers = false): string|array
 	{
 		$actions = ACTIONS;
 
-        if ($in_out) $actions += ['ITEM_IN' => 'Item In', 'ITEM_OUT' => 'Item Out'];
+		if ($param && !in_array($param, $actions)) {
+			$others = array_values($actions['OTHERS']);
+			for ($i=0; $i <= count($others); $i++) { 
+				if (isset($others[$i][$param])) return $others[$i][$param];
+			}
+		}
+
+        if (! $withOthers) unset($actions['OTHERS']);
 
 		return $param ? $actions[strtoupper($param)] : $actions;
 	}

@@ -1,4 +1,4 @@
-var table, modal, form, elems;
+var table, modal, form, elems, $actions, $permission, $initialPermissions;
 
 $(document).ready(function () {
 	table = "permission_table";
@@ -7,8 +7,9 @@ $(document).ready(function () {
 	editRoute = $("#edit_url").val();
 	removeRoute = $("#remove_url").val();
 	elems = ["role_code", "module_code", "permissions"];
-
-	select2Init("#permissions");
+	$actions = $pjOptions.actions;
+	$permission = "#permissions";
+	$initialPermissions = initialPermissions();
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -21,8 +22,10 @@ $(document).ready(function () {
 		clearAlertInForm(elems);
 	});
 
+	select2Init($permission, "Select Permissions", $initialPermissions);
+
 	$("#module_code").on("change", function () {
-		changePermissionsOptions($(this).val() === "INVENTORY");
+		otherPermissions($(this).val());
 	});
 
 	/* Load dataTable */
@@ -105,24 +108,38 @@ function remove(id) {
 	);
 }
 
-/* For changing permissions options */
-function changePermissionsOptions(withItemInAndOut = false) {
-	let options = "",
-		select = "#permissions";
+/* Initialize permission select2 */
+function initPermissionSelect2(data) {
+	$($permission)
+		.select2({
+			data: data,
+			placeholder: "Select Permission",
+			allowClear: true,
+		})
+		.trigger("change");
+}
 
-	$.each(
-		ACTIONS,
-		(key, val) => (options += `<option value="${key}">${val}</option>`)
-	);
+/* Populate initial permissions options */
+function initialPermissions() {
+	const options = $.map($actions, (action, key) => {
+		// Not include the OTHERS options yet
+		if (key !== "OTHERS") return { id: key, text: action };
+	});
 
-	if (withItemInAndOut) {
-		options += `
-			<option value="ITEM_IN">Item In</option>
-			<option value="ITEM_OUT">Item Out</option>
-		`;
+	return options;
+}
+
+/* Check and populate other permissions options */
+function otherPermissions(val) {
+	let data = $initialPermissions;
+
+	if (val && inObject($actions.OTHERS, val)) {
+		const options = $.map($actions.OTHERS[val], (text, key) => {
+			// Include the OTHERS options
+			return { id: key, text: text };
+		});
+		data = $initialPermissions.concat(options);
 	}
 
-	if (isSelect2Initialized(select)) $(select).select2("destroy");
-	$(select).html("").append(options);
-	$(select).select2().val("").trigger("change");
+	select2Reinit($permission, "Select Permissions", data);
 }
