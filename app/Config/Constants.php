@@ -127,10 +127,25 @@ define('ACTIONS', [
     'ADD'           => 'Add',
     'EDIT'          => 'Edit',
     'DELETE'        => 'Delete',
-    'ACCEPT'        => 'Accept',
-    'DISCARD'       => 'Discard',
-    'FILE'          => 'File',
-    'RESCHEDULE'    => 'Reschedule',
+    'OTHERS'        => [
+        // Add here for specific permissions for specific module
+        // Follow the format below
+        // 'MODULE_NAME' => [
+        //     'ACTION_NAME' => 'Action Name',
+        //     'ACTION_NAME' => 'Action Name',
+        //     'ACTION_NAME' => 'Action Name',
+        // ],
+        'INVENTORY'   => [
+            'ITEM_IN'       => 'Item In',
+            'ITEM_OUT'      => 'Item Out',
+        ],
+        'ADMIN_JOB_ORDER'   => [
+            'ACCEPT'        => 'Accept',
+            'DISCARD'       => 'Discard',
+            'FILE'          => 'File',
+            'RESCHEDULE'    => 'Reschedule',
+        ],
+    ],
 ]);
 
 // Roles - No need to add new roles here
