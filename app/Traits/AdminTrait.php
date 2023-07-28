@@ -105,8 +105,8 @@ trait AdminTrait
                         <tr>
                             <th>Title</th>
                             <th>Description</th>
-                            <th>Start</th>
-                            <th>End</th>
+                            <th>Start Date & Time</th>
+                            <th>End Date & Time</th>
                         </tr>
                     </thead>
                     <tbody>{$tbody}</tbody>

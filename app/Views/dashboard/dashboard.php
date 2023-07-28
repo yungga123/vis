@@ -26,7 +26,7 @@
 							</div>
 							<div class="col-md-9 col-sm-12">                    
 								<div class="card">
-									<div class="card-body">
+									<div class="card-body p-0">
 										<?= $schedules ?>
 									</div>
 								</div>
