@@ -24,9 +24,6 @@ if (! function_exists('get_nav_menus'))
 	function get_nav_menus(string $param): array
 	{
         $is_sales = (
-            url_is('customers') || 
-            url_is('customers/commercial') || 
-            url_is('customers/residential') || 
             url_is('tasklead') || 
             url_is('sales_manager') || 
             url_is('sales_manager_indv')
@@ -62,6 +59,12 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('job-orders') || url_is('schedules')),
                 'icon'      => 'fas fa-users-cog',
             ],
+            'CLIENTS'          => [
+                'name'      => 'Clients',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential')),
+                'icon'      => 'fas fa-clipboard-list',
+            ],
         ];
 
         return $menu[$param];
@@ -91,14 +94,14 @@ if (! function_exists('setup_modules'))
                 'icon'      => 'fas fa-user-clock',
             ],
             'CUSTOMERS_COMMERCIAL'             => [
-                'menu'      => 'SALES', // Leave empty if none
+                'menu'      => 'CLIENTS', // Leave empty if none
                 'name'      => get_modules('CUSTOMERS_COMMERCIAL'),
                 'url'       => url_to('customervt.home'),
                 'class'     => (url_is('customers/commercial') ? 'active' : ''),
                 'icon'      => 'far fa-address-card',
             ],
             'CUSTOMERS_RESIDENTIAL'             => [
-                'menu'      => 'SALES', // Leave empty if none
+                'menu'      => 'CLIENTS', // Leave empty if none
                 'name'      => get_modules('CUSTOMERS_RESIDENTIAL'),
                 'url'       => url_to('customersresidential.home'),
                 'class'     => (url_is('customers/residential') ? 'active' : ''),

@@ -3,9 +3,12 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-
+use App\Traits\AdminTrait;
 class Dashboard extends BaseController
 {
+    /* Declare trait here to use */
+    use AdminTrait;
+
     /**
      * Display the index view
      *
@@ -16,7 +19,9 @@ class Dashboard extends BaseController
         $data['title']          = 'Dashboard';
         $data['page_title']     = 'Dashboard';
         $data['exclude_toastr'] = true;
-        $data['modules']        = $this->moduleBoxMenu();
+        $data['modules']        = $this->_moduleBoxMenu();
+        $data['type_legend']    = $this->scheduleTypeLegend();
+        $data['schedules']      = $this->getSchedulesForToday(true);
 
         return view('dashboard/dashboard', $data);
     }
@@ -26,25 +31,10 @@ class Dashboard extends BaseController
      *
      * @return string (html)
      */
-    public function moduleBoxMenu()
+    public function _moduleBoxMenu()
     {
-        $counter    = 0;
-        $html       = '';
         $modules    = $this->modules;
-        $bgColor    = [
-            'bg-info', 
-            'bg-primary', 
-            'bg-warning', 
-            'bg-danger', 
-            'bg-secondary', 
-        ];
-
-        $hr_html        = '';
-        $sales_html     = '';
-        $clients_html   = '';
-        $settings_html  = '';
-        $inventory_html = '';
-        $client_modules = ['CUSTOMERS_COMMERCIAL', 'CUSTOMERS_RESIDENTIAL'];
+        $arr        = [];
 
         if (! empty($modules) && is_array($modules)) {
             // Sort modules ascending
@@ -57,6 +47,7 @@ class Dashboard extends BaseController
                 
                 if ($val !== 'DASHBOARD' && in_array($val, $setup_modules)) {
                     $module = setup_modules($val);
+                    $menu   = empty($module['menu']) ? $val : $module['menu'];
 
                     // Add module card menu
                     $card = <<<EOF
@@ -69,56 +60,44 @@ class Dashboard extends BaseController
                         </div>
                     EOF;
 
-                    switch ($module['menu']) {
-                        case 'HUMAN_RESOURCE':
-                            $hr_html .= $card;
-                            break;
-                        case 'SALES':
-                            if (in_array($val, $client_modules)) {
-                                $clients_html .= $card;
-                            } else {
-                                $sales_html .= $card;
-                            }
-                            break;
-                        case 'SETTINGS':
-                            $settings_html .= $card;
-                        default:
-                            if ($val === 'INVENTORY') $inventory_html .= $card;
-                        break;
-                    }
-
-                    $counter++;
+                    // Store in array based on menu
+                    $arr[$menu][] = $card;
                 }
             }
-        } else {
-            $html = '<h2>No module card to be displayed!</h2>';
         }
 
-        return (! empty($html) && $counter === 0) ? $html : [
-            'hr_modules'        => $this->cardHtml($hr_html, 'Human Resource', 'info'),
-            'clients_modules'   => $this->cardHtml($clients_html, 'Clients', 'primary'),
-            'sales_modules'     => $this->cardHtml($sales_html, 'Sales', 'success'),
-            'inventory_modules' => $this->cardHtml($inventory_html, 'Inventory', 'secondary'),
-            'settings_modules'  => $this->cardHtml($settings_html, 'Settings', 'danger'),
-        ];
+        return $this->_cardHtml($arr);
     }
 
-    private function cardHtml($html, $title, $type)
+    /**
+     * Get the whole card box html
+     *
+     * @return string (html)
+     */
+    private function _cardHtml($arr)
     {
-        if (! empty($html)) {
-            $html = <<<EOF
-                <div class="col-4">
-                    <div class="card card-{$type} card-outline">
-                        <div class="card-header">
-                            <h5 class="card-title">{$title}</h5>
+        $html = '';    
+
+        if (!empty($arr)) {
+            $modules = get_modules();
+
+            foreach ($arr as $key => $val) {
+                $box    = implode('', $val);
+                $title  = isset($modules[$key]) ? get_modules($key) : get_nav_menus($key)['name'];
+                $html   .= <<<EOF
+                    <div class="col-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">{$title}</h5>
+                            </div>
+                            <div class="card-body">
+                                {$box}
+                            </div>
                         </div>
-                        <div class="card-body">
-                            $html
-                        </div>
-                    </div>
-                </div>	
-            EOF;
-        }
+                    </div>	
+                EOF;
+           }
+        } else $html = '<h2>No module card to be displayed!</h2>';
 
         return $html;
     }

@@ -71,4 +71,13 @@ class ScheduleModel extends Model
         $builder = $this->select($columns);
         return $id ? $builder->find($id) : $builder->findAll();
     }
+
+    // Get the current schedules
+    public function getSchedulesForToday()
+    {
+        $where      = "(start BETWEEN '".date("Y-m-d")." 00:00:00' AND '".date("Y-m-d")." 23:59:59') OR '".date("Y-m-d")." 00:00:00' BETWEEN start AND end";
+        $builder    = $this->select('title, description, type, start, end');
+        $builder->where($where);
+        return $builder->findAll();
+    }
 }
