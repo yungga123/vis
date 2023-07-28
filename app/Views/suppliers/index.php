@@ -35,6 +35,5 @@
 </div>
 
 <?= $this->include('suppliers/modal') ?>
-<?= $this->include('suppliers_dropdown/modal') ?>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>

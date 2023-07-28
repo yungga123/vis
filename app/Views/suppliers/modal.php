@@ -29,10 +29,14 @@
                             <div class="form-group">
                                 <label for="supplier_type">Type of Supplier</label>
                                 <select type="select" name="supplier_type" id="supplier_type" class="form-control">
-                                    
+                                    <option value="">---Please Select---</option>
+                                    <option>Direct</option>
+                                    <option>Indirect</option>
+                                    <option>Tools Supplier</option>
+                                    <option>Office Assets</option>
+                                    <option>Others</option>
                                 </select>
                                 <small id="alert_supplier_type" class="text-muted"></small>
-                                <span><a href="#" onclick="showDropdownModal()">Add here!</a> to add type of supplier selection. <a href="<?= url_to('suppliers.dropdown.home') ?>">Go here!</a> to manage the dropdowns.</span>
                                 
                             </div>
 
@@ -57,8 +61,6 @@
                                 <small id="alert_product" class="text-muted"></small>
                             </div>
 
-
-
                         </div>
 
                         <!-- Col -->
@@ -74,7 +76,13 @@
                             <!-- Form Text -->
                             <div class="form-group">
                                 <label for="payment_terms">Payment Terms</label>
-                                <input type="text" name="payment_terms" id="payment_terms" class="form-control" placeholder="Enter here...">
+                                <select type="text" name="payment_terms" id="payment_terms" class="form-control">
+                                    <option value="">---Please Select---</option>
+                                    <option>Cash</option>
+                                    <option>Check</option>
+                                    <option>Online Payment</option>
+                                    <option>Others</option>
+                                </select>
                                 <small id="alert_payment_terms" class="text-muted"></small>
                             </div>
 

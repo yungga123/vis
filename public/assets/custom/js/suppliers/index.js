@@ -24,7 +24,6 @@ $(document).ready(function(){
 		$(`#${modal} .modal-title`).text("Add New Supplier");
 		$(`#${form}`)[0].reset();
 		$("#supplier_id").val("");
-		fetchDropdowns();
 		clearAlertInForm(elems);
 	});
 
@@ -49,17 +48,11 @@ $(document).ready(function(){
 		showAlertInForm(elems, message, res.status);
 	});
 
-	//Initialize Select2 for Supplier Type
-    $('#supplier_type').select2({
-		theme: 'bootstrap4'
-	});
-
 	
 });
 
 /* Get supplier details */
 function edit(id) {
-	fetchDropdowns();
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Supplier");
 	$("#supplier_id").val(id);
@@ -76,7 +69,8 @@ function edit(id) {
 				
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					$.each(res.data, (key, value) => {
-						$(`input[name="${key}"]`).val(value);
+						//$(`input[name="${key}"]`).val(value);
+						$(`#${key}`).val(value);
 					});
 				}
 			} else {

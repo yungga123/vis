@@ -50,19 +50,14 @@ class Suppliers extends BaseController
     {
         $data['title']          = 'Suppliers';
         $data['page_title']     = 'Suppliers | List';
-        $data['custom_js']      = ['suppliers/index.js','suppliers_dropdown/index.js'];
+        $data['custom_js']      = ['suppliers/index.js'];
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
-        $data['select2']        = true;
+        //$data['select2']        = true;
         $data['can_add']        = $this->_can_add;
         $data['btn_add_lbl']    = 'Add New Supplier';
-        $data['routes']         = json_encode([
-            'dropdown' => [
-                'show'      => url_to('suppliers.dropdown.show'),
-            ],
-        ]);
 
 
         return view('suppliers/index', $data);
