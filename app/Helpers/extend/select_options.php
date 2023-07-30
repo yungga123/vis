@@ -192,3 +192,21 @@ if (! function_exists('get_schedule_type'))
         return $param ? $options[strtolower($param)] : $options;
 	}
 }
+
+if (! function_exists('get_dispatch_services'))
+{
+    /**
+     * Get dispatch services of Dispatch module
+     */
+	function get_dispatch_services(string $param = ''): string|array
+	{
+        $options = [
+            'installation'  => 'Installation',
+            'service'       => 'Service',
+            'warranty'      => 'Warranty',
+            'backjob'       => 'Back Job',
+        ];
+
+        return $param ? $options[strtolower($param)] : $options;
+	}
+}

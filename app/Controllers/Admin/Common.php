@@ -3,7 +3,6 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Models\TaskLeadView;
 use App\Traits\AdminTrait;
 
 class Common extends BaseController
@@ -14,14 +13,48 @@ class Common extends BaseController
     /* Search task lead booked by quotation */
     public function searchQuotation()
     {
-        $options = $this->request->getVar('options') ?? [];
+        try {
+            $options = $this->request->getVar('options') ?? [];
+            $result = $this->findBookedTaskLeadsByQuotation(
+                $this->request->getVar('q'),
+                $options
+            );
 
-        $result = $this->findBookedTaskLeadsByQuotation(
-            (new TaskLeadView),
-            $this->request->getVar('q'),
-            $options
-        );
+            return $this->response->setJSON($result);
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+        }
+    }
 
-        return $this->response->setJSON($result);
+    /* Search schedules by id, title or description */
+    public function searchSchedules()
+    {
+        try {
+            $options    = $this->request->getVar('options') ?? [];
+            $result     = $this->fetchSchedules(
+                $this->request->getVar('q'),
+                $options
+            );
+    
+            return $this->response->setJSON($result);
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+        }
+    }
+
+    /* Search customers by customer_name */
+    public function searchCustomers()
+    {
+        try {
+            $options    = $this->request->getVar('options') ?? [];
+            $result     = $this->fetchCustomers(
+                $this->request->getVar('q'),
+                $options
+            );
+            
+            return $this->response->setJSON($result);
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+        }
     }
 }

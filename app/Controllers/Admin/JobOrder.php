@@ -95,13 +95,15 @@ class JobOrder extends BaseController
     {
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
 
-        $table->setTable($this->_model->noticeTable($request))
+        $table->setTable($builder)
             ->setSearch([
-                'quotation',
-                'type',
-                'client',
-                'manager',
+                'quotation_num',
+                'tasklead_type',
+                'customer_name',
+                'firstname',
+                'lastname',
                 'work_type',
             ])
             ->setOrder([

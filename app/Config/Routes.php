@@ -232,6 +232,8 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
 // Common
 $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('quotations', 'Admin\Common::searchQuotation', ['as' => 'admin.common.quotations']);
+    $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
+    $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
 });
 
 // JOB ORDERS
@@ -250,6 +252,15 @@ $routes->group('schedules', ['filter' => 'checkauth'], static function ($routes)
     $routes->get('list', 'Admin\Schedule::list', ['as' => 'schedule.list']);
     $routes->post('save', 'Admin\Schedule::save', ['as' => 'schedule.save']);
     $routes->post('delete', 'Admin\Schedule::delete', ['as' => 'schedule.delete']);
+});
+
+// JOB ORDERS
+$routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Admin\Dispatch::index', ['as' => 'dispatch.home']);
+    $routes->post('list', 'Admin\Dispatch::list', ['as' => 'dispatch.list']);
+    $routes->post('save', 'Admin\Dispatch::save', ['as' => 'dispatch.save']);
+    $routes->post('fetch', 'Admin\Dispatch::fetch', ['as' => 'dispatch.fetch']);
+    $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'dispatch.delete']);
 });
 /* ADMIN */
 

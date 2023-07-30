@@ -10,6 +10,7 @@ class JobOrderModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'job_orders';
     protected $tableJoined      = 'task_lead_booked';
+    protected $tableEmployees   = 'employees';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -89,10 +90,11 @@ class JobOrderModel extends Model
             {$this->table}.status,
             {$this->tableJoined}.quotation_num AS quotation,
             {$this->tableJoined}.tasklead_type AS type,
+            {$this->tableJoined}.tasklead_type,
             {$this->tableJoined}.customer_name AS client,
-            (SELECT CONCAT(emp.firstname,' ',emp.lastname) AS employee_name 
-                FROM employees AS emp WHERE emp.employee_id = {$this->table}.employee_id
-            ) AS manager,
+            CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager,
+            {$this->tableEmployees}.firstname,
+            {$this->tableEmployees}.lastname,
             {$this->table}.work_type,
             {$this->table}.comments,            
             {$this->table}.warranty,
@@ -128,6 +130,7 @@ class JobOrderModel extends Model
     private function _join($builder)
     {
         $builder->join($this->tableJoined, "{$this->table}.tasklead_id = {$this->tableJoined}.id");
+        $builder->join($this->tableEmployees, "{$this->table}.employee_id = {$this->tableEmployees}.employee_id");
         $builder->where("{$this->table}.deleted_at IS NULL");
     }
 
