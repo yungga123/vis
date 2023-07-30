@@ -513,10 +513,10 @@ function refreshDataTable(table = null) {
  * passId = name of the password id selector
  * showPassId = name of the show password button id selector
  */
-function passwordShowHideInit(
-	passId = "password",
-	showPassId = "show_password"
-) {
+function passwordShowHideInit(passId, showPassId) {
+	passId = passId || "password";
+	showPassId = showPassId || "show_password";
+
 	$("#" + showPassId).on("click", function () {
 		if ($(this).hasClass("show")) {
 			$(this).removeClass("show").attr("title", "Click here to show password!");
@@ -534,7 +534,14 @@ function passwordShowHideInit(
  * Initializations and others
  */
 
-/* Initialize select2 */
+/**
+ * Initialize select2 normally
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} placeholder 	- placeholder
+ * @param {object} data  		- data or the options to dispaly
+ * @return void
+ */
 function select2Init(selector, placeholder, data) {
 	selector = selector || ".select2";
 	$(selector).select2({
@@ -544,7 +551,80 @@ function select2Init(selector, placeholder, data) {
 	});
 }
 
-/* Re-initialize select2 and new selection */
+/**
+ * Initialize select2 via ajax data source
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} placeholder 	- placeholder
+ * @param {string} route  		- the route or url to get data from
+ * @param {string} text  		- the displayed text of selected item
+ * @param {function} callaback  - the callback function after selecting an item
+ * @param {object} options  	- the options (data) to be passed to the backend
+ * @param {number} perPage  	- the length of options to display - default set to 10
+ * @return void
+ */
+function select2AjaxInit(
+	selector,
+	placeholder,
+	route,
+	text,
+	callaback,
+	options,
+	perPage
+) {
+	selector = selector || ".select2";
+
+	function dataHandler(params) {
+		let newOptions = {
+			page: params.page || 1,
+			perPage: perPage || 10,
+		};
+
+		if (isObject(options))
+			$.each(options, (key, value) => (newOptions[key] = value));
+
+		return {
+			q: params.term || "",
+			options: newOptions,
+		};
+	}
+
+	$(selector).select2({
+		placeholder: placeholder || "Select an option",
+		allowClear: true,
+		ajax: {
+			url: route,
+			type: "post",
+			dataType: "json",
+			delay: 250,
+			cache: false,
+			data: function (params) {
+				return dataHandler(params);
+			},
+			processResults: function (response) {
+				return {
+					results: response.data,
+				};
+			},
+		},
+		templateResult: function (data) {
+			return data[text] || data.text;
+		},
+		templateSelection: function (data) {
+			if (isFunction(callaback)) callaback(data);
+			return data[text] || data.text;
+		},
+	});
+}
+
+/**
+ * Re-initialize select2 and new selection
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} placeholder 	- placeholder
+ * @param {object} newData  	- new data or the new options to dispaly
+ * @return void
+ */
 function select2Reinit(select, placeholder, newData) {
 	$(select).html("");
 	$(select).select2("destroy");
@@ -572,6 +652,24 @@ function setSelect2Selection(selector, val) {
 	$(selector).val(val).trigger("change");
 }
 
+/**
+ * Set select2 selection for ajax data source
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} text 		- text to display after selection
+ * @param {string} id  			- the option value
+ * @return void
+ */
+function setSelect2AjaxSelection(selector, text, id) {
+	// Set selected option in select2
+	const option = new Option(text, id, true, true);
+
+	$(selector).append(option).trigger("change");
+	$(selector).trigger({
+		type: "select2:select",
+	});
+}
+
 /* Get select2 selection */
 function getSelect2Selection(selector, isText = false) {
 	return isText ? $(selector + " :selected").text() : $(selector).val();
@@ -583,11 +681,12 @@ function setOptionValue(selector, val) {
 }
 
 /* To format options for select2 */
-function formatOptionsForSelect2(options) {
-	return $.map(options, (val, i) => ({
-		id: i,
-		text: strCapitalize(val),
-	}));
+function formatOptionsForSelect2(options, id, text) {
+	if (isEmpty(options)) return [];
+	return $.map(options, (val, i) => {
+		if (Number.isInteger(Number(i))) return { id: val[id], text: val[text] };
+		return { id: i, text: strCapitalize(val) };
+	});
 }
 
 /**
@@ -725,7 +824,7 @@ function isObject(obj) {
 
 /* Check if param is Array or not - from stackoverflow */
 function isArray(param) {
-	return Array.isArray(param);
+	return !isEmpty(param) && Array.isArray(param);
 
 	/* Another approach */
 	// return (Object.prototype.toString.call(obj) === '[object Object]');
@@ -744,6 +843,18 @@ function inObject(obj, key) {
 	/* Another methods */
 	// return (key in obj); // Using 'in'
 	// return obj.hasOwnProperty(key); // Same as above
+}
+
+/* Check if array or object? is associative from chatgpt */
+function isArrayOrObjectAssoc(obj) {
+	if (!isObject(obj) || !isArray(obj)) return false;
+
+	// Check if the object has at least one non-numeric key
+	for (const key in obj) {
+		if (!Number.isInteger(Number(key))) return true;
+	}
+
+	return false;
 }
 
 /* Check if param is function */

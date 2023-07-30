@@ -189,6 +189,7 @@ define('MODULES', [
     'PURCHASING_SUPPLIERS'  => 'Suppliers',
     'ADMIN_JOB_ORDER'       => 'Job Orders',
     'ADMIN_SCHEDULES'       => 'Schedules',
+    'ADMIN_DISPATCH'        => 'Dispatch',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -211,4 +212,5 @@ define('MODULE_CODES', [
     'suppliers'             => 'PURCHASING_SUPPLIERS',
     'job_order'             => 'ADMIN_JOB_ORDER',
     'schedules'             => 'ADMIN_SCHEDULES',
+    'dispatch'              => 'ADMIN_DISPATCH',
 ]);
