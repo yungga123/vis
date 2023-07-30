@@ -20,38 +20,13 @@ $(document).ready(function () {
 	initSelect2Filters("filter_worktype", $pjOptions.worktype);
 
 	/* Quotation via ajax data source */
-	$("#select2Quotation").select2({
-		placeholder: "Search a quotation",
-		allowClear: true,
-		ajax: {
-			url: router.admin.common.quotations,
-			type: "post",
-			dataType: "json",
-			delay: 250,
-			cache: false,
-			data: function (params) {
-				return {
-					q: params.term || "",
-					options: {
-						page: params.page || 1,
-						perPage: 10,
-					},
-				};
-			},
-			processResults: function (response) {
-				return {
-					results: response.data,
-				};
-			},
-		},
-		templateResult: function (data) {
-			return data.quotation || data.text;
-		},
-		templateSelection: function (data) {
-			loadQDetails(data);
-			return data.quotation || data.text;
-		},
-	});
+	select2AjaxInit(
+		"#select2Quotation",
+		"Search a quotation",
+		router.admin.common.quotations,
+		"quotation",
+		loadQDetails
+	);
 
 	/* Load dataTable */
 	loadDataTable(table, router.job_order.list, METHOD.POST);
