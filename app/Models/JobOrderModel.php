@@ -182,7 +182,7 @@ class JobOrderModel extends Model
         if (isset($request['params'])) {
             $params = $request['params'];
 
-            if (! empty($params['status'])) {}
+            if (! empty($params['status']))
                 $builder->whereIn("{$this->table}.status", $params['status']);
 
             if (! empty($params['type'])) 
