@@ -234,6 +234,8 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('quotations', 'Admin\Common::searchQuotation', ['as' => 'admin.common.quotations']);
     $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
     $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
+    $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
+    $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
 });
 
 // JOB ORDERS
