@@ -161,7 +161,7 @@ class JobOrderModel extends Model
                     'job_order_id'  => $id,
                     'title'         => $job_order['client'],
                     'description'   => $job_order['comments'],
-                    'type'          => strtolower($job_order['type']),
+                    'type'          => $job_order['type'] ? strtolower($job_order['type']) : 'project',
                     'start'         => $data['data']['date_committed'],
                     'end'           => $data['data']['date_committed'] .' 23:00', // set to 11pm
                     'created_by'    => session('username'),

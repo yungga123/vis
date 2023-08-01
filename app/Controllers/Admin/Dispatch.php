@@ -278,4 +278,21 @@ class Dispatch extends BaseController
 
         return $this->response->setJSON($data);
     }
+
+    /**
+     * Printing record
+     *
+     * @return view
+     */
+    public function print() 
+    {
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+        
+        $id                 = $this->request->getUri()->getSegment(3);
+        $data['dispatch']   = $this->_model->getDispatch($id, false, false, true);
+        $data['title']      = 'Print Dispatch';
+
+        return view('admin/dispatch/print', $data);
+    }
 }

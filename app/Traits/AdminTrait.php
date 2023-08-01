@@ -17,7 +17,7 @@ trait AdminTrait
      * @param string $fields    Columns or fields in the select
      * @return array            The results of the search
      */
-    public function findBookedTaskLeadsByQuotation($model, $q, $options = [], $fields = '')
+    public function findBookedTaskLeadsByQuotation($q, $options = [], $fields = '')
     {
         $model  = new TaskLeadView();
         $fields = $fields ? $fields : '
@@ -90,8 +90,8 @@ trait AdminTrait
                 $tbody = '';
                 foreach ($schedules as $schedule) {
                     $type   = get_schedule_type($schedule['type']);
-                    $start  = date('M d, Y h:i A', strtotime($schedule['start']));
-                    $end    = date('M d, Y h:i A', strtotime($schedule['end']));
+                    $start  = format_datetime($schedule['start']);
+                    $end    = format_datetime($schedule['end']);
                     $tbody .= <<<EOF
                         <tr class="text-white text-bold" style="background-color: {$type['color']};">
                             <td>{$schedule['title']}</td>
