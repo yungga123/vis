@@ -145,6 +145,9 @@ define('ACTIONS', [
             'FILE'          => 'File',
             'RESCHEDULE'    => 'Reschedule',
         ],
+        'ADMIN_DISPATCH'   => [
+            'PRINT'         => 'Print',
+        ],
     ],
 ]);
 

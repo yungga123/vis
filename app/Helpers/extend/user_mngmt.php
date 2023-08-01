@@ -49,18 +49,60 @@ if (! function_exists('get_roles'))
 	/**
 	 * Get role / access level list
 	 */
-	function get_roles(string $param = null): string|array
+	function get_roles(string $param = null, $is_option = false): string|array
 	{
 		$model = new \App\Models\RolesModel();
         $roles = $model->getRoles();
         
         if (! empty($roles)) {
-            if(! is_admin()) unset($roles['ADMIN']);
+            if(! is_admin() && $is_option) unset($roles['ADMIN']);
 
 		    return $param ? $roles[strtoupper($param)] : $roles;
         }
         
         return [];
+	}
+}
+
+if (! function_exists('get_roles_options'))
+{
+	/**
+	 * Get roles for options selection
+	 */
+	function get_roles_options(): string
+	{
+		$html 	= '';
+        $roles 	= get_roles();
+        
+        if (! empty($roles)) {
+			$options = [];
+
+            foreach ($roles as $key => $role) {
+				$level = str_contains($key,'MANAGER') ? 'MANAGER' : (str_contains($key,'SUPERVISOR') ? 'SUPERVISOR' : 'OTHERS');
+
+				$options[$level][] = <<<EOF
+					<option value="{$key}">{$role}</option>
+				EOF;
+			}
+
+			$managers 		= implode('', $options['MANAGER']);
+			$supervisors 	= implode('', $options['SUPERVISOR']);
+			$others 		= implode('', $options['OTHERS']);
+
+			$html = <<<EOF
+				<optgroup label="Managerial Level">
+					{$managers}
+				</optgroup>
+				<optgroup label="Supervisory Level">
+					{$supervisors}
+				</optgroup>
+				<optgroup label="Others">
+					{$others}
+				</optgroup>
+			EOF;
+        }
+        
+        return $html;
 	}
 }
 

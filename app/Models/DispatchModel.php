@@ -107,7 +107,7 @@ class DispatchModel extends Model
     protected $afterDelete    = [];
 
     // Common columns
-    private function _columns($dateTimeformmated = false, $joinSchedule = false)
+    private function _columns($dateTimeformmated = false, $joinSchedule = false, $withClientDetials = false)
     {
         $columns = "
             {$this->table}.id,
@@ -122,10 +122,12 @@ class DispatchModel extends Model
             {$this->table}.comments,
             {$this->table}.service_type,
             {$this->table}.with_permit,
+            {$this->table}.created_by,
             {$this->view}.customer,
             {$this->view}.technicians,
             {$this->view}.technicians_formatted,
-            {$this->tableSchedules}.title AS schedule,
+            {$this->view}.dispatch_by,
+            {$this->view}.dispatch_by_role
         ";
 
         if ($dateTimeformmated) {
@@ -139,6 +141,8 @@ class DispatchModel extends Model
 
         if ($joinSchedule) {
             $columns .= ",
+                {$this->tableSchedules}.title AS schedule,
+                {$this->tableSchedules}.title,
                 {$this->tableSchedules}.description,
                 {$this->tableSchedules}.start,
                 {$this->tableSchedules}.end,
@@ -146,23 +150,34 @@ class DispatchModel extends Model
             ";
         }
 
+        if ($withClientDetials) {
+            $columns .= ",
+                {$this->view}.contact_person,
+                {$this->view}.contact_number,
+                {$this->view}.email_address,
+                {$this->view}.address
+            ";
+        }
+
         return $columns;
     }
     
     // Join with schedules table 
-    private function _join($builder)
+    private function _join($builder, $joinSchedule = false)
     {
-        $builder->join($this->tableSchedules, "{$this->table}.schedule_id = {$this->tableSchedules}.id");
+        if ($joinSchedule) 
+            $builder->join($this->tableSchedules, "{$this->table}.schedule_id = {$this->tableSchedules}.id");
+
         $builder->join($this->view, "{$this->table}.id = {$this->view}.dispatch_id");
         $builder->where("{$this->table}.deleted_at IS NULL");
     }
     
     // Get dispatch data - either by id or all
-    public function getDispatch($id = null, $dateTimeformmated = false, $joinSchedule = false, $disTech = false)
+    public function getDispatch($id = null, $dateTimeformmated = false, $joinSchedule = false, $withClientDetials = false)
     {
-        $builder = $this->select($this->_columns($dateTimeformmated, $joinSchedule, $disTech));
+        $builder = $this->select($this->_columns($dateTimeformmated, $joinSchedule, $withClientDetials));
         
-        if ($joinSchedule) $this->_join($builder);
+        $this->_join($builder, $joinSchedule);
         return $id ? $builder->find($id) : $builder->findAll();
     }
 
@@ -173,7 +188,7 @@ class DispatchModel extends Model
         $builder->select($this->_columns(true, true));
 
         // Join with schedules table
-        $this->_join($builder);
+        $this->_join($builder, true);
 
         return $builder;
     }
@@ -184,6 +199,14 @@ class DispatchModel extends Model
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
             $buttons = dt_button_actions($row, $id, $permissions, false);
+
+            if (check_permissions($permissions, 'PRINT')) {
+                $print_url = site_url('dispatch/print/') . $row[$id];
+                $buttons .= <<<EOF
+                    <a href="$print_url" class="btn btn-success btn-sm" target="_blank"><i class="fas fa-print"></i></a>
+                EOF;
+            }
+
             return $buttons;
         };
         
