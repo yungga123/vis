@@ -9,11 +9,13 @@ $(document).ready(function(){
 	elems = [
 		"supplier_name",
         "supplier_type",
+		"others_supplier_type",
         "contact_person",
         "contact_number",
         "viber",
         "payment_terms",
         "payment_mode",
+		"others_payment_mode",
         "product",
         "remarks",
 	];
@@ -25,6 +27,7 @@ $(document).ready(function(){
 		$(`#${form}`)[0].reset();
 		$("#supplier_id").val("");
 		clearAlertInForm(elems);
+		$('#others_supplier_type').attr('type','hidden').attr('required',false).val("");
 	});
 
 	/* Load dataTable */
@@ -48,7 +51,6 @@ $(document).ready(function(){
 		showAlertInForm(elems, message, res.status);
 	});
 
-	
 });
 
 /* Get supplier details */
@@ -71,8 +73,14 @@ function edit(id) {
 					$.each(res.data, (key, value) => {
 						//$(`input[name="${key}"]`).val(value);
 						$(`#${key}`).val(value);
+						// if () {
+							
+						// }
+						console.log(key,value);
 					});
 				}
+				// selectedOthers(val);
+				// selectedPaymentMode(val);
 			} else {
 				$(`#${modal}`).modal("hide");
 				notifMsgSwal(res.status, res.message, res.status);
@@ -98,4 +106,21 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+
+function selectedOthers(val) {
+	if (val == "Others") {
+		$('#others_supplier_type').attr('type','text').attr('required',true);
+	} else {
+		$('#others_supplier_type').attr('type','hidden').attr('required',false).val("");
+	}
+}
+
+function selectedPaymentMode(val) {
+	if (val == "Others") {
+		$('#others_payment_mode').attr('type','text').attr('required',true);
+	} else {
+		$('#others_payment_mode').attr('type','hidden').attr('required',false).val("");
+	}
 }

@@ -18,11 +18,13 @@ class SuppliersModel extends Model
     protected $allowedFields    = [
         "supplier_name",
         "supplier_type",
+        "others_supplier_type",
         "contact_person",
         "contact_number",
         "viber",
         "payment_terms",
         "payment_mode",
+        "others_payment_mode",
         "product",
         "remarks",
     ];
@@ -109,6 +111,42 @@ class SuppliersModel extends Model
                 </div>
                 
             EOF;
+        };
+        return $closureFun;
+    }
+
+    public function supplierType() {
+        $closureFun = function($row) {
+
+            if ($row['supplier_type'] == 'Others') {
+                return $row['supplier_type'].' - '.$row['others_supplier_type'];
+            } else {
+                return $row['supplier_type'];
+            }
+        };
+        return $closureFun;
+    }
+
+    public function paymentTerms() {
+        $closureFun = function($row) {
+
+            if ($row['payment_terms'] == '0') {
+                return 'No';
+            } else {
+                return $row['payment_terms'].' day/s';
+            }
+        };
+        return $closureFun;
+    }
+
+    public function paymentMode() {
+        $closureFun = function($row) {
+
+            if ($row['payment_mode'] == 'Others') {
+                return $row['payment_mode'].' - '.$row['others_payment_mode'];
+            } else {
+                return $row['payment_mode'];
+            }
         };
         return $closureFun;
     }
