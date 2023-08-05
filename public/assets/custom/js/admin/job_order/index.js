@@ -281,7 +281,7 @@ function status(id, changeTo, status) {
 			.then((res) => {
 				$("#date_committed_status").val(res.data.date_committed);
 				setSelect2Selection("#employee_id_status", res.data.employee_id);
-				$("#type").val(res.data.type);
+				$("#type").val(res.data.type || "Project");
 				$("#remarks").val(res.data.remarks);
 			})
 			.catch((err) => catchErrMsg(err));
@@ -292,8 +292,7 @@ function status(id, changeTo, status) {
 function toggleStatusFields(changeTo, val) {
 	const fields = $("#fields_" + changeTo);
 
-	if (val === changeTo && fields.hasClass("d-none"))
-		fields.removeClass("d-none");
+	if (val === changeTo) fields.removeClass("d-none");
 	else $("#fields_" + val).addClass("d-none");
 }
 

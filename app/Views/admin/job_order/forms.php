@@ -121,7 +121,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="type">Type</label>
+                            <label for="type">Quotation Type</label>
                             <input type="text" name="type" id="type" class="form-control" readonly>
                         </div>
                     </div>

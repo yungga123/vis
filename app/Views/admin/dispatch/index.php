@@ -23,6 +23,8 @@
                                 <th>With Permit</th>
                                 <th>Comments</th>
                                 <th>Remarks</th>
+                                <th>Dispatched By</th>
+                                <th>Checked By</th>
                             </tr>
                         </thead>
                     </table>

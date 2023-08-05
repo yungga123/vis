@@ -102,6 +102,18 @@
                                 <select class="form-control" id="technicians" multiple name="technicians[]" style="width: 100%;" required></select>
                                 <small id="alert_technicians" class="text-danger"></small>
                             </div>
+                            <div class="form-group">
+                                <label class="required" for="checked_by">Check By</label>
+                                <select class="form-control" id="checked_by" name="checked_by" style="width: 100%;" required>
+                                    <option value="">Select an employee</option>
+                                    <?php if (! empty(get_employees())): ?>
+                                    <?php foreach (get_employees() as $val): ?>
+                                        <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
+                                    <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                                <small id="alert_checked_by" class="text-danger"></small>
+                            </div>
                         </div>
                     </div>
                 </div>

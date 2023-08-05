@@ -192,6 +192,7 @@ class JobOrderModel extends Model
                 $builder->whereIn("{$this->table}.work_type", $params['work_type']);
         }
 
+        $builder->orderBy('id', 'DESC');
         return $builder;
     }
 

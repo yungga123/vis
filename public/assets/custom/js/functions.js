@@ -540,14 +540,16 @@ function passwordShowHideInit(passId, showPassId) {
  * @param {string} selector    	- id or class name of the select
  * @param {string} placeholder 	- placeholder
  * @param {object} data  		- data or the options to dispaly
+ * @param {object} container  	- the container to attach to (e.g for modal)
  * @return void
  */
-function select2Init(selector, placeholder, data) {
+function select2Init(selector, placeholder, data, container) {
 	selector = selector || ".select2";
 	$(selector).select2({
 		placeholder: placeholder || "Select an option",
 		allowClear: true,
 		data: data || {},
+		attachContainer: container || "",
 	});
 }
 
