@@ -72,8 +72,6 @@ class Suppliers extends Migration
         ]);
 
         $this->forge->addPrimaryKey('id');
-
-        $this->forge->dropTable('suppliers');
         $this->forge->createTable('suppliers');
     }
 
