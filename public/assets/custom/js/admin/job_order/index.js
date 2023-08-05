@@ -167,10 +167,6 @@ function edit(id) {
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#job_order_id").val(id);
 
-	// Trigger select2 to get quotations first
-	// since it's ajax data source
-	$("#select2Quotation").select2("open");
-
 	clearAlertInForm(elems);
 	showLoading();
 
@@ -180,11 +176,7 @@ function edit(id) {
 
 			if (res.status === STATUS.SUCCESS) {
 				// Set selected quotation in select2
-				const option = new Option(res.data.quotation, id, true, true);
-				$("#select2Quotation").append(option).trigger("change");
-				$("#select2Quotation").trigger({
-					type: "select2:select",
-				});
+				setSelect2AjaxSelection("#select2Quotation", res.data.quotation, id);
 
 				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
 				$("#orig_qn")
