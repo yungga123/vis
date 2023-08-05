@@ -24,5 +24,6 @@ class AllViews extends Seeder
         $this->call('SalesTargetView');
         $this->call('SuppliersView');
         $this->call('DispatchView');
+        $this->call('Roles');
     }
 }
