@@ -31,6 +31,7 @@ class DispatchModel extends Model
         'comments',
         'with_permit',
         'created_by',
+        'checked_by',
     ];
 
     // Dates
@@ -90,6 +91,10 @@ class DispatchModel extends Model
             'rules' => 'required',
             'label' => 'assign technicians'
         ],
+        'checked_by' => [
+            'rules' => 'required',
+            'label' => 'check by'
+        ],
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -123,11 +128,16 @@ class DispatchModel extends Model
             {$this->table}.service_type,
             {$this->table}.with_permit,
             {$this->table}.created_by,
+            {$this->table}.checked_by,
+            {$this->table}.customer_type,
             {$this->view}.customer,
             {$this->view}.technicians,
             {$this->view}.technicians_formatted,
-            {$this->view}.dispatch_by,
-            {$this->view}.dispatch_by_role
+            {$this->view}.dispatched_by,
+            {$this->view}.dispatched_by_role,
+            {$this->view}.dispatched_by_position,
+            {$this->view}.checked_by_name,
+            {$this->view}.checked_by_position
         ";
 
         if ($dateTimeformmated) {
@@ -189,6 +199,7 @@ class DispatchModel extends Model
 
         // Join with schedules table
         $this->_join($builder, true);
+        $builder->orderBy('id', 'DESC');
 
         return $builder;
     }

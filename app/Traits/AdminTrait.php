@@ -42,9 +42,10 @@ trait AdminTrait
                 return $model->find();
             }
 
-            $model->like('quotation_num', $q);            
+            $model->like('quotation_num', $q);
         }
 
+        $model->orderBy('id', 'DESC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total = $model->countAllResults();
 
@@ -143,6 +144,7 @@ trait AdminTrait
             $model->orLike('description', $q);
         }
 
+        $model->orderBy('id', 'DESC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total = $model->countAllResults();
 
@@ -175,6 +177,7 @@ trait AdminTrait
             $model->like('LOWER(customer_name)', strtolower($q));
         }
 
+        $model->orderBy('customer_name', 'ASC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total  = $model->countAllResults();
 

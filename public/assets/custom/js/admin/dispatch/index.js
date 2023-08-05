@@ -64,6 +64,9 @@ $(document).ready(function () {
 	/* Initialize select2 employees/technicians */
 	select2Init("#technicians", "Select technicians", $technicians);
 
+	/* Initialize select2 employees/check by */
+	select2Init("#checked_by", "Select an employee");
+
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
@@ -97,11 +100,6 @@ function edit(id) {
 	$("#dispatch_id").val(id);
 	$("#schedule_id").val("");
 
-	// Trigger select2 to get schedules first
-	// since it's ajax data source
-	$("#schedules").select2("open");
-	$("#customer_id").select2("open");
-
 	clearAlertInForm(elems);
 	showLoading();
 
@@ -125,7 +123,12 @@ function edit(id) {
 				);
 
 				// Set selected technicians in select2
+				initSelect2Customers(res.data.customer_type);
 				setSelect2Technicians(res.data.technicians);
+				$("#" + res.data.customer_type).prop("checked", true);
+
+				// Set selected employee/checked by in select2
+				setSelect2Selection("#checked_by", res.data.checked_by);
 
 				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
 				$("#orig_schedule")

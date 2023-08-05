@@ -114,8 +114,8 @@
 				<div class="col-4 text-center">
 					<p style="font-weight: bold">Dispatched By:</p>
 					<p>
-                        <u><?= $dispatch['dispatch_by'] ?></u><br> 
-					    <?= get_roles($dispatch['dispatch_by_role']) ?>
+                        <u><?= $dispatch['dispatched_by'] ?></u><br> 
+					    <?= ucwords($dispatch['dispatched_by_position']) ?>
                     </p>
 				</div>
 				<div class="col-2">
@@ -123,8 +123,8 @@
 				<div class="col-2 text-center">
 					<p style="font-weight: bold">Checked By:</p>
 					<p>
-                        <u>Jenina Gaceta</u><br> 
-					    Human Resource
+                        <u><?= $dispatch['checked_by_name'] ?></u><br> 
+					    <?= ucwords($dispatch['checked_by_position']) ?>
                     </p>
 				</div>
 

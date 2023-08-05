@@ -105,6 +105,8 @@ class Dispatch extends BaseController
                 'technicians',
                 'service_type',
                 'sr_number',
+                'dispatched_by',
+                'checked_by_name',
             ])
             ->setOrder([
                 null,
@@ -122,6 +124,8 @@ class Dispatch extends BaseController
                 'with_permit',
                 'comments',
                 'remarks',
+                'dispatched_by',
+                'checked_by_name',
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
@@ -139,6 +143,8 @@ class Dispatch extends BaseController
                 'with_permit',
                 'comments',
                 'remarks',
+                'dispatched_by',
+                'checked_by_name',
             ]);
 
         return $table->getDatatable();
@@ -175,6 +181,7 @@ class Dispatch extends BaseController
                 'comments'      => $this->request->getVar('comments'),
                 'with_permit'   => $this->request->getVar('with_permit'),
                 'technicians'   => $this->request->getVar('technicians'),
+                'checked_by'    => $this->request->getVar('checked_by'),
                 'created_by'    => session('username'),
             ];
 
