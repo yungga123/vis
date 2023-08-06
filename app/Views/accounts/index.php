@@ -57,7 +57,12 @@
                     <div class="form-group">
                         <label class="required lbl_password"  for="password">Password</label>
                         <small id="small_password" class="text-muted" style="display: none;">Leave it blank if you will not update the password.</small>
-                        <input type="text" name="password" id="password" class="form-control" placeholder="Enter here...">
+                        <div class="input-group">
+                            <input type="password" name="password" id="password" class="form-control" placeholder="Enter here...">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" id="show_password" type="button" title="Click here to show password!"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
                         <small id="alert_password" class="text-danger"></small>
                     </div>
                     <div class="form-group">

@@ -5,7 +5,7 @@
         <?= csrf_field(); ?>
         <input type="hidden" name="mail_config_id" value="<?= $mail['mail_config_id'] ?? ''; ?>">
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-6">
                 <div class="card card-primary collapsed-card">
                     <div class="card-header">
                         <h3 class="card-title">Gmail Credentials</h3>
@@ -42,6 +42,8 @@
                         <?php endif; ?>
                     </div>
                 </div>
+            </div>
+            <div class="col-6">                
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Other Details</h3>
@@ -63,10 +65,23 @@
                             </small><br>
                             <small id="alert_recepients" class="text-danger"></small>
                         </div>
+                        <div class="form-group">
+                            <label class="required" for="hostname">Is Mail Sending Enabled?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input type="radio" id="is_enable_yes" name="is_enable" class="form-check-input" value="YES" <?= $mail['is_enable'] === 'YES' ? 'checked' : ''; ?>>
+                                    <label class="form-check-label" for="is_enable_yes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input type="radio" id="is_enable_no" name="is_enable" class="form-check-input" value="NO" <?= $mail['is_enable'] === 'NO' ? 'checked' : ''; ?>>
+                                    <label class="form-check-label" for="is_enable_no">No</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-6 d-none">
                 <div class="card card-secondary collapsed-card">
                     <div class="card-header">
                         <h3 class="card-title">OAuth2 Google Client</h3>
