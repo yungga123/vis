@@ -102,10 +102,11 @@ class Home extends BaseController
      */
     public function list()
     {
-        $table = new TablesIgniter();
-        $request = $this->request->getVar();
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
 
-        $table->setTable($this->_model->noticeTable($request))
+        $table->setTable($builder)
             ->setSearch([
                 'id',
                 'category',
@@ -113,35 +114,39 @@ class Home extends BaseController
                 'item_brand',
                 'item_model',
                 'item_description',
-                'encoder',
+                'created_by_name',
             ])
             ->setOrder([
                 null,
                 'id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
-                'item_size',
-                'total',
                 'stocks',
-                'stock_unit',
-                'encoder',
+                'total',
+                'size',
+                'unit',
+                'date_purchase',
+                'created_by_name',
+                'created_at_formatted'
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
                 'id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
-                'item_size',
-                'total',
                 'stocks',
-                'stock_unit',
-                'encoder',
+                'total',
+                'size',
+                'unit',
+                'date_purchase',
+                'created_by_name',
+                'created_at_formatted'
             ]);
 
         return $table->getDatatable();
@@ -163,7 +168,26 @@ class Home extends BaseController
         $this->transBegin();
 
         try {
-            if (! $this->_model->save($this->request->getVar())) {
+            $inputs = [
+                'id'                => $this->request->getVar('id'),
+                'category'          => $this->request->getVar('category'),
+                'sub_category'      => $this->request->getVar('sub_category') ?? '',
+                'item_brand'        => $this->request->getVar('item_brand') ?? '',
+                'item_model'        => $this->request->getVar('item_model'),
+                'item_description'  => $this->request->getVar('item_description'),
+                'item_size'         => $this->request->getVar('item_size') ?? '',
+                'item_sdp'          => $this->request->getVar('item_sdp'),
+                'item_srp'          => $this->request->getVar('item_srp'),
+                'project_price'     => $this->request->getVar('project_price'),
+                'total'             => $this->request->getVar('total'),
+                'stocks'            => $this->request->getVar('stocks'),
+                'stock_unit'        => $this->request->getVar('stock_unit') ?? '',
+                'date_of_purchase'  => $this->request->getVar('date_of_purchase'),
+                'supplier'          => $this->request->getVar('supplier'),
+                'location'          => $this->request->getVar('location'),
+            ];
+
+            if (! $this->_model->save($inputs)) {
                 $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";

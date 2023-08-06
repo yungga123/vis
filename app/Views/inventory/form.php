@@ -1,8 +1,8 @@
 <!-- Modal -->
-<div class="modal fade" id="modal_inventory" aria-hidden="true">
+<div class="modal fade" id="inventory_modal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="form_inventory" class="with-label-indicator" action="<?= url_to('inventory.save'); ?>" method="post" autocomplete="off">
+            <form id="inventory_form" class="with-label-indicator" action="<?= url_to('inventory.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="inventory_id" name="id" readonly>
                 <div class="modal-header">
@@ -89,7 +89,7 @@
                                 <p>Not in the list? <a href="#" role="button" onclick="openDropdownModal('Item Unit', 'UNIT', '#stock_unit')">Add unit here</a>!</p>
                             </div>
                             <div class="form-group">
-                                <label class="required" for="date_of_purchase">Date of Purchase</label>
+                                <label for="date_of_purchase">Date of Purchase</label>
                                 <input type="date" name="date_of_purchase" id="date_of_purchase" class="form-control" placeholder="Enter...">
                                 <small id="alert_date_of_purchase" class="text-danger"></small>
                             </div>
@@ -105,7 +105,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="required" for="encoder">Encoder</label>
-                                <input type="text" name="encoder" id="encoder" class="form-control" placeholder="Enter..." readonly value="<?= session('name') ?>">
+                                <input type="text" name="created_by" id="encoder" class="form-control" placeholder="Enter..." readonly value="<?= session('name') ?>">
                                 <small id="alert_encoder" class="text-danger"></small>
                             </div>
                         </div>

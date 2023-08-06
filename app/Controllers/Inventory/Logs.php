@@ -68,7 +68,7 @@ class Logs extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['inventory/logs.js'];
+        $data['custom_js']      = ['inventory/logs/index.js'];
         $data['routes']         = json_encode([
             'dropdown' => [
                 'show'      => url_to('inventory.dropdown.show'),
@@ -104,17 +104,9 @@ class Logs extends BaseController
             $request    = $this->request->getVar();
             $inputs     = [
                 'inventory_id'      => $request['inventory_id'],
-                'item_size'         => $request['item_size_logs_out'] ?? $request['item_size_logs'] ?? 0,
-                'item_sdp'          => $request['item_sdp_logs'],
-                'item_srp'          => $request['item_srp_logs'],
-                'project_price'     => $request['project_price_logs'],
                 'stocks'            => $request['quantity'] ?? $request['stocks_logs'],
                 'parent_stocks'     => $request['parent_stocks'],
-                'stock_unit'        => $request['stock_unit_logs_out'] ?? $request['stock_unit_logs'] ?? 0,
-                'date_of_purchase'  => $request['date_of_purchase_logs'],
-                'location'          => $request['location_logs'],
-                'supplier'          => $request['supplier_logs'],
-                'status'            => $request['status_logs'] ?? NULL,
+                'status'            => $request['status_logs'] ?? '',
                 'status_date'       => $request['status_date_logs'] ?? NULL,
                 'action'            => $request['action_logs'],
             ];
@@ -160,45 +152,48 @@ class Logs extends BaseController
 
         $table->setTable($this->_model->noticeTable($request))
             ->setSearch([
-                'inventory_id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
                 'encoder',
             ])
             ->setOrder([
-                // null,
                 'action',
                 'inventory_id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
-                'item_size',
                 'stocks',
-                'stock_unit',
-                'status',
-                'status_date',
+                'parent_stocks',
+                'current_stocks',
+                'size',
+                'unit',
+                'cap_status',
+                'status_date_formatted',
                 'encoder',
+                'created_at_formatted',
             ])
             ->setOutput([
-                // $this->_model->buttons($this->_permissions),
                 $this->_model->actionLogs(),
                 'inventory_id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
-                'item_size',
                 'stocks',
-                'stock_unit',
-                'status',
-                'status_date',
+                'parent_stocks',
+                'current_stocks',
+                'size',
+                'unit',
+                'cap_status',
+                'status_date_formatted',
                 'encoder',
+                'created_at_formatted',
             ]);
 
         return $table->getDatatable();

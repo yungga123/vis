@@ -20,7 +20,7 @@ $(document).ready(function () {
 	select2Init();
 	$("#filter_category_logs").on("select2:select", function (e) {
 		let selector = "#filter_sub_category_logs";
-		dropdownInitLogs(selector, $(this).val());
+		dropdownInitLogs2(selector, $(this).val());
 	});
 
 	/* Load dataTable */
@@ -36,10 +36,11 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable($("#" + tableLogs));
 			notifMsgSwal(res.status, message, res.status);
-			clearSelectionSelect2Logs();
 			toggleModalLogs(true);
+
 			$("#inventory_parent_id").val("");
 			$("#action_logs").val("");
+			$("#parent_stocks_logs").val("");
 		}
 
 		showAlertInForm(elems, message, res.status);
@@ -104,40 +105,28 @@ function dropdownInitLogs(select, type) {
 		.catch((err) => catchErrMsg(err));
 }
 
-/* Item In */
-function itemIn(id, stock) {
-	clearAlertInForm(elemLogs);
-	showLoading();
-
-	$.post(router.inventory.edit, { id: id })
+/* Dropdown initialization */
+function dropdownInitLogs2(select, type) {
+	$.post(router.dropdown.show, { dropdown_type: type })
 		.then((res) => {
-			closeLoading();
-
 			if (res.status === STATUS.SUCCESS) {
-				const itemDetails = itemDetailsHtml(id, stock, res.data, "in");
-
-				$(modalLogs + " .modal-title").text(
-					"Item In - " + res.data.item_description
+				const options = formatOptionsForSelect2(
+					res.data,
+					"dropdown_id",
+					"dropdown"
 				);
-				$(modalLogs + " .modal-dialog").removeClass("modal-lg");
-				$(modalLogs + " .modal-body .row").addClass("d-none");
-				$(modalLogs + " .modal-body .item-details-wrapper").html(itemDetails);
-				$("#inventory_parent_id").val(id);
-				$("#action_logs").val("ITEM_IN");
-				$("#item_sdp_logs").val(res.data.item_sdp);
-				$("#item_srp_logs").val(res.data.item_srp);
-				$("#project_price_logs").val(res.data.project_price);
-				$("#parent_stocks").val(res.data.stocks);
-				$("#date_of_purchase_logs").val(res.data.date_of_purchase);
-				$("#location_logs").val(res.data.location);
-				$("#supplier_logs").val(res.data.supplier);
-				toggleModalLogs();
+				select2Reinit(select, "", options);
+				setSelect2Selection(select, val);
 			} else {
-				toggleModalLogs(true);
-				notifMsgSwal(res.status, res.message, res.status);
+				console.log(res.message);
 			}
 		})
 		.catch((err) => catchErrMsg(err));
+}
+
+/* Item In */
+function itemIn(id, stock) {
+	fetchItemDetails(id, stock, "in");
 }
 
 /* Item Out */
@@ -148,10 +137,14 @@ function itemOut(id, stock) {
 			"This item has zero stock! Need to add items first.",
 			STATUS.INFO
 		);
-
 		return;
 	}
 
+	fetchItemDetails(id, stock, "out");
+}
+
+/* Get inventory item details */
+function fetchItemDetails(id, stock, action) {
 	clearAlertInForm(elemLogs);
 	showLoading();
 
@@ -160,22 +153,16 @@ function itemOut(id, stock) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				const itemDetails = itemDetailsHtml(id, stock, res.data, "out");
+				const itemDetails = itemDetailsHtml(id, stock, res.data, action);
 				$(modalLogs + " .modal-title").text(
-					"Item Out - " + res.data.item_description
+					`Item ${strCapitalize(action)} - ` + res.data.item_description
 				);
 				$(modalLogs + " .modal-dialog").removeClass("modal-lg");
 				$(modalLogs + " .modal-body .row").addClass("d-none");
 				$(modalLogs + " .modal-body .item-details-wrapper").html(itemDetails);
 				$("#inventory_parent_id").val(id);
-				$("#action_logs").val("ITEM_OUT");
-				$("#item_sdp_logs").val(res.data.item_sdp);
-				$("#item_srp_logs").val(res.data.item_srp);
-				$("#project_price_logs").val(res.data.project_price);
-				$("#parent_stocks").val(res.data.stocks);
-				$("#date_of_purchase_logs").val(res.data.date_of_purchase);
-				$("#location_logs").val(res.data.location);
-				$("#supplier_logs").val(res.data.supplier);
+				$("#parent_stocks_logs").val(stock);
+				$("#action_logs").val("ITEM_" + strUpper(action));
 				toggleModalLogs();
 			} else {
 				toggleModalLogs(true);
@@ -194,22 +181,22 @@ function itemDetailsHtml(id, stock, data, action) {
 		action === "out"
 			? ""
 			: `	
-		<tr>
-			<th>Status:</th>
-			<td>
-				<select name="status_logs" id="status_logs" class="form-control" required>
-					<option value="PURCHASE">Purchase</option>
-					<option value="RETURN">Return</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<th>Status Date:</th>
-			<td>
-				<input type="date" class="form-control" name="status_date_logs" id="status_date_logs" required/>
-			</td>
-		</tr>
-	`;
+				<tr>
+					<th>Status:</th>
+					<td>
+						<select name="status_logs" id="status_logs" class="form-control" required>
+							<option value="purchase">Purchase</option>
+							<option value="return">Return</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>Status Date:</th>
+					<td>
+						<input type="date" class="form-control" name="status_date_logs" id="status_date_logs" required/>
+					</td>
+				</tr>
+			`;
 	const details = `
 		<h4 class="text-center">Item Details</h4>
 		<table class="table">
@@ -231,10 +218,6 @@ function itemDetailsHtml(id, stock, data, action) {
 					<td>${data.item_model}</td>
 				</tr>
 				<tr>
-					<th>Dealer's Price:</th>
-					<td>${data.item_sdp}</td>
-				</tr>
-				<tr>
 					<th>Current Stocks:</th>
 					<td>${data.stocks}</td>
 				</tr>
@@ -248,17 +231,12 @@ function itemDetailsHtml(id, stock, data, action) {
 				${itemStatusFields}
 			</tbody>
 		</table>
-		<input type="hidden" name="item_size_logs_${stock}" value="${
-		data.item_size
-	}" readonly>
-		<input type="hidden" name="stock_unit_logs_${stock}" value="${
-		data.stock_unit
-	}" readonly>
 	`;
 
 	return details;
 }
 
+/* Validation */
 function checkInputQuantity(val, stock, action) {
 	$("#quantity_logs").addClass("is-valid").removeClass("is-invalid");
 	$("#alert_quantity_logs").text("");
@@ -281,9 +259,4 @@ function checkInputQuantity(val, stock, action) {
 function toggleModalLogs(close = false) {
 	if (close) $(modalLogs).modal("hide");
 	$(modalLogs).modal("show");
-}
-
-function clearSelectionSelect2Logs() {
-	$("#item_size_logs").val("").trigger("change");
-	$("#stock_unit_logs").val("").trigger("change");
 }

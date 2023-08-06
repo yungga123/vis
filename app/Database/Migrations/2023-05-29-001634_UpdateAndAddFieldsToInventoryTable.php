@@ -105,7 +105,6 @@ class UpdateAndAddFieldsToInventoryTable extends Migration
                 'null' => false,
             ],
         ];
-
         
         $add_fields = [
             'item_name' => [

@@ -28,17 +28,19 @@ if (! function_exists('remove_string'))
     /**
      * Clear variable based on the passed params
      */
-	function remove_string(string|array $subject, string $search, string $replace = ''): string|array
+	function remove_string(string|array|null $subject, string $search, string $replace = ''): string|array|null
 	{
-        if (is_array($subject)) {
-            $arr = [];
-            foreach ($subject as $val) {
-                $arr[] = str_replace($search, $replace, $val);
+        if (! empty($subject)) {
+            if (is_array($subject)) {
+                $arr = [];
+                foreach ($subject as $val) {
+                    $arr[] = str_replace($search, $replace, $val);
+                }
+    
+                $subject = $arr;
+            } else {
+                $subject = str_replace($search, $replace, $subject);
             }
-
-            $subject = $arr;
-        } else {
-            $subject = str_replace($search, $replace, $subject);
         }
 
         return $subject;

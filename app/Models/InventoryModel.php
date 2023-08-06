@@ -32,7 +32,7 @@ class InventoryModel extends Model
         'date_of_purchase',
         'supplier',
         'location',
-        'encoder',
+        'created_by',
     ];
 
     // Dates
@@ -89,7 +89,7 @@ class InventoryModel extends Model
             'label' => 'item unit'
         ],
         'date_of_purchase' => [
-            'rules' => 'required',
+            'rules' => 'permit_empty',
             'label' => 'date of purchase'
         ],
         'location' => [
@@ -100,10 +100,6 @@ class InventoryModel extends Model
             'rules' => 'permit_empty|string|min_length[3]|max_length[200]',
             'label' => 'supplier'
         ],
-        'encoder' => [
-            'rules' => 'required',
-            'label' => 'encoder'
-        ],
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -111,17 +107,17 @@ class InventoryModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = ['beforeInsert'];
-    protected $afterInsert    = ['afterInsert'];
-    protected $beforeUpdate   = ['beforeInsert'];
+    protected $beforeInsert   = ['setItemFieldsValue'];
+    protected $afterInsert    = ['addLogsIfHasQuantity'];
+    protected $beforeUpdate   = ['setItemFieldsValue'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    // Set the value for encoder before inserting
-    protected function beforeInsert(array $data)
+    // Set the value for created_by before inserting
+    protected function setItemFieldsValue(array $data)
     {
         if (isset($data['data']['item_size']) && $data['data']['item_size'] === 'na') {
             $data['data']['item_size'] = '';
@@ -129,32 +125,22 @@ class InventoryModel extends Model
         if (isset($data['data']['stock_unit']) && $data['data']['stock_unit'] === 'na') {
             $data['data']['stock_unit'] = '';
         }
-        $data['data']['encoder'] = session('employee_id');
+        $data['data']['created_by'] = session('username');
 
         return $data;
     }
 
-    // Insert item in logs if has quantity or stock entered
-    protected function afterInsert(array $data)
+    // Add item in logs if has quantity or stock entered
+    protected function addLogsIfHasQuantity(array $data)
     {
         if ($data['result']) {
             $id         = $this->insertID;
             $arr        = $data['data'];
             $inputs     = [
                 'inventory_id'      => $id,
-                'item_size'         => $arr['item_size'],
-                'item_sdp'          => $arr['item_sdp'],
-                'item_srp'          => $arr['item_srp'],
-                'project_price'     => $arr['project_price'],
                 'stocks'            => $arr['quantity'] ?? $arr['stocks'],
                 'parent_stocks'     => $arr['quantity'] ?? $arr['stocks'],
-                'stock_unit'        => $arr['stock_unit'],
-                'date_of_purchase'  => $arr['date_of_purchase'],
-                'location'          => $arr['location'],
-                'supplier'          => $arr['supplier'],
-                'status'            => 'PURCHASE',
-                'action'            => 'ITEM_IN',
-                'created_by'        => session('employee_id'),
+                'created_by'        => session('username'),
             ];
 
             $this->db->table('inventory_logs')->insert($inputs);
@@ -164,7 +150,7 @@ class InventoryModel extends Model
     }
 
     // Set/format columns to include in select
-    public function columns($joinView = false, $withboth = false)
+    public function columns($joinView = false, $withboth = false, $date_format = false)
     {
         $columns        = "
             {$this->table}.id,
@@ -185,7 +171,7 @@ class InventoryModel extends Model
             {$this->view}.brand,
             {$this->view}.size,
             {$this->view}.unit,
-            {$this->view}.encoder_name
+            {$this->view}.created_by_name
         ";
         $wo_dropdown    = ",
             {$this->table}.category,
@@ -193,8 +179,15 @@ class InventoryModel extends Model
             {$this->table}.item_brand,
             {$this->table}.item_size,
             {$this->table}.stock_unit,
-            {$this->table}.encoder
+            {$this->table}.created_by
         ";
+
+        if ($date_format) {
+            $columns .= ",
+                DATE_FORMAT({$this->table}.date_of_purchase, '%b %e, %Y') AS date_purchase,
+                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted
+            ";
+        }
 
         if ($withboth && $joinView) {
             $columns .= $w_dropdown . $wo_dropdown;
@@ -247,20 +240,8 @@ class InventoryModel extends Model
     public function noticeTable($request) 
     {
         $builder = $this->db->table($this->table);
-        $builder->select("
-            id,
-            (SELECT dropdown FROM inventory_dropdowns AS db WHERE category = db.dropdown_id) AS category,
-            (SELECT dropdown FROM inventory_dropdowns AS db WHERE sub_category = db.dropdown_id) AS sub_category,
-            IF(item_brand IS NULL or TRIM(item_brand) = '', 'N/A', (SELECT dropdown FROM inventory_dropdowns AS db WHERE item_brand = db.dropdown_id)) AS item_brand,
-            item_model,
-            item_description,
-            IF(item_size IS NULL or TRIM(item_size) = '', 'N/A', (SELECT dropdown FROM inventory_dropdowns AS db WHERE item_size = db.dropdown_id)) AS item_size,
-            item_sdp,
-            IF(total IS NULL or TRIM(total) = '', 'N/A', total) AS total,
-            stocks,
-            IF(stock_unit IS NULL or TRIM(stock_unit) = '', 'N/A', (SELECT dropdown FROM inventory_dropdowns AS db WHERE stock_unit = db.dropdown_id)) AS stock_unit,
-            (SELECT CONCAT(firstname, ' ', lastname) FROM employees AS ev WHERE encoder = ev.employee_id) AS encoder
-        ");
+        $builder->select($this->columns(true, true, true));
+        $this->joinView($builder);
 
         if (isset($request['params'])) {
             $params         = $request['params'];
@@ -268,17 +249,18 @@ class InventoryModel extends Model
                 if (!str_contains($val, 'other__')) return $val;
             });
 
-            if (! empty($category_ids)) $builder->whereIn('category', $category_ids);
+            if (! empty($category_ids)) $builder->whereIn("{$this->table}.category", $category_ids);
             if (! empty($params['sub_dropdown'])) {
                 $ids    = implode(',', $params['sub_dropdown']);
                 $in     = "IN({$ids})";
-                $where  = "(sub_category {$in} OR item_brand {$in} OR item_size {$in} OR stock_unit {$in})";
+                $where  = "({$this->table}.sub_category {$in} OR {$this->table}.item_brand {$in} OR {$this->table}.item_size {$in} OR {$this->table}.stock_unit {$in})";
 
                 $builder->where($where);
             }
         }
 
-        $builder->where('deleted_at', null);
+        $builder->where("{$this->table}.deleted_at", null);
+        $builder->orderBy("{$this->table}.id", 'DESC');
         return $builder;
     }
 
@@ -293,7 +275,6 @@ class InventoryModel extends Model
 
             if (check_permissions($permissions, 'ITEM_IN')) {
                 // Item In
-                $data = json_encode($row);
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? 'Item In' : '',
                     'button'    => 'btn-primary',
@@ -304,7 +285,6 @@ class InventoryModel extends Model
 
             if (check_permissions($permissions, 'ITEM_OUT')) {
                 // Item Out
-                $data = json_encode($row);
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? 'Item Out' : '',
                     'button'    => 'btn-secondary',

@@ -12,6 +12,7 @@ class InventoryLogsModel extends Model
 
     protected $DBGroup          = 'default';
     protected $inventoryTable   = 'inventory';
+    protected $inventoryView    = 'inventory_view';
     protected $invDropdownTable = 'inventory_dropdowns';
     protected $table            = 'inventory_logs';
     protected $primaryKey       = 'inventory_logs_id';
@@ -52,41 +53,9 @@ class InventoryLogsModel extends Model
             'rules' => 'required',
             'label' => 'inventory number'
         ],
-        'item_size' => [
-            'rules' => 'permit_empty',
-            'label' => 'item size'
-        ],
-        'item_sdp' => [
-            'rules' => 'required|numeric',
-            'label' => 'dealer price'
-        ],
-        'item_srp' => [
-            'rules' => 'permit_empty|numeric',
-            'label' => 'retail price'
-        ],
-        'project_price' => [
-            'rules' => 'permit_empty|numeric',
-            'label' => 'project price'
-        ],
         'stocks' => [
             'rules' => 'required|numeric',
             'label' => 'quantity'
-        ],
-        'stock_unit' => [
-            'rules' => 'permit_empty',
-            'label' => 'item unit'
-        ],
-        'date_of_purchase' => [
-            'rules' => 'required',
-            'label' => 'date of purchase'
-        ],
-        'location' => [
-            'rules' => 'permit_empty|min_length[3]|max_length[200]',
-            'label' => 'lacation'
-        ],
-        'supplier' => [
-            'rules' => 'permit_empty|string|min_length[3]|max_length[200]',
-            'label' => 'supplier'
         ],
     ];
     protected $validationMessages   = [];
@@ -95,42 +64,27 @@ class InventoryLogsModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = ['beforeInsert'];
-    protected $afterInsert    = ['afterInsert'];
-    protected $beforeUpdate   = ['beforeInsert'];
+    protected $beforeInsert   = ['setCreatedByValue'];
+    protected $afterInsert    = ['updateInventoryStock'];
+    protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    // Join to main table inventory
-    protected function joinInventory($builder, $alias = null, $joinType = 'left')
-    {
-        $table = $alias ? $this->inventoryTable . ' AS '. $alias: $this->inventoryTable;
-        $id = $alias ? "{$alias}.id" : 'id';
-        return $builder->join($table, "inventory_id = $id", $joinType);
-    }
-
     // Set the value for created_by before inserting
-    protected function beforeInsert(array $data)
+    protected function setCreatedByValue(array $data)
     {
-        if (isset($data['data']['item_size']) && $data['data']['item_size'] === 'na') {
-            $data['data']['item_size'] = '';
-        }
-        if (isset($data['data']['stock_unit']) && $data['data']['stock_unit'] === 'na') {
-            $data['data']['stock_unit'] = '';
-        }
-        $data['data']['created_by'] = session('employee_id');
-
+        $data['data']['created_by'] = session('username');
         return $data;
     }
 
     // Set the value for created_by before inserting
-    protected function afterInsert(array $data)
+    protected function updateInventoryStock(array $data)
     {
         if ($data['result']) {
-            $this->updateInventoryStock(
+            $this->traitUpdateInventoryStock(
                 $data['data']['inventory_id'], 
                 doubleval($data['data']['quantity'] ?? $data['data']['stocks']),
                 $data['data']['action']
@@ -139,31 +93,48 @@ class InventoryLogsModel extends Model
 
         return $data;
     }
+
+    // Join to main table inventory
+    protected function joinInventory($builder)
+    {
+        $builder->join($this->inventoryTable, "{$this->inventoryTable}.id = {$this->table}.inventory_id", 'left');
+        $builder->join($this->inventoryView, "{$this->inventoryView}.inventory_id = {$this->table}.inventory_id", 'left');
+    }
+
+    // Set/format columns to include in select
+    public function columns()
+    {
+        $columns        = "
+            {$this->table}.inventory_logs_id,
+            {$this->table}.inventory_id,
+            {$this->table}.status,
+            (UPPER({$this->table}.status)) AS cap_status,
+            {$this->table}.action,
+            {$this->table}.stocks,
+            {$this->table}.parent_stocks,
+            {$this->inventoryTable}.item_model,
+            {$this->inventoryTable}.item_description,
+            {$this->inventoryTable}.stocks AS current_stocks,
+            {$this->inventoryView}.category_name,
+            {$this->inventoryView}.subcategory_name,
+            {$this->inventoryView}.brand,
+            {$this->inventoryView}.size,
+            {$this->inventoryView}.unit,
+            {$this->inventoryView}.created_by_name,
+            DATE_FORMAT({$this->table}.status_date, '%b %e, %Y') AS status_date_formatted,
+            DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted,
+            (SELECT employee_name FROM accounts_view AS av WHERE {$this->table}.created_by = av.username) AS encoder
+        ";
+
+        return $columns;
+    }
     
     // For DataTables
     public function noticeTable($request) 
     {
-        $invAlias = 'inv';
         $builder = $this->db->table($this->table);
-        $builder->select("
-            inventory_logs_id,
-            inventory_id,
-            (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.category = db.dropdown_id) AS category,
-            (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.sub_category = db.dropdown_id) AS sub_category,
-            IF($invAlias.item_brand IS NULL or TRIM($invAlias.item_brand) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.item_brand = db.dropdown_id)) AS item_brand,
-            $invAlias.item_model,
-            $invAlias.item_description,
-            IF($invAlias.item_size IS NULL or TRIM($invAlias.item_size) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.item_size = db.dropdown_id)) AS item_size,
-            {$this->table}.item_sdp,
-            {$this->table}.stocks,
-            IF($invAlias.stock_unit IS NULL or TRIM($invAlias.stock_unit) = '', 'N/A', (SELECT dropdown FROM {$this->invDropdownTable} AS db WHERE $invAlias.stock_unit = db.dropdown_id)) AS stock_unit,
-            status,
-            DATE_FORMAT(status_date, '%b %e, %Y') AS status_date,
-            action,
-            (SELECT CONCAT(firstname, ' ', lastname) FROM employees AS ev WHERE created_by = ev.employee_id) AS encoder
-        ");
-
-        $this->joinInventory($builder, $invAlias);        
+        $builder->select($this->columns());
+        $this->joinInventory($builder);        
 
         if (isset($request['params'])) {
             $params = $request['params'];
@@ -176,13 +147,13 @@ class InventoryLogsModel extends Model
                     if (!str_contains($val, 'other__')) return $val;
                 });
     
-                if (! empty($category_ids)) $builder->whereIn("$invAlias.category", $category_ids);
+                if (! empty($category_ids)) $builder->whereIn("{$this->inventoryTable}.category", $category_ids);
             }
 
             if (! empty($params['sub_dropdown'])) {
                 $ids    = implode(',', $params['sub_dropdown']);
                 $in     = "IN({$ids})";
-                $where  = "($invAlias.sub_category {$in} OR $invAlias.item_brand {$in} OR {$this->table}.item_size {$in} OR {$this->table}.stock_unit {$in})";
+                $where  = "({$this->inventoryTable}.sub_category {$in} OR {$this->inventoryTable}.item_brand {$in} OR {$this->table}.item_size {$in} OR {$this->table}.stock_unit {$in})";
 
                 $builder->where($where);
             }
@@ -196,11 +167,12 @@ class InventoryLogsModel extends Model
     public function actionLogs()
     {
         $closureFun = function($row) {
-            $text = get_actions($row['action'], true);
-            $class = $row['action'] === 'ITEM_IN' ? 'badge-primary' : 'badge-secondary';
+            $text   = get_actions($row['action'], true);
+            $class  = $row['action'] === 'ITEM_IN' ? 'bg-primary' : 'bg-success';
+            $class  .= ' rounded text-sm text-white pl-2 pr-2 pt-1 pb-1';
 
             return <<<EOF
-                <span class="badge {$class}" style="font-size: 90%; font-weight: 500;">{$text}</span>
+                <span class="{$class}">{$text}</span>
             EOF;
 
         };

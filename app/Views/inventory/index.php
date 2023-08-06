@@ -35,11 +35,13 @@
                                 <th>Item Brand</th>
                                 <th>Item Model</th>
                                 <th>Item Description</th>
-                                <th>Item Size</th>
-                                <th>Total</th>
                                 <th>Stocks</th>
+                                <th>Total</th>
+                                <th>Item Size</th>
                                 <th>Unit</th>
+                                <th>Date Purchase</th>
                                 <th>Encoder</th>
+                                <th>Encoded At</th>
                             </tr>
                         </thead>
                     </table>
@@ -52,7 +54,7 @@
         </div>
     </div>
 </div>
-<?= $this->include('inventory/modal'); ?>
-<?= $this->include('inventory/logs/modal'); ?>
+<?= $this->include('inventory/form'); ?>
+<?= $this->include('inventory/logs/form'); ?>
 <?= $this->include('templates/loading'); ?>
 <?=$this->endSection();?>

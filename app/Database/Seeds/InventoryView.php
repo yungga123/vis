@@ -28,7 +28,7 @@ class InventoryView extends Seeder
                 TRIM(BOTH '\r\n' FROM brand.dropdown) AS brand,
                 TRIM(BOTH '\r\n' FROM size.dropdown) AS size,
                 TRIM(BOTH '\r\n' FROM unit.dropdown) AS unit,
-                av.employee_name AS encoder_name
+                av.employee_name AS created_by_name
             FROM {$table} AS inv
             LEFT JOIN {$join} AS cat
                 ON cat.dropdown_id = inv.category
@@ -37,11 +37,11 @@ class InventoryView extends Seeder
             LEFT JOIN {$join} AS brand
                 ON brand.dropdown_id = inv.item_brand
             LEFT JOIN {$join} AS size
-                ON size.dropdown_id = inv.category
+                ON size.dropdown_id = inv.item_size
             LEFT JOIN {$join} AS unit
                 ON unit.dropdown_id = inv.stock_unit
             LEFT JOIN accounts_view AS av
-                ON av.employee_id = inv.encoder)
+                ON av.username = inv.created_by)
         ");
     }
 }
