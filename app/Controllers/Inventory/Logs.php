@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Inventory;
 
 use App\Controllers\BaseController;
 use App\Models\InventoryLogsModel;
-use App\Models\InventoryModel;
 use App\Models\InventoryDropdownModel;
 use monken\TablesIgniter;
 
-class InventoryLogs extends BaseController
+class Logs extends BaseController
 {
     /**
      * Use to initialize corresponding model

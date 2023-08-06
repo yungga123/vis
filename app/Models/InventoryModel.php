@@ -8,6 +8,8 @@ class InventoryModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'inventory';
+    protected $view             = 'inventory_view';
+    protected $tableDropdowns   = 'inventory_dropdowns';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -51,7 +53,6 @@ class InventoryModel extends Model
             'label' => 'sub-category'
         ],
         'item_brand' => [
-            // 'rules' => 'required|string|min_length[3]|max_length[200]',
             'rules' => 'required',
             'label' => 'item brand'
         ],
@@ -162,16 +163,61 @@ class InventoryModel extends Model
         return $data;
     }
 
-    // Get inventories
-    public function getInventories($id = null)
+    // Set/format columns to include in select
+    public function columns($joinView = false, $withboth = false)
     {
-        $columns = implode(',', $this->allowedFields);
-        $columns = $columns . "
-            ,IF(item_brand IS NULL or TRIM(item_brand) = '', 'N/A', (SELECT dropdown FROM inventory_dropdowns AS db WHERE item_brand = db.dropdown_id)) AS item_brand_name,
-            ,(SELECT CONCAT(ev.firstname, ' ', ev.lastname) FROM employees AS ev WHERE encoder = ev.employee_id) AS encoder_name             
+        $columns        = "
+            {$this->table}.id,
+            {$this->table}.item_model,
+            {$this->table}.item_description,
+            {$this->table}.item_sdp,
+            {$this->table}.item_srp,
+            {$this->table}.project_price,
+            {$this->table}.total,
+            {$this->table}.stocks,
+            {$this->table}.date_of_purchase,
+            {$this->table}.location,
+            {$this->table}.supplier
+        ";
+        $w_dropdown     = ",
+            {$this->view}.category_name,
+            {$this->view}.subcategory_name,
+            {$this->view}.brand,
+            {$this->view}.size,
+            {$this->view}.unit,
+            {$this->view}.encoder_name
+        ";
+        $wo_dropdown    = ",
+            {$this->table}.category,
+            {$this->table}.sub_category,
+            {$this->table}.item_brand,
+            {$this->table}.item_size,
+            {$this->table}.stock_unit,
+            {$this->table}.encoder
         ";
 
+        if ($withboth && $joinView) {
+            $columns .= $w_dropdown . $wo_dropdown;
+            return $columns;
+        }
+
+        $columns .= ($joinView) ? $w_dropdown: $wo_dropdown;
+        return $columns;
+    }
+
+    // Join inventory_view via id
+    public function joinView($builder)
+    {
+        $builder->join($this->view, "{$this->table}.id = {$this->view}.inventory_id", 'left');
+    }
+
+    // Get inventories
+    public function getInventories($id = null, $joinView = false, $withboth = false)
+    {
+        $columns = $this->columns($joinView, $withboth);
         $builder = $this->select($columns);
+
+        if ($joinView) $this->joinView($builder);
         return $id ? $builder->find($id) : $builder->findAll();
     }
     

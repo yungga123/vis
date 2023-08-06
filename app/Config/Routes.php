@@ -205,28 +205,45 @@ $routes->get('access-denied','Settings\Permission::denied', ['as' => 'access.den
 /***************** PHASE 1 *****************/
 
 /***************** PHASE 2 *****************/
-//INVENTORY
+
+/* INVENTORY */
 $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Inventory::index', ['as' => 'inventory.home']);
-    $routes->post('list', 'Inventory::list', ['as' => 'inventory.list']);
-    $routes->post('save', 'Inventory::save', ['as' => 'inventory.save']);
-    $routes->post('edit', 'Inventory::edit', ['as' => 'inventory.edit']);
-    $routes->post('delete', 'Inventory::delete', ['as' => 'inventory.delete']);
+    // Inventory
+    $routes->get('/', 'Inventory\Home::index', ['as' => 'inventory.home']);
+    $routes->post('list', 'Inventory\Home::list', ['as' => 'inventory.list']);
+    $routes->post('save', 'Inventory\Home::save', ['as' => 'inventory.save']);
+    $routes->post('edit', 'Inventory\Home::edit', ['as' => 'inventory.edit']);
+    $routes->post('delete', 'Inventory\Home::delete', ['as' => 'inventory.delete']);
 
     // Dropdowns
-    $routes->get('dropdowns', 'InventoryDropdown::index', ['as' => 'inventory.dropdown.home']);
-    $routes->get('dropdown/types', 'InventoryDropdown::types', ['as' => 'inventory.dropdown.types']);
-    $routes->post('dropdown/show', 'InventoryDropdown::show', ['as' => 'inventory.dropdown.show']);
-    $routes->post('dropdown/list', 'InventoryDropdown::list', ['as' => 'inventory.dropdown.list']);
-    $routes->post('dropdown/save', 'InventoryDropdown::save', ['as' => 'inventory.dropdown.save']);
-    $routes->post('dropdown/edit', 'InventoryDropdown::edit', ['as' => 'inventory.dropdown.edit']);
-    $routes->post('dropdown/delete', 'InventoryDropdown::delete', ['as' => 'inventory.dropdown.delete']);
+    $routes->get('dropdowns', 'Inventory\Dropdown::index', ['as' => 'inventory.dropdown.home']);
+    $routes->get('dropdown/types', 'Inventory\Dropdown::types', ['as' => 'inventory.dropdown.types']);
+    $routes->post('dropdown/show', 'Inventory\Dropdown::show', ['as' => 'inventory.dropdown.show']);
+    $routes->post('dropdown/list', 'Inventory\Dropdown::list', ['as' => 'inventory.dropdown.list']);
+    $routes->post('dropdown/save', 'Inventory\Dropdown::save', ['as' => 'inventory.dropdown.save']);
+    $routes->post('dropdown/edit', 'Inventory\Dropdown::edit', ['as' => 'inventory.dropdown.edit']);
+    $routes->post('dropdown/delete', 'Inventory\Dropdown::delete', ['as' => 'inventory.dropdown.delete']);
 
     // Logs (Item In and Out)
-    $routes->get('logs', 'InventoryLogs::index', ['as' => 'inventory.logs.home']);
-    $routes->post('logs/save', 'InventoryLogs::save', ['as' => 'inventory.logs.save']);
-    $routes->post('logs/list', 'InventoryLogs::list', ['as' => 'inventory.logs.list']);
+    $routes->get('logs', 'Inventory\Logs::index', ['as' => 'inventory.logs.home']);
+    $routes->post('logs/save', 'Inventory\Logs::save', ['as' => 'inventory.logs.save']);
+    $routes->post('logs/list', 'Inventory\Logs::list', ['as' => 'inventory.logs.list']);
+
+    // Common
+    $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
 });
+
+// Project Request Forms    
+$routes->group('', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('project-request-forms', 'Inventory\ProjectRequestForm::index', ['as' => 'prf.home']);
+    $routes->post('prf/list', 'Inventory\ProjectRequestForm::list', ['as' => 'prf.list']);
+    $routes->post('prf/save', 'Inventory\ProjectRequestForm::save', ['as' => 'prf.save']);
+    $routes->post('prf/fetch', 'Inventory\ProjectRequestForm::fetch', ['as' => 'prf.fetch']);
+    $routes->post('prf/delete', 'Inventory\ProjectRequestForm::delete', ['as' => 'prf.delete']);
+    $routes->post('prf/change', 'Inventory\ProjectRequestForm::change', ['as' => 'prf.change']);
+    $routes->get('prf/print/(:num)', 'Inventory\ProjectRequestForm::print', ['as' => 'prf.print/$1']);
+});
+/* INVENTORY */
 
 /* ADMIN */
 // Common

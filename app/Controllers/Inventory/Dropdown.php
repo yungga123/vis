@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Inventory;
 
 use App\Controllers\BaseController;
 use App\Models\InventoryDropdownModel;
 use monken\TablesIgniter;
 
-class InventoryDropdown extends BaseController
+class Dropdown extends BaseController
 {
     /**
      * Use to initialize PermissionModel class
@@ -64,7 +64,7 @@ class InventoryDropdown extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'inventory/dropdown.js';
+        $data['custom_js']      = 'inventory/dropdown/index.js';
         $data['routes']         = json_encode([
             'dropdown' => [
                 'show'      => url_to('inventory.dropdown.show'),

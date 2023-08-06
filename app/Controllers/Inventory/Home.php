@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Inventory;
 
 use App\Controllers\BaseController;
 use App\Models\InventoryModel;
@@ -10,7 +10,7 @@ use monken\TablesIgniter;
 /**
  * Controller for Inventory
  */
-class Inventory extends BaseController
+class Home extends BaseController
 {
     /**
      * Use to initialize corresponding model
@@ -74,7 +74,7 @@ class Inventory extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['inventory/list.js', 'inventory/logs.js'];
+        $data['custom_js']      = ['inventory/index.js', 'inventory/logs/index.js'];
         $data['routes']         = json_encode([
             'inventory' => [
                 'list'      => url_to('inventory.list'),
@@ -201,7 +201,7 @@ class Inventory extends BaseController
 
         try {
             $id             = $this->request->getVar('id');
-            $data['data']   = $this->_model->getInventories($id);
+            $data['data']   = $this->_model->getInventories($id, true, true);
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;

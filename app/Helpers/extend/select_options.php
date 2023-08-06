@@ -210,3 +210,59 @@ if (! function_exists('get_dispatch_services'))
         return $param ? $options[strtolower($param)] : $options;
 	}
 }
+
+if (! function_exists('get_prf_status'))
+{
+    /**
+     * Get status of Project Request Form module
+     */
+	function get_prf_status(string $param = '', bool $pass_tense = false): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'accept'    => 'accept',
+            'reject'    => 'reject',
+            'item_out'  => 'item_out',
+        ];
+
+        $options_pt = [
+            'pending'   => 'pending',
+            'accepted'  => 'accepted',
+            'rejected'  => 'rejected',
+            'item_out'  => 'item_out',
+        ];
+
+        $arr = $pass_tense ? $options_pt : $options;
+
+        return $param ? $arr[$param] : $arr;
+	}
+}
+
+if (! function_exists('set_prf_status'))
+{
+    /**
+     * Setting status of Project Request Form module to its past tense
+     */
+	function set_prf_status(string|array $param): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'accept'    => 'accepted',
+            'accepted'  => 'accepted',
+            'reject'    => 'rejected',
+            'rejected'  => 'rejected',
+            'item_out'  => 'item_out',
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_prf_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $options[$param];
+	}
+}

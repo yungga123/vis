@@ -15,7 +15,6 @@ class InventoryLogs extends Migration
             ],
             'inventory_id' => [
                 'type' => "INT",
-                // 'unsigned' => true,
                 'comment' => 'Foreign key of inventory primary id',
             ],
             'item_size' => [

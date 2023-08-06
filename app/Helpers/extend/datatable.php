@@ -22,7 +22,7 @@ if (! function_exists('dt_button_html'))
 if (! function_exists('dt_button_actions'))
 {
     /**
-     * DataTable buttons actions format
+     * DataTable default (edit & delete) buttons actions format
      */
 	function dt_button_actions(array $row, string $id, array $permissions, bool $dropdown = false): string
 	{

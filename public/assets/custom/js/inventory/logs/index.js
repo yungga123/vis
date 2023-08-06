@@ -224,7 +224,7 @@ function itemDetailsHtml(id, stock, data, action) {
 				</tr>
 				<tr>
 					<th>Item Brand:</th>
-					<td>${data.item_brand_name}</td>
+					<td>${data.brand}</td>
 				</tr>
 				<tr>
 					<th>Item Model:</th>
@@ -239,7 +239,7 @@ function itemDetailsHtml(id, stock, data, action) {
 					<td>${data.stocks}</td>
 				</tr>
 				<tr>
-					<th>Quantity (${action.toUpperCase()}):</th>
+					<th>Quantity (${strUpper(action)}):</th>
 					<td>
 						<input type="number" class="form-control" name="quantity" id="quantity_logs" placeholder="Quantity here" min="1" max="${max}" onkeyup="checkInputQuantity(this.value, ${stock}, '${action}')" required/>
 						<small id="alert_quantity_logs" class="text-danger"></small>

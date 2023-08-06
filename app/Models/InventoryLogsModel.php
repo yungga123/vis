@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\InventoryTrait;
 
 class InventoryLogsModel extends Model
 {
+    /* Declare trait here to use */
+    use InventoryTrait;
+
     protected $DBGroup          = 'default';
     protected $inventoryTable   = 'inventory';
     protected $invDropdownTable = 'inventory_dropdowns';
@@ -126,7 +130,7 @@ class InventoryLogsModel extends Model
     protected function afterInsert(array $data)
     {
         if ($data['result']) {
-            $this->_updateInventoryStock(
+            $this->updateInventoryStock(
                 $data['data']['inventory_id'], 
                 doubleval($data['data']['quantity'] ?? $data['data']['stocks']),
                 $data['data']['action']
@@ -202,14 +206,5 @@ class InventoryLogsModel extends Model
         };
         
         return $closureFun;
-    }
-
-    // Updating inventory stocks
-    private function _updateInventoryStock($id, $stock, $action)
-    {
-        $sign = $action === 'ITEM_OUT' ? '-' : '+';
-        $builder = $this->db->table($this->inventoryTable);
-        $builder->set('stocks', "stocks $sign ". $stock, false);
-        $builder->where('id', $id)->update();
     }
 }

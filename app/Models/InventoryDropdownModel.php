@@ -88,7 +88,7 @@ class InventoryDropdownModel extends Model
                 $data = [];
                 foreach ($dropdowns as $key => $val) {
                     $data[$key] = [
-                        'dropdown'      => $val,
+                        'dropdown'      => trim($val),
                         'dropdown_type' => $inputs['dropdown_type'],
                         'parent_id'     => $inputs['parent_id'],
                     ];
@@ -132,7 +132,7 @@ class InventoryDropdownModel extends Model
             $data = [];
             foreach ($dropdowns as $key => $val) {
                 $data[$key] = [
-                    'dropdown'              => $val,
+                    'dropdown'              => trim($val),
                     'dropdown_type'         => $other_type,
                     'other_category_type'   => $other_type,
                     'parent_id'             => $id,
