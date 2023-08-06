@@ -138,7 +138,8 @@ abstract class BaseController extends Controller
         if($status === STATUS_ERROR) {
             // If mail didn't sent set status as info
             $status = STATUS_INFO;
-            $message = 'Account has been updated but mail could not be sent!';
+            // $message = 'Account has been updated but mail could not be sent!';
+            $message = 'Account has been updated! '. $message;
         }
 
         return compact('status', 'message');
@@ -165,7 +166,7 @@ abstract class BaseController extends Controller
     /**
      * Check permissions based on the passed needle
      *
-     * @param string $permissions
+     * @param string|array $permissions
      * @param string $needle
      * @return bool
      */

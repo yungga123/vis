@@ -507,25 +507,31 @@ function refreshDataTable(table = null) {
 	else dtTable.ajax.reload();
 }
 
-/*
+/**
  * Use for showing and hiding a password - dependent on input group password
  * You can see reference from Views/settings/send_mail.php for the input group
- * passId = name of the password id selector
- * showPassId = name of the show password button id selector
+ *
+ * @param {string} passId 		name of the password id selector
+ * @param {string} showPassId 	name of the show password button id selector
+ * @return {void}
  */
 function passwordShowHideInit(passId, showPassId) {
 	passId = passId || "password";
 	showPassId = showPassId || "show_password";
 
 	$("#" + showPassId).on("click", function () {
-		if ($(this).hasClass("show")) {
-			$(this).removeClass("show").attr("title", "Click here to show password!");
-			$(this).children("i").removeClass().addClass("fas fa-eye");
-			$("#" + passId).attr("type", "password");
-		} else {
-			$(this).addClass("show").attr("title", "Click here to hide password!");
-			$(this).children("i").removeClass().addClass("fas fa-eye-slash");
-			$("#" + passId).attr("type", "text");
+		if (!isEmpty($("#" + passId).val())) {
+			if ($(this).hasClass("show")) {
+				$(this)
+					.removeClass("show")
+					.attr("title", "Click here to show password!");
+				$(this).children("i").removeClass().addClass("fas fa-eye");
+				$("#" + passId).attr("type", "password");
+			} else {
+				$(this).addClass("show").attr("title", "Click here to hide password!");
+				$(this).children("i").removeClass().addClass("fas fa-eye-slash");
+				$("#" + passId).attr("type", "text");
+			}
 		}
 	});
 }

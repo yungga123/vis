@@ -140,6 +140,10 @@ class MailConfig extends BaseController
 
             if (empty($mail_config)) {
                 throw new Exception("There is no mail config data.", 1);
+            } else {
+                if ($mail_config['is_enable'] === 'NO') {
+                    throw new Exception("Mail sending has been <strong>disabled</strong>.", 2);
+                }
             }
 
             //Tell PHPMailer to use SMTP
@@ -215,9 +219,11 @@ class MailConfig extends BaseController
             $error = 'Mail could not be sent! Please contact your system administrator.';
             log_message(
                 'error',
-                'Mail could not be sent. Mailer Error: {mail_error}! [ERROR] {exception}!',
-                ['mail_error' => $mail->ErrorInfo, 'exception' => $e]
+                'Mail could not be sent. Mailer Error: {mail_error}! [ERROR] {exception}! Error code: {code}',
+                ['mail_error' => $mail->ErrorInfo, 'exception' => $e, 'code' => $e->getCode()]
             );
+
+            if ($e->getCode() == 1 || $e->getCode() == 2) $error = $e->getMessage();
         }
 
         return [
