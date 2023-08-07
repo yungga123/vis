@@ -20,7 +20,7 @@ trait InventoryTrait
         $model      = new JobOrderModel();
         $table      = $model->table;
         $join       = $model->tableJoined;
-        $fields     = $fields ? $fields : $this->selectedColumns();
+        $fields     = $fields ? $fields : $model->selectedColumns(true);
         $builder    = $model->select($fields);
 
         $builder->_join($builder);
