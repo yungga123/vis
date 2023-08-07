@@ -1,10 +1,12 @@
-var table, modal, form, elems, $technicians;
+var table, modal, form, elems, jo_selector, inv_selector;
 
 $(document).ready(function () {
 	table = "prf_table";
 	modal = "prf_modal";
 	form = "prf_form";
 	elems = ["inventory_id", "quantity_out", "process_date"];
+	jo_selector = "#job_order_id";
+	inv_selector = "#inventory_id";
 
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
@@ -16,16 +18,28 @@ $(document).ready(function () {
 		$(`#${modal} .modal-title`).text("Add PRF");
 		$(`#${form}`)[0].reset();
 		$("#prf_id").val("");
+		$("#orig_job_order").addClass("d-none");
 		$("#orig_item").addClass("d-none");
+		$(".job-order-details").html("");
 		$(".item-details").html("");
-		clearSelect2Selection("#inventory_id");
+		clearSelect2Selection(jo_selector);
+		clearSelect2Selection(inv_selector);
 
 		clearAlertInForm(elems);
 	});
 
+	/* Job Order select2 via ajax data source */
+	select2AjaxInit(
+		jo_selector,
+		"Search & select a job order",
+		router.inventory.common.joborders,
+		"option_text",
+		_loadJobOrderDetails
+	);
+
 	/* Masterlist select2 via ajax data source */
 	select2AjaxInit(
-		"#inventory_id",
+		inv_selector,
 		"Search & select an item",
 		router.inventory.common.masterlist,
 		"text",
@@ -41,9 +55,12 @@ $(document).ready(function () {
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
 			$("#prf_id").val("");
+			$("#orig_job_order").addClass("d-none");
 			$("#orig_item").addClass("d-none");
+			$(".job-order-details").html("");
 			$(".item-details").html("");
-			clearSelect2Selection("#inventory_id");
+			clearSelect2Selection(jo_selector);
+			clearSelect2Selection(inv_selector);
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -68,14 +85,23 @@ function edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
+				// Set selected job order in select2
+				setSelect2AjaxSelection(
+					jo_selector,
+					res.data.option_text,
+					res.data.job_order_id
+				);
 				// Set selected item in select2
 				setSelect2AjaxSelection(
-					"#inventory_id",
+					inv_selector,
 					res.data.text,
 					res.data.inventory_id
 				);
 
 				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+				$("#orig_job_order")
+					.removeClass()
+					.html(`Original JO: <strong>${res.data.option_text}</strong>`);
 				$("#orig_item")
 					.removeClass()
 					.html(`Original item: <strong>${res.data.text}</strong>`);
@@ -151,13 +177,50 @@ function change(id, changeTo, status, currStocks, quantityOut) {
 	);
 }
 
+/* Load selected job order details */
+function _loadJobOrderDetails(data) {
+	let html = "";
+
+	if (!data.selected && data.id) {
+		html = `
+			<h5 class="text-center">JO Details</h5>
+			<table class="table table-bordered table-sm table-condensed">
+				<tbody>
+                    <tr>
+                        <th class="text-right" width="50%">Task Lead #</th>
+						<td class="text-left" width="50%">${data.tasklead_id}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right" width="50%">Client</th>
+						<td class="text-left" width="50%">${data.customer_name}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right" width="50%">Manager</th>
+						<td class="text-left" width="50%">${data.manager}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right" width="50%">Work Type</th>
+						<td class="text-left" width="50%">${data.work_type}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right" width="50%">Status</th>
+						<td class="text-left" width="50%">${strUpper(data.jo_status)}</td>
+                    </tr>
+				</tbody>
+			</table>
+		`;
+	}
+
+	$(".job-order-details").html(html);
+}
+
 /* Load selected item details */
 function _loadItemDetails(data) {
 	let html = "";
 
 	if (!data.selected && data.id) {
 		html = `
-			<h5 class="text-center">Details</h5>
+			<h5 class="text-center">Item Details</h5>
 			<table class="table table-bordered table-sm table-condensed">
 				<tbody>
                     <tr>

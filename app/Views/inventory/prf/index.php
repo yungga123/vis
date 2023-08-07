@@ -11,7 +11,11 @@
                                 <th>Actions</th>
                                 <th>Status</th>
                                 <th>PRF #</th>
+                                <th>JO #</th>
                                 <th>Item #</th>
+                                <th>Quotation</th>
+                                <th>Client</th>
+                                <th>Work Type</th>
                                 <th>Category</th>
                                 <th>Sub-Category</th>
                                 <th>Item Brand</th>

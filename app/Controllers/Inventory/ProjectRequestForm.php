@@ -5,9 +5,13 @@ namespace App\Controllers\Inventory;
 use App\Controllers\BaseController;
 use App\Models\ProjectRequestFormModel;
 use monken\TablesIgniter;
+use App\Traits\InventoryTrait;
 
 class ProjectRequestForm extends BaseController
 {
+    /* Declare trait here to use */
+    use InventoryTrait;
+
     /**
      * Use to initialize corresponding model
      * @var object
@@ -73,7 +77,8 @@ class ProjectRequestForm extends BaseController
             ],
             'inventory' => [
                 'common' => [
-                    'masterlist' => url_to('inventory.common.masterlist'),
+                    'masterlist'    => url_to('inventory.common.masterlist'),
+                    'joborders'     => url_to('inventory.common.joborders'),
                 ]
             ]
         ]);
@@ -99,12 +104,18 @@ class ProjectRequestForm extends BaseController
                 'item_description',
                 'category_name',
                 'subcategory_name',
+                'quotation_num',
+                'customer_name',
             ])
             ->setOrder([
                 null,
                 null,
                 'id',
+                'job_order_id',
                 'inventory_id',
+                'quotation_num',
+                'customer_name',
+                'work_type',
                 'category_name',
                 'subcategory_name',
                 'brand',
@@ -126,7 +137,11 @@ class ProjectRequestForm extends BaseController
                 $this->_model->buttons($this->_permissions),
                 $this->_model->dtPRFStatusFormat(),
                 'id',
+                'job_order_id',
                 'inventory_id',
+                'quotation_num',
+                'customer_name',
+                'work_type',
                 'category_name',
                 'subcategory_name',
                 'brand',
@@ -164,7 +179,15 @@ class ProjectRequestForm extends BaseController
         $this->transBegin();
 
         try {
-            if (! $this->_model->save($this->request->getVar())) {
+            $inputs = [
+                'id'            => $this->request->getVar('id'),
+                'job_order_id'  => $this->request->getVar('job_order_id'),
+                'inventory_id'  => $this->request->getVar('inventory_id'),
+                'quantity_out'  => $this->request->getVar('quantity_out'),
+                'process_date'  => $this->request->getVar('process_date'),
+            ];
+
+            if (! $this->_model->save($inputs)) {
                 $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
@@ -204,11 +227,18 @@ class ProjectRequestForm extends BaseController
             $table          = $this->_model->table;
             $tableInventory = $this->_model->tableInventory;
             $columns        = "
-                {$table}.id, {$table}.inventory_id, {$table}.quantity_out, {$table}.process_date,                
+                {$table}.id, {$table}.job_order_id, {$table}.inventory_id, 
+                {$table}.quantity_out, {$table}.process_date,                
                 CONCAT({$tableInventory}.id, ' | ', {$tableInventory}.item_model, ' | ', {$tableInventory}.item_description) AS text
             ";
             $id             = $this->request->getVar('id');
-            $data['data']   = $this->_model->getProjectRequestForms($id, true, $columns);
+            $record         = $this->_model->getProjectRequestForms($id, true, $columns);
+            $job_order      = $this->fetchJobOrders($record['job_order_id'], []);
+
+            // Remove the id to avoid conflict after merge two array
+            unset($job_order[0]['id']); 
+            // Merge the two results
+            $data['data']   = $record + $job_order[0];
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;

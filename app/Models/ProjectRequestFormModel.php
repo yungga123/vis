@@ -13,6 +13,7 @@ class ProjectRequestFormModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'project_request_forms';
     protected $view             = 'prf_view';
+    protected $tableJobOrder    = 'job_orders';
     protected $tableInventory   = 'inventory';
     protected $viewInventory    = 'inventory_view';
     protected $primaryKey       = 'id';
@@ -22,6 +23,7 @@ class ProjectRequestFormModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        'job_order_id',
         'inventory_id',
         'quantity_out',
         'process_date',
@@ -38,6 +40,10 @@ class ProjectRequestFormModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'job_order_id' => [
+            'rules' => 'required',
+            'label' => 'job order'
+        ],
         'inventory_id' => [
             'rules' => 'required',
             'label' => 'masterlist item'
@@ -104,10 +110,11 @@ class ProjectRequestFormModel extends Model
     }
 
     // Set columns depending on arguments
-    protected function columns($date_format = false, $joinIventory = false, $joinView = false)
+    protected function columns($date_format = false, $joinInventory = false, $joinView = false)
     {
         $columns = "
             {$this->table}.id,
+            {$this->table}.job_order_id,
             {$this->table}.inventory_id,
             {$this->table}.quantity_out,
             {$this->table}.process_date,
@@ -124,7 +131,7 @@ class ProjectRequestFormModel extends Model
             ";
         }
 
-        if ($joinIventory) {
+        if ($joinInventory) {
             $columns .= ",
                 {$this->tableInventory}.item_model,
                 {$this->tableInventory}.item_description,
@@ -147,6 +154,14 @@ class ProjectRequestFormModel extends Model
         return $columns;
     }
 
+    // Get the Job Order selected columns
+    protected function jobOrderColumns()
+    {
+        $joModel = new JobOrderModel();
+        // Get the selected columns
+        return $joModel->selectedColumns();
+    }
+
     // Join with prf_view
     protected function joinView($builder)
     {
@@ -154,10 +169,20 @@ class ProjectRequestFormModel extends Model
     }
 
     // Join with inventory table and inventory_view
-    protected function joinIventory($builder)
+    protected function joinInventory($builder)
     {
         $builder->join($this->tableInventory, "{$this->table}.inventory_id = {$this->tableInventory}.id", 'left');
         $builder->join($this->viewInventory, "{$this->table}.inventory_id = {$this->viewInventory}.inventory_id", 'left');
+    }
+
+    // Join with prf_view
+    protected function joinJobOrder($builder)
+    {
+        $joModel = new JobOrderModel();
+        // Join with job_orders table
+        $builder->join($this->tableJobOrder, "{$this->table}.job_order_id = {$this->tableJobOrder}.id", 'left');
+        // Then join job_orders with task_lead_booked view and employees table
+        $joModel->_join($builder);
     }
 
     // Get project request forms
@@ -166,7 +191,9 @@ class ProjectRequestFormModel extends Model
         $columns = $columns ? $columns : $this->columns($join);
         $builder = $this->select($columns);
 
-        if ($join) $this->joinIventory($builder);
+        if ($join) $this->joinInventory($builder);
+        $builder->where("{$this->table}.deleted_at", null);
+
         return $id ? $builder->find($id) : $builder->findAll();
     }
     
@@ -174,9 +201,14 @@ class ProjectRequestFormModel extends Model
    public function noticeTable($request) 
    {
        $builder = $this->db->table($this->table);
-       $builder->select($this->columns(true, true, true));
-       $this->joinIventory($builder);
+       $columns = $this->columns(true, true, true);
+       // Include JO columns
+       $columns .= ','. $this->jobOrderColumns();
+
+       $builder->select($columns);
+       $this->joinInventory($builder);
        $this->joinView($builder);
+       $this->joinJobOrder($builder);
 
        $builder->where("{$this->table}.deleted_at", null);
        $builder->orderBy('id', 'DESC');
@@ -235,7 +267,9 @@ class ProjectRequestFormModel extends Model
                 EOF;
             }
 
-            $buttons = dt_buttons_dropdown($buttons);
+            $buttons = ($row['status'] === 'rejected' && !is_admin()) 
+                ? '~~N/A~~' : dt_buttons_dropdown($buttons);
+                
             return $buttons;
         };
         
@@ -257,7 +291,7 @@ class ProjectRequestFormModel extends Model
                    $format = '<span class="bg-primary '.$class.'">'.$text.'</span>';
                    break;
                case 'rejected':
-                   $format = '<span class="bg-danger '.$class.'">'.$text.'</span>';
+                   $format = '<span class="bg-secondary '.$class.'">'.$text.'</span>';
                    break;
                case 'item_out':
                    $format = '<span class="bg-success '.$class.'">Item Out</span>';

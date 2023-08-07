@@ -13,18 +13,32 @@
                 <div class="modal-body">                    
                     <div class="alert alert-info" role="alert">
                         <strong>Note:</strong> 
-                        If not empty, initial dropdowns of <strong>Inventory Masterlist</strong> are by 10. Type the ITEM MODEL & DESCRIPTION to search if not in the options and then, click to select.
+                        If not empty, initial dropdowns of <strong>Job Order & Inventory Masterlist</strong> are by 10. Type the QUOTATION NUMBER and ITEM MODEL & DESCRIPTION to search if not in the options and then, click to select.
                     </div>
                     <div class="form-group">
                         <input type="hidden" id="prf_id" name="id" readonly>
+                        <label class="required" for="job_order_id">Job Order</label>
+                        <span>Format: JO # | Quotation # | Client</span>
+                        <!-- Select input -->
+                        <select class="custom-select" name="job_order_id" id="job_order_id" style="width: 100%;">
+                        </select>
+                        <!-- Select input -->
+                        <small>Only <strong>ACCEPTED</strong> and <strong>FILED</strong> will be displayed.</small>
+                        <div class="d-none" id="orig_job_order"></div>
+                        <small id="alert_job_order_id" class="text-danger"></small>
+                        <div class="mt-2 job-order-details"></div>
+                    </div>
+                    <div class="form-group">
                         <label class="required" for="inventory_id">Masterlist Item</label>
-                        <p class="text-muted text-sm">Format: Item ID | Model | Description</p>
+                        <span>Format: Item # | Model | Description</span>
+                        <!-- Select input -->
                         <select class="custom-select" name="inventory_id" id="inventory_id" style="width: 100%;">
                         </select>
+                        <!-- Select input -->
                         <div class="d-none" id="orig_item"></div>
                         <small id="alert_inventory_id" class="text-danger"></small>
+                        <div class="mt-2 item-details"></div>
                     </div>
-                    <div class="form-group item-details"></div>
                     <div class="form-group">
                         <label class="required" for="quantity_out">Stock/s Out</label>
                         <input type="number" name="quantity_out" id="quantity_out" class="form-control" placeholder="Enter quantity out">

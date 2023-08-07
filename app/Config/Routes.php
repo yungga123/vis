@@ -231,6 +231,7 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
 
     // Common
     $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
+    $routes->post('job-orders', 'Inventory\Common::searchJobOrders', ['as' => 'inventory.common.joborders']);
 });
 
 // Project Request Forms    

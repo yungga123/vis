@@ -13,6 +13,10 @@ class ProjectRequestFormMigration extends Migration
                 'type' => 'INT',
                 'auto_increment' => true
             ],
+            'job_order_id' => [
+                'type' => 'INT',
+                'comment' => 'Connected to job_orders table',
+            ],
             'inventory_id' => [
                 'type' => 'INT',
                 'comment' => 'Connected to inventory table',
