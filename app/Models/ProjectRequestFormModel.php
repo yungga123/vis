@@ -24,8 +24,6 @@ class ProjectRequestFormModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'job_order_id',
-        'inventory_id',
-        'quantity_out',
         'process_date',
         'status',
         'created_by',
@@ -46,10 +44,10 @@ class ProjectRequestFormModel extends Model
         ],
         'inventory_id' => [
             'rules' => 'required',
-            'label' => 'masterlist item'
+            'label' => 'item'
         ],
         'quantity_out' => [
-            'rules' => 'required|numeric',
+            'rules' => 'required',
             'label' => 'quantity out'
         ],
         'process_date' => [

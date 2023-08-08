@@ -1,15 +1,16 @@
-var table, modal, form, elems, jo_selector, inv_selector;
+var table, modal, form, elems, joSelector, invSelector, itemFieldTable;
 
 $(document).ready(function () {
 	table = "prf_table";
 	modal = "prf_modal";
 	form = "prf_form";
-	elems = ["inventory_id", "quantity_out", "process_date"];
-	jo_selector = "#job_order_id";
-	inv_selector = "#inventory_id";
+	elems = ["job_order_id", "inventory_id", "quantity_out", "process_date"];
+	joSelector = "#job_order_id";
+	invSelector = ".inventory_id";
+	itemFieldTable = $("#item_field_table tbody");
 
 	/* Load dataTable */
-	loadDataTable(table, router.prf.list, METHOD.POST);
+	// loadDataTable(table, router.prf.list, METHOD.POST);
 
 	/* Toggle modal */
 	$("#btn_add_record").on("click", function () {
@@ -21,16 +22,15 @@ $(document).ready(function () {
 		$("#orig_job_order").addClass("d-none");
 		$("#orig_item").addClass("d-none");
 		$(".job-order-details").html("");
-		$(".item-details").html("");
-		clearSelect2Selection(jo_selector);
-		clearSelect2Selection(inv_selector);
-
+		$(".item-row").remove();
+		clearSelect2Selection(joSelector);
+		clearSelect2Selection(invSelector);
 		clearAlertInForm(elems);
 	});
 
 	/* Job Order select2 via ajax data source */
 	select2AjaxInit(
-		jo_selector,
+		joSelector,
 		"Search & select a job order",
 		router.inventory.common.joborders,
 		"option_text",
@@ -38,13 +38,7 @@ $(document).ready(function () {
 	);
 
 	/* Masterlist select2 via ajax data source */
-	select2AjaxInit(
-		inv_selector,
-		"Search & select an item",
-		router.inventory.common.masterlist,
-		"text",
-		_loadItemDetails
-	);
+	_initInventorySelect2();
 
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -52,15 +46,15 @@ $(document).ready(function () {
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			refreshDataTable($("#" + table));
+			// refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
 			$("#prf_id").val("");
 			$("#orig_job_order").addClass("d-none");
 			$("#orig_item").addClass("d-none");
 			$(".job-order-details").html("");
-			$(".item-details").html("");
-			clearSelect2Selection(jo_selector);
-			clearSelect2Selection(inv_selector);
+			$(".item-row").remove();
+			clearSelect2Selection(joSelector);
+			clearSelect2Selection(invSelector);
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -87,13 +81,13 @@ function edit(id) {
 			if (res.status === STATUS.SUCCESS) {
 				// Set selected job order in select2
 				setSelect2AjaxSelection(
-					jo_selector,
+					joSelector,
 					res.data.option_text,
 					res.data.job_order_id
 				);
 				// Set selected item in select2
 				setSelect2AjaxSelection(
-					inv_selector,
+					invSelector,
 					res.data.text,
 					res.data.inventory_id
 				);
@@ -174,6 +168,45 @@ function change(id, changeTo, status, currStocks, quantityOut) {
 		title,
 		swalMsg,
 		STATUS.WARNING
+	);
+}
+
+/* Toggle item field */
+function toggleItemField(row) {
+	const itemFieldCount = itemFieldTable.find("tr").length + 1;
+
+	if (row) {
+		itemFieldTable.children("tr#row_" + row).remove();
+		return;
+	}
+
+	const html = `
+		<tr class="item-row" id="row_${itemFieldCount}">
+			<td>
+				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
+			</td>
+			<td>
+				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Enter quantity out">
+			</td>
+			<td>
+				<button type="button" class="btn btn-sm btn-danger" onclick="toggleItemField(${itemFieldCount})" title="Add new item field">
+					<i class="fas fa-minus"></i>
+				</button>
+			</td>
+		</tr>
+	`;
+
+	itemFieldTable.append(html);
+	_initInventorySelect2();
+}
+
+/* Masterlist select2 via ajax data source */
+function _initInventorySelect2() {
+	select2AjaxInit(
+		invSelector,
+		"Search & select an item",
+		router.inventory.common.masterlist,
+		"text"
 	);
 }
 

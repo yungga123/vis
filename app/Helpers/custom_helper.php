@@ -83,3 +83,17 @@ if (! function_exists('format_datetime'))
         return !empty($datetime) ? date($format, strtotime($datetime)) : '';
 	}
 }
+
+if (! function_exists('has_empty_value'))
+{
+    /**
+     * Check if array has an empty value
+     */
+	function has_empty_value(array $array): bool
+	{
+        foreach ($array as $value) {
+            if (empty($value)) return true; // Found an empty value
+        }
+        return false; // No empty values found
+	}
+}

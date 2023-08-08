@@ -4,6 +4,7 @@ namespace App\Controllers\Inventory;
 
 use App\Controllers\BaseController;
 use App\Models\ProjectRequestFormModel;
+use App\Models\PRFItemModel;
 use monken\TablesIgniter;
 use App\Traits\InventoryTrait;
 
@@ -179,21 +180,30 @@ class ProjectRequestForm extends BaseController
         $this->transBegin();
 
         try {
+            $id     = $this->request->getVar('id');
+            $inv_id = $this->request->getVar('inventory_id');
+            $q_out  = $this->request->getVar('quantity_out');
             $inputs = [
-                'id'            => $this->request->getVar('id'),
+                'id'            => $id,
                 'job_order_id'  => $this->request->getVar('job_order_id'),
-                'inventory_id'  => $this->request->getVar('inventory_id'),
-                'quantity_out'  => $this->request->getVar('quantity_out'),
                 'process_date'  => $this->request->getVar('process_date'),
+                'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
+                    ? (!has_empty_value($q_out) && count($inv_id) === count($q_out) ? $inv_id : null) 
+                    : null,
+                'quantity_out'  => !has_empty_value($q_out) ? $q_out : null,
             ];
 
             if (! $this->_model->save($inputs)) {
                 $data['errors']     = $this->_model->errors();
                 $data['status']     = STATUS_ERROR;
                 $data['message']    = "Validation error!";
+            } else {
+                $prfItemModel   = new PRFItemModel();
+                $prf_id         = $id ? $id : $this->_model->insertID();
+                $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
             }
 
-            if ($this->request->getVar('id')) {
+            if ($id) {
                 $data['message']    = 'PRF has been updated successfully!';
             }
 

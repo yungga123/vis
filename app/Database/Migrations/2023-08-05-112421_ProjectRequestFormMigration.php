@@ -17,14 +17,6 @@ class ProjectRequestFormMigration extends Migration
                 'type' => 'INT',
                 'comment' => 'Connected to job_orders table',
             ],
-            'inventory_id' => [
-                'type' => 'INT',
-                'comment' => 'Connected to inventory table',
-            ],
-            'quantity_out' => [
-                'type' => 'DECIMAL',
-                'constraint' => [7,2]
-            ],
             'process_date' => [
                 'type' => 'date',
             ],
@@ -32,6 +24,10 @@ class ProjectRequestFormMigration extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 50,
                 'default'=> "pending",
+            ],
+            'remarks' => [
+                'type' => 'TEXT',
+                'null' => true
             ],
             'created_by' => [
                 'type' => 'VARCHAR',

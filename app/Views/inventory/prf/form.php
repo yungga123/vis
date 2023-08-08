@@ -1,6 +1,6 @@
 <!-- PRF Modal -->
 <div class="modal fade" id="prf_modal" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <form id="prf_form" class="with-label-indicator" action="<?= url_to('prf.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
@@ -15,39 +15,68 @@
                         <strong>Note:</strong> 
                         If not empty, initial dropdowns of <strong>Job Order & Inventory Masterlist</strong> are by 10. Type the QUOTATION NUMBER and ITEM MODEL & DESCRIPTION to search if not in the options and then, click to select.
                     </div>
-                    <div class="form-group">
-                        <input type="hidden" id="prf_id" name="id" readonly>
-                        <label class="required" for="job_order_id">Job Order</label>
-                        <span>Format: JO # | Quotation # | Client</span>
-                        <!-- Select input -->
-                        <select class="custom-select" name="job_order_id" id="job_order_id" style="width: 100%;">
-                        </select>
-                        <!-- Select input -->
-                        <small>Only <strong>ACCEPTED</strong> and <strong>FILED</strong> will be displayed.</small>
-                        <div class="d-none" id="orig_job_order"></div>
-                        <small id="alert_job_order_id" class="text-danger"></small>
-                        <div class="mt-2 job-order-details"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="required" for="inventory_id">Masterlist Item</label>
-                        <span>Format: Item # | Model | Description</span>
-                        <!-- Select input -->
-                        <select class="custom-select" name="inventory_id" id="inventory_id" style="width: 100%;">
-                        </select>
-                        <!-- Select input -->
-                        <div class="d-none" id="orig_item"></div>
-                        <small id="alert_inventory_id" class="text-danger"></small>
-                        <div class="mt-2 item-details"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="required" for="quantity_out">Stock/s Out</label>
-                        <input type="number" name="quantity_out" id="quantity_out" class="form-control" placeholder="Enter quantity out">
-                        <small id="alert_quantity_out" class="text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label class="required" for="process_date">Process Date</label>
-                        <input type="date" name="process_date" id="process_date" class="form-control">
-                        <small id="alert_process_date" class="text-danger"></small>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <input type="hidden" id="prf_id" name="id" readonly>
+                                <label class="required" for="job_order_id">Job Order</label>
+                                <div>Format: JO # | Quotation # | Client</div>
+                                <!-- Select input -->
+                                <select class="custom-select" name="job_order_id" id="job_order_id" style="width: 100%;">
+                                </select>
+                                <!-- Select input -->
+                                <small>Only <strong>ACCEPTED</strong> and <strong>FILED</strong> will be displayed.</small>
+                                <div class="d-none" id="orig_job_order"></div>
+                                <div id="alert_job_order_id" class="text-sm text-danger"></div>
+                                <div class="mt-2 job-order-details"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="required" for="process_date">Process Date</label>
+                                <input type="date" name="process_date" id="process_date" class="form-control">
+                                <small id="alert_process_date" class="text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label class="required text-center">Masterlist Items</label>
+                                <div>Format: Item # | Model | Description</div>
+                            </div>
+                            <table class="table" id="item_field_table">
+                                <thead>
+                                    <tr>
+                                        <th width="60%">Item Details</th>
+                                        <th width="30%">Quantity Out</th>
+                                        <th width="5%">Button</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Enter quantity out">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="toggleItemField()" title="Add new item field">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td>
+                                            <small id="alert_inventory_id" class="text-danger"></small>
+                                        </td>
+                                        <td>
+                                            <small id="alert_quantity_out" class="text-danger"></small>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
