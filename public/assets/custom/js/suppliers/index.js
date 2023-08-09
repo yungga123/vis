@@ -60,6 +60,7 @@ function edit(id) {
 	$("#supplier_id").val(id);
 
 	clearAlertInForm(elems);
+	resetSelected();
 	
 	showLoading();
 
@@ -73,9 +74,12 @@ function edit(id) {
 					$.each(res.data, (key, value) => {
 						//$(`input[name="${key}"]`).val(value);
 						$(`#${key}`).val(value);
-						// if () {
-							
-						// }
+						if (value == "Others" && key == "supplier_type") {
+							selectedOthers(value);
+						}
+						if (value == "Others" && key == "payment_mode") {
+							selectedPaymentMode(value);
+						}
 						console.log(key,value);
 					});
 				}
@@ -123,4 +127,9 @@ function selectedPaymentMode(val) {
 	} else {
 		$('#others_payment_mode').attr('type','hidden').attr('required',false).val("");
 	}
+}
+
+function resetSelected() {
+	$('#others_supplier_type').attr('type','hidden').attr('required',false).val("");
+	$('#others_payment_mode').attr('type','hidden').attr('required',false).val("");
 }
