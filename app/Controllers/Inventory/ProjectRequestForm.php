@@ -100,30 +100,18 @@ class ProjectRequestForm extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'brand',
-                'item_model',
-                'item_description',
-                'category_name',
-                'subcategory_name',
                 'quotation_num',
                 'customer_name',
+                'work_type',
             ])
             ->setOrder([
                 null,
                 null,
                 'id',
                 'job_order_id',
-                'inventory_id',
                 'quotation_num',
                 'customer_name',
                 'work_type',
-                'category_name',
-                'subcategory_name',
-                'brand',
-                'item_model',
-                'item_description',
-                'stocks',
-                'quantity_out',
                 'process_date_formatted',
                 'created_by_name',
                 'created_at_formatted',
@@ -139,17 +127,9 @@ class ProjectRequestForm extends BaseController
                 $this->_model->dtPRFStatusFormat(),
                 'id',
                 'job_order_id',
-                'inventory_id',
                 'quotation_num',
                 'customer_name',
                 'work_type',
-                'category_name',
-                'subcategory_name',
-                'brand',
-                'item_model',
-                'item_description',
-                'stocks',
-                'quantity_out',
                 'process_date_formatted',
                 'created_by_name',
                 'created_at_formatted',
@@ -222,7 +202,7 @@ class ProjectRequestForm extends BaseController
     }
     
     /**
-     * For fetching record using the id
+     * For fetching record using the id or other
      *
      * @return json
      */
@@ -234,21 +214,27 @@ class ProjectRequestForm extends BaseController
         ];
 
         try {
-            $table          = $this->_model->table;
-            $tableInventory = $this->_model->tableInventory;
-            $columns        = "
-                {$table}.id, {$table}.job_order_id, {$table}.inventory_id, 
-                {$table}.quantity_out, {$table}.process_date,                
-                CONCAT({$tableInventory}.id, ' | ', {$tableInventory}.item_model, ' | ', {$tableInventory}.item_description) AS text
-            ";
-            $id             = $this->request->getVar('id');
-            $record         = $this->_model->getProjectRequestForms($id, true, $columns);
-            $job_order      = $this->fetchJobOrders($record['job_order_id'], []);
+            $id  = $this->request->getVar('id');
+            if ($this->request->getVar('prf_items')) {                
+                $data['data']       = $this->traitFetchPrfItems($id);
+                $data['message']    = 'PRF items has been retrieved!';
+            } else {
+                $table          = $this->_model->table;
+                $tableInventory = 'inventory';
+                $columns        = "
+                    {$table}.id, {$table}.job_order_id, {$table}.inventory_id, 
+                    {$table}.quantity_out, {$table}.process_date,                
+                    CONCAT({$tableInventory}.id, ' | ', {$tableInventory}.item_model, ' | ', {$tableInventory}.item_description) AS text
+                ";
+                
+                $record         = $this->_model->getProjectRequestForms($id, true, $columns);
+                $job_order      = $this->fetchJobOrders($record['job_order_id'], []);
 
-            // Remove the id to avoid conflict after merge two array
-            unset($job_order[0]['id']); 
-            // Merge the two results
-            $data['data']   = $record + $job_order[0];
+                // Remove the id to avoid conflict after merge two array
+                unset($job_order[0]['id']); 
+                // Merge the two results
+                $data['data']   = $record + $job_order[0];
+            }            
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;

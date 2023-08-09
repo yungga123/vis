@@ -582,7 +582,7 @@ function select2AjaxInit(
 			perPage: perPage || 10,
 		};
 
-		if (isObject(options))
+		if (isObject(options) && !isEmpty(options))
 			$.each(options, (key, value) => (newOptions[key] = value));
 
 		return {

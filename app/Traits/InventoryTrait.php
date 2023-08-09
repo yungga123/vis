@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\PRFItemModel;
 use App\Models\InventoryModel;
 use App\Models\JobOrderModel;
 
@@ -88,6 +89,26 @@ trait InventoryTrait
             'data'  => $result,
             'total'  => $total
         ];     
+    }
+
+    /**
+     * Fetch prf items (inventory)
+     *
+     * @param string $q         The query to search for
+     * @param string $options   Identifier for the options - pagination or not
+     * @param string $fields    Columns or fields in the select
+     * @return array            The results of the search
+     */
+    public function traitFetchPrfItems($prf_id, $fields = '')
+    {
+        $model      = new PRFItemModel();
+        $columns    = $model->columns() .','. $model->inventoryColumns(true);
+        $fields     = $fields ? $fields : $columns;
+        $builder    = $model->select($fields);
+
+        $model->joinInventory($builder, true);
+        $builder->where($model->table.'.prf_id', $prf_id);
+        return $builder->findAll();
     }
 
     /**

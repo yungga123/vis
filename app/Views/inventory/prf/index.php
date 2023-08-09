@@ -12,17 +12,9 @@
                                 <th>Status</th>
                                 <th>PRF #</th>
                                 <th>JO #</th>
-                                <th>Item #</th>
                                 <th>Quotation</th>
                                 <th>Client</th>
                                 <th>Work Type</th>
-                                <th>Category</th>
-                                <th>Sub-Category</th>
-                                <th>Item Brand</th>
-                                <th>Item Model</th>
-                                <th>Item Description</th>
-                                <th>Current Stock</th>
-                                <th>Quantity Out</th>
                                 <th>Process Date</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
@@ -41,5 +33,6 @@
     </div>
 </div>
 <?= $this->include('inventory/prf/form'); ?>
+<?= $this->include('inventory/prf/items'); ?>
 <?= $this->include('templates/loading'); ?>
 <?=$this->endSection();?>

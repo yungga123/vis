@@ -79,4 +79,57 @@ class PRFItemModel extends Model
     {
         $this->where('prf_id', $prf_id)->delete();
     }
+    
+    // Set columns
+    public function columns()
+    {
+        $columns = "
+            {$this->table}.inventory_id,
+            {$this->table}.quantity_out,
+            {$this->table}.returned_q,
+            {$this->table}.returned_date,
+            CASE 
+                WHEN {$this->table}.returned_q IS NOT NULL
+                THEN ({$this->table}.quantity_out - {$this->table}.returned_q) 
+                ELSE 'N/A' 
+            END AS consumed
+        ";
+
+        return $columns;
+    }
+    
+    // Selected inventory columns
+    public function inventoryColumns($withView = false)
+    {
+        $inventoryModel = new InventoryModel();  
+        $columns = "
+            {$inventoryModel->table}.category,
+            {$inventoryModel->table}.sub_category,
+            {$inventoryModel->table}.item_brand,
+            {$inventoryModel->table}.item_model,
+            {$inventoryModel->table}.item_description,
+            {$inventoryModel->table}.stocks
+        ";
+
+        if ($withView) {
+            $columns .= ",
+                {$inventoryModel->view}.category_name,
+                {$inventoryModel->view}.subcategory_name,
+                {$inventoryModel->view}.brand,
+                {$inventoryModel->view}.created_by_name
+            ";
+        }
+
+        return $columns;
+    }
+
+    // Join with inventory table and inventory_view
+    public function joinInventory($builder, $withView = false)
+    {
+        $inventoryModel = new InventoryModel();        
+        // Join with inventory table
+        $builder->join($inventoryModel->table, "{$this->table}.inventory_id = {$inventoryModel->table}.id", 'left');
+        // Then join inventory with inventory_View
+        if ($withView) $inventoryModel->joinView($builder);
+    }
 }

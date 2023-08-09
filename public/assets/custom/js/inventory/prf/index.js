@@ -10,7 +10,7 @@ $(document).ready(function () {
 	itemFieldTable = $("#item_field_table tbody");
 
 	/* Load dataTable */
-	// loadDataTable(table, router.prf.list, METHOD.POST);
+	loadDataTable(table, router.prf.list, METHOD.POST);
 
 	/* Toggle modal */
 	$("#btn_add_record").on("click", function () {
@@ -64,6 +64,51 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 });
+
+/* Get prf items */
+function view(id) {
+	$("#prf_items_modal #prf_id_text").text("PRF #: " + id);
+	showLoading();
+
+	const data = { id: id, prf_items: true };
+	$.post(router.prf.fetch, data)
+		.then((res) => {
+			closeLoading();
+
+			if (res.status === STATUS.SUCCESS) {
+				let html = "";
+
+				if (!isEmpty(res.data)) {
+					$.each(res.data, (index, val) => {
+						console.log(index, val);
+						html += `
+							<tr>
+								<td>${val.inventory_id}</td>
+								<td>${val.category_name}</td>
+								<td>${val.item_model}</td>
+								<td>${val.item_description}</td>
+								<td>${val.stocks}</td>
+								<td>${val.quantity_out}</td>
+								<td>${val.returned_q || "N/A"}</td>
+								<td>${val.consumed}</td>
+								<td>${val.returned_date || "N/A"}</td>
+							</tr>
+						`;
+					});
+				} else {
+					html =
+						'<tr><td colspan="9" align="center">No PRF items found...</td></tr>';
+				}
+
+				$(`#prf_items_table tbody`).html(html);
+				$(`#prf_items_modal`).modal("show");
+			} else {
+				$(`#prf_items_modal`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status);
+			}
+		})
+		.catch((err) => catchErrMsg(err));
+}
 
 /* Get record details */
 function edit(id) {
