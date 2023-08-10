@@ -92,52 +92,42 @@ class Logs extends BaseController
      */
     public function save() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => '<strong>ITEM IN!</strong> Item has been saved successfully!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $request    = $this->request->getVar();
+                $inputs     = [
+                    'inventory_id'      => $request['inventory_id'],
+                    'stocks'            => $request['quantity'] ?? $request['stocks_logs'],
+                    'parent_stocks'     => $request['parent_stocks'],
+                    'status'            => $request['status_logs'] ?? '',
+                    'status_date'       => $request['status_date_logs'] ?? NULL,
+                    'action'            => $request['action_logs'],
+                ];
 
-        // Using DB Transaction
-        $this->transBegin();
+                if (! $this->_model->save($inputs)) {
+                    $errors = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
 
-        try {
-            $request    = $this->request->getVar();
-            $inputs     = [
-                'inventory_id'      => $request['inventory_id'],
-                'stocks'            => $request['quantity'] ?? $request['stocks_logs'],
-                'parent_stocks'     => $request['parent_stocks'],
-                'status'            => $request['status_logs'] ?? '',
-                'status_date'       => $request['status_date_logs'] ?? NULL,
-                'action'            => $request['action_logs'],
-            ];
+                    foreach ($errors as $key => $value) {
+                        $errors[$key .'_logs'] = $value;
+                    }                
+                    $data['errors']     = $errors;
+                }
 
-            if (! $this->_model->save($inputs)) {
-                $errors = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-
-                foreach ($errors as $key => $value) {
-                    $errors[$key .'_logs'] = $value;
-                }                
-                $data['errors']     = $errors;
+                if ($request['action_logs'] === 'ITEM_OUT') {
+                    $data['message']    = '<strong>ITEM OUT!</strong> Item has been updated successfully!';
+                }
+                return $data;
             }
+        );
 
-            if ($request['action_logs'] === 'ITEM_OUT') {
-                $data['message']    = '<strong>ITEM OUT!</strong> Item has been updated successfully!';
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**

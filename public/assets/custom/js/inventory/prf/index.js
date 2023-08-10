@@ -86,7 +86,6 @@ function view(id) {
 
 				if (!isEmpty(res.data)) {
 					$.each(res.data, (index, val) => {
-						console.log(index, val);
 						html += `
 							<tr>
 								<td>${val.inventory_id}</td>
@@ -118,6 +117,7 @@ function view(id) {
 
 /* Get record details */
 function edit(id) {
+	$("#prf_items_modal").modal("hide");
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#prf_id").val(id);
@@ -202,7 +202,7 @@ function remove(id) {
 }
 
 /* Change status record */
-function change(id, changeTo, status, currStocks, quantityOut) {
+function change(id, changeTo, status, proceed) {
 	const swalMsg = `
 		<div>PRF #: <strong>${id}</strong></div>
 		<div>Are you sure you want to <strong>${strUpper(
@@ -212,18 +212,34 @@ function change(id, changeTo, status, currStocks, quantityOut) {
 	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
 	const data = { id: id, status: changeTo };
 
-	if (!(isEmpty(currStocks) && isEmpty(quantityOut))) {
-		// Check if current stocks is less than the quantity out
-		// If yes, will not proceed to change status
-		if (Math.floor(currStocks < quantityOut)) {
-			notifMsgSwal(
-				STATUS.INFO,
-				"The Item's <strong>CURRENT STOCK/S</strong> is less than the <strong>QUANTITY OUT</strong>! Please replenish the stocks first.",
-				STATUS.INFO
-			);
+	if (status === "accepted" && !proceed) {
+		// For item out, dispaly the prf_items_modal
+		// to review the item first
+		view(id);
+		// Add note
+		const onclick = 'onclick="edit(' + id + ')"';
+		const note = `
+			Please review the items details first before you proceed to <strong>ITEM OUT</strong>! 
+			Click the <button type="button" class="btn btn-sm btn-warning" ${onclick} title="Edit"><i class="fas fa-edit"></i></button> button/icon to update details.
+		`;
+		$("#note_item_out").html(note);
 
-			return;
-		}
+		// Remove and append the button
+		const changeClick =
+			'onclick="change(' +
+			id +
+			",'" +
+			changeTo +
+			"','" +
+			status +
+			"'," +
+			true +
+			')"';
+		$("#prf_items_modal .modal-footer #btn_item_out").remove();
+		$("#prf_items_modal .modal-footer").append(`
+			<button type="button" class="btn btn-success" id="btn_item_out" ${changeClick}">Item Out</button>	
+		`);
+		return;
 	}
 
 	swalNotifConfirm(
@@ -234,6 +250,7 @@ function change(id, changeTo, status, currStocks, quantityOut) {
 
 					refreshDataTable($("#" + table));
 					notifMsgSwal(res.status, message, res.status);
+					$("#prf_items_modal").modal("hide");
 				})
 				.catch((err) => catchErrMsg(err));
 		},

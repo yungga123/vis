@@ -46,6 +46,18 @@ class PRFItemModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Get prf items using prf_id
+    public function getPrfItemsByPrfId($prf_id, $columns = '', $concat = false, $joinInventory = false) 
+    {
+        $columns = $columns ? $columns : $this->columns($concat);
+        $builder = $this->select($columns);
+        $builder->where('prf_id', $prf_id);
+
+        if ($concat) $builder->groupBy('prf_id');
+        if ($joinInventory) $builder->joinInventory($builder);
+        return $builder->findAll();
+    }
+
     // Saving the prf items
     public function savePrfItems($data, $prf_id) 
     {
@@ -81,7 +93,7 @@ class PRFItemModel extends Model
     }
     
     // Set columns
-    public function columns()
+    public function columns($concat = false)
     {
         $columns = "
             {$this->table}.inventory_id,
@@ -94,6 +106,27 @@ class PRFItemModel extends Model
                 ELSE 'N/A' 
             END AS consumed
         ";
+
+        if ($concat) {
+            $columns = "
+                GROUP_CONCAT(inventory_id) AS inventory_id,
+                GROUP_CONCAT(quantity_out) AS quantity_out,
+                GROUP_CONCAT(
+                    CASE 
+                    WHEN returned_q IS NOT NULL
+                    THEN returned_q 
+                    ELSE 0 
+                END
+                ) AS returned_q,
+                GROUP_CONCAT(
+                    CASE 
+                    WHEN returned_q IS NOT NULL
+                    THEN (quantity_out - returned_q) 
+                    ELSE 0 
+                END
+                ) AS consumed
+            ";
+        }
 
         return $columns;
     }

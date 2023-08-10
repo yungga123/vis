@@ -4,6 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
+use PhpParser\Node\Stmt\TryCatch;
 
 class ProjectRequestFormModel extends Model
 {
@@ -17,7 +18,7 @@ class ProjectRequestFormModel extends Model
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'job_order_id',
@@ -87,17 +88,36 @@ class ProjectRequestFormModel extends Model
     }
 
     // Update inventory stock after item out
-    protected function updateInventoryStock(array $data)
+    public function updateInventoryStock(array $data)
     {
         if ($data['result'] && isset($data['data']['status'])) {
             if ($data['data']['status'] === 'item_out') {
-                $record = $this->getProjectRequestForms($data['id'], false, 'inventory_id, quantity_out');
-    
-                $this->traitUpdateInventoryStock(
-                    $record[0]['inventory_id'], 
-                    doubleval($record[0]['quantity_out']),
-                    'ITEM_OUT'
-                );
+                $prfItemModel   = new PRFItemModel();
+                $columns        = "
+                    {$prfItemModel->table}.inventory_id, 
+                    {$prfItemModel->table}.quantity_out,
+                    inventory.stocks
+                ";
+                $record         = $prfItemModel->getPrfItemsByPrfId($data['id'], $columns, false, true);
+                $action         = 'ITEM_OUT';
+
+                if (! empty($record)) {
+                    $logs_data = [];
+                    foreach ($record as $val) {
+                        $this->traitUpdateInventoryStock($val['inventory_id'], $val['quantity_out'], $action);
+                        $logs_data[] = [
+                            'inventory_id'  => $val['inventory_id'],
+                            'stocks'        => $val['quantity_out'],
+                            'parent_stocks' => $val['stocks'],
+                            'action'        => $action,
+                            'created_by'    => session('username'),
+                        ];
+                    }
+
+                    // Add inventory logs
+                    $invLogModel = new InventoryLogsModel();
+                    $invLogModel->insertBatch($logs_data);
+                }
             }
         }
 
@@ -241,7 +261,7 @@ class ProjectRequestFormModel extends Model
                     'text'      => $dropdown ? 'Item Out' : '',
                     'button'    => 'btn-success',
                     'icon'      => 'fas fa-file-import',
-                    'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status'], $row['stocks'], $row['quantity_out']),
+                    'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status']),
                 ], $dropdown);
             }
 
@@ -294,12 +314,12 @@ class ProjectRequestFormModel extends Model
    }
 
    // For status onchange event
-   private function _statusDTOnchange($id, $changeTo, $status, $stocks = '', $q_out = '')
+   private function _statusDTOnchange($id, $changeTo, $status)
    {
        $title  = ucwords($changeTo);
        $title  = $changeTo === 'item_out' ? 'Item Out' : $title;
        return <<<EOF
-           onclick="change({$id}, '{$changeTo}', '{$status}', '{$stocks}', '{$q_out}')" title="{$title} PRF"
+           onclick="change({$id}, '{$changeTo}', '{$status}')" title="{$title} PRF"
        EOF;
    }
 }

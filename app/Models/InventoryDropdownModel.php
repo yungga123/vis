@@ -82,14 +82,14 @@ class InventoryDropdownModel extends Model
     {
         $dropdowns = explode(',', $inputs['dropdown']);
         if (! empty($inputs['is_category']) || count($dropdowns) <= 1) {
-            return $this->save($inputs);
+            return $this->save(clean_input($inputs));
         } else {
             if (count($dropdowns) > 1) {
                 $data = [];
                 foreach ($dropdowns as $key => $val) {
                     $data[$key] = [
                         'dropdown'      => trim($val),
-                        'dropdown_type' => $inputs['dropdown_type'],
+                        'dropdown_type' => trim($inputs['dropdown_type']),
                         'parent_id'     => $inputs['parent_id'],
                     ];
                 }
@@ -105,14 +105,14 @@ class InventoryDropdownModel extends Model
         $id         = 0;
         $other_type = strtoupper($inputs['other_category_type']);
         $record     = $this->select('dropdown_id, dropdown')
-                        ->where('other_category_type', $other_type)
+                        ->where('other_category_type', trim($other_type))
                         ->where('parent_id', 0)->first();
 
         if (empty($record)) {
             $this->save([
-                'dropdown'              => $other_type,
+                'dropdown'              => trim($other_type),
                 'dropdown_type'         => 'CATEGORY',
-                'other_category_type'   => $other_type,
+                'other_category_type'   => trim($other_type),
                 'parent_id'             => 0,
             ]);
 
@@ -123,8 +123,8 @@ class InventoryDropdownModel extends Model
         if (count($dropdowns) <= 1) {
             $data = [
                 'dropdown'              => $inputs['dropdown'],
-                'dropdown_type'         => $other_type,
-                'other_category_type'   => $other_type,
+                'dropdown_type'         => trim($other_type),
+                'other_category_type'   => trim($other_type),
                 'parent_id'             => $id,
             ];
             return $this->save($data);
@@ -133,8 +133,8 @@ class InventoryDropdownModel extends Model
             foreach ($dropdowns as $key => $val) {
                 $data[$key] = [
                     'dropdown'              => trim($val),
-                    'dropdown_type'         => $other_type,
-                    'other_category_type'   => $other_type,
+                    'dropdown_type'         => trim($other_type),
+                    'other_category_type'   => trim($other_type),
                     'parent_id'             => $id,
                 ];
             }

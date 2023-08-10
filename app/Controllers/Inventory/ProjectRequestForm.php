@@ -5,8 +5,8 @@ namespace App\Controllers\Inventory;
 use App\Controllers\BaseController;
 use App\Models\ProjectRequestFormModel;
 use App\Models\PRFItemModel;
-use monken\TablesIgniter;
 use App\Traits\InventoryTrait;
+use monken\TablesIgniter;
 
 class ProjectRequestForm extends BaseController
 {
@@ -29,7 +29,6 @@ class ProjectRequestForm extends BaseController
      * Use to get current permissions
      * @var string
      */
-
     private $_permissions;
 
     /**
@@ -216,7 +215,7 @@ class ProjectRequestForm extends BaseController
             function($data) {
                 $id  = $this->request->getVar('id');
                 if ($this->request->getVar('prf_items')) {                
-                    $data['data']       = $this->traitFetchPrfItems($id, true);
+                    $data['data']       = $this->traitFetchPrfItems($id, true, true);
                     $data['message']    = 'PRF items has been retrieved!';
                 } else {
                     $table          = $this->_model->table;

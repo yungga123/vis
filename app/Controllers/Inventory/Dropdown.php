@@ -193,11 +193,11 @@ class Dropdown extends BaseController
                     }
                 } else {
                     if ($inputs['is_category']) {
-                        $inputs['dropdown']         = strtoupper($inputs['dropdown']);
+                        $inputs['dropdown']         = strtoupper(trim($inputs['dropdown']));
                         $inputs['dropdown_type']    = 'CATEGORY';
                     } else {
-                        $inputs['parent_id']        = $inputs['dropdown_type'];
-                        $inputs['dropdown_type']    = $inputs['dropdown_type_text'];
+                        $inputs['parent_id']        = trim($inputs['dropdown_type']);
+                        $inputs['dropdown_type']    = trim($inputs['dropdown_type_text']);
                     }
         
                     if ($this->request->getVar('dropdown_id')) {
@@ -210,7 +210,7 @@ class Dropdown extends BaseController
                         $data['message']    = "Validation error!";
                     } else {
                         if ($inputs['is_category'] && !empty($inputs['dropdown_id'])) {
-                            $this->_model->set(['dropdown_type' => $inputs['dropdown']])
+                            $this->_model->set(['dropdown_type' => trim($inputs['dropdown'])])
                                 ->where('parent_id', $inputs['dropdown_id'])->update();
                         }
                     }

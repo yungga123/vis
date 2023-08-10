@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\PRFItemModel;
 use App\Models\InventoryModel;
 use App\Models\JobOrderModel;
+use CodeIgniter\Database\RawSql;
 
 trait InventoryTrait
 {
@@ -115,9 +116,9 @@ trait InventoryTrait
     /**
      * To update the inventory stock/quantity
      *
-     * @param int $id           The inventory primary id
-     * @param int|double $stock Stock/quantity to add or minus
-     * @param string $action    Either 'ITEM_IN' or 'ITEM_OUT'
+     * @param int|array $id             The inventory primary id(s)
+     * @param int|double|array $stock   Stock/quantity to add or minus
+     * @param string $action            Either 'ITEM_IN' or 'ITEM_OUT'
      * @return void            
      */
     public function traitUpdateInventoryStock($id, $stock, $action)
@@ -126,9 +127,8 @@ trait InventoryTrait
         $sign       = $action === 'ITEM_OUT' ? '-' : '+';
         $builder    = $model->db->table($model->table);
 
-        $builder->where('id', $id);
         $builder->set('stocks', "stocks $sign ". $stock, false);
-        $builder->update();
+        $builder->where('id', $id)->update();
     }
 
     /**
