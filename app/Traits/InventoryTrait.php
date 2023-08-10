@@ -12,7 +12,7 @@ trait InventoryTrait
      * Fetching/searching job order by quotation number
      *
      * @param string $q         The query to search for
-     * @param string $options   Identifier for the options - pagination or not
+     * @param array $options    Identifier for the options - pagination or not
      * @param string $fields    Columns or fields in the select
      * @return array            The results of the search
      */
@@ -50,7 +50,7 @@ trait InventoryTrait
      * Fetching/searching items (inventory) by model & description
      *
      * @param string $q         The query to search for
-     * @param string $options   Identifier for the options - pagination or not
+     * @param array $options    Identifier for the options - pagination or not
      * @param string $fields    Columns or fields in the select
      * @return array            The results of the search
      */
@@ -94,19 +94,20 @@ trait InventoryTrait
     /**
      * Fetch prf items (inventory)
      *
-     * @param string $q         The query to search for
-     * @param string $options   Identifier for the options - pagination or not
+     * @param int $prf_id       The prf_id to search for
+     * @param bool $join        Identifier if join with inventory
+     * @param bool $with_view   Identifier if join with inventory_view
      * @param string $fields    Columns or fields in the select
-     * @return array            The results of the search
+     * @return array            The items result
      */
-    public function traitFetchPrfItems($prf_id, $fields = '')
+    public function traitFetchPrfItems($prf_id, $join = false, $with_view = false, $fields = '')
     {
         $model      = new PRFItemModel();
-        $columns    = $model->columns() .','. $model->inventoryColumns(true);
-        $fields     = $fields ? $fields : $columns;
+        $fields     = $fields ? $fields : $model->columns();
+        $fields     = $join ? $fields .','. $model->inventoryColumns($with_view) : $fields;
         $builder    = $model->select($fields);
 
-        $model->joinInventory($builder, true);
+        if ($join) $model->joinInventory($builder, $with_view);
         $builder->where($model->table.'.prf_id', $prf_id);
         return $builder->findAll();
     }
@@ -128,5 +129,24 @@ trait InventoryTrait
         $builder->where('id', $id);
         $builder->set('stocks', "stocks $sign ". $stock, false);
         $builder->update();
+    }
+
+    /**
+     * Check if available stocks is less than the quantity out
+     *
+     * @param mixed $available      The current available stocks
+     * @param mixed $quantity_out   The items quantity to be out
+     * @return bool            
+     */
+    public function traitIsStocksLessThanQuantityOut($available, $quantity_out)
+    {
+       if (is_array($available)) {
+            for ($i=0; $i < count($available); $i++) { 
+                if (floatval($available[$i]) < floatval($quantity_out[$i]))
+                    return true;
+            }
+       } 
+       
+       return floatval($available) < floatval($quantity_out);
     }
 }

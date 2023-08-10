@@ -50,7 +50,7 @@ class PRFItemModel extends Model
     public function savePrfItems($data, $prf_id) 
     {
         $inventory_ids  = $data['inventory_id'];
-        $quantity_outs  = $data['inventory_id'];
+        $quantity_outs  = $data['quantity_out'];
         $returned_qs    = isset($data['returned_q']) ? $data['returned_q'] : null;
         $returned_date  = isset($data['returned_date']) ? $data['returned_date'] : null;
 

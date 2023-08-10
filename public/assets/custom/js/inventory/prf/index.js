@@ -40,13 +40,19 @@ $(document).ready(function () {
 	/* Masterlist select2 via ajax data source */
 	_initInventorySelect2();
 
+	// If select2 clear, set the item_available input next to it to empty
+	$(invSelector).on("select2:clear", function (e) {
+		const parentSiblingElem = e.target.parentElement.nextElementSibling;
+		_populateAvailableItemStocks(parentSiblingElem, "");
+	});
+
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			// refreshDataTable($("#" + table));
+			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
 			$("#prf_id").val("");
 			$("#orig_job_order").addClass("d-none");
@@ -115,7 +121,11 @@ function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#prf_id").val(id);
+	$(".quantity_out").val("");
+	$(".item-row").remove();
 
+	clearSelect2Selection(joSelector);
+	clearSelect2Selection(invSelector);
 	clearAlertInForm(elems);
 	showLoading();
 
@@ -127,23 +137,40 @@ function edit(id) {
 				// Set selected job order in select2
 				setSelect2AjaxSelection(
 					joSelector,
-					res.data.option_text,
+					res.data.job_order.option_text,
 					res.data.job_order_id
 				);
-				// Set selected item in select2
-				setSelect2AjaxSelection(
-					invSelector,
-					res.data.text,
-					res.data.inventory_id
-				);
+
+				if (!isEmpty(res.data.items)) {
+					const items = res.data.items;
+					// Add item fields
+					for (let i = 1; i < items.length; i++) toggleItemField();
+
+					// Populate data
+					const itemFields = $(".inventory_id");
+					const quantity_out = $(".quantity_out");
+					for (let x = 0; x < itemFields.length; x++) {
+						const elem = itemFields[x];
+						const qelem = quantity_out[x];
+						const item = items[x];
+						const text = `${item.inventory_id} | ${item.item_model} | ${item.item_description}`;
+						// Set selected item in each select2
+						setSelect2AjaxSelection(elem, text, item.inventory_id);
+						// Set quantity_out in each input
+						$(qelem).val(parseInt(item.quantity_out));
+						// Get the parent next sibling td (which where the item_available input) each
+						const parentSiblingElem = $(elem).parent().next();
+						// Set available stocks each
+						_populateAvailableItemStocks(parentSiblingElem[0], item.stocks);
+					}
+				}
 
 				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
 				$("#orig_job_order")
 					.removeClass()
-					.html(`Original JO: <strong>${res.data.option_text}</strong>`);
-				$("#orig_item")
-					.removeClass()
-					.html(`Original item: <strong>${res.data.text}</strong>`);
+					.html(
+						`Original JO: <strong>${res.data.job_order.option_text}</strong>`
+					);
 
 				$(`#${modal}`).modal("show");
 			} else {
@@ -231,7 +258,10 @@ function toggleItemField(row) {
 				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
 			</td>
 			<td>
-				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Enter quantity out">
+				<input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+			</td>
+			<td>
+				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1">
 			</td>
 			<td>
 				<button type="button" class="btn btn-sm btn-danger" onclick="toggleItemField(${itemFieldCount})" title="Add new item field">
@@ -251,7 +281,8 @@ function _initInventorySelect2() {
 		invSelector,
 		"Search & select an item",
 		router.inventory.common.masterlist,
-		"text"
+		"text",
+		_loadItemDetails
 	);
 }
 
@@ -294,33 +325,19 @@ function _loadJobOrderDetails(data) {
 
 /* Load selected item details */
 function _loadItemDetails(data) {
-	let html = "";
-
-	if (!data.selected && data.id) {
-		html = `
-			<h5 class="text-center">Item Details</h5>
-			<table class="table table-bordered table-sm table-condensed">
-				<tbody>
-                    <tr>
-                        <th class="text-right" width="50%">Category</th>
-						<td class="text-left" width="50%">${data.category_name}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Sub-Category</th>
-						<td class="text-left" width="50%">${data.subcategory_name}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Brand</th>
-						<td class="text-left" width="50%">${data.brand}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Current Stocks</th>
-						<td class="text-left" width="50%">${data.stocks}</td>
-                    </tr>
-				</tbody>
-			</table>
-		`;
+	if (data.id) {
+		const parentSiblingElem =
+			data.element.parentElement.parentElement.nextElementSibling;
+		if (data.stocks)
+			_populateAvailableItemStocks(parentSiblingElem, data.stocks);
 	}
+}
 
-	$(".item-details").html(html);
+/* Populate the item available stocks */
+function _populateAvailableItemStocks(parentSiblingElem, available) {
+	if (parentSiblingElem.tagName === "TD" && typeof available !== "undefined") {
+		$(parentSiblingElem)
+			.children('input[name="item_available[]"]')
+			.val(available);
+	}
 }

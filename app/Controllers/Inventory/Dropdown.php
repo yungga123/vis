@@ -118,20 +118,20 @@ class Dropdown extends BaseController
      */
     public function types() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Data has been retrieved!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $data['data'] = $this->_model->getDropdownTypes();
+                return $data;
+            }, 
+            false
+        );
 
-        try {
-            $data['data'] = $this->_model->getDropdownTypes();
-        } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
     
     /**
@@ -141,32 +141,32 @@ class Dropdown extends BaseController
      */
     public function show() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Data has been retrieved!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $type = $this->request->getVar('dropdown_type');
+                $type = is_string($type) ? strtoupper($type) : $type;
 
-        try {
-            $type = $this->request->getVar('dropdown_type');
-            $type = is_string($type) ? strtoupper($type) : $type;
+                if (in_array($type, $this->_model->otherCategoryTypes)) {
+                    $result = $this->_model->getOtherCategoryTypes($type);
+                } else {
+                    $is_all = $type == 'CATEGORY' ? true : false;
+                    $columns = 'dropdown_id, dropdown, dropdown_type, other_category_type';
+                    $result = $this->_model->getDropdowns($type, $columns, $is_all);
+                }
 
-            if (in_array($type, $this->_model->otherCategoryTypes)) {
-                $result = $this->_model->getOtherCategoryTypes($type);
-            } else {
-                $is_all = $type == 'CATEGORY' ? true : false;
-                $columns = 'dropdown_id, dropdown, dropdown_type, other_category_type';
-                $result = $this->_model->getDropdowns($type, $columns, $is_all);
-            }
+                $data['data'] = $result;
+                $data['type'] = $type;
+                return $data;
+            }, 
+            false
+        );
 
-            $data['data'] = $result;
-            $data['type'] = $type;
-        } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -176,60 +176,50 @@ class Dropdown extends BaseController
      */
     public function save() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Data has been saved successfully!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $inputs = $this->request->getVar();
 
-        // Using DB Transaction
-        $this->transBegin();
-
-        try {
-            $inputs = $this->request->getVar();
-
-            if (isset($inputs['other_category_type'])) {
-                if (! $this->_model->saveOtherCategoryTypes($inputs)) {
-                    $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
-                }
-            } else {
-                if ($inputs['is_category']) {
-                    $inputs['dropdown']         = strtoupper($inputs['dropdown']);
-                    $inputs['dropdown_type']    = 'CATEGORY';
+                if (isset($inputs['other_category_type'])) {
+                    if (! $this->_model->saveOtherCategoryTypes($inputs)) {
+                        $data['errors']     = $this->_model->errors();
+                        $data['status']     = STATUS_ERROR;
+                        $data['message']    = "Validation error!";
+                    }
                 } else {
-                    $inputs['parent_id'] = $inputs['dropdown_type'];
-                    $inputs['dropdown_type'] = $inputs['dropdown_type_text'];
-                }
-    
-                if ($this->request->getVar('dropdown_id')) {
-                    $data['message']    = 'Data has been updated successfully!';
-                }
-    
-                if (! $this->_model->saveDropdowns($inputs)) {
-                    $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
-                } else {
-                    if ($inputs['is_category'] && !empty($inputs['dropdown_id'])) {
-                        $this->_model->set(['dropdown_type' => $inputs['dropdown']])
-                            ->where('parent_id', $inputs['dropdown_id'])->update();
+                    if ($inputs['is_category']) {
+                        $inputs['dropdown']         = strtoupper($inputs['dropdown']);
+                        $inputs['dropdown_type']    = 'CATEGORY';
+                    } else {
+                        $inputs['parent_id']        = $inputs['dropdown_type'];
+                        $inputs['dropdown_type']    = $inputs['dropdown_type_text'];
+                    }
+        
+                    if ($this->request->getVar('dropdown_id')) {
+                        $data['message']    = 'Data has been updated successfully!';
+                    }
+        
+                    if (! $this->_model->saveDropdowns($inputs)) {
+                        $data['errors']     = $this->_model->errors();
+                        $data['status']     = STATUS_ERROR;
+                        $data['message']    = "Validation error!";
+                    } else {
+                        if ($inputs['is_category'] && !empty($inputs['dropdown_id'])) {
+                            $this->_model->set(['dropdown_type' => $inputs['dropdown']])
+                                ->where('parent_id', $inputs['dropdown_id'])->update();
+                        }
                     }
                 }
+                return $data;
             }
+        );
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
     
     /**
@@ -239,24 +229,24 @@ class Dropdown extends BaseController
      */
     public function edit() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Data has been retrieved!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id     = $this->request->getVar('id');
+                $fields = 'dropdown_id, dropdown, dropdown_type, parent_id';
+                $result = $this->_model->select($fields)->find($id);
 
-        try {
-            $id     = $this->request->getVar('id');
-            $fields = 'dropdown_id, dropdown, dropdown_type, parent_id';
-            $result = $this->_model->select($fields)->find($id);
+                $data['data'] = $result;
+                return $data;
+            }, 
+            false
+        );
 
-            $data['data'] = $result;
-        } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -266,38 +256,28 @@ class Dropdown extends BaseController
      */
     public function delete() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Data has been deleted successfully!'
         ];
-
-        // Using DB Transaction
-        $this->transBegin();
-
-        try {
-            $id = $this->request->getVar('id');
-            if ($this->_model->categoryHasDropdowns($id)) {                
-                $data['status']     = STATUS_INFO;
-                $data['message']    = "Category has already dropdowns added and can't be deleted! Remove the dropdown first in order to delete this category.";
-            } else {
-                if (! $this->_model->delete($id)) {
-                    $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id = $this->request->getVar('id');
+                if ($this->_model->categoryHasDropdowns($id)) {                
+                    $data['status']     = STATUS_INFO;
+                    $data['message']    = "Category has already dropdowns added and can't be deleted! Remove the dropdown first in order to delete this category.";
+                } else {
+                    if (! $this->_model->delete($id)) {
+                        $data['errors']     = $this->_model->errors();
+                        $data['status']     = STATUS_ERROR;
+                        $data['message']    = "Validation error!";
+                    }
                 }
+                return $data;
             }
+        );
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 }

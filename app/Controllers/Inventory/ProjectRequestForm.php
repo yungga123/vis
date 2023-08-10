@@ -151,54 +151,53 @@ class ProjectRequestForm extends BaseController
      */
     public function save() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'PRF has been saved successfully!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id     = $this->request->getVar('id');
+                $inv_id = $this->request->getVar('inventory_id');
+                $q_out  = $this->request->getVar('quantity_out');
+                $bool   = $this->traitIsStocksLessThanQuantityOut(
+                    $this->request->getVar('item_available'),
+                    $q_out
+                );
 
-        // Using DB Transaction
-        $this->transBegin();
+                if ($bool) {
+                    throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
+                } else {
+                    $inputs = [
+                        'id'            => $id,
+                        'job_order_id'  => $this->request->getVar('job_order_id'),
+                        'process_date'  => $this->request->getVar('process_date'),
+                        'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
+                            ? (!has_empty_value($q_out) && count($inv_id) === count($q_out) ? $inv_id : null) 
+                            : null,
+                        'quantity_out'  => !has_empty_value($q_out) ? $q_out : null,
+                    ];
 
-        try {
-            $id     = $this->request->getVar('id');
-            $inv_id = $this->request->getVar('inventory_id');
-            $q_out  = $this->request->getVar('quantity_out');
-            $inputs = [
-                'id'            => $id,
-                'job_order_id'  => $this->request->getVar('job_order_id'),
-                'process_date'  => $this->request->getVar('process_date'),
-                'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
-                    ? (!has_empty_value($q_out) && count($inv_id) === count($q_out) ? $inv_id : null) 
-                    : null,
-                'quantity_out'  => !has_empty_value($q_out) ? $q_out : null,
-            ];
+                    if (! $this->_model->save($inputs)) {
+                        $data['errors']     = $this->_model->errors();
+                        $data['status']     = STATUS_ERROR;
+                        $data['message']    = "Validation error!";
+                    } else {
+                        $prfItemModel   = new PRFItemModel();
+                        $prf_id         = $id ? $id : $this->_model->insertID();
+                        $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
+                    }
 
-            if (! $this->_model->save($inputs)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            } else {
-                $prfItemModel   = new PRFItemModel();
-                $prf_id         = $id ? $id : $this->_model->insertID();
-                $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
+                    if ($id) {
+                        $data['message']    = 'PRF has been updated successfully!';
+                    }
+                }
+                return $data;
             }
+        );
 
-            if ($id) {
-                $data['message']    = 'PRF has been updated successfully!';
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
     
     /**
@@ -208,40 +207,35 @@ class ProjectRequestForm extends BaseController
      */
     public function fetch() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'PRF has been retrieved!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id  = $this->request->getVar('id');
+                if ($this->request->getVar('prf_items')) {                
+                    $data['data']       = $this->traitFetchPrfItems($id, true);
+                    $data['message']    = 'PRF items has been retrieved!';
+                } else {
+                    $table          = $this->_model->table;
+                    $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";
+                    
+                    $record         = $this->_model->getProjectRequestForms($id, true, $columns);
+                    $job_order      = $this->fetchJobOrders($record['job_order_id'], []);
+                    $items          = $this->traitFetchPrfItems($id, true);
 
-        try {
-            $id  = $this->request->getVar('id');
-            if ($this->request->getVar('prf_items')) {                
-                $data['data']       = $this->traitFetchPrfItems($id);
-                $data['message']    = 'PRF items has been retrieved!';
-            } else {
-                $table          = $this->_model->table;
-                $tableInventory = 'inventory';
-                $columns        = "
-                    {$table}.id, {$table}.job_order_id, {$table}.inventory_id, 
-                    {$table}.quantity_out, {$table}.process_date,                
-                    CONCAT({$tableInventory}.id, ' | ', {$tableInventory}.item_model, ' | ', {$tableInventory}.item_description) AS text
-                ";
-                
-                $record         = $this->_model->getProjectRequestForms($id, true, $columns);
-                $job_order      = $this->fetchJobOrders($record['job_order_id'], []);
+                    $data['data']               = $record;
+                    $data['data']['job_order']  = $job_order[0];
+                    $data['data']['items']      = $items;
+                }
+                return $data;
+            }, 
+            false
+        );
 
-                // Remove the id to avoid conflict after merge two array
-                unset($job_order[0]['id']); 
-                // Merge the two results
-                $data['data']   = $record + $job_order[0];
-            }            
-        } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -251,33 +245,23 @@ class ProjectRequestForm extends BaseController
      */
     public function delete() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'PRF has been deleted successfully!'
         ];
-
-        // Using DB Transaction
-        $this->transBegin();
-
-        try {
-            if (! $this->_model->delete($this->request->getVar('id'))) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                if (! $this->_model->delete($this->request->getVar('id'))) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                }
+                return $data;
             }
+        );
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -287,37 +271,28 @@ class ProjectRequestForm extends BaseController
      */
     public function change() 
     {
-        $data = [];
+        $data       = [];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id     = $this->request->getVar('id');
+                $status = set_prf_status($this->request->getVar('status'));
+                $inputs = ['status' => $status];
 
-        // Using DB Transaction
-        $this->transBegin();
+                if (! $this->_model->update($id, $inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                } else {
+                    $data['status']     = STATUS_SUCCESS;
+                    $data['message']    = 'PRF has been '. strtoupper($status) .' successfully!';
+                }
+                return $data;
+            }, 
+            false
+        );
 
-        try {
-            $id     = $this->request->getVar('id');
-            $status = set_prf_status($this->request->getVar('status'));
-            $inputs = ['status' => $status];
-
-            if (! $this->_model->update($id, $inputs)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            } else {
-                $data['status']     = STATUS_SUCCESS;
-                $data['message']    = 'PRF has been '. strtoupper($status) .' successfully!';
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**

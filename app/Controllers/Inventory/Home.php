@@ -159,56 +159,46 @@ class Home extends BaseController
      */
     public function save() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Item has been saved successfully!'
         ];
-
-        // Using DB Transaction
-        $this->transBegin();
-
-        try {
-            $inputs = [
-                'id'                => $this->request->getVar('id'),
-                'category'          => $this->request->getVar('category'),
-                'sub_category'      => $this->request->getVar('sub_category') ?? '',
-                'item_brand'        => $this->request->getVar('item_brand') ?? '',
-                'item_model'        => $this->request->getVar('item_model'),
-                'item_description'  => $this->request->getVar('item_description'),
-                'item_size'         => $this->request->getVar('item_size') ?? '',
-                'item_sdp'          => $this->request->getVar('item_sdp'),
-                'item_srp'          => $this->request->getVar('item_srp'),
-                'project_price'     => $this->request->getVar('project_price'),
-                'total'             => $this->request->getVar('total'),
-                'stocks'            => $this->request->getVar('stocks'),
-                'stock_unit'        => $this->request->getVar('stock_unit') ?? '',
-                'date_of_purchase'  => $this->request->getVar('date_of_purchase'),
-                'supplier'          => $this->request->getVar('supplier'),
-                'location'          => $this->request->getVar('location'),
-            ];
-
-            if (! $this->_model->save($inputs)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $inputs = [
+                    'id'                => $this->request->getVar('id'),
+                    'category'          => $this->request->getVar('category'),
+                    'sub_category'      => $this->request->getVar('sub_category') ?? '',
+                    'item_brand'        => $this->request->getVar('item_brand') ?? '',
+                    'item_model'        => $this->request->getVar('item_model'),
+                    'item_description'  => $this->request->getVar('item_description'),
+                    'item_size'         => $this->request->getVar('item_size') ?? '',
+                    'item_sdp'          => $this->request->getVar('item_sdp'),
+                    'item_srp'          => $this->request->getVar('item_srp'),
+                    'project_price'     => $this->request->getVar('project_price'),
+                    'total'             => $this->request->getVar('total'),
+                    'stocks'            => $this->request->getVar('stocks'),
+                    'stock_unit'        => $this->request->getVar('stock_unit') ?? '',
+                    'date_of_purchase'  => $this->request->getVar('date_of_purchase'),
+                    'supplier'          => $this->request->getVar('supplier'),
+                    'location'          => $this->request->getVar('location'),
+                ];
+    
+                if (! $this->_model->save($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                }
+    
+                if ($this->request->getVar('id')) {
+                    $data['message']    = 'Item has been updated successfully!';
+                }
+                return $data;
             }
+        );
 
-            if ($this->request->getVar('id')) {
-                $data['message']    = 'Item has been updated successfully!';
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
     
     /**
@@ -218,21 +208,20 @@ class Home extends BaseController
      */
     public function edit() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Item has been retrieved!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id             = $this->request->getVar('id');
+                $data['data']   = $this->_model->getInventories($id, true, true);
+                return $data;
+            }
+        );
 
-        try {
-            $id             = $this->request->getVar('id');
-            $data['data']   = $this->_model->getInventories($id, true, true);
-        } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -242,32 +231,22 @@ class Home extends BaseController
      */
     public function delete() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Item has been deleted successfully!'
         ];
-
-        // Using DB Transaction
-        $this->transBegin();
-
-        try {
-            if (! $this->_model->delete($this->request->getVar('id'))) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                if (! $this->_model->delete($this->request->getVar('id'))) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                }
+                return $data;
             }
+        );
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 }

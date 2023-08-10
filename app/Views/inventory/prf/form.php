@@ -44,8 +44,9 @@
                             <table class="table" id="item_field_table">
                                 <thead>
                                     <tr>
-                                        <th width="60%">Item Details</th>
-                                        <th width="30%">Quantity Out</th>
+                                        <th width="55%">Item Details</th>
+                                        <th width="15%">Available</th>
+                                        <th width="20%">Quantity Out</th>
                                         <th width="5%">Button</th>
                                     </tr>
                                 </thead>
@@ -55,7 +56,10 @@
                                             <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
                                         </td>
                                         <td>
-                                            <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Enter quantity out">
+                                            <input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1">
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-success" onclick="toggleItemField()" title="Add new item field">
