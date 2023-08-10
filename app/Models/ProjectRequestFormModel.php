@@ -4,7 +4,6 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
-use PhpParser\Node\Stmt\TryCatch;
 
 class ProjectRequestFormModel extends Model
 {
@@ -37,20 +36,23 @@ class ProjectRequestFormModel extends Model
     // Validation
     protected $validationRules      = [
         'job_order_id' => [
-            'rules' => 'required',
+            'rules' => 'required|if_exist',
             'label' => 'job order'
         ],
         'inventory_id' => [
-            'rules' => 'required',
+            'rules' => 'required|if_exist',
             'label' => 'item'
         ],
         'quantity_out' => [
-            'rules' => 'required',
+            'rules' => 'required|if_exist',
             'label' => 'quantity out'
         ],
         'process_date' => [
-            'rules' => 'required',
+            'rules' => 'required|if_exist',
             'label' => 'process date'
+        ],
+        'remarks' => [
+            'rules' => 'required|if_exist'
         ],
     ];
     protected $validationMessages   = [];
@@ -115,8 +117,7 @@ class ProjectRequestFormModel extends Model
                     }
 
                     // Add inventory logs
-                    $invLogModel = new InventoryLogsModel();
-                    $invLogModel->insertBatch($logs_data);
+                    $this->saveInventoryLogs($logs_data);
                 }
             }
         }
@@ -140,7 +141,8 @@ class ProjectRequestFormModel extends Model
                 DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted,
                 DATE_FORMAT({$this->table}.accepted_at, '%b %e, %Y at %h:%i %p') AS accepted_at_formatted,
                 DATE_FORMAT({$this->table}.rejected_at, '%b %e, %Y at %h:%i %p') AS rejected_at_formatted,
-                DATE_FORMAT({$this->table}.item_out_at, '%b %e, %Y at %h:%i %p') AS item_out_at_formatted
+                DATE_FORMAT({$this->table}.item_out_at, '%b %e, %Y at %h:%i %p') AS item_out_at_formatted,
+                DATE_FORMAT({$this->table}.filed_at, '%b %e, %Y at %h:%i %p') AS filed_at_formatted
             ";
         }
 
@@ -149,7 +151,8 @@ class ProjectRequestFormModel extends Model
                 {$this->view}.created_by_name,
                 {$this->view}.accepted_by_name,
                 {$this->view}.rejected_by_name,
-                {$this->view}.item_out_by_name
+                {$this->view}.item_out_by_name,
+                {$this->view}.filed_by_name
             ";
         }
 
@@ -266,6 +269,15 @@ class ProjectRequestFormModel extends Model
             }
 
             if (check_permissions($permissions, 'PRINT') && $row['status'] === 'item_out') {
+                // File PRF
+                $changeTo = 'file';
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? ucfirst($changeTo) : '',
+                    'button'    => 'btn-primary',
+                    'icon'      => 'fas fa-file-alt',
+                    'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status']),
+                ], $dropdown);
+
                 // Print PRF
                 $print_url = site_url('prf/print/') . $row[$id];
                 $buttons .= <<<EOF

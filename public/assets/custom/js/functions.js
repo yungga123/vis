@@ -874,6 +874,11 @@ function countObject(obj) {
 	return Object.keys(obj).length;
 }
 
+/* Check if param is number/float or not - from chatgpt */
+function isNumber(param) {
+	return typeof param === "number" && isFinite(param);
+}
+
 /* Check if is toastr is loaded */
 function isToastrLoaded() {
 	return window.toastr != undefined;
@@ -920,4 +925,9 @@ function strUpperWords(str) {
 	}
 
 	return arr.join(" ");
+}
+
+/* Get the current date in "YYYY-MM-DD" format  */
+function currentDate() {
+	return new Date().toISOString().split("T")[0];
 }

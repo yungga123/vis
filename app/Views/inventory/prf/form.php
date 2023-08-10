@@ -59,7 +59,7 @@
                                             <input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
                                         </td>
                                         <td>
-                                            <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1">
+                                            <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-success" onclick="toggleItemField()" title="Add new item field">

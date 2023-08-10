@@ -24,6 +24,8 @@
                                 <th>Rejected At</th>
                                 <th>Item Out By</th>
                                 <th>Item Out At</th>
+                                <th>Filed By</th>
+                                <th>Filed At</th>
                             </tr>
                         </thead>
                     </table>

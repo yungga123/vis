@@ -53,10 +53,17 @@ class ProjectRequestFormMigration extends Migration
                 'comment' => 'Use username',
                 'null' => true
             ],
+            'filed_by' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
+                'comment' => 'Use username',
+                'null' => true
+            ],
             'created_at datetime default current_timestamp',
             'accepted_at datetime default null',
             'rejected_at datetime default null',
             'item_out_at datetime default null',
+            'filed_at datetime default null',
             'updated_at datetime default null on update current_timestamp',
             'deleted_at datetime default null'
         ]);

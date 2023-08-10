@@ -120,6 +120,8 @@ class ProjectRequestForm extends BaseController
                 'rejected_at_formatted',
                 'item_out_by_name',
                 'item_out_at_formatted',
+                'filed_by_name',
+                'filed_at_formatted',
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
@@ -138,6 +140,8 @@ class ProjectRequestForm extends BaseController
                 'rejected_at_formatted',
                 'item_out_by_name',
                 'item_out_at_formatted',
+                'filed_by_name',
+                'filed_at_formatted',
             ]);
 
         return $table->getDatatable();
@@ -278,6 +282,14 @@ class ProjectRequestForm extends BaseController
                 $status = set_prf_status($this->request->getVar('status'));
                 $inputs = ['status' => $status];
 
+                if (null !== $this->request->getVar('remarks'))
+                    $inputs['remarks'] = $this->request->getVar('remarks');
+
+                if (in_array($status, ['accepted', 'item_out'])) {
+                    if ($this->checkPrfItemsOutNStocks($id))
+                        throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
+                }
+
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = STATUS_ERROR;
@@ -285,6 +297,11 @@ class ProjectRequestForm extends BaseController
                 } else {
                     $data['status']     = STATUS_SUCCESS;
                     $data['message']    = 'PRF has been '. strtoupper($status) .' successfully!';
+
+                    if ($status === 'filed') {
+                        $prfItemModel = new PRFItemModel();
+                        $prfItemModel->updatePrfItems($this->request->getVar(), $id);
+                    }
                 }
                 return $data;
             }, 

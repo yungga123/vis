@@ -223,6 +223,7 @@ if (! function_exists('get_prf_status'))
             'accept'    => 'accept',
             'reject'    => 'reject',
             'item_out'  => 'item_out',
+            'file'      => 'file',
         ];
 
         $options_pt = [
@@ -230,6 +231,7 @@ if (! function_exists('get_prf_status'))
             'accepted'  => 'accepted',
             'rejected'  => 'rejected',
             'item_out'  => 'item_out',
+            'filed'     => 'filed',
         ];
 
         $arr = $pass_tense ? $options_pt : $options;
@@ -252,6 +254,8 @@ if (! function_exists('set_prf_status'))
             'reject'    => 'rejected',
             'rejected'  => 'rejected',
             'item_out'  => 'item_out',
+            'file'      => 'filed',
+            'filed'     => 'filed',
         ];
 
         if (is_array($param)) {

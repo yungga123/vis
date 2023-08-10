@@ -69,10 +69,55 @@ $(document).ready(function () {
 
 		showAlertInForm(elems, message, res.status);
 	});
+
+	/* Form for status filed */
+	formSubmit($("#prf_file_form"), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+
+		if (res.status !== STATUS.ERROR) {
+			self[0].reset();
+			refreshDataTable($("#" + table));
+			notifMsgSwal(res.status, message, res.status);
+			$("#prf_id").val("");
+			$("#inventory_id_file").val("");
+			$("#status_file").val("");
+			$(`#prf_items_modal`).modal("hide");
+		}
+
+		showAlertInForm(["remarks"], message, res.status);
+	});
 });
 
 /* Get prf items */
-function view(id) {
+function view(id, status) {
+	$(`#prf_items_modal .modal-title`).html("PRF Items Detials");
+	$("#file_remarks").addClass("d-none");
+	if (!status) $("#note_item_out").html("");
+	$("#prf_items_modal .modal-footer #btn_item_out").remove();
+	$("#prf_items_modal .modal-footer #btn_file").remove();
+
+	if (status === "item_out") {
+		$("#file_remarks").addClass("d-none");
+		$("#prf_items_modal .modal-footer #btn_file").remove();
+	}
+	if (status === "file") {
+		$(`#prf_items_modal .modal-title`).html(
+			`Change Status from ITEM OUT to FILED`
+		);
+		$("#file_remarks").removeClass("d-none");
+		$("#prf_items_modal .modal-footer #btn_item_out").remove();
+		$("#note_item_out").html(
+			"If item quantity were all consumed, just put zero <strong>(0)</strong> in the input field. Returned item quantity will be added back to the Masterlist stocks."
+		);
+
+		// Remove and append button
+		$("#prf_items_modal .modal-footer #btn_file").remove();
+		$("#prf_items_modal .modal-footer #btn_item_out").remove();
+		$("#prf_items_modal .modal-footer").append(`
+			<button type="submit" class="btn btn-success" id="btn_file">Save Changes</button>	
+		`);
+	}
+
 	$("#prf_items_modal #prf_id_text").text("PRF #: " + id);
 	showLoading();
 
@@ -85,18 +130,48 @@ function view(id) {
 				let html = "";
 
 				if (!isEmpty(res.data)) {
+					const returned_date = `
+						<input type="date" name="returned_date[]" id="returned_date_file" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
+					`;
 					$.each(res.data, (index, val) => {
+						const inventory_id = `
+							<input type="hidden" name="inventory_id[]" value="${val.inventory_id}" class="form-control" readonly>
+						`;
+						const stocks = `
+							<input type="hidden" name="stocks[]" value="${val.stocks}" class="form-control" readonly>
+						`;
+						const quantity_out = `
+							<input type="hidden" name="quantity_out[]" value="${val.quantity_out}" class="form-control" readonly>
+						`;
+						const onkeyEvent =
+							'onkeyup="compute(' + parseFloat(val.quantity_out) + ', event)"';
+						const returned_q = `
+							<input type="number" name="returned_q[]" id="returned_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${val.quantity_out}">
+						`;
 						html += `
 							<tr>
-								<td>${val.inventory_id}</td>
+								<td>
+									${val.inventory_id}
+									${inventory_id}
+								</td>
 								<td>${val.category_name}</td>
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
-								<td>${val.stocks}</td>
-								<td>${val.quantity_out}</td>
-								<td>${val.returned_q || "N/A"}</td>
+								<td>
+									${val.stocks}
+									${stocks}
+								</td>
+								<td>
+									${val.quantity_out}
+									${quantity_out}
+								</td>
+								<td>${status === "file" ? returned_q : val.returned_q || "N/A"}</td>
 								<td>${val.consumed}</td>
-								<td>${val.returned_date || "N/A"}</td>
+								<td>${
+									status === "file"
+										? returned_date
+										: val.returned_date_formatted || "N/A"
+								}</td>
 							</tr>
 						`;
 					});
@@ -158,6 +233,7 @@ function edit(id) {
 						setSelect2AjaxSelection(elem, text, item.inventory_id);
 						// Set quantity_out in each input
 						$(qelem).val(parseInt(item.quantity_out));
+						$(qelem).attr("max", parseInt(item.quantity_out));
 						// Get the parent next sibling td (which where the item_available input) each
 						const parentSiblingElem = $(elem).parent().next();
 						// Set available stocks each
@@ -203,19 +279,10 @@ function remove(id) {
 
 /* Change status record */
 function change(id, changeTo, status, proceed) {
-	const swalMsg = `
-		<div>PRF #: <strong>${id}</strong></div>
-		<div>Are you sure you want to <strong>${strUpper(
-			changeTo
-		)}</strong> this PRF?</div>
-	`;
-	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
-	const data = { id: id, status: changeTo };
-
 	if (status === "accepted" && !proceed) {
 		// For item out, dispaly the prf_items_modal
 		// to review the item first
-		view(id);
+		view(id, changeTo);
 		// Add note
 		const onclick = 'onclick="edit(' + id + ')"';
 		const note = `
@@ -236,11 +303,30 @@ function change(id, changeTo, status, proceed) {
 			true +
 			')"';
 		$("#prf_items_modal .modal-footer #btn_item_out").remove();
+		$("#prf_items_modal .modal-footer #btn_file").remove();
 		$("#prf_items_modal .modal-footer").append(`
 			<button type="button" class="btn btn-success" id="btn_item_out" ${changeClick}">Item Out</button>	
 		`);
 		return;
 	}
+
+	if (status === "item_out") {
+		$("#prf_id_file").val(id);
+		$("#status_file").val(changeTo);
+
+		// Display the items details
+		view(id, changeTo);
+		return;
+	}
+
+	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
+	const swalMsg = `
+		<div>PRF #: <strong>${id}</strong></div>
+		<div>Are you sure you want to <strong>${strUpper(
+			changeTo
+		)}</strong> this PRF?</div>
+	`;
+	const data = { id: id, status: changeTo };
 
 	swalNotifConfirm(
 		function () {
@@ -278,7 +364,7 @@ function toggleItemField(row) {
 				<input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
 			</td>
 			<td>
-				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1">
+				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
 			</td>
 			<td>
 				<button type="button" class="btn btn-sm btn-danger" onclick="toggleItemField(${itemFieldCount})" title="Add new item field">
@@ -290,6 +376,16 @@ function toggleItemField(row) {
 
 	itemFieldTable.append(html);
 	_initInventorySelect2();
+}
+
+/* Toggle item field */
+function compute(quantity_out, evt) {
+	const returned = parseFloat(evt.target.value);
+	if (isNumber(returned)) {
+		const consumed = parseFloat(quantity_out) - returned;
+		const parentSiblingElem = evt.target.parentElement.nextElementSibling;
+		_populateAvailableItemStocks(parentSiblingElem, consumed, true);
+	}
 }
 
 /* Masterlist select2 via ajax data source */
@@ -351,10 +447,12 @@ function _loadItemDetails(data) {
 }
 
 /* Populate the item available stocks */
-function _populateAvailableItemStocks(parentSiblingElem, available) {
-	if (parentSiblingElem.tagName === "TD" && typeof available !== "undefined") {
-		$(parentSiblingElem)
-			.children('input[name="item_available[]"]')
-			.val(available);
+function _populateAvailableItemStocks(parentSiblingElem, stock, noChild) {
+	if (parentSiblingElem.tagName === "TD" && typeof stock !== "undefined") {
+		if (noChild) {
+			$(parentSiblingElem).text(stock);
+			return;
+		}
+		$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
 	}
 }
