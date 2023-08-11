@@ -16,6 +16,7 @@
                                 <th>Client</th>
                                 <th>Work Type</th>
                                 <th>Process Date</th>
+                                <th>Remarks</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
                                 <th>Accepted By</th>

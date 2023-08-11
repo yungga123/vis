@@ -1,134 +1,153 @@
 <?=$this->extend('templates/print');?>
 <?=$this->section('content');?>
 <div class="container-fluid">
-<div class="row">
+	<div class="row">		
+		<div class="col-3 text-center mx-auto">
+			<img src="<?= base_url('assets/images/vinculumnew.jpg') ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px;width: 200px">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-8 pr-0">
+			<table class="table table-bordered table-sm" style="font-size: 15px">
+				<tbody>
+					<tr>
+						<td width="50%" style="font-weight: bold">PRF No:</td>
+						<td width="50%"><?= $prf['id'] ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Project/Client Name:</td>
+						<td width="50%"><?= $prf['customer_name'] ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Quotation No:</td>
+						<td width="50%"><?= $prf['quotation_num'] ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Work Type:</td>
+						<td width="50%"><?= $prf['work_type'] ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Person In-Charge:</td>
+						<td width="50%"><?= $prf['manager'] ?></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-4 pl-0">
+			<table class="table table-bordered table-sm" style="font-size: 15px">
+				<tbody>
+					<tr>
+						<td width="50%" style="font-weight: bold">Job Order No.</td>
+						<td width="50%"><?= $prf['job_order_id'] ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Date Requested</td>
+						<td width="50%"><?= format_date($prf['date_requested']) ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Date Needed</td>
+						<td width="50%"><?= format_date($prf['date_committed']) ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Date Issued</td>
+						<td width="50%"><?= format_date($prf['jo_created_at']) ?></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Date Returned</td>
+						<td width="50%"></td>
+					</tr>
+					<tr>
+						<td width="50%" style="font-weight: bold">Time Returned</td>
+						<td width="50%"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="row pt-0">
+		<div class="col-12 pt-0">
+			<table class="table table-bordered table-sm" style="font-size: 15px">
+				<thead>
+					<tr>
+						<th>Item #</th>
+						<th>Category</th>
+						<th>Description</th>
+						<th>Quantity</th>
+						<th>Available</th>
+						<th>Consumed</th>
+						<th>Returned</th>
+						<th>Returned Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php 
+					if (! empty($prf_items)): 
+						foreach ($prf_items as $item): ?>
+							<tr>
+								<td><?= $item['inventory_id'] ?></td>
+								<td><?= $item['category_name'] ?></td>
+								<td><?= $item['item_description'] ?></td>
+								<td><?= $item['quantity_out'] ?></td>
+								<td><?= $item['stocks'] ?></td>
+								<td><?= $item['consumed'] ?></td>
+								<td><?= $item['returned_q'] ?></td>
+								<td><?= $item['returned_date_formatted'] ?></td>
+							</tr>
+					<?php
+						endforeach;
+					endif; ?>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="row">
 		<div class="col-12">
-			<div class="row">
-				<div class="col-3">
-					<img src="<?= base_url('assets/images/vinculumnew.jpg') ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 80px;width: 200px">
-				</div>
-				<div class="col-6">
-					<p class="text-center mx-auto" style="font-size: 23px;font-weight: bold;">DISPATCH FORM</p>
-					<p class="text-center mx-auto">ID No. <?= $dispatch['id'] ?></p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-12 mb-4">
-					<table class="table table-bordered table-sm" style="font-size: 15px">
-						<tbody>
-							<tr>
-								<td width="20%" style="font-weight: bold">Client Name</td>
-								<td width="80%"><?= $dispatch['customer_id'].' --- '.$dispatch['customer'] ?></td>
-							</tr>
-							<tr>
-								<td width="20%" style="font-weight: bold">Contact Person</td>
-								<td width="80%"><?= $dispatch['contact_person'] ?></td>
-							</tr>
-							<tr>
-								<td width="20%" style="font-weight: bold">Contact Number</td>
-								<td width="80%"><?= $dispatch['contact_number'] ?></td>
-							</tr>
-							<tr>
-								<td width="20%" style="font-weight: bold">Address</td>
-								<td width="80%"><?= $dispatch['address'] ?></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-8">
-					<table class="table table-bordered table-sm" style="font-size: 15px">
-						<tbody>
-							<tr>
-								<td width="100%" class="text-center" colspan="2" style="font-weight: bold">Personnel/s</td>
-							</tr>
-                            <?php 
-                                $technicians = explode(',', $dispatch['technicians']);
-
-                                foreach ($technicians as $tech):
-                            ?>
-							<tr>
-								<td width="50%"><?= $tech ?></td>
-							</tr>
-                            <?php endforeach; ?>
-							<tr>
-								<td width="100%" class="text-center" colspan="2" style="font-weight: bold;">Service Report No. : <?= $dispatch['sr_number'] ?></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="col-4">
-					<table class="table table-bordered table-sm mb-4" style="font-size: 15px">
-						<tbody>
-							<tr>
-								<td class="text-bold" width="30%">Work Permit</td>
-								<td width="70%"><?= $dispatch['with_permit'] ?></td>
-							</tr>
-							<tr>
-								<td width="30%" style="font-weight: bold;">Dispatch Date</td>
-								<td width="70%"><?= $dispatch['dispatch_date'] ? format_date($dispatch['dispatch_date'], 'l - F j, Y') : '' ?></td>
-							</tr>
-							<tr>
-								<td width="30%" style="font-weight: bold;">Time In</td>
-								<td width="70%"><?= $dispatch['time_in'] ? format_time($dispatch['time_in'], '', true) : '' ?></td>
-							</tr>
-							<tr>
-								<td width="30%" style="font-weight: bold;">Time Out</td>
-								<td width="70%"><?= $dispatch['time_out'] ? format_time($dispatch['time_out'], '', true) : '' ?></td>
-							</tr>
-							<tr>
-								<td width="30%" style="font-weight: bold;">Dispatch Out</td>
-								<td width="70%"><?= $dispatch['dispatch_out'] ? format_time($dispatch['dispatch_out'], '', true) : '' ?></td>
-							</tr>
-							<tr>
-								<td width="30%" style="font-weight: bold;">Service Type</td>
-								<td width="70%"><?= get_dispatch_services($dispatch['service_type']) ?></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-12">
-					<table class="table table-bordered table-sm" style="font-size: 15px">
-						<tbody>
-							<tr>
-								<td width="15%" style="font-weight: bold">Description</td>
-								<td width="85%"><?= $dispatch['comments'] ?></td>
-							</tr>
-							<tr>
-								<td width="15%" style="font-weight: bold">Remarks</td>
-								<td width="85%"><?= $dispatch['remarks'] ?></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-4">
-					<p style="font-weight: bold">Customer Acceptance:</p>
-					<p>________________________________ <br> 
-					Customer Signature over Printed Name</p>
-				</div>
-				<div class="col-4 text-center">
-					<p style="font-weight: bold">Dispatched By:</p>
-					<p>
-                        <u><?= $dispatch['dispatched_by'] ?></u><br> 
-					    <?= ucwords($dispatch['dispatched_by_position']) ?>
-                    </p>
-				</div>
-				<div class="col-2">
-				</div>
-				<div class="col-2 text-center">
-					<p style="font-weight: bold">Checked By:</p>
-					<p>
-                        <u><?= $dispatch['checked_by_name'] ?></u><br> 
-					    <?= ucwords($dispatch['checked_by_position']) ?>
-                    </p>
-				</div>
-
-			</div>
+			<table class="table table-bordered table-sm mb-0" style="font-size: 15px">
+				<tbody>
+					<tr>
+						<td width="50%">
+							<div class="text-bold">Requested by:</div>
+							<div class="text-center"><?= $prf['created_by_name'] ?></div>
+						</td>
+						<td width="50%">
+							<div class="text-bold">Received by: (Person In-Charge)</div>
+							<div class="text-center"></div>
+						</td>
+					</tr>
+					<tr>
+						<td width="50%">
+							<div class="text-bold">Prepared by:</div>
+							<div class="text-center"><?= $prf['accepted_by_name'] ?></div>
+						</td>
+						<td width="50%">
+							<div class="text-bold">Checked By: (Project In-Charge)</div>
+							<div class="text-center"></div>
+						</td>
+					</tr>
+					<tr>
+						<td width="50%">
+							<div class="text-bold">Returned by:</div>
+							<div class="text-center"><?= $prf['filed_by_name'] ?></div>
+						</td>
+						<td width="50%">
+							<div class="text-bold">Approved By: (Engineer In-charge)</div>
+							<div class="text-center"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-12">
+			<table class="table table-bordered table-sm" style="font-size: 15px">
+				<tbody>
+					<tr>
+						<td style="height: 80px; min-height: 80px;">
+							<div class="text-bold">Remarks:</div>
+							<div><?= $prf['remarks'] ?></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>

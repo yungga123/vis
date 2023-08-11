@@ -112,6 +112,7 @@ class ProjectRequestForm extends BaseController
                 'customer_name',
                 'work_type',
                 'process_date_formatted',
+                'remarks',
                 'created_by_name',
                 'created_at_formatted',
                 'accepted_by_name',
@@ -132,6 +133,7 @@ class ProjectRequestForm extends BaseController
                 'customer_name',
                 'work_type',
                 'process_date_formatted',
+                'remarks',
                 'created_by_name',
                 'created_at_formatted',
                 'accepted_by_name',
@@ -283,7 +285,7 @@ class ProjectRequestForm extends BaseController
                 $inputs = ['status' => $status];
 
                 if (null !== $this->request->getVar('remarks'))
-                    $inputs['remarks'] = $this->request->getVar('remarks');
+                    $inputs['remarks'] = trim($this->request->getVar('remarks'));
 
                 if (in_array($status, ['accepted', 'item_out'])) {
                     if ($this->checkPrfItemsOutNStocks($id))
@@ -322,8 +324,18 @@ class ProjectRequestForm extends BaseController
         $this->checkRolePermissions($this->_module_code);
         
         $id             = $this->request->getUri()->getSegment(3);
-        $data['prf']    = $this->_model->getProjectRequestForms($id, true, true);
-        $data['title']  = 'Print Project Request Form';
+        $columns        = $this->_model->columns(true, true);
+        $columns       .= ','. $this->_model->jobOrderColumns(false, true);
+        $builder        = $this->_model->select($columns);
+        $this->_model->joinView($builder);
+        $this->_model->joinJobOrder($builder);
+        
+        $data['prf']        = $builder->find($id);
+        $data['prf_items']  = $builder->traitFetchPrfItems($id, true, true);
+        $data['title']      = 'Print Project Request Form';
+        // d($data['prf']); 
+        // d($data['prf_items']); 
+        // die;
 
         return view('inventory/prf/print', $data);
     }

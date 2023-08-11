@@ -24,6 +24,7 @@ class ProjectRequestFormModel extends Model
         'process_date',
         'status',
         'created_by',
+        'remarks',
     ];
 
     // Dates
@@ -126,13 +127,14 @@ class ProjectRequestFormModel extends Model
     }
 
     // Set columns depending on arguments
-    protected function columns($date_format = false, $joinView = false)
+    public function columns($date_format = false, $joinView = false)
     {
         $columns = "
             {$this->table}.id,
             {$this->table}.job_order_id,
             {$this->table}.process_date,
-            {$this->table}.status
+            {$this->table}.status,
+            {$this->table}.remarks
         ";
 
         if ($date_format) {
@@ -160,21 +162,21 @@ class ProjectRequestFormModel extends Model
     }
 
     // Get the Job Order selected columns
-    protected function jobOrderColumns()
+    public function jobOrderColumns($with_text = false, $with_date = false)
     {
         $joModel = new JobOrderModel();
         // Get the selected columns
-        return $joModel->selectedColumns();
+        return $joModel->selectedColumns($with_text, $with_date);
     }
 
     // Join with prf_view
-    protected function joinView($builder)
+    public function joinView($builder)
     {
         $builder->join($this->view, "{$this->table}.id = {$this->view}.prf_id");
     }
 
     // Join with prf_view
-    protected function joinJobOrder($builder)
+    public function joinJobOrder($builder)
     {
         $joModel = new JobOrderModel();
         // Join with job_orders table
@@ -268,7 +270,7 @@ class ProjectRequestFormModel extends Model
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'PRINT') && $row['status'] === 'item_out') {
+            if (check_permissions($permissions, 'FILE') && $row['status'] === 'item_out') {
                 // File PRF
                 $changeTo = 'file';
                 $buttons .= dt_button_html([
@@ -277,7 +279,9 @@ class ProjectRequestFormModel extends Model
                     'icon'      => 'fas fa-file-alt',
                     'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status']),
                 ], $dropdown);
+            }
 
+            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['item_out', 'filed'])) {
                 // Print PRF
                 $print_url = site_url('prf/print/') . $row[$id];
                 $buttons .= <<<EOF
@@ -298,28 +302,29 @@ class ProjectRequestFormModel extends Model
    public function dtPRFStatusFormat()
    {
        $closureFun = function($row) {
-           $text   = ucwords(set_prf_status($row['status']));
-           $class  = 'rounded text-sm text-white pl-2 pr-2 pt-1 pb-1';
+           $text    = ucwords(set_prf_status($row['status']));
+           $color   = 'secondary';
 
            switch ($row['status']) {
                case 'pending':
-                   $format = '<span class="bg-warning '.$class.'">'.$text.'</span>';
+                   $color = 'warning';                   
                    break;
                case 'accepted':
-                   $format = '<span class="bg-primary '.$class.'">'.$text.'</span>';
+                   $color = 'primary';
                    break;
                case 'rejected':
-                   $format = '<span class="bg-secondary '.$class.'">'.$text.'</span>';
+                   $color = 'secondary';
                    break;
                case 'item_out':
-                   $format = '<span class="bg-success '.$class.'">Item Out</span>';
+                   $color   = 'success';
+                   $text    = 'Item Out';
                    break;
-               default:
-                   $format = '<span class="bg-secondary '.$class.'">'.$text.'</span>';
+               case 'filed':
+                   $color = 'dark';
                    break;
            }
 
-           return $format;
+           return text_badge($color, $text);
        };
        
        return $closureFun;

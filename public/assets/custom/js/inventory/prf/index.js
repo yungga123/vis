@@ -165,7 +165,7 @@ function view(id, status) {
 									${val.quantity_out}
 									${quantity_out}
 								</td>
-								<td>${status === "file" ? returned_q : val.returned_q || "N/A"}</td>
+								<td>${status === "file" ? returned_q : val.returned_q || "0.00"}</td>
 								<td>${val.consumed}</td>
 								<td>${
 									status === "file"

@@ -62,7 +62,7 @@ class PRFItemModel extends Model
             CASE 
                 WHEN {$this->table}.returned_q IS NOT NULL
                 THEN ({$this->table}.quantity_out - {$this->table}.returned_q) 
-                ELSE 'N/A' 
+                ELSE 0 
             END AS consumed
         ";
 

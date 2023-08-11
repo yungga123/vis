@@ -168,13 +168,8 @@ class InventoryLogsModel extends Model
     {
         $closureFun = function($row) {
             $text   = get_actions($row['action'], true);
-            $class  = $row['action'] === 'ITEM_IN' ? 'bg-primary' : 'bg-success';
-            $class  .= ' rounded text-sm text-white pl-2 pr-2 pt-1 pb-1';
-
-            return <<<EOF
-                <span class="{$class}">{$text}</span>
-            EOF;
-
+            $color  = $row['action'] === 'ITEM_IN' ? 'primary' : 'success';
+            return text_badge($color, $text);
         };
         
         return $closureFun;
