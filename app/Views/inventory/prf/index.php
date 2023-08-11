@@ -9,6 +9,7 @@
                         <thead class="nowrap">
                             <tr> 
                                 <th>Actions</th>
+                                <th>Items</th>
                                 <th>Status</th>
                                 <th>PRF #</th>
                                 <th>JO #</th>

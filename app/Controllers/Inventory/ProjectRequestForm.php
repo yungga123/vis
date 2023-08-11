@@ -106,6 +106,7 @@ class ProjectRequestForm extends BaseController
             ->setOrder([
                 null,
                 null,
+                null,
                 'id',
                 'job_order_id',
                 'quotation_num',
@@ -126,6 +127,7 @@ class ProjectRequestForm extends BaseController
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
+                $this->_model->dtViewPrfItems(),
                 $this->_model->dtPRFStatusFormat(),
                 'id',
                 'job_order_id',

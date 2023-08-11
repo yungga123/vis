@@ -220,20 +220,8 @@ class ProjectRequestFormModel extends Model
    {
         $id         = $this->primaryKey;
         $dropdown   = false;
-        $closureFun = function($row) use($id, $permissions, $dropdown) {           
-            $buttonView = '';
-            if (check_permissions($permissions, 'VIEW')) {
-                // View prf inventory items
-                $buttonView = dt_button_html([
-                    'text'      => $dropdown ? 'View' : '',
-                    'button'    => 'btn-info',
-                    'icon'      => 'fas fa-eye',
-                    'condition' => 'onclick="view('.$row[$id].')" title="View PRF Items"',
-                ], $dropdown);
-            }
-
-            $buttons = $buttonView ?? '';
-            $buttons .= dt_button_actions($row, $id, $permissions, $dropdown);
+        $closureFun = function($row) use($id, $permissions, $dropdown) {
+            $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
 
             if ($row['status'] === 'pending') {
                 if (check_permissions($permissions, 'ACCEPT')) {
@@ -296,6 +284,19 @@ class ProjectRequestFormModel extends Model
         };
         
         return $closureFun;
+   }
+
+   // DataTable status formatter
+   public function dtViewPrfItems()
+   {
+        $id         = $this->primaryKey;
+        $closureFun = function($row) use($id) {
+            return <<<EOF
+                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]})"><i class="fas fa-eye"></i> View</button>
+            EOF;
+       };
+       
+       return $closureFun;
    }
 
    // DataTable status formatter
