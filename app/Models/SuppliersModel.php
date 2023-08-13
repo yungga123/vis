@@ -108,6 +108,9 @@ class SuppliersModel extends Model
                 <div class="dropdown-menu" role="menu" style="">
                     <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_add_supplier" title="Edit"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button>
+
+                    <button class="btn btn-sm btn-success" title="Add Brand"><i class="fas fa-plus-square"></i></button>
+                    <button class="btn btn-sm btn-primary" title="View Details"><i class="fas fa-eye"></i></button>
                 </div>
                 
             EOF;
