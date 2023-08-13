@@ -38,7 +38,7 @@ class RPFItems extends Migration
             ],
         ]);
 
-        $this->forge->addForeignKey('rpf_id', 'project_request_forms', 'id', '', 'CASCADE');
+        $this->forge->addForeignKey('rpf_id', 'request_purchase_forms', 'id', '', 'CASCADE');
         $this->forge->addForeignKey('inventory_id', 'inventory', 'id', '', 'CASCADE');
         $this->forge->createTable('rpf_items');
     }

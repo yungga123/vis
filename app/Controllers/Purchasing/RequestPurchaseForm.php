@@ -159,45 +159,36 @@ class RequestPurchaseForm extends BaseController
     {
         $data       = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been saved successfully!'
+            'message'   => 'RFP has been saved successfully!'
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 $id     = $this->request->getVar('id');
                 $inv_id = $this->request->getVar('inventory_id');
-                $q_out  = $this->request->getVar('quantity_out');
-                $bool   = $this->traitIsStocksLessThanQuantityOut(
-                    $this->request->getVar('item_available'),
-                    $q_out
-                );
+                $q_in   = $this->request->getVar('quantity_in');
+                $inputs = [
+                    'id'            => $id,
+                    'delivery_date' => $this->request->getVar('delivery_date'),
+                    'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
+                        ? (!has_empty_value($q_in) && count($inv_id) === count($q_in) ? $inv_id : null) 
+                        : null,
+                    'quantity_in'   => !has_empty_value($q_in) ? $q_in : null,
+                    'remarks'       => $this->request->getVar('remarks'),
+                ];
 
-                if ($bool) {
-                    throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
+                if (! $this->_model->save($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
                 } else {
-                    $inputs = [
-                        'id'            => $id,
-                        'job_order_id'  => $this->request->getVar('job_order_id'),
-                        'process_date'  => $this->request->getVar('process_date'),
-                        'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
-                            ? (!has_empty_value($q_out) && count($inv_id) === count($q_out) ? $inv_id : null) 
-                            : null,
-                        'quantity_out'  => !has_empty_value($q_out) ? $q_out : null,
-                    ];
+                    $rpfItemModel   = new RPFItemModel();
+                    $rpf_id         = $id ? $id : $this->_model->insertID();
+                    $rpfItemModel->saveRpfItems($this->request->getVar(), $rpf_id);
+                }
 
-                    if (! $this->_model->save($inputs)) {
-                        $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = "Validation error!";
-                    } else {
-                        $prfItemModel   = new RPFItemModel();
-                        $prf_id         = $id ? $id : $this->_model->insertID();
-                        $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
-                    }
-
-                    if ($id) {
-                        $data['message']    = 'PRF has been updated successfully!';
-                    }
+                if ($id) {
+                    $data['message']    = 'RFP has been updated successfully!';
                 }
                 return $data;
             }

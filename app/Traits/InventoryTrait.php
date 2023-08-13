@@ -209,4 +209,21 @@ trait InventoryTrait
 
         return false;
     }
+
+    /**
+     * Join with inventory table and inventory_view
+     *
+     * @param string $table     Table to be joined with inventory
+     * @param object $builder   The builder (db/model object) to use to join the tables
+     * @param bool $withView    Identifier if also join with inventory_view
+     * @return void            
+     */
+    public function joinInventory($table, $builder, $withView = false)
+    {
+        $inventoryModel = new InventoryModel();        
+        // Join with inventory table
+        $builder->join($inventoryModel->table, "{$table}.inventory_id = {$inventoryModel->table}.id", 'left');
+        // Then join inventory with inventory_View
+        if ($withView) $inventoryModel->joinView($builder);
+    }
 }

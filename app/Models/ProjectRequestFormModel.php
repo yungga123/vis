@@ -175,7 +175,7 @@ class ProjectRequestFormModel extends Model
         $builder->join($this->view, "{$this->table}.id = {$this->view}.prf_id");
     }
 
-    // Join with prf_view
+    // Join with job_orders
     public function joinJobOrder($builder)
     {
         $joModel = new JobOrderModel();

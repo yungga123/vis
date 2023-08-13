@@ -5,7 +5,7 @@
             <form id="rpf_form" class="with-label-indicator" action="<?= url_to('rpf.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <div class="modal-header">
-                    <h5 class="modal-title">Add PRF</h5>
+                    <h5 class="modal-title">Add RPF</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

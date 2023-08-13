@@ -50,9 +50,20 @@ if (! function_exists('remove_string'))
 if (! function_exists('current_date'))
 {
     /**
-     * Get current data - default format 'Y-m-d'
+     * Get current date - default format 'Y-m-d'
      */
 	function current_date(string $format = 'Y-m-d'): string
+	{
+        return date($format);
+	}
+}
+
+if (! function_exists('current_datetime'))
+{
+    /**
+     * Get current date & time - default format 'Y-m-d H:i:s'
+     */
+	function current_datetime(string $format = 'Y-m-d H:i:s'): string
 	{
         return date($format);
 	}
