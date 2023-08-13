@@ -155,6 +155,12 @@ define('ACTIONS', [
             'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],
+        'PURCHASING_RPF'    => [
+            'ACCEPT'        => 'Accept',
+            'REJECT'        => 'Reject',
+            'RECEIVE'       => 'Receive', // Item In
+            'PRINT'         => 'Print',
+        ],
     ],
 ]);
 
@@ -200,7 +206,8 @@ define('MODULES', [
     'ADMIN_JOB_ORDER'       => 'Job Orders',
     'ADMIN_SCHEDULES'       => 'Schedules',
     'ADMIN_DISPATCH'        => 'Dispatch',
-    'INVENTORY_PRF'         => 'Project Request Forms',
+    'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
+    'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -225,4 +232,5 @@ define('MODULE_CODES', [
     'schedules'             => 'ADMIN_SCHEDULES',
     'dispatch'              => 'ADMIN_DISPATCH',
     'inventory_prf'         => 'INVENTORY_PRF',
+    'purchasing_rpf'        => 'PURCHASING_RPF',
 ]);

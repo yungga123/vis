@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Controllers\Inventory;
+namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
-use App\Models\ProjectRequestFormModel;
-use App\Models\PRFItemModel;
-use App\Traits\InventoryTrait;
+use App\Models\RequestPurchaseFormModel;
+use App\Models\RPFItemModel;
+use App\Traits\PurchasingTrait;
 use monken\TablesIgniter;
 
-class ProjectRequestForm extends BaseController
+class RequestPurchaseForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait;
+    use PurchasingTrait;
 
     /**
      * Use to initialize corresponding model
@@ -42,8 +42,8 @@ class ProjectRequestForm extends BaseController
      */
     public function __construct()
     {
-        $this->_model       = new ProjectRequestFormModel(); // Current model
-        $this->_module_code = MODULE_CODES['inventory_prf']; // Current module
+        $this->_model       = new RequestPurchaseFormModel(); // Current model
+        $this->_module_code = MODULE_CODES['purchasing_rpf']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
@@ -58,32 +58,31 @@ class ProjectRequestForm extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
-        $data['title']          = 'Project Request Forms';
-        $data['page_title']     = 'Project Request Forms';
+        $data['title']          = get_modules($this->_module_code);
+        $data['page_title']     = get_modules($this->_module_code);
         $data['can_add']        = $this->_can_add;
-        $data['btn_add_lbl']    = 'Add Project Request Form';
+        $data['btn_add_lbl']    = 'Add Request to Purchase Form';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'inventory/prf/index.js';
+        $data['custom_js']      = 'purchasing/rpf/index.js';
         $data['routes']         = json_encode([
-            'prf' => [
-                'list'      => url_to('prf.list'),
-                'save'      => url_to('prf.save'),
-                'fetch'     => url_to('prf.fetch'),
-                'delete'    => url_to('prf.delete'),
-                'change'    => url_to('prf.change'),
+            'rpf' => [
+                'list'      => url_to('rpf.list'),
+                'save'      => url_to('rpf.save'),
+                'fetch'     => url_to('rpf.fetch'),
+                'delete'    => url_to('rpf.delete'),
+                'change'    => url_to('rpf.change'),
             ],
             'inventory' => [
                 'common' => [
                     'masterlist'    => url_to('inventory.common.masterlist'),
-                    'joborders'     => url_to('inventory.common.joborders'),
                 ]
             ]
         ]);
 
-        return view('inventory/prf/index', $data);
+        return view('purchasing/rpf/index', $data);
     }
 
     /**
@@ -191,7 +190,7 @@ class ProjectRequestForm extends BaseController
                         $data['status']     = STATUS_ERROR;
                         $data['message']    = "Validation error!";
                     } else {
-                        $prfItemModel   = new PRFItemModel();
+                        $prfItemModel   = new RPFItemModel();
                         $prf_id         = $id ? $id : $this->_model->insertID();
                         $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
                     }
@@ -303,7 +302,7 @@ class ProjectRequestForm extends BaseController
                     $data['message']    = 'PRF has been '. strtoupper($status) .' successfully!';
 
                     if ($status === 'filed') {
-                        $prfItemModel = new PRFItemModel();
+                        $prfItemModel = new RPFItemModel();
                         $prfItemModel->updatePrfItems($this->request->getVar(), $id);
                     }
                 }
@@ -329,13 +328,15 @@ class ProjectRequestForm extends BaseController
         $columns        = $this->_model->columns(true, true);
         $columns       .= ','. $this->_model->jobOrderColumns(false, true);
         $builder        = $this->_model->select($columns);
-        
         $this->_model->joinView($builder);
         $this->_model->joinJobOrder($builder);
         
         $data['prf']        = $builder->find($id);
         $data['prf_items']  = $builder->traitFetchPrfItems($id, true, true);
         $data['title']      = 'Print Project Request Form';
+        // d($data['prf']); 
+        // d($data['prf_items']); 
+        // die;
 
         return view('inventory/prf/print', $data);
     }

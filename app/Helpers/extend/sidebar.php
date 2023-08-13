@@ -23,57 +23,60 @@ if (! function_exists('get_nav_menus'))
      */
 	function get_nav_menus(string $param): array
 	{
-        $is_sales = (
+        $is_sales       = (
             url_is('tasklead') || 
             url_is('sales_manager') || 
             url_is('sales_manager_indv')
         );
-
-        $is_inventory = (
+        $is_inventory   = (
             url_is('inventory') || 
             url_is('inventory/dropdowns') || 
             url_is('inventory/logs') || 
             url_is('project-request-forms')
         );
-
-		$menu = [
-            'SALES'         => [
+        $is_purchasing  = (
+            url_is('suppliers') || 
+            url_is('request-purchase-forms')
+        );
+        
+		$menu           = [
+            'SALES'             => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => $is_sales,
                 'icon'      => 'far fa-credit-card',
             ],
-            'HUMAN_RESOURCE'   => [
+            'HUMAN_RESOURCE'    => [
                 'name'      => 'Human Resource',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('accounts') || url_is('employees')),
                 'icon'      => 'fas fa-users',
             ],
-            'SETTINGS'      => [
+            'SETTINGS'          => [
                 'name'      => 'Settings',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('settings/mail') || url_is('settings/permissions') || url_is('settings/roles')),
                 'icon'      => 'fas fa-cog',
             ],
-            'PURCHASING'          => [
+            'PURCHASING'        => [
                 'name'      => 'Purchasing',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('suppliers')),
+                'urls'      => $is_purchasing,
                 'icon'      => 'fas fa-money-check',
             ],
-            'ADMIN'         => [
+            'ADMIN'             => [
                 'name'      => 'Admin',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('job-orders') || url_is('schedules') || url_is('dispatch')),
                 'icon'      => 'fas fa-users-cog',
             ],
-            'CLIENTS'       => [
+            'CLIENTS'           => [
                 'name'      => 'Clients',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential')),
                 'icon'      => 'fas fa-clipboard-list',
             ],
-            'INVENTORY'     => [
+            'INVENTORY'         => [
                 'name'      => 'Inventory',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => $is_inventory,
@@ -107,14 +110,14 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('employees') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
             ],
-            'CUSTOMERS_COMMERCIAL'             => [
+            'CUSTOMERS_COMMERCIAL'  => [
                 'menu'      => 'CLIENTS', // Leave empty if none
                 'name'      => get_modules('CUSTOMERS_COMMERCIAL'),
                 'url'       => url_to('customervt.home'),
                 'class'     => (url_is('customers/commercial') ? 'active' : ''),
                 'icon'      => 'far fa-address-card',
             ],
-            'CUSTOMERS_RESIDENTIAL'             => [
+            'CUSTOMERS_RESIDENTIAL' => [
                 'menu'      => 'CLIENTS', // Leave empty if none
                 'name'      => get_modules('CUSTOMERS_RESIDENTIAL'),
                 'url'       => url_to('customersresidential.home'),
@@ -135,14 +138,14 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('sales_manager') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
-            'MANAGER_OF_SALES_INDV'      => [
+            'MANAGER_OF_SALES_INDV' => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('MANAGER_OF_SALES_INDV'),
                 'url'       => url_to('sales_manager_indv.home'),
                 'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
                 'icon'      => 'far fa-circle',
             ],
-            'INVENTORY'     => [
+            'INVENTORY'             => [
                 'menu'      => 'INVENTORY', // Leave empty if none
                 'name'      => get_modules('INVENTORY'),
                 'url'       => url_to('inventory.home'),
@@ -156,47 +159,54 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('settings/mail') ? 'active' : ''),
                 'icon'      => 'fas fa-envelope',
             ],
-            'SETTINGS_PERMISSIONS'   => [
+            'SETTINGS_PERMISSIONS'  => [
                 'menu'      => 'SETTINGS', // Leave empty if none
                 'name'      => get_modules('SETTINGS_PERMISSIONS'),
                 'url'       => url_to('permission.home'),
                 'class'     => (url_is('settings/permissions') ? 'active' : ''),
                 'icon'      => 'fas fa-user-lock',
             ],
-            'SETTINGS_ROLES'   => [
+            'SETTINGS_ROLES'        => [
                 'menu'      => 'SETTINGS', // Leave empty if none
                 'name'      => get_modules('SETTINGS_ROLES'),
                 'url'       => url_to('roles.home'),
                 'class'     => (url_is('settings/roles') ? 'active' : ''),
                 'icon'      => 'fas fa-user-tag',
             ],
-            'ADMIN_JOB_ORDER'   => [
+            'ADMIN_JOB_ORDER'       => [
                 'menu'      => 'ADMIN', // Leave empty if none
                 'name'      => get_modules('ADMIN_JOB_ORDER'),
                 'url'       => url_to('job_order.home'),
                 'class'     => (url_is('job-orders') ? 'active' : ''),
                 'icon'      => 'fas fa-user-md',
             ],
-            'ADMIN_SCHEDULES'   => [
+            'ADMIN_SCHEDULES'       => [
                 'menu'      => 'ADMIN', // Leave empty if none
                 'name'      => get_modules('ADMIN_SCHEDULES'),
                 'url'       => url_to('schedule.home'),
                 'class'     => (url_is('schedules') ? 'active' : ''),
                 'icon'      => 'fas fa-calendar-alt',
             ],
-            'ADMIN_DISPATCH'   => [
+            'ADMIN_DISPATCH'        => [
                 'menu'      => 'ADMIN', // Leave empty if none
                 'name'      => get_modules('ADMIN_DISPATCH'),
                 'url'       => url_to('dispatch.home'),
                 'class'     => (url_is('dispatch') ? 'active' : ''),
                 'icon'      => 'fas fa-user-astronaut',
             ],
-            'INVENTORY_PRF'   => [
+            'INVENTORY_PRF'         => [
                 'menu'      => 'INVENTORY', // Leave empty if none
                 'name'      => get_modules('INVENTORY_PRF'),
                 'url'       => url_to('prf.home'),
                 'class'     => (url_is('project-request-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-sign-out-alt',
+            ],
+            'PURCHASING_RPF'        => [
+                'menu'      => 'PURCHASING', // Leave empty if none
+                'name'      => get_modules('PURCHASING_RPF'),
+                'url'       => url_to('rpf.home'),
+                'class'     => (url_is('request-purchase-forms') ? 'active' : ''),
+                'icon'      => 'fas fa-shopping-bag',
             ],
         ];
 

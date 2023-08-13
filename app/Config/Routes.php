@@ -285,6 +285,25 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
 });
 /* ADMIN */
 
+
+/* PURCHASING */
+// Common
+$routes->group('purchasing', ['filter' => 'checkauth'], static function ($routes) {
+    //
+});
+
+// REQUEST TO PURCHASE FORMS
+$routes->group('', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('request-purchase-forms', 'Purchasing\RequestPurchaseForm::index', ['as' => 'rpf.home']);
+    $routes->post('rpf/list', 'Purchasing\RequestPurchaseForm::list', ['as' => 'rpf.list']);
+    $routes->post('rpf/save', 'Purchasing\RequestPurchaseForm::save', ['as' => 'rpf.save']);
+    $routes->post('rpf/fetch', 'Purchasing\RequestPurchaseForm::fetch', ['as' => 'rpf.fetch']);
+    $routes->post('rpf/delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'rpf.delete']);
+    $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
+    $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print', ['as' => 'rpf.print/$1']);
+});
+/* PURCHASING */
+
 /***************** PHASE 2 *****************/
 
 /*
