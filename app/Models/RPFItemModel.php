@@ -20,10 +20,11 @@ class RPFItemModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'inventory_id',
+        'supplier_id',
         'quantity_in',
         'received_q',
         'received_date',
-        'delivery_date',
+        'purpose',
     ];
 
     // Dates
@@ -54,27 +55,60 @@ class RPFItemModel extends Model
     public function columns()
     {
         $columns = "
+            {$this->table}.supplier_id,
             {$this->table}.inventory_id,
             {$this->table}.quantity_in,
             {$this->table}.received_q,
             {$this->table}.received_date,
-            {$this->table}.delivery_date,
-            DATE_FORMAT({$this->table}.received_date, '%b %e, %Y') AS received_date_formatted,
-            DATE_FORMAT({$this->table}.delivery_date, '%b %e, %Y') AS delivery_date_formatted
+            DATE_FORMAT({$this->table}.received_date, '%b %e, %Y') AS received_date_formatted
         ";
+
+        return $columns;
+    }
+    
+    // Selected inventory columns
+    public function inventoryColumns($withView = false)
+    {
+        $inventoryModel = new InventoryModel();  
+        $columns = "
+            {$inventoryModel->table}.item_model,
+            {$inventoryModel->table}.item_description,
+            {$inventoryModel->table}.stocks,
+            {$inventoryModel->table}.item_sdp
+        ";
+
+        if ($withView) {
+            $columns .= ",
+                {$inventoryModel->view}.category_name,
+                {$inventoryModel->view}.subcategory_name,
+                {$inventoryModel->view}.brand,
+                {$inventoryModel->view}.unit,
+                {$inventoryModel->view}.created_by_name
+            ";
+        } else {
+            $columns .= ",
+                {$inventoryModel->table}.category,
+                {$inventoryModel->table}.sub_category,
+                {$inventoryModel->table}.item_brand,
+            ";
+        }
 
         return $columns;
     }
 
     // Get rpf items using rpf_id
-    public function getRpfItemsByPrfId($rpf_id, $columns = '', $joinInventory = false) 
+    public function getRpfItemsByPrfId($rpf_id, $joinInventory = false, $withView = false, $columns = '') 
     {
         $columns = $columns ? $columns : $this->columns();
+        $columns = $joinInventory ? $columns .',' . $this->inventoryColumns($withView) : $columns;
         $builder = $this->select($columns);
-        $builder->where('rpf_id', $rpf_id);
+
+        is_array($rpf_id) 
+            ? $builder->whereIn('rpf_id', $rpf_id)
+            : $builder->where('rpf_id', $rpf_id);
 
         // From InventoryTrait
-        if ($joinInventory) $this->joinInventory($this->table, $builder);
+        if ($joinInventory) $this->joinInventory($this->table, $builder, $withView);
         return $builder->findAll();
     }
 
@@ -82,8 +116,9 @@ class RPFItemModel extends Model
     public function saveRpfItems($data, $rpf_id) 
     {
         $inventory_id   = $data['inventory_id'];
+        $supplier_id    = $data['supplier_id'] ?? null;
         $quantity_in    = $data['quantity_in'];
-        $delivery_date  = $data['delivery_date'] ?? null;
+        $purpose        = $data['purpose'];
 
         if (! empty($data) && count($inventory_id)) {
             $arr = [];
@@ -95,8 +130,9 @@ class RPFItemModel extends Model
                 $arr[] = [
                     'rpf_id'        => (int)$rpf_id,
                     'inventory_id'  => $inventory_id[$i],
+                    'supplier_id'   => $supplier_id[$i] ?? null,
                     'quantity_in'   => $quantity_in[$i],
-                    'delivery_date' => $delivery_date ? $delivery_date[$i] : $delivery_date,
+                    'purpose'       => $purpose[$i] ?? null,
                 ];
             }
 

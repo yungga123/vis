@@ -18,6 +18,7 @@ class RequestPurchaseFormModel extends Model
     protected $allowedFields    = [
         'status',
         'remarks',
+        'date_needed',
         'created_by',
     ];
 
@@ -33,6 +34,10 @@ class RequestPurchaseFormModel extends Model
         'inventory_id' => [
             'rules' => 'required|if_exist',
             'label' => 'item'
+        ],
+        'supplier_id' => [
+            'rules' => 'required|if_exist',
+            'label' => 'supplier'
         ],
         'quantity_in' => [
             'rules' => 'required|if_exist',
@@ -120,7 +125,40 @@ class RequestPurchaseFormModel extends Model
         return $data;
     }
 
-    // Join with prf_view
+    // Set columns depending on arguments
+    public function columns($date_format = false, $joinView = false)
+    {
+        $columns = "
+            {$this->table}.id,
+            {$this->table}.status,
+            {$this->table}.date_needed
+        ";
+
+        if ($date_format) {
+            $columns .= ",
+                DATE_FORMAT({$this->table}.date_needed, '%b %e, %Y') AS date_needed_formatted,
+                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted,
+                DATE_FORMAT({$this->table}.accepted_at, '%b %e, %Y at %h:%i %p') AS accepted_at_formatted,
+                DATE_FORMAT({$this->table}.rejected_at, '%b %e, %Y at %h:%i %p') AS rejected_at_formatted,
+                DATE_FORMAT({$this->table}.reviewed_at, '%b %e, %Y at %h:%i %p') AS reviewed_at_formatted,
+                DATE_FORMAT({$this->table}.received_at, '%b %e, %Y at %h:%i %p') AS received_at_formatted
+            ";
+        }
+
+        if ($joinView) {
+            $columns .= ",
+                {$this->view}.created_by_name,
+                {$this->view}.accepted_by_name,
+                {$this->view}.rejected_by_name,
+                {$this->view}.reviewed_by_name,
+                {$this->view}.received_by_name
+            ";
+        }
+
+        return $columns;
+    }
+
+    // Join with rpf_view
     public function joinView($builder)
     {
         $builder->join($this->view, "{$this->table}.id = {$this->view}.rpf_id");
@@ -137,4 +175,116 @@ class RequestPurchaseFormModel extends Model
 
         return $id ? $builder->find($id) : $builder->findAll();
     }
+    
+    // For DataTables
+   public function noticeTable($request) 
+   {
+       $builder = $this->db->table($this->table);
+       $columns = $this->columns(true, true);
+
+       $builder->select($columns);
+       $this->joinView($builder);
+
+       $builder->where("{$this->table}.deleted_at", null);
+       $builder->orderBy('id', 'DESC');
+
+       return $builder;
+   }
+
+   // DataTable action buttons
+   public function buttons($permissions)
+   {
+        $id         = $this->primaryKey;
+        $dropdown   = false;
+        $title      = 'PRF';
+        $closureFun = function($row) use($id, $permissions, $dropdown, $title) {
+            $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
+
+            if ($row['status'] === 'pending') {
+                if (check_permissions($permissions, 'ACCEPT')) {
+                    // Accept PRF
+                    $changeTo = 'accept';
+                    $buttons .= dt_button_html([
+                        'text'      => $dropdown ? ucfirst($changeTo) : '',
+                        'button'    => 'btn-primary',
+                        'icon'      => 'fas fa-check-circle',
+                        'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
+                    ], $dropdown);
+                }
+
+                if (check_permissions($permissions, 'REJECT')) {
+                    // Reject PRF
+                    $changeTo = 'reject';
+                    $buttons .= dt_button_html([
+                        'text'      => $dropdown ? ucfirst($changeTo) : '',
+                        'button'    => 'btn-secondary',
+                        'icon'      => 'fas fa-times-circle',
+                        'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
+                    ], $dropdown);
+                }
+            }
+
+            if (check_permissions($permissions, 'REVIEW') && $row['status'] === 'accepted') {
+                // Review PRF
+                $changeTo = 'review';
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? ucfirst($changeTo) : '',
+                    'button'    => 'btn-success',
+                    'icon'      => 'fas fa-check-double',
+                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
+                ], $dropdown);
+            }
+
+            if (check_permissions($permissions, 'RECIEVE') && $row['status'] === 'item_out') {
+                // Receive PRF
+                $changeTo = 'receive';
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? ucfirst($changeTo) : '',
+                    'button'    => 'btn-primary',
+                    'icon'      => 'fas fa-sign-in-alt',
+                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
+                ], $dropdown);
+            }
+
+            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['item_out', 'filed'])) {
+                // Print PRF
+                $print_url = site_url('prf/print/') . $row[$id];
+                $buttons .= <<<EOF
+                    <a href="$print_url" class="btn btn-info btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
+                EOF;
+            }
+
+            $buttons = ($row['status'] === 'rejected' && !is_admin()) 
+                ? ($buttonView ?? '~~N/A~~') : dt_buttons_dropdown($buttons);
+                
+            return $buttons;
+        };
+        
+        return $closureFun;
+   }
+
+   // DataTable status formatter
+   public function dtViewRpfItems()
+   {
+        $id         = $this->primaryKey;
+        $closureFun = function($row) use($id) {
+            return <<<EOF
+                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]})"><i class="fas fa-eye"></i> View</button>
+            EOF;
+       };
+       
+       return $closureFun;
+   }
+
+   // DataTable status formatter
+   public function dtRpfStatusFormat()
+   {
+       $closureFun = function($row) {
+           $text    = ucwords(set_prf_status($row['status']));
+           $color   = dt_status_color($row['status']);
+           return text_badge($color, $text);
+       };
+       
+       return $closureFun;
+   }
 }

@@ -115,16 +115,6 @@ class PRFItemModel extends Model
         return $columns;
     }
 
-    // Join with inventory table and inventory_view
-    public function joinInventory($builder, $withView = false)
-    {
-        $inventoryModel = new InventoryModel();        
-        // Join with inventory table
-        $builder->join($inventoryModel->table, "{$this->table}.inventory_id = {$inventoryModel->table}.id", 'left');
-        // Then join inventory with inventory_View
-        if ($withView) $inventoryModel->joinView($builder);
-    }
-
     // Get prf items using prf_id
     public function getPrfItemsByPrfId($prf_id, $columns = '', $concat = false, $joinInventory = false) 
     {
@@ -133,7 +123,8 @@ class PRFItemModel extends Model
         $builder->where('prf_id', $prf_id);
 
         if ($concat) $builder->groupBy('prf_id');
-        if ($joinInventory) $builder->joinInventory($builder);
+        // From InventoryTrait
+        if ($joinInventory) $builder->joinInventory($this->table, $builder);
         return $builder->findAll();
     }
 

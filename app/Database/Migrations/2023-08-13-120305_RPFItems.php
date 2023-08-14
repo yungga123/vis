@@ -17,6 +17,10 @@ class RPFItems extends Migration
                 'type' => 'INT',
                 'comment' => 'Connected to inventory table',
             ],
+            'supplier_id' => [
+                'type' => 'INT',
+                'comment' => 'Connected to suppliers table',
+            ],
             'quantity_in' => [
                 'type' => 'DECIMAL',
                 'constraint' => [5,2],
@@ -32,8 +36,8 @@ class RPFItems extends Migration
                 'type' => 'date',
                 'null' => true
             ],
-            'delivery_date' => [
-                'type' => 'date',
+            'purpose' => [
+                'type' => 'TEXT',
                 'null' => true
             ],
         ]);

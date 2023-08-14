@@ -18,8 +18,8 @@ class RequestToPurchaseForm extends Migration
                 'constraint' => 50,
                 'default'=> "pending",
             ],
-            'remarks' => [
-                'type' => 'TEXT',
+            'date_needed' => [
+                'type' => 'date',
                 'null' => true
             ],
             'created_by' => [
@@ -40,6 +40,12 @@ class RequestToPurchaseForm extends Migration
                 'comment' => 'Use username',
                 'null' => true
             ],
+            'reviewed_by' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
+                'comment' => 'Use username',
+                'null' => true
+            ],
             'received_by' => [
                 'type' => 'VARCHAR',
                 'constraint' => 50,
@@ -49,6 +55,7 @@ class RequestToPurchaseForm extends Migration
             'created_at datetime default current_timestamp',
             'accepted_at datetime default null',
             'rejected_at datetime default null',
+            'reviewed_at datetime default null',
             'received_at datetime default null',
             'updated_at datetime default null on update current_timestamp',
             'deleted_at datetime default null'

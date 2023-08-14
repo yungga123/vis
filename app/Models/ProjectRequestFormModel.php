@@ -220,7 +220,8 @@ class ProjectRequestFormModel extends Model
    {
         $id         = $this->primaryKey;
         $dropdown   = false;
-        $closureFun = function($row) use($id, $permissions, $dropdown) {
+        $title      = 'PRF';
+        $closureFun = function($row) use($id, $permissions, $dropdown, $title) {
             $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
 
             if ($row['status'] === 'pending') {
@@ -231,18 +232,18 @@ class ProjectRequestFormModel extends Model
                         'text'      => $dropdown ? ucfirst($changeTo) : '',
                         'button'    => 'btn-primary',
                         'icon'      => 'fas fa-check-circle',
-                        'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status']),
+                        'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                     ], $dropdown);
                 }
 
                 if (check_permissions($permissions, 'REJECT')) {
-                    // Discard PRF
+                    // Reject PRF
                     $changeTo = 'reject';
                     $buttons .= dt_button_html([
                         'text'      => $dropdown ? ucfirst($changeTo) : '',
                         'button'    => 'btn-secondary',
                         'icon'      => 'fas fa-times-circle',
-                        'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status']),
+                        'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                     ], $dropdown);
                 }
             }
@@ -254,7 +255,7 @@ class ProjectRequestFormModel extends Model
                     'text'      => $dropdown ? 'Item Out' : '',
                     'button'    => 'btn-success',
                     'icon'      => 'fas fa-file-import',
-                    'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status']),
+                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }
 
@@ -265,7 +266,7 @@ class ProjectRequestFormModel extends Model
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
                     'button'    => 'btn-primary',
                     'icon'      => 'fas fa-file-alt',
-                    'condition' => $this->_statusDTOnchange($row[$id], $changeTo, $row['status']),
+                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }
 
@@ -273,7 +274,7 @@ class ProjectRequestFormModel extends Model
                 // Print PRF
                 $print_url = site_url('prf/print/') . $row[$id];
                 $buttons .= <<<EOF
-                    <a href="$print_url" class="btn btn-info btn-sm" target="_blank"><i class="fas fa-print"></i></a>
+                    <a href="$print_url" class="btn btn-info btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }
 
@@ -303,41 +304,11 @@ class ProjectRequestFormModel extends Model
    public function dtPRFStatusFormat()
    {
        $closureFun = function($row) {
-           $text    = ucwords(set_prf_status($row['status']));
-           $color   = 'secondary';
-
-           switch ($row['status']) {
-               case 'pending':
-                   $color = 'warning';                   
-                   break;
-               case 'accepted':
-                   $color = 'primary';
-                   break;
-               case 'rejected':
-                   $color = 'secondary';
-                   break;
-               case 'item_out':
-                   $color   = 'success';
-                   $text    = 'Item Out';
-                   break;
-               case 'filed':
-                   $color = 'dark';
-                   break;
-           }
-
+           $text    = $row['status'] === 'item_out' ? 'Item Out' : ucwords(set_prf_status($row['status']));
+           $color   = dt_status_color($row['status']);
            return text_badge($color, $text);
        };
        
        return $closureFun;
-   }
-
-   // For status onchange event
-   private function _statusDTOnchange($id, $changeTo, $status)
-   {
-       $title  = ucwords($changeTo);
-       $title  = $changeTo === 'item_out' ? 'Item Out' : $title;
-       return <<<EOF
-           onclick="change({$id}, '{$changeTo}', '{$status}')" title="{$title} PRF"
-       EOF;
    }
 }

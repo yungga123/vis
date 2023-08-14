@@ -5,29 +5,24 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <table id="prf_table" class="table table-hover table-striped nowrap" width="100%">
+                    <table id="rpf_table" class="table table-hover table-striped nowrap" width="100%">
                         <thead class="nowrap">
                             <tr> 
                                 <th>Actions</th>
                                 <th>Items</th>
                                 <th>Status</th>
-                                <th>PRF #</th>
-                                <th>JO #</th>
-                                <th>Quotation</th>
-                                <th>Client</th>
-                                <th>Work Type</th>
-                                <th>Process Date</th>
-                                <th>Remarks</th>
-                                <th>Created By</th>
-                                <th>Created At</th>
+                                <th>RPF #</th>
+                                <th>Date Needed</th>
+                                <th>Requested By</th>
+                                <th>Requested At</th>
                                 <th>Accepted By</th>
                                 <th>Accepted At</th>
+                                <th>Reviewed By</th>
+                                <th>Reviewed At</th>
+                                <th>Received By</th>
+                                <th>Received At</th>
                                 <th>Rejected By</th>
                                 <th>Rejected At</th>
-                                <th>Item Out By</th>
-                                <th>Item Out At</th>
-                                <th>Filed By</th>
-                                <th>Filed At</th>
                             </tr>
                         </thead>
                     </table>

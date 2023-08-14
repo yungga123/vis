@@ -1,4 +1,4 @@
-var table, modal, form, elems, invSelector, itemFieldTable;
+var table, modal, form, elems, invSelector, supSelector, itemFieldTable;
 
 $(document).ready(function () {
 	table = "rpf_table";
@@ -6,16 +6,18 @@ $(document).ready(function () {
 	form = "rpf_form";
 	elems = [
 		"inventory_id",
+		"supplier_id",
 		"quantity_in",
 		"received_q",
 		"received_date",
-		"delivery_date",
+		"date_needed",
 	];
 	invSelector = ".inventory_id";
+	supSelector = ".supplier_id";
 	itemFieldTable = $("#item_field_table tbody");
 
 	/* Load dataTable */
-	// loadDataTable(table, router.prf.list, METHOD.POST);
+	loadDataTable(table, router.rpf.list, METHOD.POST);
 
 	/* Toggle modal */
 	$("#btn_add_record").on("click", function () {
@@ -47,10 +49,9 @@ $(document).ready(function () {
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
 			$("#rpf_id").val("");
-
 			$(".item-row").remove();
-			clearSelect2Selection(joSelector);
 			clearSelect2Selection(invSelector);
+			// clearSelect2Selection(supSelector);
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -78,41 +79,30 @@ $(document).ready(function () {
 	});
 });
 
-/* Get prf items */
+/* Get rpf items */
 function view(id, status) {
-	$(`#rpf_items_modal .modal-title`).html("PRF Items Detials");
-	$("#file_remarks").addClass("d-none");
+	$(`#rpf_items_modal .modal-title`).html("RPF Items Detials");
+	$("#received_remarks").addClass("d-none");
 	if (!status) $("#note_item_out").html("");
-	$("#rpf_items_modal .modal-footer #btn_item_out").remove();
-	$("#rpf_items_modal .modal-footer #btn_file").remove();
-
-	if (status === "item_out") {
-		$("#file_remarks").addClass("d-none");
-		$("#rpf_items_modal .modal-footer #btn_file").remove();
-	}
-	if (status === "file") {
+	$("#rpf_items_modal .modal-footer #btn_received").remove();
+	if (status === "received") {
 		$(`#rpf_items_modal .modal-title`).html(
-			`Change Status from ITEM OUT to FILED`
+			`Change Status from REVIEWED to RECEIVE`
 		);
-		$("#file_remarks").removeClass("d-none");
-		$("#rpf_items_modal .modal-footer #btn_item_out").remove();
-		$("#note_item_out").html(
-			"If item quantity were all consumed, just put zero <strong>(0)</strong> in the input field. Returned item quantity will be added back to the Masterlist stocks."
-		);
+		$("#received_remarks").removeClass("d-none");
 
 		// Remove and append button
-		$("#rpf_items_modal .modal-footer #btn_file").remove();
-		$("#rpf_items_modal .modal-footer #btn_item_out").remove();
+		$("#rpf_items_modal .modal-footer #btn_received").remove();
 		$("#rpf_items_modal .modal-footer").append(`
-			<button type="submit" class="btn btn-success" id="btn_file">Save Changes</button>	
+			<button type="submit" class="btn btn-success" id="btn_received">Save Changes</button>	
 		`);
 	}
 
-	$("#rpf_items_modal #rpf_id_text").text("PRF #: " + id);
+	$("#rpf_items_modal #rpf_id_text").text("RPF #: " + id);
 	showLoading();
 
-	const data = { id: id, prf_items: true };
-	$.post(router.prf.fetch, data)
+	const data = { id: id, rpf_items: true };
+	$.post(router.rpf.fetch, data)
 		.then((res) => {
 			closeLoading();
 
@@ -120,8 +110,8 @@ function view(id, status) {
 				let html = "";
 
 				if (!isEmpty(res.data)) {
-					const returned_date = `
-						<input type="date" name="returned_date[]" id="returned_date_file" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
+					const received_date = `
+						<input type="date" name="received_date[]" id="received_date_file" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
 					`;
 					$.each(res.data, (index, val) => {
 						const inventory_id = `
@@ -135,8 +125,8 @@ function view(id, status) {
 						`;
 						const onkeyEvent =
 							'onkeyup="compute(' + parseFloat(val.quantity_in) + ', event)"';
-						const returned_q = `
-							<input type="number" name="returned_q[]" id="returned_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${val.quantity_in}">
+						const received_q = `
+							<input type="number" name="received_q[]" id="received_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${val.quantity_in}">
 						`;
 						html += `
 							<tr>
@@ -155,22 +145,24 @@ function view(id, status) {
 									${val.quantity_in}
 									${quantity_in}
 								</td>
-								<td>${status === "file" ? returned_q : val.returned_q || "0.00"}</td>
-								<td>${val.consumed}</td>
+								<td>${val.unit || "N/A"}</td>
+								<td>${val.item_sdp}</td>
+								<td>${parseFloat(val.quantity_in) * parseFloat(val.item_sdp)}</td>
+								<td>${status === "receive" ? received_q : val.received_q || "0.00"}</td>
 								<td>${
-									status === "file"
-										? returned_date
-										: val.returned_date_formatted || "N/A"
+									status === "receive"
+										? received_date
+										: val.received_date_formatted || "N/A"
 								}</td>
 							</tr>
 						`;
 					});
 				} else {
 					html =
-						'<tr><td colspan="9" align="center">No PRF items found...</td></tr>';
+						'<tr><td colspan="9" align="center">No rpf items found...</td></tr>';
 				}
 
-				$(`#prf_items_table tbody`).html(html);
+				$(`#rpf_items_table tbody`).html(html);
 				$(`#rpf_items_modal`).modal("show");
 			} else {
 				$(`#rpf_items_modal`).modal("hide");
@@ -194,7 +186,7 @@ function edit(id) {
 	clearAlertInForm(elems);
 	showLoading();
 
-	$.post(router.prf.fetch, { id: id })
+	$.post(router.rpf.fetch, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -252,7 +244,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(router.prf.delete, { id: id })
+			$.post(router.rpf.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
@@ -311,16 +303,16 @@ function change(id, changeTo, status, proceed) {
 
 	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
 	const swalMsg = `
-		<div>PRF #: <strong>${id}</strong></div>
+		<div>rpf #: <strong>${id}</strong></div>
 		<div>Are you sure you want to <strong>${strUpper(
 			changeTo
-		)}</strong> this PRF?</div>
+		)}</strong> this rpf?</div>
 	`;
 	const data = { id: id, status: changeTo };
 
 	swalNotifConfirm(
 		function () {
-			$.post(router.prf.change, data)
+			$.post(router.rpf.change, data)
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
@@ -357,6 +349,12 @@ function toggleItemField(row) {
 				<input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Quantity" min="1" required>
 			</td>
 			<td>
+				<select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
+			</td>
+			<td>
+				<input type="text" name="purpose[]" class="form-control quantity_out" placeholder="Purpose">
+			</td>
+			<td>
 				<button type="button" class="btn btn-sm btn-danger" onclick="toggleItemField(${itemFieldCount})" title="Add new item field">
 					<i class="fas fa-minus"></i>
 				</button>
@@ -387,43 +385,6 @@ function _initInventorySelect2() {
 		"text",
 		_loadItemDetails
 	);
-}
-
-/* Load selected job order details */
-function _loadJobOrderDetails(data) {
-	let html = "";
-
-	if (!data.selected && data.id) {
-		html = `
-			<h5 class="text-center">JO Details</h5>
-			<table class="table table-bordered table-sm table-condensed">
-				<tbody>
-                    <tr>
-                        <th class="text-right" width="50%">Task Lead #</th>
-						<td class="text-left" width="50%">${data.tasklead_id}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Client</th>
-						<td class="text-left" width="50%">${data.customer_name}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Manager</th>
-						<td class="text-left" width="50%">${data.manager}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Work Type</th>
-						<td class="text-left" width="50%">${data.work_type}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Status</th>
-						<td class="text-left" width="50%">${strUpper(data.jo_status)}</td>
-                    </tr>
-				</tbody>
-			</table>
-		`;
-	}
-
-	$(".job-order-details").html(html);
 }
 
 /* Load selected item details */

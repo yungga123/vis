@@ -98,53 +98,41 @@ class RequestPurchaseForm extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'quotation_num',
-                'customer_name',
-                'work_type',
+                'status',
             ])
             ->setOrder([
                 null,
                 null,
                 null,
                 'id',
-                'job_order_id',
-                'quotation_num',
-                'customer_name',
-                'work_type',
-                'process_date_formatted',
-                'remarks',
+                'date_needed',
                 'created_by_name',
                 'created_at_formatted',
                 'accepted_by_name',
                 'accepted_at_formatted',
+                'reviewed_by_name',
+                'reviewed_at_formatted',
+                'received_by_name',
+                'received_at_formatted',
                 'rejected_by_name',
                 'rejected_at_formatted',
-                'item_out_by_name',
-                'item_out_at_formatted',
-                'filed_by_name',
-                'filed_at_formatted',
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
-                $this->_model->dtViewPrfItems(),
-                $this->_model->dtPRFStatusFormat(),
+                $this->_model->dtViewRpfItems(),
+                $this->_model->dtRpfStatusFormat(),
                 'id',
-                'job_order_id',
-                'quotation_num',
-                'customer_name',
-                'work_type',
-                'process_date_formatted',
-                'remarks',
+                'date_needed',
                 'created_by_name',
                 'created_at_formatted',
                 'accepted_by_name',
                 'accepted_at_formatted',
+                'reviewed_by_name',
+                'reviewed_at_formatted',
+                'received_by_name',
+                'received_at_formatted',
                 'rejected_by_name',
                 'rejected_at_formatted',
-                'item_out_by_name',
-                'item_out_at_formatted',
-                'filed_by_name',
-                'filed_at_formatted',
             ]);
 
         return $table->getDatatable();
@@ -166,15 +154,16 @@ class RequestPurchaseForm extends BaseController
             function($data) {
                 $id     = $this->request->getVar('id');
                 $inv_id = $this->request->getVar('inventory_id');
+                $sup_id = $this->request->getVar('supplier_id');
                 $q_in   = $this->request->getVar('quantity_in');
                 $inputs = [
                     'id'            => $id,
-                    'delivery_date' => $this->request->getVar('delivery_date'),
+                    'date_needed'   => $this->request->getVar('date_needed'),
                     'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
                         ? (!has_empty_value($q_in) && count($inv_id) === count($q_in) ? $inv_id : null) 
                         : null,
+                    // 'supplier_id'  => (isset($inv_id) && !has_empty_value($sup_id)) ? $sup_id : null,
                     'quantity_in'   => !has_empty_value($q_in) ? $q_in : null,
-                    'remarks'       => $this->request->getVar('remarks'),
                 ];
 
                 if (! $this->_model->save($inputs)) {
@@ -206,25 +195,23 @@ class RequestPurchaseForm extends BaseController
     {
         $data       = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been retrieved!'
+            'message'   => 'RPF has been retrieved!'
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id  = $this->request->getVar('id');
-                if ($this->request->getVar('prf_items')) {                
-                    $data['data']       = $this->traitFetchPrfItems($id, true, true);
-                    $data['message']    = 'PRF items has been retrieved!';
+                $rpfItemModel   = new RPFItemModel(); 
+                $id             = $this->request->getVar('id');
+                if ($this->request->getVar('rpf_items')) {
+                    $data['data']       = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+                    $data['message']    = 'RPF items has been retrieved!';
                 } else {
                     $table          = $this->_model->table;
-                    $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";
-                    
-                    $record         = $this->_model->getProjectRequestForms($id, true, $columns);
-                    $job_order      = $this->fetchJobOrders($record['job_order_id'], []);
-                    $items          = $this->traitFetchPrfItems($id, true);
+                    $columns        = "{$table}.id, {$table}.date_needed";                    
+                    $record         = $this->_model->getRequestPurchaseForms($id, false, $columns);
+                    $items          = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
 
                     $data['data']               = $record;
-                    $data['data']['job_order']  = $job_order[0];
                     $data['data']['items']      = $items;
                 }
                 return $data;

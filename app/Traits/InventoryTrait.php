@@ -108,7 +108,7 @@ trait InventoryTrait
         $fields     = $join && $fields ? $fields .','. $model->inventoryColumns($with_view) : $fields;
         $builder    = $model->select($fields);
 
-        if ($join) $model->joinInventory($builder, $with_view);
+        if ($join) $this->joinInventory($model->table, $builder, $with_view);
         if ($id && is_array($id)) 
             return $builder->whereIn($model->table.'.prf_id', $id)->findAll();
 
