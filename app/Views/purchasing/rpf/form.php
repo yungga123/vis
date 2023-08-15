@@ -40,13 +40,13 @@
                                         <input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
                                     </td>
                                     <td>
-                                        <input type="number" name="quantity_in[]" class="form-control quantity_out" placeholder="Qty" min="1" required>
+                                        <input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
                                     </td>
                                     <td>
                                         <select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
                                     </td>
                                     <td>
-                                        <input type="text" name="purpose[]" class="form-control quantity_out" placeholder="Purpose">
+                                        <input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-success" onclick="toggleItemField()" title="Add new item field">
@@ -60,12 +60,14 @@
                                     <td>
                                         <small id="alert_inventory_id" class="text-danger"></small>
                                     </td>
+                                    <td></td>
                                     <td>
                                         <small id="alert_quantity_in" class="text-danger"></small>
                                     </td>
                                     <td>
                                         <small id="alert_supplier_id" class="text-danger"></small>
                                     </td>
+                                    <td></td>
                                     <td></td>
                                 </tr>
                             </tfoot>

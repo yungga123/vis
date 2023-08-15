@@ -147,7 +147,7 @@ function view(id, status) {
 								</td>
 								<td>${val.unit || "N/A"}</td>
 								<td>${val.item_sdp}</td>
-								<td>${parseFloat(val.quantity_in) * parseFloat(val.item_sdp)}</td>
+								<td>${Math.floor(val.quantity_in * val.item_sdp)}</td>
 								<td>${status === "receive" ? received_q : val.received_q || "0.00"}</td>
 								<td>${
 									status === "receive"
@@ -159,7 +159,7 @@ function view(id, status) {
 					});
 				} else {
 					html =
-						'<tr><td colspan="9" align="center">No rpf items found...</td></tr>';
+						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';
 				}
 
 				$(`#rpf_items_table tbody`).html(html);
@@ -176,12 +176,12 @@ function view(id, status) {
 function edit(id) {
 	$("#rpf_items_modal").modal("hide");
 	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Item");
+	$(`#${modal} .modal-title`).text("Edit RPF");
 	$("#rpf_id").val(id);
 	$(".quantity_in").val("");
 	$(".item-row").remove();
 
-	clearSelect2Selection(joSelector);
+	// clearSelect2Selection(supSelector);
 	clearSelect2Selection(invSelector);
 	clearAlertInForm(elems);
 	showLoading();
@@ -191,13 +191,6 @@ function edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				// Set selected job order in select2
-				setSelect2AjaxSelection(
-					joSelector,
-					res.data.job_order.option_text,
-					res.data.job_order_id
-				);
-
 				if (!isEmpty(res.data.items)) {
 					const items = res.data.items;
 					// Add item fields
@@ -215,7 +208,6 @@ function edit(id) {
 						setSelect2AjaxSelection(elem, text, item.inventory_id);
 						// Set quantity_in in each input
 						$(qelem).val(parseInt(item.quantity_in));
-						$(qelem).attr("max", parseInt(item.quantity_in));
 						// Get the parent next sibling td (which where the item_available input) each
 						const parentSiblingElem = $(elem).parent().next();
 						// Set available stocks each
@@ -224,12 +216,6 @@ function edit(id) {
 				}
 
 				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
-				$("#orig_job_order")
-					.removeClass()
-					.html(
-						`Original JO: <strong>${res.data.job_order.option_text}</strong>`
-					);
-
 				$(`#${modal}`).modal("show");
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -346,13 +332,13 @@ function toggleItemField(row) {
 				<input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
 			</td>
 			<td>
-				<input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Quantity" min="1" required>
+				<input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
 			</td>
 			<td>
 				<select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
 			</td>
 			<td>
-				<input type="text" name="purpose[]" class="form-control quantity_out" placeholder="Purpose">
+				<input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
 			</td>
 			<td>
 				<button type="button" class="btn btn-sm btn-danger" onclick="toggleItemField(${itemFieldCount})" title="Add new item field">
