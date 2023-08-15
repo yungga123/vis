@@ -282,6 +282,7 @@ if (! function_exists('get_rpf_status'))
             'pending'   => 'pending',
             'accept'    => 'accept',
             'reject'    => 'reject',
+            'review'    => 'review',
             'receive'   => 'receive',
         ];
 
@@ -289,7 +290,7 @@ if (! function_exists('get_rpf_status'))
             'pending'   => 'pending',
             'accepted'  => 'accepted',
             'rejected'  => 'rejected',
-            'item_out'  => 'item_out',
+            'reviewed'  => 'reviewed',
             'received'  => 'received',
         ];
 
@@ -312,6 +313,8 @@ if (! function_exists('set_rpf_status'))
             'accepted'  => 'accepted',
             'reject'    => 'rejected',
             'rejected'  => 'rejected',
+            'review'    => 'reviewed',
+            'reviewed'  => 'reviewed',
             'receive'   => 'received',
             'received'  => 'received',
         ];

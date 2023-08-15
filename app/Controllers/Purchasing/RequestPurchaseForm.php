@@ -5,13 +5,13 @@ namespace App\Controllers\Purchasing;
 use App\Controllers\BaseController;
 use App\Models\RequestPurchaseFormModel;
 use App\Models\RPFItemModel;
-use App\Traits\PurchasingTrait;
+use App\Traits\InventoryTrait;
 use monken\TablesIgniter;
 
 class RequestPurchaseForm extends BaseController
 {
     /* Declare trait here to use */
-    use PurchasingTrait;
+    use InventoryTrait;
 
     /**
      * Use to initialize corresponding model
@@ -105,7 +105,7 @@ class RequestPurchaseForm extends BaseController
                 null,
                 null,
                 'id',
-                'date_needed',
+                'date_needed_formatted',
                 'created_by_name',
                 'created_at_formatted',
                 'accepted_by_name',
@@ -122,7 +122,7 @@ class RequestPurchaseForm extends BaseController
                 $this->_model->dtViewRpfItems(),
                 $this->_model->dtRpfStatusFormat(),
                 'id',
-                'date_needed',
+                'date_needed_formatted',
                 'created_by_name',
                 'created_at_formatted',
                 'accepted_by_name',
@@ -200,17 +200,16 @@ class RequestPurchaseForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $rpfItemModel   = new RPFItemModel(); 
                 $id             = $this->request->getVar('id');
+                $rpfItemModel   = new RPFItemModel(); 
+                $items          = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
                 if ($this->request->getVar('rpf_items')) {
-                    $data['data']       = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+                    $data['data']       = $items;
                     $data['message']    = 'RPF items has been retrieved!';
                 } else {
                     $table          = $this->_model->table;
                     $columns        = "{$table}.id, {$table}.date_needed";                    
                     $record         = $this->_model->getRequestPurchaseForms($id, false, $columns);
-                    $items          = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
-
                     $data['data']               = $record;
                     $data['data']['items']      = $items;
                 }
@@ -260,16 +259,8 @@ class RequestPurchaseForm extends BaseController
             $data,
             function($data) {
                 $id     = $this->request->getVar('id');
-                $status = set_prf_status($this->request->getVar('status'));
+                $status = set_rpf_status($this->request->getVar('status'));
                 $inputs = ['status' => $status];
-
-                if (null !== $this->request->getVar('remarks'))
-                    $inputs['remarks'] = trim($this->request->getVar('remarks'));
-
-                if (in_array($status, ['accepted', 'item_out'])) {
-                    if ($this->checkPrfItemsOutNStocks($id))
-                        throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
-                }
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
@@ -277,16 +268,15 @@ class RequestPurchaseForm extends BaseController
                     $data['message']    = "Validation error!";
                 } else {
                     $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'PRF has been '. strtoupper($status) .' successfully!';
+                    $data['message']    = 'RPF has been '. strtoupper($status) .' successfully!';
 
-                    if ($status === 'filed') {
+                    if ($status === 'received') {
                         $prfItemModel = new RPFItemModel();
-                        $prfItemModel->updatePrfItems($this->request->getVar(), $id);
+                        $prfItemModel->updateRpfItems($this->request->getVar(), $id);
                     }
                 }
                 return $data;
-            }, 
-            false
+            }
         );
 
         return $response;
@@ -302,20 +292,18 @@ class RequestPurchaseForm extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
         
-        $id             = $this->request->getUri()->getSegment(3);
-        $columns        = $this->_model->columns(true, true);
-        $columns       .= ','. $this->_model->jobOrderColumns(false, true);
-        $builder        = $this->_model->select($columns);
-        $this->_model->joinView($builder);
-        $this->_model->joinJobOrder($builder);
+        $id                 = $this->request->getUri()->getSegment(3);
+        $columns            = $this->_model->columns(true, true);
+        $builder            = $this->_model->select($columns);
         
-        $data['prf']        = $builder->find($id);
-        $data['prf_items']  = $builder->traitFetchPrfItems($id, true, true);
-        $data['title']      = 'Print Project Request Form';
-        // d($data['prf']); 
-        // d($data['prf_items']); 
-        // die;
+        $this->_model->joinView($builder);
 
-        return view('inventory/prf/print', $data);
+        $rpfItemModel       = new RPFItemModel(); 
+        $items              = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+        $data['rpf']        = $builder->find($id);
+        $data['rpf_items']  = $items;
+        $data['title']      = 'Print Requisition Form';
+
+        return view('purchasing/rpf/print', $data);
     }
 }

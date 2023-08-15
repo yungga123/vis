@@ -308,8 +308,7 @@ class ProjectRequestForm extends BaseController
                     }
                 }
                 return $data;
-            }, 
-            false
+            }
         );
 
         return $response;

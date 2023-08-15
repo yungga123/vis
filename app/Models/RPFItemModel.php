@@ -116,7 +116,7 @@ class RPFItemModel extends Model
     public function saveRpfItems($data, $rpf_id) 
     {
         $inventory_id   = $data['inventory_id'];
-        $supplier_id    = $data['supplier_id'] ?? null;
+        $supplier_id    = $data['supplier_id'] ?? 0;
         $quantity_in    = $data['quantity_in'];
         $purpose        = $data['purpose'];
 
@@ -130,12 +130,13 @@ class RPFItemModel extends Model
                 $arr[] = [
                     'rpf_id'        => (int)$rpf_id,
                     'inventory_id'  => $inventory_id[$i],
-                    'supplier_id'   => $supplier_id[$i] ?? null,
+                    'supplier_id'   => $supplier_id[$i] ?? 0,
                     'quantity_in'   => $quantity_in[$i],
                     'purpose'       => $purpose[$i] ?? null,
                 ];
             }
 
+            log_message('error', 'arr => '. json_encode($arr));
             if (! empty($arr)) $this->db->table($this->table)->insertBatch($arr);
         }
     }
@@ -145,46 +146,25 @@ class RPFItemModel extends Model
     {
         $inventory_id   = $data['inventory_id'];
         $quantity_in    = $data['quantity_in'];
+        $received_q     = $data['received_q'];
         $received_date  = $data['received_date'];
-        $stocks         = $data['stocks'];
 
         if (! empty($data) && count($inventory_id)) {
             $arr        = [];
-            $action     = 'ITEM_IN';
-            $logs_data  = [];
             for ($i=0; $i < count($inventory_id); $i++) { 
                 $arr[] = [
                     'rpf_id'        => (int)$rpf_id,
                     'inventory_id'  => $inventory_id[$i],
-                    'quantity_in'    => $quantity_in[$i],
+                    'quantity_in'   => $quantity_in[$i],
+                    'received_q'    => $received_q[$i],
                     'received_date' => $received_date[$i],
                 ];
-
-                if (floatval($quantity_in[$i]) > 0) {
-                    $logs_data[] = [
-                        'inventory_id'  => $inventory_id[$i],
-                        'stocks'        => $quantity_in[$i],
-                        'parent_stocks' => $stocks[$i],
-                        'action'        => $action,
-                        'status'        => 'PURCHASE',
-                        'status_date'   => current_date(),
-                        'created_by'    => session('username'),
-                    ];
-
-                    $this->traitUpdateInventoryStock(
-                        $inventory_id[$i],
-                        $quantity_in[$i],
-                        $action
-                    );
-                }
             }
 
             if (! empty($arr)) {
                 $constraint = ['rpf_id', 'inventory_id', 'quantity_in'];
                 $this->db->table($this->table)->updateBatch($arr, $constraint);
             }
-            // Add inventory logs
-            $this->saveInventoryLogs($logs_data);
         }
     }
 

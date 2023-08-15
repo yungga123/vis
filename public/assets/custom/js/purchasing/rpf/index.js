@@ -62,7 +62,7 @@ $(document).ready(function () {
 	});
 
 	/* Form for status filed */
-	formSubmit($("#rpf_received_form"), "continue", function (res, self) {
+	formSubmit($("#rpf_items_form"), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
 
 		if (res.status !== STATUS.ERROR) {
@@ -83,18 +83,21 @@ $(document).ready(function () {
 function view(id, status) {
 	$(`#rpf_items_modal .modal-title`).html("RPF Items Detials");
 	$("#received_remarks").addClass("d-none");
-	if (!status) $("#note_item_out").html("");
-	$("#rpf_items_modal .modal-footer #btn_received").remove();
-	if (status === "received") {
+	if (!status) {
+		$("#item_note").html("");
+		$("#rpf_items_modal .modal-footer #btn_review").remove();
+		$("#rpf_items_modal .modal-footer #btn_receive").remove();
+	}
+	if (status === "receive") {
 		$(`#rpf_items_modal .modal-title`).html(
 			`Change Status from REVIEWED to RECEIVE`
 		);
-		$("#received_remarks").removeClass("d-none");
 
 		// Remove and append button
-		$("#rpf_items_modal .modal-footer #btn_received").remove();
+		$("#rpf_items_modal .modal-footer #btn_review").remove();
+		$("#rpf_items_modal .modal-footer #btn_receive").remove();
 		$("#rpf_items_modal .modal-footer").append(`
-			<button type="submit" class="btn btn-success" id="btn_received">Save Changes</button>	
+			<button type="submit" class="btn btn-success" id="btn_receive">Mark as Received</button>	
 		`);
 	}
 
@@ -111,8 +114,10 @@ function view(id, status) {
 
 				if (!isEmpty(res.data)) {
 					const received_date = `
-						<input type="date" name="received_date[]" id="received_date_file" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
+						<input type="date" name="received_date[]" id="received_date" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
 					`;
+					let totalAmount = 0,
+						totalAmountReceived = 0;
 					$.each(res.data, (index, val) => {
 						const inventory_id = `
 							<input type="hidden" name="inventory_id[]" value="${val.inventory_id}" class="form-control" readonly>
@@ -124,10 +129,16 @@ function view(id, status) {
 							<input type="hidden" name="quantity_in[]" value="${val.quantity_in}" class="form-control" readonly>
 						`;
 						const onkeyEvent =
-							'onkeyup="compute(' + parseFloat(val.quantity_in) + ', event)"';
+							'onkeyup="validate(' + parseFloat(val.quantity_in) + ', event)"';
 						const received_q = `
-							<input type="number" name="received_q[]" id="received_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${val.quantity_in}">
+							<input type="number" name="received_q[]" id="received_q" class="form-control" placeholder="Qty" ${onkeyEvent} value="${val.quantity_in}" max="${val.quantity_in}">
 						`;
+						const totalCost = Math.floor(val.quantity_in * val.item_sdp);
+						const totalCostReceived = Math.floor(val.received_q * val.item_sdp);
+						totalAmount = Math.floor(totalAmount + totalCost);
+						totalAmountReceived = Math.floor(
+							totalAmountReceived + totalCostReceived
+						);
 						html += `
 							<tr>
 								<td>
@@ -137,6 +148,7 @@ function view(id, status) {
 								<td>${val.category_name}</td>
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
+								<td>${val.supplier_id}</td>
 								<td>
 									${val.stocks}
 									${stocks}
@@ -147,7 +159,7 @@ function view(id, status) {
 								</td>
 								<td>${val.unit || "N/A"}</td>
 								<td>${val.item_sdp}</td>
-								<td>${Math.floor(val.quantity_in * val.item_sdp)}</td>
+								<td>${totalCost}</td>
 								<td>${status === "receive" ? received_q : val.received_q || "0.00"}</td>
 								<td>${
 									status === "receive"
@@ -157,6 +169,8 @@ function view(id, status) {
 							</tr>
 						`;
 					});
+					$(`#total_amount`).text(totalAmount);
+					$(`#total_amount_received`).text(totalAmountReceived);
 				} else {
 					html =
 						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';
@@ -252,12 +266,10 @@ function change(id, changeTo, status, proceed) {
 		// to review the item first
 		view(id, changeTo);
 		// Add note
-		const onclick = 'onclick="edit(' + id + ')"';
 		const note = `
-			Please review the items details first before you proceed to <strong>ITEM OUT</strong>! 
-			Click the <button type="button" class="btn btn-sm btn-warning" ${onclick} title="Edit"><i class="fas fa-edit"></i></button> button/icon to update details.
+			Please review the items details first! If good to go, click the <strong>Mark as Reviewed</strong> button to make this as <strong>REVIEWED</strong> and ready for purchase. Once marked as reviewed, record cannot be edited anymore.
 		`;
-		$("#note_item_out").html(note);
+		$("#item_note").html(note);
 
 		// Remove and append the button
 		const changeClick =
@@ -270,17 +282,17 @@ function change(id, changeTo, status, proceed) {
 			"'," +
 			true +
 			')"';
-		$("#rpf_items_modal .modal-footer #btn_item_out").remove();
-		$("#rpf_items_modal .modal-footer #btn_file").remove();
+		$("#rpf_items_modal .modal-footer #btn_review").remove();
 		$("#rpf_items_modal .modal-footer").append(`
-			<button type="button" class="btn btn-success" id="btn_item_out" ${changeClick}">Item Out</button>	
+			<button type="button" class="btn btn-success" id="btn_review" ${changeClick}">Mark as Reviewed</button>	
 		`);
 		return;
 	}
 
-	if (status === "item_out") {
-		$("#rpf_id_file").val(id);
-		$("#status_receive").val(changeTo);
+	if (status === "reviewed") {
+		$("#rpf_id_received").val(id);
+		$("#status_received").val(changeTo);
+		$("#item_note").html("");
 
 		// Display the items details
 		view(id, changeTo);
@@ -289,10 +301,10 @@ function change(id, changeTo, status, proceed) {
 
 	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
 	const swalMsg = `
-		<div>rpf #: <strong>${id}</strong></div>
+		<div>RPF #: <strong>${id}</strong></div>
 		<div>Are you sure you want to <strong>${strUpper(
 			changeTo
-		)}</strong> this rpf?</div>
+		)}</strong> this RPF?</div>
 	`;
 	const data = { id: id, status: changeTo };
 
@@ -302,9 +314,11 @@ function change(id, changeTo, status, proceed) {
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					refreshDataTable($("#" + table));
 					notifMsgSwal(res.status, message, res.status);
-					$("#rpf_items_modal").modal("hide");
+					if (res.status !== STATUS.ERROR) {
+						refreshDataTable($("#" + table));
+						$("#rpf_items_modal").modal("hide");
+					}
 				})
 				.catch((err) => catchErrMsg(err));
 		},
@@ -353,13 +367,17 @@ function toggleItemField(row) {
 }
 
 /* Toggle item field */
-function compute(quantity_in, evt) {
-	const returned = parseFloat(evt.target.value);
-	if (isNumber(returned)) {
-		const consumed = parseFloat(quantity_in) - returned;
-		const parentSiblingElem = evt.target.parentElement.nextElementSibling;
-		_populateAvailableItemStocks(parentSiblingElem, consumed, true);
+function validate(quantity_in, evt) {
+	const received = parseFloat(evt.target.value);
+	let alertMsg = "";
+
+	if (
+		isNumber(received) &&
+		Math.floor(parseFloat(quantity_in) < parseFloat(received))
+	) {
+		alertMsg = "Received qty must not be greater than quantity in!";
 	}
+	$("#alert_received_q").text("");
 }
 
 /* Masterlist select2 via ajax data source */

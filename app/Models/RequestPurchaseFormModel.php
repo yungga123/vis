@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\InventoryTrait;
 
 class RequestPurchaseFormModel extends Model
 {
+    /* Declare trait here to use */
+    use InventoryTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'request_purchase_forms';
     protected $view             = 'rpf_view';
@@ -93,15 +97,17 @@ class RequestPurchaseFormModel extends Model
     public function updateInventoryStock(array $data)
     {
         if ($data['result'] && isset($data['data']['status'])) {
-            if ($data['data']['status'] === 'receive') {
+            if ($data['data']['status'] === 'received') {
                 $rpfItemModel   = new RPFItemModel();
                 $columns        = "
                     {$rpfItemModel->table}.inventory_id, 
                     {$rpfItemModel->table}.quantity_in,
+                    {$rpfItemModel->table}.received_date,
                     inventory.stocks
                 ";
-                $record         = $rpfItemModel->getRpfItemsByPrfId($data['id'], $columns, false, true);
-                $action         = 'ITEM_OUT';
+                log_message('error', 'data => '. json_encode($data));
+                $record         = $rpfItemModel->getRpfItemsByPrfId($data['id'], true, false, $columns);
+                $action         = 'ITEM_IN';
 
                 if (! empty($record)) {
                     $logs_data = [];
@@ -111,6 +117,7 @@ class RequestPurchaseFormModel extends Model
                             'inventory_id'  => $val['inventory_id'],
                             'stocks'        => $val['quantity_in'],
                             'parent_stocks' => $val['stocks'],
+                            'status_date'   => $val['received_date'],
                             'action'        => $action,
                             'created_by'    => session('username'),
                         ];
@@ -229,32 +236,32 @@ class RequestPurchaseFormModel extends Model
                 $changeTo = 'review';
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
-                    'button'    => 'btn-success',
+                    'button'    => 'btn-info',
                     'icon'      => 'fas fa-check-double',
                     'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'RECIEVE') && $row['status'] === 'item_out') {
+            if (check_permissions($permissions, 'RECIEVE') && $row['status'] === 'reviewed') {
                 // Receive PRF
                 $changeTo = 'receive';
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
-                    'button'    => 'btn-primary',
+                    'button'    => 'btn-success',
                     'icon'      => 'fas fa-sign-in-alt',
                     'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['item_out', 'filed'])) {
+            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed', 'received'])) {
                 // Print PRF
-                $print_url = site_url('prf/print/') . $row[$id];
+                $print_url = site_url('rpf/print/') . $row[$id];
                 $buttons .= <<<EOF
-                    <a href="$print_url" class="btn btn-info btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
+                    <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }
 
-            $buttons = ($row['status'] === 'rejected' && !is_admin()) 
+            $buttons = (in_array($row['status'], ['rejected', 'reviewed', 'received']) && !is_admin()) 
                 ? ($buttonView ?? '~~N/A~~') : dt_buttons_dropdown($buttons);
                 
             return $buttons;
@@ -280,7 +287,7 @@ class RequestPurchaseFormModel extends Model
    public function dtRpfStatusFormat()
    {
        $closureFun = function($row) {
-           $text    = ucwords(set_prf_status($row['status']));
+           $text    = ucwords(set_rpf_status($row['status']));
            $color   = dt_status_color($row['status']);
            return text_badge($color, $text);
        };

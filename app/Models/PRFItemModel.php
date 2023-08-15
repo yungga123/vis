@@ -167,8 +167,6 @@ class PRFItemModel extends Model
 
         if (! empty($data) && count($inventory_id)) {
             $arr        = [];
-            $action     = 'ITEM_IN';
-            $logs_data  = [];
             for ($i=0; $i < count($inventory_id); $i++) { 
                 $arr[] = [
                     'prf_id'        => (int)$prf_id,
@@ -177,32 +175,12 @@ class PRFItemModel extends Model
                     'returned_date' => $returned_date[$i],
                     'quantity_out'  => $quantity_out[$i],
                 ];
-
-                if (floatval($returned_q[$i]) > 0) {
-                    $logs_data[] = [
-                        'inventory_id'  => $inventory_id[$i],
-                        'stocks'        => $returned_q[$i],
-                        'parent_stocks' => $stocks[$i],
-                        'action'        => $action,
-                        'status'        => 'RETURN',
-                        'status_date'   => current_date(),
-                        'created_by'    => session('username'),
-                    ];
-
-                    $this->traitUpdateInventoryStock(
-                        $inventory_id[$i],
-                        $returned_q[$i],
-                        $action
-                    );
-                }
             }
 
             if (! empty($arr)) {
                 $constraint = ['prf_id', 'inventory_id', 'quantity_out'];
                 $this->db->table($this->table)->updateBatch($arr, $constraint);
             }
-            // Add inventory logs
-            $this->saveInventoryLogs($logs_data);
         }
     }
 

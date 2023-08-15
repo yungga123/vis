@@ -18,6 +18,7 @@
                     <div class="form-group">
                         <label class="required text-center">Masterlist Items</label>
                         <div>Format: Item # | Model | Description</div>
+                        <input type="hidden" name="id" id="rpf_id" class="form-control" readonly>
                     </div>
                     <div>
                         <table class="table" id="item_field_table">

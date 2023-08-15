@@ -107,11 +107,13 @@ if (! function_exists('dt_status_color'))
                 $color = 'secondary';
                 break;
             case 'item_out':
-            case 'reviewed':
+            case 'received':
                 $color   = 'success';
                 break;
+            case 'reviewed':
+                $color   = 'info';
+                break;
             case 'filed':
-            case 'received':
                 $color = 'dark';
                 break;
         }
