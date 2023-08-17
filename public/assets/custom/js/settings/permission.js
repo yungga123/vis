@@ -78,7 +78,7 @@ function edit(id) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					setOptionValue("#role_code", res.data.role_code);
 					setOptionValue("#module_code", res.data.module_code);
-					$("#permissions").val(res.data.permissions).change();
+					setSelect2Selection($permission, res.data.permissions);
 				}
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -106,17 +106,6 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
-}
-
-/* Initialize permission select2 */
-function initPermissionSelect2(data) {
-	$($permission)
-		.select2({
-			data: data,
-			placeholder: "Select Permission",
-			allowClear: true,
-		})
-		.trigger("change");
 }
 
 /* Populate initial permissions options */

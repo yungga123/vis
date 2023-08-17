@@ -289,8 +289,10 @@ class RequestPurchaseForm extends BaseController
      */
     public function print() 
     {
-        // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        // Check role & action if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code, 'PRINT');
+        d($this->modules);
+        d($this->getSpecificActionsByModule($this->_module_code)); die;
         
         $id                 = $this->request->getUri()->getSegment(3);
         $columns            = $this->_model->columns(true, true);

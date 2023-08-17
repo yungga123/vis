@@ -84,7 +84,7 @@ if (! function_exists('text_badge'))
      */
 	function text_badge(string $color, string $text): string
 	{   
-        return '<span class="rounded text-sm text-white pl-2 pr-2 pt-1 pb-1 bg-'.$color.'">'.$text.'</span>';
+        return '<span class="rounded text-sm text-white pl-2 pr-2 pt-1 pb-1 mr-1 bg-'.$color.'">'.$text.'</span>';
 	}
 }
 
@@ -96,11 +96,13 @@ if (! function_exists('dt_status_color'))
 	function dt_status_color(string $status): string
     {
         $color   = 'secondary';
-        switch ($status) {
+        switch (strtolower($status)) {
             case 'pending':
+            case 'edit':
                 $color = 'warning';                   
                 break;
             case 'accepted':
+            case 'add':
                 $color = 'primary';
                 break;
             case 'rejected':
@@ -111,9 +113,14 @@ if (! function_exists('dt_status_color'))
                 $color   = 'success';
                 break;
             case 'reviewed':
+            case 'view':
                 $color   = 'info';
                 break;
+            case 'delete':
+                $color   = 'danger';
+                break;
             case 'filed':
+            case 'print':
                 $color = 'dark';
                 break;
         }

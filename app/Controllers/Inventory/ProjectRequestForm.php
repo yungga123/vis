@@ -322,7 +322,7 @@ class ProjectRequestForm extends BaseController
     public function print() 
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, 'PRINT');
         
         $id             = $this->request->getUri()->getSegment(3);
         $columns        = $this->_model->columns(true, true);
