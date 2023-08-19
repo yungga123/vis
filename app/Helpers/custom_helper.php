@@ -81,3 +81,14 @@ if (! function_exists('format_datetime'))
         return !empty($datetime) ? date($format, strtotime($datetime)) : '';
 	}
 }
+
+if (! function_exists('has_html_tags'))
+{
+    /**
+     * Check string if has html tags
+     */
+	function has_html_tags(string $string): bool
+	{
+        return preg_match('/<[^>]+>/', $string) === 1;
+	}
+}

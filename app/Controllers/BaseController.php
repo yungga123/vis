@@ -101,51 +101,6 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * For sending mail to employee
-     * $request param should contain [employee_id, username, password]
-     * @param array $request    - should contain [employee_id, username, password]
-     * @param string $sendVia   - either 'xoauth' or 'regular'
-     * @param boolean $is_add   - set true if from add request
-     * @return array
-     */
-    protected function sendMail($request, $sendVia, $is_add = false)
-    {
-        // Declare mail config controller
-        $mail = new \App\Controllers\Settings\MailConfig();
-
-        // Get employee details
-        $employeesModel = new \App\Models\EmployeesModel();
-        $params = $employeesModel->getEmployeeDetails(
-            $request['employee_id'],
-            'employee_id, employee_name, email_address',
-        );
-
-        $params['username'] = $request['username'];
-        $params['password'] = $request['password'];
-        $params['subject'] = 'Password changed confirmation!';
-
-        if ($is_add) {
-            $params['subject'] = 'Account confirmation!';
-            $params['is_add'] = true;
-        }
-
-        // $params should contain (employee_id, employee_name, email_address, username, password, subject)
-        // And $sendVia either via 'regular' or 'xoauth'
-        $res = $mail->send($params, $sendVia);
-        $status = $res['status'];
-        $message = $res['message'];
-
-        if($status === STATUS_ERROR) {
-            // If mail didn't sent set status as info
-            $status = STATUS_INFO;
-            // $message = 'Account has been updated but mail could not be sent!';
-            $message = 'Account has been updated! '. $message;
-        }
-
-        return compact('status', 'message');
-    }
-
-    /**
      * Get specific permissions based on module code
      *
      * @param string $module_code
