@@ -8,7 +8,6 @@ class SupplierBrandsModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'supplier_brands';
-    protected $view             = '';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -82,4 +81,44 @@ class SupplierBrandsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function noticeTable($supplier_id)
+    {
+        $builder    = $this->db->table($this->table);
+        $builder->select('
+            brand_name,
+            product,
+            warranty,
+            sales_person,
+            sales_contact_number,
+            technical_support,
+            technical_contact_number,
+            remarks
+        ');
+
+        $builder->where('deleted_at', null);
+        $builder->where('supplier_id',$supplier_id);
+        return $builder;
+    }
+
+    public function buttons()
+    {
+        $closureFun = function($row) {
+            return <<<EOF
+                
+
+                <button type="button" class="btn btn-info dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                    Action 
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+
+                <div class="dropdown-menu" role="menu" style="">
+                    <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_add_supplier" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button>
+                </div>
+                
+            EOF;
+        };
+        return $closureFun;
+    }
 }
