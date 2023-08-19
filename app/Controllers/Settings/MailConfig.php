@@ -9,6 +9,7 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\OAuth;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
+use App\Libraries\Mail\PHPMailerSMTPService;
 
 class MailConfig extends BaseController
 {
@@ -67,12 +68,12 @@ class MailConfig extends BaseController
         $data['mail']           = $this->_model->getMailConfig();
 
         return view('settings/mail_config/send_mail', $data);
-    }
+    }   
 
     /**
      * For saving changes
      *
-     * @return json_encode array
+     * @return json
      */
     public function save()
     {
@@ -82,23 +83,23 @@ class MailConfig extends BaseController
         $this->transBegin();
 
         try {
-            $data['status'] = STATUS_SUCCESS;
-            $data['message'] = "Changes have been saved!";
+            $data['status']     = STATUS_SUCCESS;
+            $data['message']    = "Changes have been saved!";
 
             if (!$this->_model->save($this->request->getVar())) {
-                $data['errors'] = $this->_model->errors();
-                $data['status'] = STATUS_ERROR;
-                $data['message'] = "Validation error!";
+                $data['errors']     = $this->_model->errors();
+                $data['status']     = STATUS_ERROR;
+                $data['message']    = "Validation error!";
             } else {
                 log_message(
                     'error',
                     'Mail config data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.',
                     [
-                        'username' => session()->get('username'),
-                        'employee_id' => session()->get('employee_id'),
-                        'access_level' => session()->get('access_level'),
-                        'saved_at' => date('Y-m-d H:i:s'),
-                        'ip_address' => $this->request->getIPAddress(),
+                        'username'      => session()->get('username'),
+                        'employee_id'   => session()->get('employee_id'),
+                        'access_level'  => session()->get('access_level'),
+                        'saved_at'      => date('Y-m-d H:i:s'),
+                        'ip_address'    => $this->request->getIPAddress(),
                     ]
                 );
             }
@@ -116,120 +117,6 @@ class MailConfig extends BaseController
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * Function for sending mail using PHPMailer library
-     *
-     * @param array $params
-     * @param string $sendVia
-     * @return array
-     */
-    protected function send(array $params, $sendVia = 'xoauth2')
-    {
-        $error = '';
-
-        //Create a new PHPMailer instance
-        $mail = new PHPMailer();
-
-        try {
-            // $this->checkIfStillHasSessionToken();
-
-            //Get mail config details
-            $mail_config = $this->_model->getMailConfig();
-
-            if (empty($mail_config)) {
-                throw new Exception("There is no mail config data.", 1);
-            } else {
-                if ($mail_config['is_enable'] === 'NO') {
-                    throw new Exception("Mail sending has been <strong>disabled</strong>.", 2);
-                }
-            }
-
-            //Tell PHPMailer to use SMTP
-            $mail->isSMTP();
-
-            //Enable SMTP debugging
-            //SMTP::DEBUG_OFF = off (for production use)
-            //SMTP::DEBUG_CLIENT = client messages
-            //SMTP::DEBUG_SERVER = client and server messages
-            $mail->SMTPDebug = SMTP::DEBUG_OFF;
-
-            //Set the hostname of the mail server
-            $mail->Host = $mail_config['hostname'];
-
-            //Set the SMTP port number:
-            // - 465 for SMTP with implicit TLS, a.k.a. RFC8314 SMTPS or
-            // - 587 for SMTP+STARTTLS
-            $mail->Port = 587;
-
-            //Set the encryption mechanism to use:
-            // - SMTPS (implicit TLS on port 465) or
-            // - STARTTLS (explicit TLS on port 587)
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-
-            //Whether to use SMTP authentication
-            $mail->SMTPAuth = true;
-
-            if ($sendVia === 'xoauth2') {
-                $this->_sendViaOAuth2($mail, $mail_config);
-            } else {
-                $this->_sendViaRegularSMPT($mail, $mail_config);
-            }
-
-            //Set who the message is to be sent from
-            $mail->setFrom($mail_config['email'], $mail_config['email_name']);
-
-            //Set who will receive the mail
-            $mail->addAddress($params['email_address'], $params['employee_name'] ?? '');
-
-            //Set who can get a copy
-            if (!empty($mail_config['recepients'])) {
-                $split = explode(',', $mail_config['recepients']);
-                foreach ($split as $val) {
-                    $mail->addCC(trim($val));
-                }
-
-            }
-            // $mail->addBCC('bcc@example.com');
-
-            //Set the subject line
-            $mail->Subject = $params['subject'] ?? $mail_config['email_name'];
-
-            //Attachments
-            // $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
-            // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
-
-            //Set email format to HTML
-            $mail->isHTML(true);
-
-            //Content
-            $mail->Body = $params['body'] ?? $this->_bodyMailTemplate($params);
-
-            //Read an HTML message body from an external file, convert referenced images to embedded,
-            //convert HTML into a basic plain-text alternative body
-            $mail->CharSet = PHPMailer::CHARSET_UTF8;
-            $mail->msgHTML($mail->Body);
-
-            //send the message, check for errors
-            if (!$mail->send()) {
-                throw new Exception("Mail could not be sent!", 1);
-            }
-        } catch (Exception $e) {
-            $error = 'Mail could not be sent! Please contact your system administrator.';
-            log_message(
-                'error',
-                'Mail could not be sent. Mailer Error: {mail_error}! [ERROR] {exception}! Error code: {code}',
-                ['mail_error' => $mail->ErrorInfo, 'exception' => $e, 'code' => $e->getCode()]
-            );
-
-            if ($e->getCode() == 1 || $e->getCode() == 2) $error = $e->getMessage();
-        }
-
-        return [
-            'status' => empty($error) ? STATUS_SUCCESS : STATUS_ERROR,
-            'message' => empty($error) ? ' A mail has been sent to employee.' : $error,
-        ];
     }
 
     /**

@@ -38,6 +38,14 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
+                        <label class="required"  for="access_level">Role/Access Level</label>
+                        <select name="access_level" id="access_level" class="form-control" data-value="<?= $account_data['access_level'] ?? ''; ?>">
+                            <option value="">Choose an Option</option>
+                            <?= get_roles_options(); ?>
+                        </select>
+                        <small id="alert_access_level" class="text-danger"></small>
+                    </div>
+                    <div class="form-group">
                         <label class="required" for="employee_id">Employee Name</label>
                         <select class="select2" name="employee_id" id="employee_id" data-placeholder="Select Employee" style="width: 100%;" required>
                             <option value="">---Please Select---</option>
@@ -64,14 +72,6 @@
                             </div>
                         </div>
                         <small id="alert_password" class="text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label class="required"  for="access_level">Access Level</label>
-                        <select name="access_level" id="access_level" class="form-control" data-value="<?= $account_data['access_level'] ?? ''; ?>">
-                            <option value="">Choose an Option</option>
-                            <?= get_roles_options(); ?>
-                        </select>
-                        <small id="alert_access_level" class="text-danger"></small>
                     </div>
                 </div>
                 <div class="modal-footer">
