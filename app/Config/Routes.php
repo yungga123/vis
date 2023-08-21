@@ -236,15 +236,14 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('edit', 'Suppliers::edit', ['as' => 'suppliers.edit']);
     $routes->post('delete', 'Suppliers::delete', ['as' => 'suppliers.delete']);
 
-    //DROPDOWNS
-    $routes->get('dropdowns','SuppliersDropdown::index', ['as' => 'suppliers.dropdown.home']);
-    $routes->post('dropdowns/list','SuppliersDropdown::list', ['as' => 'suppliers.dropdown.list']);
-    $routes->post('dropdowns/save','SuppliersDropdown::save', ['as' => 'suppliers.dropdown.save']);
-    $routes->post('dropdowns/edit','SuppliersDropdown::edit', ['as' => 'suppliers.dropdown.edit']);
-    $routes->post('dropdowns/delete','SuppliersDropdown::delete', ['as' => 'suppliers.dropdown.delete']);
-    $routes->post('dropdowns/show','SuppliersDropdown::fetchDropdowns', ['as' => 'suppliers.dropdown.show']);
+    $routes->post('brands/list','SupplierBrands',['as' => 'suppliers.brand.list']);
+    $routes->post('brands/save','SupplierBrands',['as' => 'suppliers.brand.save']);
+    $routes->post('brands/edit','SupplierBrands',['as' => 'suppliers.brand.edit']);
+    $routes->post('brands/delete','SupplierBrands',['as' => 'suppliers.brand.delete']);
+
     
 });
+
 
 
 

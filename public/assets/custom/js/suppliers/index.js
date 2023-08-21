@@ -1,4 +1,4 @@
-var table, modal, form, editRoute, removeRoute, elems;
+var table, modal, form, editRoute, removeRoute, elems, branch_table, branch_modal, branch_form, branch_editRoute, branch_removeRoute, branch_elems;
 
 $(document).ready(function(){
     table = "supplier_table";

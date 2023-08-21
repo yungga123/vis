@@ -15,6 +15,7 @@ class SupplierBrandsModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        "supplier_id",
         "brand_name",
         "product",
         "warranty",
