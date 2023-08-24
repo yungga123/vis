@@ -236,10 +236,10 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('edit', 'Suppliers::edit', ['as' => 'suppliers.edit']);
     $routes->post('delete', 'Suppliers::delete', ['as' => 'suppliers.delete']);
 
-    $routes->post('brands/list','SupplierBrands',['as' => 'suppliers.brand.list']);
-    $routes->post('brands/save','SupplierBrands',['as' => 'suppliers.brand.save']);
-    $routes->post('brands/edit','SupplierBrands',['as' => 'suppliers.brand.edit']);
-    $routes->post('brands/delete','SupplierBrands',['as' => 'suppliers.brand.delete']);
+    $routes->get('brands/list','SupplierBrands::list',['as' => 'suppliers.brand.list']);
+    $routes->post('brands/save','SupplierBrands::save',['as' => 'suppliers.brand.save']);
+    $routes->post('brands/edit','SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
+    $routes->post('brands/delete','SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
 
     
 });

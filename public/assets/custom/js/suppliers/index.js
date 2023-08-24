@@ -20,6 +20,22 @@ $(document).ready(function(){
         "remarks",
 	];
 
+	brand_table = "supplier_table_brand";
+	brand_modal = "modal_add_supplier_brand";
+	brand_form = "form_add_supplier_brand";
+	brand_editRoute = $("#edit_url_brand").val();
+	brand_removeRoute = $("#remove_url_brand").val();
+	brand_elems = [
+		"brand_name",
+        "brand_product",
+        "brand_warranty",
+        "brand_sales_person",
+        "brand_sales_contact_number",
+        "brand_technical_support",
+        "brand_technical_contact_number",
+        "brand_remarks"
+	];
+
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
@@ -40,7 +56,7 @@ $(document).ready(function(){
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			refreshDataTable();
+			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
 
 			if ($(`#${modal}`).hasClass("edit")) {
@@ -50,6 +66,8 @@ $(document).ready(function(){
 
 		showAlertInForm(elems, message, res.status);
 	});
+
+	brand_suppliers();
 
 });
 
@@ -101,7 +119,7 @@ function remove(id) {
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					refreshDataTable();
+					refreshDataTable($("#" + table));
 					notifMsgSwal(res.status, message, res.status);
 				})
 				.catch((err) => catchErrMsg(err));

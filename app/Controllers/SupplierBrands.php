@@ -63,7 +63,7 @@ class SupplierBrands extends BaseController
                 "sales_contact_number",
                 "technical_support",
                 "technical_contact_number",
-                "remarks"
+                "supplier_brands_remark"
             ])
             ->setDefaultOrder('id','desc')
             ->setOrder([
@@ -75,7 +75,7 @@ class SupplierBrands extends BaseController
                 "sales_contact_number",
                 "technical_support",
                 "technical_contact_number",
-                "remarks"
+                "supplier_brands_remark"
             ])
             ->setOutput([
                 $this->_model->buttons(),
@@ -86,7 +86,7 @@ class SupplierBrands extends BaseController
                 "sales_contact_number",
                 "technical_support",
                 "technical_contact_number",
-                "remarks"
+                "supplier_brands_remark"
             ]);
 
         return $table->getDatatable();

@@ -1,24 +1,7 @@
 
 function brand_suppliers() {
-    brand_table = "supplier_table_brand";
-	brand_modal = "modal_add_supplier_brand";
-	brand_form = "form_add_supplier_brand";
-	brand_editRoute = $("#edit_url_brand").val();
-	brand_removeRoute = $("#remove_url_brand").val();
-	brand_elems = [
-		"brand_name",
-        "product",
-        "warranty",
-        "sales_person",
-        "sales_contact_number",
-        "technical_support",
-        "technical_contact_number",
-        "remarks"
-	];
+    
 
-    /* Load dataTable */
-	const route = $("#" + brand_table).data("url");
-	loadDataTable(brand_table, route, METHOD.POST);
 
     /* Form for saving item */
 	formSubmit($("#" + brand_form), "continue", function (res, self) {
@@ -26,7 +9,7 @@ function brand_suppliers() {
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			refreshDataTable();
+			refreshDataTable($("#" + brand_table));
 			notifMsgSwal(res.status, message, res.status);
 
 			if ($(`#${brand_modal}`).hasClass("edit")) {
@@ -34,7 +17,7 @@ function brand_suppliers() {
 			}
 		}
 
-		showAlertInForm(brand_elems, message, res.status);
+		showAlertInForm(brand_elems, message, res.status, prefix = "alert_brand");
 	});
 
 }
@@ -45,14 +28,14 @@ function brand_suppliers() {
 function brand_edit(id) {
 	$(`#${brand_modal}`).removeClass("add").addClass("edit");
 	$(`#${brand_modal} .modal-title`).text("Edit Brand Supplier");
-	$("#supplier_id").val(id);
+	$("#brand_id").val(id);
 
-	clearAlertInForm(elems);
-	resetSelected();
+	clearAlertInForm(brand_elems);
+	//resetSelected();
 	
 	showLoading();
 
-	$.post(editRoute, { id: id })
+	$.post(brand_editRoute, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -74,7 +57,7 @@ function brand_edit(id) {
 				// selectedOthers(val);
 				// selectedPaymentMode(val);
 			} else {
-				$(`#${modal}`).modal("hide");
+				$(`#${brand_modal}`).modal("hide");
 				notifMsgSwal(res.status, res.message, res.status);
 			}
 		})
@@ -85,11 +68,11 @@ function brand_remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(removeRoute, { id: id })
+			$.post(brand_removeRoute, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					refreshDataTable($("#" + branch_table));
+					refreshDataTable($("#" + brand_table));
 					notifMsgSwal(res.status, message, res.status);
 				})
 				.catch((err) => catchErrMsg(err));
@@ -98,4 +81,26 @@ function brand_remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+function brand_add(id) {
+	// Used in Select Customers from ADD BRANCH modal
+	$("#brand_supplier_id").val(id);
+	// $("#bcustomer_name").val(name);
+	// $("#branch_id").val("");
+
+	$(`#${brand_modal}`).modal("show");
+	$(`#${brand_modal}`).removeClass("edit").addClass("add");
+	$(`#${brand_modal} .modal-title`).text("Add Supplier Brand");
+
+	clearAlertInForm(brand_elems,null);
+	$(`#${brand_form}`)[0].reset();
+}
+
+function supplierbrandRetrieve(id) {
+
+	const route = $("#" + brand_table).data("url") + "?supplier_id=" + id;
+
+	$("#modal_supplier_brand").modal("show");
+	loadDataTable(brand_table, route, METHOD.GET, null, true);
 }
