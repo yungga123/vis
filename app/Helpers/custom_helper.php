@@ -140,5 +140,16 @@ if (! function_exists('clean_input'))
         }
 
         return trim($input);
+  }
+}
+
+if (! function_exists('has_html_tags'))
+{
+    /**
+     * Check string if has html tags
+     */
+	function has_html_tags(string $string): bool
+	{
+        return preg_match('/<[^>]+>/', $string) === 1;
 	}
 }
