@@ -151,4 +151,50 @@ abstract class BaseController extends Controller
             exit;
         }
 	}
+
+    /**
+     * The custom try catch function for handling error
+     * 
+     * @param array $data           The $data variable from the parent method
+     * @param function $callback    The callback function where logic is
+     * @param bool $dbTrans         [Optional - default true] The identifier if will use db transactions
+     * @return array                The passed/response $data variable
+     */
+    public function customTryCatch($data, $callback, $dbTrans = true)
+	{
+        // Using DB Transaction
+        if ($dbTrans) $this->transBegin();
+
+        try {
+            $data = $callback($data);
+
+            // Commit transaction
+            if ($dbTrans) $this->transCommit();
+        } catch (\Exception$e) {
+            // Try catch exception error handling
+            $data = $this->tryCatchException($data, $e, $dbTrans);
+        }
+
+        return $this->response->setJSON($data);
+	}
+
+    /**
+     * The common try catch exception method in handling error
+     * 
+     * @param array $data   The $data variable from the parent method
+     * @param object $e     The exception object
+     * @return array        The passed $data variable
+     */
+    public function tryCatchException($data, $e, $dbTrans = true)
+	{
+        // Rollback transaction if there's an error
+        if ($dbTrans) $this->transRollback();
+
+		log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+        $data['status']     = STATUS_ERROR;
+        $data['message']    = $e->getCode() === 2 
+            ? $e->getMessage() : 'Error while processing data! Please contact your system administrator.';
+
+        return $data;
+	}
 }

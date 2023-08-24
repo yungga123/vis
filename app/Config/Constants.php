@@ -145,7 +145,14 @@ define('ACTIONS', [
             'FILE'          => 'File',
             'RESCHEDULE'    => 'Reschedule',
         ],
-        'ADMIN_DISPATCH'   => [
+        'ADMIN_DISPATCH'    => [
+            'PRINT'         => 'Print',
+        ],
+        'INVENTORY_PRF'     => [
+            'ACCEPT'        => 'Accept',
+            'REJECT'        => 'Reject',
+            'ITEM_OUT'      => 'Item Out',
+            'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],
     ],
@@ -184,7 +191,7 @@ define('MODULES', [
     'TASK_LEAD'             => 'Task/Lead Monitoring',
     'MANAGER_OF_SALES'      => 'Manager of Sales',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
-    'INVENTORY'             => 'Inventory',
+    'INVENTORY'             => 'Masterlist',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'SETTINGS_ROLES'        => 'Roles',
@@ -193,6 +200,7 @@ define('MODULES', [
     'ADMIN_JOB_ORDER'       => 'Job Orders',
     'ADMIN_SCHEDULES'       => 'Schedules',
     'ADMIN_DISPATCH'        => 'Dispatch',
+    'INVENTORY_PRF'         => 'Project Request Forms',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -216,4 +224,5 @@ define('MODULE_CODES', [
     'job_order'             => 'ADMIN_JOB_ORDER',
     'schedules'             => 'ADMIN_SCHEDULES',
     'dispatch'              => 'ADMIN_DISPATCH',
+    'inventory_prf'         => 'INVENTORY_PRF',
 ]);

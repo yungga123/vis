@@ -22,7 +22,7 @@ if (! function_exists('dt_button_html'))
 if (! function_exists('dt_button_actions'))
 {
     /**
-     * DataTable buttons actions format
+     * DataTable default (edit & delete) buttons actions format
      */
 	function dt_button_actions(array $row, string $id, array $permissions, bool $dropdown = false): string
 	{
@@ -74,5 +74,16 @@ if (! function_exists('dt_buttons_dropdown'))
                 </div>
             </div>
         EOF;
+	}
+}
+
+if (! function_exists('text_badge'))
+{
+    /**
+     * DataTable text badge (text with background color)
+     */
+	function text_badge(string $color, string $text): string
+	{   
+        return '<span class="rounded text-sm text-white pl-2 pr-2 pt-1 pb-1 bg-'.$color.'">'.$text.'</span>';
 	}
 }

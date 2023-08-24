@@ -33,7 +33,6 @@
                     <table id="table_inventory_logs" class="table table-hover table-striped nowrap" width="100%">
                         <thead class="nowrap">
                             <tr> 
-                                <!-- <th>Action</th> -->
                                 <th>Logs Type</th>
                                 <th>Item #</th>
                                 <th>Category</th>
@@ -41,12 +40,15 @@
                                 <th>Item Brand</th>
                                 <th>Item Model</th>
                                 <th>Item Description</th>
+                                <th>Quantity</th>
+                                <th>Prev Stocks</th>
+                                <th>Current Stocks</th>
                                 <th>Item Size</th>
-                                <th>Stocks</th>
                                 <th>Unit</th>
                                 <th>Status</th>
                                 <th>Status Date</th>
                                 <th>Encoder</th>
+                                <th>Encoded At</th>
                             </tr>
                         </thead>
                     </table>
@@ -58,5 +60,5 @@
         </div>
     </div>
 </div>
-<?= $this->include('inventory/logs/modal'); ?>
+<?= $this->include('inventory/logs/form'); ?>
 <?=$this->endSection();?>

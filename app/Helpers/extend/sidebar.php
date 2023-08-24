@@ -28,8 +28,16 @@ if (! function_exists('get_nav_menus'))
             url_is('sales_manager') || 
             url_is('sales_manager_indv')
         );
+
+        $is_inventory = (
+            url_is('inventory') || 
+            url_is('inventory/dropdowns') || 
+            url_is('inventory/logs') || 
+            url_is('project-request-forms')
+        );
+
 		$menu = [
-            'SALES'            => [
+            'SALES'         => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => $is_sales,
@@ -41,7 +49,7 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('accounts') || url_is('employees')),
                 'icon'      => 'fas fa-users',
             ],
-            'SETTINGS'          => [
+            'SETTINGS'      => [
                 'name'      => 'Settings',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('settings/mail') || url_is('settings/permissions') || url_is('settings/roles')),
@@ -53,17 +61,23 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('suppliers')),
                 'icon'      => 'fas fa-money-check',
             ],
-            'ADMIN'          => [
+            'ADMIN'         => [
                 'name'      => 'Admin',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('job-orders') || url_is('schedules') || url_is('dispatch')),
                 'icon'      => 'fas fa-users-cog',
             ],
-            'CLIENTS'          => [
+            'CLIENTS'       => [
                 'name'      => 'Clients',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential')),
                 'icon'      => 'fas fa-clipboard-list',
+            ],
+            'INVENTORY'     => [
+                'name'      => 'Inventory',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => $is_inventory,
+                'icon'      => 'fas fa-store-alt',
             ],
         ];
 
@@ -129,7 +143,7 @@ if (! function_exists('setup_modules'))
                 'icon'      => 'far fa-circle',
             ],
             'INVENTORY'     => [
-                'menu'      => '', // Leave empty if none
+                'menu'      => 'INVENTORY', // Leave empty if none
                 'name'      => get_modules('INVENTORY'),
                 'url'       => url_to('inventory.home'),
                 'class'     => (url_is('inventory') || url_is('inventory/dropdowns') || url_is('inventory/logs') ? 'active' : ''),
@@ -176,6 +190,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('dispatch.home'),
                 'class'     => (url_is('dispatch') ? 'active' : ''),
                 'icon'      => 'fas fa-user-astronaut',
+            ],
+            'INVENTORY_PRF'   => [
+                'menu'      => 'INVENTORY', // Leave empty if none
+                'name'      => get_modules('INVENTORY_PRF'),
+                'url'       => url_to('prf.home'),
+                'class'     => (url_is('project-request-forms') ? 'active' : ''),
+                'icon'      => 'fas fa-sign-out-alt',
             ],
         ];
 

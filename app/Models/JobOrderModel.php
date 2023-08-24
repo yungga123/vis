@@ -99,7 +99,7 @@ class JobOrderModel extends Model
             {$this->table}.comments,            
             {$this->table}.warranty,
             {$this->table}.remarks,
-            created_by
+            {$this->table}.created_by
         ";
         $dates = "
             ,{$this->table}.date_requested,
@@ -125,9 +125,41 @@ class JobOrderModel extends Model
 
         return $columns;
     }
+
+    // Common columns
+    public function selectedColumns($with_text = false, $with_date = false)
+    {
+        $columns = "
+            {$this->table}.tasklead_id,
+            {$this->tableJoined}.customer_name,
+            {$this->table}.status AS jo_status,
+            {$this->tableJoined}.quotation_num,
+            {$this->tableJoined}.tasklead_type,
+            {$this->table}.work_type,
+            CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager
+        ";
+
+        if ($with_text) {
+            $columns .= ", 
+                {$this->table}.id,
+                CONCAT({$this->table}.id, ' | ', {$this->tableJoined}.quotation_num, ' | ', {$this->tableJoined}.customer_name) AS option_text
+            ";
+        }
+
+        if ($with_date) {
+            $columns .= ",
+                {$this->table}.date_requested,
+                {$this->table}.date_committed,
+                {$this->table}.date_reported,
+                {$this->table}.created_by AS jo_created_at
+            ";
+        }
+
+        return $columns;
+    }
     
     // Join job_orders with task_lead_booked 
-    private function _join($builder)
+    public function _join($builder)
     {
         $builder->join($this->tableJoined, "{$this->table}.tasklead_id = {$this->tableJoined}.id");
         $builder->join($this->tableEmployees, "{$this->table}.employee_id = {$this->tableEmployees}.employee_id");
@@ -272,24 +304,21 @@ class JobOrderModel extends Model
     {
         $closureFun = function($row) {
             $text   = ucfirst(set_jo_status($row['status']));
-            $class  = 'rounded text-sm text-white pl-2 pr-2 pt-1 pb-1';
-
+            $color   = 'secondary';
+ 
             switch ($row['status']) {
                 case 'pending':
-                    $format = '<span class="bg-warning '.$class.'">'.$text.'</span>';
+                    $color = 'warning';                   
                     break;
                 case 'accepted':
-                    $format = '<span class="bg-primary '.$class.'">'.$text.'</span>';
+                    $color = 'primary';
                     break;
                 case 'filed':
-                    $format = '<span class="bg-success '.$class.'">'.$text.'</span>';
-                    break;
-                default:
-                    $format = '<span class="bg-secondary '.$class.'">'.$text.'</span>';
+                    $color = 'success';
                     break;
             }
-
-            return $format;
+ 
+            return text_badge($color, $text);
         };
         
         return $closureFun;
