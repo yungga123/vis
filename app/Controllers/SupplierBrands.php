@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\SuppliersModel;
+use App\Models\SupplierBrandsModel;
 use monken\TablesIgniter;
 
-class Suppliers extends BaseController
+class SupplierBrands extends BaseController
 {
     /**
      * Use to initialize PermissionModel class
@@ -40,73 +40,53 @@ class Suppliers extends BaseController
     
     public function __construct()
     {
-        $this->_model       = new SuppliersModel(); // Current model
+        $this->_model       = new SupplierBrandsModel(); // Current model
         $this->_module_code = MODULE_CODES['suppliers']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
-    public function index()
-    {
-        $data['title']          = 'Suppliers';
-        $data['page_title']     = 'Suppliers | List';
-        $data['custom_js']      = ['suppliers/index.js','suppliers_brand/index.js'];
-        $data['with_dtTable']   = true;
-        $data['with_jszip']     = true;
-        $data['sweetalert2']    = true;
-        $data['exclude_toastr'] = true;
-        //$data['select2']        = true;
-        $data['can_add']        = $this->_can_add;
-        $data['btn_add_lbl']    = 'Add New Supplier';
-
-
-        return view('suppliers/index', $data);
-    }
 
     public function list()
     {
         $table = new TablesIgniter();
-        $builder = $this->_model->noticeTable();
+
+        $supplier_id = $this->request->getVar('supplier_id');
+        $builder = $this->_model->noticeTable($supplier_id);
 
         $table->setTable($builder)
             ->setSearch([
-                "id",
-                "supplier_name",
-                "supplier_type",
-                "contact_person",
-                "contact_number",
-                "viber",
-                "payment_terms",
-                "payment_mode",
+                "brand_name",
                 "product",
-                "remarks",
+                "warranty",
+                "sales_person",
+                "sales_contact_number",
+                "technical_support",
+                "technical_contact_number",
+                "supplier_brands_remark"
             ])
             ->setDefaultOrder('id','desc')
             ->setOrder([
                 null,
-                "id",
-                "supplier_name",
-                "supplier_type",
-                "contact_person",
-                "contact_number",
-                "viber",
-                "payment_terms",
-                "payment_mode",
+                "brand_name",
                 "product",
-                "remarks",
+                "warranty",
+                "sales_person",
+                "sales_contact_number",
+                "technical_support",
+                "technical_contact_number",
+                "supplier_brands_remark"
             ])
             ->setOutput([
                 $this->_model->buttons(),
-                "id",
-                "supplier_name",
-                $this->_model->supplierType(),
-                "contact_person",
-                "contact_number",
-                "viber",
-                $this->_model->paymentTerms(),
-                $this->_model->paymentMode(),
+                "brand_name",
                 "product",
-                "remarks",
+                "warranty",
+                "sales_person",
+                "sales_contact_number",
+                "technical_support",
+                "technical_contact_number",
+                "supplier_brands_remark"
             ]);
 
         return $table->getDatatable();
@@ -121,7 +101,7 @@ class Suppliers extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier has been saved successfully!'
+            'message'   => 'Supplier Brands has been saved successfully!'
         ];
 
         // Using DB Transaction
@@ -137,7 +117,7 @@ class Suppliers extends BaseController
             }
 
             if ($this->request->getVar('id')) {
-                $data['message']    = 'Supplier has been updated successfully!';
+                $data['message']    = 'Supplier Brands has been updated successfully!';
             }
 
             // Commit transaction
@@ -163,7 +143,7 @@ class Suppliers extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier has been retrieved!'
+            'message'   => 'Supplier Brands has been retrieved!'
         ];
 
         try {
@@ -190,7 +170,7 @@ class Suppliers extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier has been deleted successfully!'
+            'message'   => 'Supplier Brands has been deleted successfully!'
         ];
 
         // Using DB Transaction
@@ -218,5 +198,4 @@ class Suppliers extends BaseController
 
         return $this->response->setJSON($data);
     }
-
 }
