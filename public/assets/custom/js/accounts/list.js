@@ -9,6 +9,7 @@ $(document).ready(function () {
 	elems = ["employee_id", "username", "password", "access_level"];
 
 	select2Init("#employee_id");
+	passwordShowHideInit();
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -21,6 +22,7 @@ $(document).ready(function () {
 		$(".lbl_password").addClass("required");
 		$("#small_password").css("display", "none");
 		setOptionValue("#employee_id", "");
+		clearSelect2Selection("#employee_id", "");
 
 		clearAlertInForm(elems);
 	});
@@ -44,6 +46,7 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
+			clearSelect2Selection("#employee_id", "");
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");

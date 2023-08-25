@@ -28,6 +28,14 @@ if (! function_exists('get_nav_menus'))
             url_is('sales_manager') || 
             url_is('sales_manager_indv')
         );
+
+        $is_inventory = (
+            url_is('inventory') || 
+            url_is('inventory/dropdowns') || 
+            url_is('inventory/logs') || 
+            url_is('project-request-forms')
+        );
+
         $is_inventory   = (
             url_is('inventory') || 
             url_is('inventory/dropdowns') || 
@@ -40,7 +48,7 @@ if (! function_exists('get_nav_menus'))
         );
         
 		$menu           = [
-            'SALES'             => [
+            'SALES'          => [
                 'name'      => 'Sales',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => $is_sales,
@@ -52,7 +60,7 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('accounts') || url_is('employees')),
                 'icon'      => 'fas fa-users',
             ],
-            'SETTINGS'          => [
+            'SETTINGS'      => [
                 'name'      => 'Settings',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('settings/mail') || url_is('settings/permissions') || url_is('settings/roles')),
@@ -70,7 +78,7 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('job-orders') || url_is('schedules') || url_is('dispatch')),
                 'icon'      => 'fas fa-users-cog',
             ],
-            'CLIENTS'           => [
+            'CLIENTS'       => [
                 'name'      => 'Clients',
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential')),
@@ -194,12 +202,19 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('dispatch') ? 'active' : ''),
                 'icon'      => 'fas fa-user-astronaut',
             ],
-            'INVENTORY_PRF'         => [
+            'INVENTORY_PRF'   => [
                 'menu'      => 'INVENTORY', // Leave empty if none
                 'name'      => get_modules('INVENTORY_PRF'),
                 'url'       => url_to('prf.home'),
                 'class'     => (url_is('project-request-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-sign-out-alt',
+            ],
+            'PURCHASING_SUPPLIERS'      => [
+                'menu'      => 'PURCHASING', // Leave empty if none
+                'name'      => get_modules('PURCHASING_SUPPLIERS'),
+                'url'       => url_to('suppliers.home'),
+                'class'     => (url_is('suppliers') ? 'active' : ''),
+                'icon'      => 'fas fa-truck-loading',
             ],
             'PURCHASING_RPF'        => [
                 'menu'      => 'PURCHASING', // Leave empty if none

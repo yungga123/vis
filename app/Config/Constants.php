@@ -201,13 +201,13 @@ define('MODULES', [
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'SETTINGS_ROLES'        => 'Roles',
-    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
     'PURCHASING_SUPPLIERS'  => 'Suppliers',
     'ADMIN_JOB_ORDER'       => 'Job Orders',
     'ADMIN_SCHEDULES'       => 'Schedules',
     'ADMIN_DISPATCH'        => 'Dispatch',
     'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
     'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
+    'INVENTORY_PRF'         => 'Project Request Forms',
 ]);
 
 // Modules code based on the specific identifier you set

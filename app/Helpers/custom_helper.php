@@ -28,19 +28,21 @@ if (! function_exists('remove_string'))
     /**
      * Clear variable based on the passed params
      */
-	function remove_string(string|array|null $subject, string $search, string $replace = ''): string|array|null
+	function remove_string(string|array|null|null $subject, string $search, string $replace = ''): string|array|null|null
 	{
         if (! empty($subject)) {
+            if (! empty($subject)) {
             if (is_array($subject)) {
-                $arr = [];
-                foreach ($subject as $val) {
-                    $arr[] = str_replace($search, $replace, $val);
+                    $arr = [];
+                    foreach ($subject as $val) {
+                        $arr[] = str_replace($search, $replace, $val);
+                    }
+        
+                    $subject = $arr;
+                } else {
+                    $subject = str_replace($search, $replace, $subject);
                 }
-    
-                $subject = $arr;
-            } else {
-                $subject = str_replace($search, $replace, $subject);
-            }
+        }
         }
 
         return $subject;
@@ -64,6 +66,17 @@ if (! function_exists('current_datetime'))
      * Get current date & time - default format 'Y-m-d H:i:s'
      */
 	function current_datetime(string $format = 'Y-m-d H:i:s'): string
+	{
+        return date($format);
+	}
+}
+
+if (! function_exists('current_date'))
+{
+    /**
+     * Get current data - default format 'Y-m-d'
+     */
+	function current_date(string $format = 'Y-m-d'): string
 	{
         return date($format);
 	}
@@ -151,5 +164,64 @@ if (! function_exists('clean_input'))
         }
 
         return trim($input);
+	}
+}
+
+if (! function_exists('has_empty_value'))
+{
+    /**
+     * Check if array has an empty value
+     */
+	function has_empty_value(array $array): bool
+	{
+        foreach ($array as $value) {
+            if (empty($value)) return true; // Found an empty value
+        }
+        return false; // No empty values found
+	}
+}
+
+if (! function_exists('is_array_multi_dimen'))
+{
+    /**
+     * Check if array is multi-dimensional
+     */
+	function is_array_multi_dimen(array $array): bool
+	{
+        foreach ($array as $element) {
+            if (is_array($element)) return true; // Found a nested array
+        }
+        return false; // No nested arrays found
+	}
+}
+
+if (! function_exists('clean_input'))
+{
+    /**
+     * Clean input using trim default function
+     */
+	function clean_input(string|array $input): string|array
+	{
+        if (is_array($input)) {
+            $arr = [];
+            foreach ($input as $key => $val) {
+                $arr[$key] = trim($val);
+            }
+
+            return $arr;
+        }
+
+        return trim($input);
+  }
+}
+
+if (! function_exists('has_html_tags'))
+{
+    /**
+     * Check string if has html tags
+     */
+	function has_html_tags(string $string): bool
+	{
+        return preg_match('/<[^>]+>/', $string) === 1;
 	}
 }
