@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
 use App\Models\SuppliersModel;
@@ -48,9 +48,12 @@ class Suppliers extends BaseController
 
     public function index()
     {
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
+
         $data['title']          = 'Suppliers';
         $data['page_title']     = 'Suppliers | List';
-        $data['custom_js']      = ['suppliers/index.js','suppliers_brand/index.js'];
+        $data['custom_js']      = ['purchasing/suppliers/index.js', 'purchasing/suppliers_brand/index.js'];
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
@@ -59,8 +62,7 @@ class Suppliers extends BaseController
         $data['can_add']        = $this->_can_add;
         $data['btn_add_lbl']    = 'Add New Supplier';
 
-
-        return view('suppliers/index', $data);
+        return view('purchasing/suppliers/index', $data);
     }
 
     public function list()

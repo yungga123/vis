@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
 use App\Models\SupplierBrandsModel;
