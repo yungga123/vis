@@ -50,12 +50,12 @@ class Suppliers extends BaseController
     {
         $data['title']          = 'Suppliers';
         $data['page_title']     = 'Suppliers | List';
-        $data['custom_js']      = ['suppliers/index.js','suppliers_brand/index.js'];
+        $data['custom_js']      = 'suppliers/index.js';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
-        //$data['select2']        = true;
+        $data['select2']        = true;
         $data['can_add']        = $this->_can_add;
         $data['btn_add_lbl']    = 'Add New Supplier';
 
@@ -99,12 +99,12 @@ class Suppliers extends BaseController
                 $this->_model->buttons(),
                 "id",
                 "supplier_name",
-                $this->_model->supplierType(),
+                "supplier_type",
                 "contact_person",
                 "contact_number",
                 "viber",
-                $this->_model->paymentTerms(),
-                $this->_model->paymentMode(),
+                "payment_terms",
+                "payment_mode",
                 "product",
                 "remarks",
             ]);

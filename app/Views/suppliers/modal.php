@@ -1,5 +1,5 @@
 <!-- Supplier Add Form (MODAL) -->
-<div class="modal fade" id="modal_add_supplier" aria-hidden="true">
+<div class="modal fade" id="modal_add_supplier" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="form_add_supplier" action="<?= url_to('suppliers.save'); ?>" method="post" autocomplete="off">
@@ -28,16 +28,11 @@
                             <!-- Form Text -->
                             <div class="form-group">
                                 <label for="supplier_type">Type of Supplier</label>
-                                <select type="select" name="supplier_type" id="supplier_type" class="form-control" onchange='selectedOthers(this.value)'>
+                                <select type="select" name="supplier_type" id="supplier_type" class="form-control">
                                     <option value="">---Please Select---</option>
-                                    <option>Direct</option>
-                                    <option>Indirect</option>
-                                    <option>Tools Supplier</option>
-                                    <option>Office Assets</option>
-                                    <option>Others</option>
                                 </select>
-                                <input type="hidden" name="others_supplier_type" id="others_supplier_type" class="form-control" placeholder="Please Specify here...">
                                 <small id="alert_supplier_type" class="text-muted"></small>
+                                <span><a href="javascript:void(0)">Add here!</a> to add type of supplier selection.</span>
                                 
                             </div>
 
@@ -62,6 +57,8 @@
                                 <small id="alert_product" class="text-muted"></small>
                             </div>
 
+
+
                         </div>
 
                         <!-- Col -->
@@ -77,32 +74,14 @@
                             <!-- Form Text -->
                             <div class="form-group">
                                 <label for="payment_terms">Payment Terms</label>
-                                <select type="text" name="payment_terms" id="payment_terms" class="form-control">
-                                    <option value="">---Please Select---</option>
-                                    <option value="0">No</option>
-                                    <option value="7">7 days</option>
-                                    <option value="15">15 days</option>
-                                    <option value="30">30 days</option>
-                                    <option value="45">45 days</option>
-                                    <option value="50">50 days</option>
-                                    <option value="60">60 days</option>
-                                    <option value="90">90 days</option>
-                                    <option value="120">120 days</option>
-                                </select>
+                                <input type="text" name="payment_terms" id="payment_terms" class="form-control" placeholder="Enter here...">
                                 <small id="alert_payment_terms" class="text-muted"></small>
                             </div>
 
                             <!-- Form Text -->
                             <div class="form-group">
                                 <label for="payment_mode">Mode of Payment</label>
-                                <select name="payment_mode" id="payment_mode" class="form-control" onchange="selectedPaymentMode(this.value)">
-                                    <option value="">---Please Select---</option>
-                                    <option>Cash</option>
-                                    <option>Check</option>
-                                    <option>Online Payment</option>
-                                    <option>Others</option>
-                                </select>
-                                <input type="hidden" name="others_payment_mode" id="others_payment_mode" class="form-control" placeholder="Please Specify here...">
+                                <input type="text" name="payment_mode" id="payment_mode" class="form-control" placeholder="Enter here...">
                                 <small id="alert_payment_mode" class="text-muted"></small>
                             </div>
 

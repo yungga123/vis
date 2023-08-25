@@ -256,22 +256,6 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
 });
 
-//SUPPLIERS
-$routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Suppliers::index', ['as' => 'suppliers.home']);
-    $routes->post('list', 'Suppliers::list', ['as' => 'suppliers.list']);
-    $routes->post('save', 'Suppliers::save', ['as' => 'suppliers.save']);
-    $routes->post('edit', 'Suppliers::edit', ['as' => 'suppliers.edit']);
-    $routes->post('delete', 'Suppliers::delete', ['as' => 'suppliers.delete']);
-
-    $routes->get('brands/list','SupplierBrands::list',['as' => 'suppliers.brand.list']);
-    $routes->post('brands/save','SupplierBrands::save',['as' => 'suppliers.brand.save']);
-    $routes->post('brands/edit','SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
-    $routes->post('brands/delete','SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
-
-});
-
-    
 // JOB ORDERS
 $routes->group('job-orders', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'Admin\JobOrder::index', ['as' => 'job_order.home']);
@@ -300,9 +284,6 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
     $routes->get('print/(:num)', 'Admin\Dispatch::print', ['as' => 'dispatch.print/$1']);
 });
 /* ADMIN */
-
-
-
 
 /***************** PHASE 2 *****************/
 

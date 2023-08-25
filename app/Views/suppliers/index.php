@@ -5,8 +5,6 @@
 
     <input type="hidden" id="edit_url" value="<?= url_to('suppliers.edit') ?>" readonly>
     <input type="hidden" id="remove_url" value="<?= url_to('suppliers.delete') ?>" readonly>
-    <input type="hidden" id="edit_url_brand" value="<?= url_to('suppliers.brand.edit') ?>" readonly>
-    <input type="hidden" id="remove_url_brand" value="<?= url_to('suppliers.brand.delete') ?>" readonly>
     <!-- Suppliers List Card -->
     <div class="card">
         <div class="card-body">
@@ -36,9 +34,8 @@
     </div>
 </div>
 
-<?= $this->include('suppliers/modal') ?>
 
-<?= $this->include('supplier_brands/list') ?>
-<?= $this->include('supplier_brands/modal') ?>
+
+<?= $this->include('suppliers/modal') ?>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>
