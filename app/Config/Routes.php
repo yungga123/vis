@@ -269,6 +269,8 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('brands/edit','SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
     $routes->post('brands/delete','SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
 
+});
+
     
 // JOB ORDERS
 $routes->group('job-orders', ['filter' => 'checkauth'], static function ($routes) {
