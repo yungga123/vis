@@ -12,7 +12,7 @@
         <div class="card-body">
 
 
-            <table id="supplier_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('suppliers.list'); ?>">
+            <table id="supplier_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('suppliers.list'); ?>">
                 <thead>
                     <tr>
                         <th>Action</th>

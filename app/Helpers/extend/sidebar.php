@@ -198,6 +198,13 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('project-request-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-sign-out-alt',
             ],
+            'PURCHASING_SUPPLIERS'      => [
+                'menu'      => 'PURCHASING', // Leave empty if none
+                'name'      => get_modules('PURCHASING_SUPPLIERS'),
+                'url'       => url_to('suppliers.home'),
+                'class'     => (url_is('suppliers') ? 'active' : ''),
+                'icon'      => 'fas fa-truck-loading',
+            ],
         ];
 
         return $param ? $modules[$param] : $modules;

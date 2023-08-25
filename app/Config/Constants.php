@@ -195,7 +195,6 @@ define('MODULES', [
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'SETTINGS_ROLES'        => 'Roles',
-    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
     'PURCHASING_SUPPLIERS'  => 'Suppliers',
     'ADMIN_JOB_ORDER'       => 'Job Orders',
     'ADMIN_SCHEDULES'       => 'Schedules',
