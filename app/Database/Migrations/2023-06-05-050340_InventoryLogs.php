@@ -11,7 +11,7 @@ class InventoryLogs extends Migration
         $this->forge->addField([
             'inventory_logs_id' => [
                 'type' => 'INT',
-                'auto_increment' => true
+                'auto_increment' => true,
             ],
             'inventory_id' => [
                 'type' => "INT",
@@ -74,7 +74,6 @@ class InventoryLogs extends Migration
         ]);
 
         $this->forge->addPrimaryKey('inventory_logs_id');
-        $this->forge->addForeignKey('inventory_id', 'inventory', 'id', 'CASCADE');
         $this->forge->createTable('inventory_logs');
     }
 

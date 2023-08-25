@@ -114,7 +114,7 @@ class Accounts extends Model
 
     public function dtAccessLevel() 
     {
-        $access_level = function($row) use($old) {
+        $access_level = function($row) {
             return get_roles($row['access_level']);
         };
 

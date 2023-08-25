@@ -276,7 +276,8 @@ function edit(id) {
 						toggleCategory(true);
 						$("#dropdown_id").val(id);
 						$("#dropdown").val(res.data.dropdown);
-						$(select2Dropdown).val(res.data.parent_id).trigger("change");
+						$("#dropdown_type_text").val(res.data.dropdown_type);
+						setSelect2Selection(select2Dropdown, res.data.parent_id);
 					}
 				}
 			} else {

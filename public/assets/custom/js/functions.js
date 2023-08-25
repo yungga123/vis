@@ -201,7 +201,7 @@ function swalNotifConfirm(
 	if (message === "delete") {
 		message = "Are you really sure you want to delete this?";
 		confirmText = "Yes, delete it!";
-	} else if ((message = "continue")) {
+	} else if (message === "continue") {
 		message = "Are you really sure you want to continue?";
 		color = "#007bff";
 	}
@@ -442,7 +442,7 @@ function loadDataTable(
 			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
 		processing: true,
-		scrollX: true,
+		// scrollX: true,
 		autoWidth: false,
 		columnDefs: columnDefs,
 		order: order,
@@ -492,6 +492,11 @@ function loadDataTable(
 				"custom-select-sm form-control-sm"
 			);
 			$(".dt-buttons").removeClass("btn-group");
+
+			// To fix not align header and body
+			$("#" + table).wrap(
+				"<div style='overflow: auto; width: 100%; position: relative;'></div>"
+			);
 		},
 	});
 }
@@ -502,37 +507,139 @@ function refreshDataTable(table = null) {
 	else dtTable.ajax.reload();
 }
 
-/*
+/**
  * Use for showing and hiding a password - dependent on input group password
  * You can see reference from Views/settings/send_mail.php for the input group
- * passId = name of the password id selector
- * showPassId = name of the show password button id selector
+ *
+ * @param {string} passId 		name of the password id selector
+ * @param {string} showPassId 	name of the show password button id selector
+ * @return {void}
  */
-function passwordShowHideInit(
-	passId = "password",
-	showPassId = "show_password"
-) {
+function passwordShowHideInit(passId, showPassId) {
+	passId = passId || "password";
+	showPassId = showPassId || "show_password";
+
 	$("#" + showPassId).on("click", function () {
-		if ($(this).hasClass("show")) {
-			$(this).removeClass("show").attr("title", "Click here to show password!");
-			$(this).children("i").removeClass().addClass("fas fa-eye");
-			$("#" + passId).attr("type", "password");
-		} else {
-			$(this).addClass("show").attr("title", "Click here to hide password!");
-			$(this).children("i").removeClass().addClass("fas fa-eye-slash");
-			$("#" + passId).attr("type", "text");
+		if (!isEmpty($("#" + passId).val())) {
+			if ($(this).hasClass("show")) {
+				$(this)
+					.removeClass("show")
+					.attr("title", "Click here to show password!");
+				$(this).children("i").removeClass().addClass("fas fa-eye");
+				$("#" + passId).attr("type", "password");
+			} else {
+				$(this).addClass("show").attr("title", "Click here to hide password!");
+				$(this).children("i").removeClass().addClass("fas fa-eye-slash");
+				$("#" + passId).attr("type", "text");
+			}
 		}
 	});
 }
 
 /*
- * Small functions
+ * Initializations and others
  */
 
-/* Initialize select2 */
-function select2Init(selector) {
+/**
+ * Initialize select2 normally
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} placeholder 	- placeholder
+ * @param {object} data  		- data or the options to dispaly
+ * @param {object} container  	- the container to attach to (e.g for modal)
+ * @return void
+ */
+function select2Init(selector, placeholder, data, container) {
 	selector = selector || ".select2";
-	$(selector).select2();
+	$(selector).select2({
+		placeholder: placeholder || "Select an option",
+		allowClear: true,
+		data: data || {},
+		attachContainer: container || "",
+	});
+}
+
+/**
+ * Initialize select2 via ajax data source
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} placeholder 	- placeholder
+ * @param {string} route  		- the route or url to get data from
+ * @param {string} text  		- the displayed text of selected item
+ * @param {function} callaback  - the callback function after selecting an item
+ * @param {object} options  	- the options (data) to be passed to the backend
+ * @param {number} perPage  	- the length of options to display - default set to 10
+ * @return void
+ */
+function select2AjaxInit(
+	selector,
+	placeholder,
+	route,
+	text,
+	callaback,
+	options,
+	perPage
+) {
+	selector = selector || ".select2";
+
+	function dataHandler(params) {
+		let newOptions = {
+			page: params.page || 1,
+			perPage: perPage || 10,
+		};
+
+		if (isObject(options) && !isEmpty(options))
+			$.each(options, (key, value) => (newOptions[key] = value));
+
+		return {
+			q: params.term || "",
+			options: newOptions,
+		};
+	}
+
+	$(selector).select2({
+		placeholder: placeholder || "Select an option",
+		allowClear: true,
+		ajax: {
+			url: route,
+			type: "post",
+			dataType: "json",
+			delay: 250,
+			cache: false,
+			data: function (params) {
+				return dataHandler(params);
+			},
+			processResults: function (response) {
+				return {
+					results: response.data,
+				};
+			},
+		},
+		templateResult: function (data) {
+			return data[text] || data.text;
+		},
+		templateSelection: function (data) {
+			if (isFunction(callaback)) callaback(data);
+			return data[text] || data.text;
+		},
+	});
+}
+
+/**
+ * Re-initialize select2 and new selection
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} placeholder 	- placeholder
+ * @param {object} newData  	- new data or the new options to dispaly
+ * @return void
+ */
+function select2Reinit(select, placeholder, newData) {
+	$(select).html("");
+	$(select).select2("destroy");
+
+	select2Init(select, placeholder, newData);
+
+	$(select).trigger("change");
 }
 
 /* Check if select2 was initialized */
@@ -553,6 +660,24 @@ function setSelect2Selection(selector, val) {
 	$(selector).val(val).trigger("change");
 }
 
+/**
+ * Set select2 selection for ajax data source
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} text 		- text to display after selection
+ * @param {string} id  			- the option value
+ * @return void
+ */
+function setSelect2AjaxSelection(selector, text, id) {
+	// Set selected option in select2
+	const option = new Option(text, id, true, true);
+
+	$(selector).append(option).trigger("change");
+	$(selector).trigger({
+		type: "select2:select",
+	});
+}
+
 /* Get select2 selection */
 function getSelect2Selection(selector, isText = false) {
 	return isText ? $(selector + " :selected").text() : $(selector).val();
@@ -563,6 +688,128 @@ function setOptionValue(selector, val) {
 	$(`${selector}`).val(val).change();
 }
 
+/* To format options for select2 */
+function formatOptionsForSelect2(options, id, text) {
+	if (isEmpty(options)) return [];
+	return $.map(options, (val, i) => {
+		if (Number.isInteger(Number(i))) return { id: val[id], text: val[text] };
+		return { id: i, text: strCapitalize(val) };
+	});
+}
+
+/**
+ * Initialize date range picker
+ * with custom callbacks for on apply and cancel events
+ *
+ * @param {string} selector 			- id or class name with '#' or '.' identifier
+ * @param {object} options    			- options for date range picker
+ * @param {function} onApplyCallback  	- on apply callback
+ * @param {function} onCancelCallback 	- on cancel callback
+ */
+function initDateRangePicker(
+	selector,
+	options,
+	onApplyCallback,
+	onCancelCallback
+) {
+	options = options || {};
+	$(selector).daterangepicker(options);
+	$(selector).on("apply.daterangepicker", function (ev, picker) {
+		if (!picker.autoUpdateInput) {
+			$(this).val(
+				picker.startDate.format(picker.locale.format) +
+					" - " +
+					picker.endDate.format(picker.locale.format)
+			);
+		}
+
+		if (isFunction(onApplyCallback)) onApplyCallback(ev, picker);
+	});
+	$(selector).on("cancel.daterangepicker", function (ev, picker) {
+		$(this).val("");
+		if (isFunction(onCancelCallback)) onCancelCallback(ev, picker);
+	});
+}
+
+/**
+ * Initialize full calendar for schedule
+ *
+ * @param {string} elemName 		id or class name without identifier
+ * @param {object} eventsData		calendar event data [object | json]
+ * @param {object} options   		set other options for the calendar
+ * @returns {object}				_calendar variable object
+ */
+function initFullCalendar(elemName, eventsData, options) {
+	const calendarEl = document.getElementById(elemName);
+
+	const headerToolbar = inObject(options, "headerToolbar")
+		? options.headerToolbar
+		: {
+				left: "prev,next today",
+				center: "title",
+				right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+		  };
+
+	// Check if has eventPopHover callback otherwise call the default
+	const eventPopHover =
+		inObject(options, "eventPopHover") && isFunction(options.eventPopHover)
+			? options.eventPopHover
+			: (info) => {
+					$(info.el).popover({
+						container: "body",
+						placement: "top",
+						trigger: "hover",
+						title: info.event.title,
+						content: info.event.extendedProps.description,
+					});
+			  };
+
+	// Check if has eventClick callback otherwise call the default
+	const eventClick =
+		inObject(options, "eventClick") && isFunction(options.eventClick)
+			? options.eventClick
+			: (info) => {
+					// Please don't change the 'fcEventClick' function name
+					// You need to define fcEventClick function in your module
+					// to get the info from the event
+					if (isFunctionExist(fcEventClick)) fcEventClick(info);
+			  };
+
+	var _calendar = new FullCalendar.Calendar(calendarEl, {
+		themeSystem: "bootstrap",
+		initialView: "dayGridMonth",
+		displayEventTime: true,
+		editable: true,
+		height: "auto",
+		headerToolbar: headerToolbar,
+		views: {
+			dayGridMonth: { buttonText: "Month" },
+			timeGridWeek: { buttonText: "Week" },
+			timeGridDay: { buttonText: "Day" },
+			listMonth: { buttonText: "List" },
+		},
+		events: eventsData,
+		dayMaxEvents: true, // allow "more" link when too many events
+		navLinks: true,
+		eventDidMount: eventPopHover,
+		eventClick: eventClick,
+	});
+
+	_calendar.render();
+
+	// You can use the return object to refresh
+	// or add additional methods or functions to the calendar
+	return _calendar;
+}
+
+/* Refreshing Full Calendar */
+function refreshFullCalendar(elem) {
+	elem.refetchEvents();
+}
+
+/*
+ * More generic functions
+ */
 /* Check if value is empty - from stackoverflow */
 function isEmpty(value) {
 	return (
@@ -585,7 +832,7 @@ function isObject(obj) {
 
 /* Check if param is Array or not - from stackoverflow */
 function isArray(param) {
-	return Array.isArray(param);
+	return !isEmpty(param) && Array.isArray(param);
 
 	/* Another approach */
 	// return (Object.prototype.toString.call(obj) === '[object Object]');
@@ -598,6 +845,7 @@ function isString(param) {
 
 /* Check if Object key exist */
 function inObject(obj, key) {
+	if (isEmpty(obj)) return false;
 	return isObject(obj) ? Object.prototype.hasOwnProperty.call(obj, key) : false;
 
 	/* Another methods */
@@ -605,9 +853,36 @@ function inObject(obj, key) {
 	// return obj.hasOwnProperty(key); // Same as above
 }
 
+/* Check if array or object? is associative from chatgpt */
+function isArrayOrObjectAssoc(obj) {
+	if (!isObject(obj) || !isArray(obj)) return false;
+
+	// Check if the object has at least one non-numeric key
+	for (const key in obj) {
+		if (!Number.isInteger(Number(key))) return true;
+	}
+
+	return false;
+}
+
+/* Check if param is function */
+function isFunction(param) {
+	return typeof param === "function";
+}
+
+/* Check if function exist */
+function isFunctionExist(param) {
+	return isFunction(param);
+}
+
 /* Check if param is Object or not - from stackoverflow */
 function countObject(obj) {
 	return Object.keys(obj).length;
+}
+
+/* Check if param is number/float or not - from chatgpt */
+function isNumber(param) {
+	return typeof param === "number" && isFinite(param);
 }
 
 /* Check if is toastr is loaded */
@@ -618,4 +893,47 @@ function isToastrLoaded() {
 /* Check if is swal is loaded */
 function isSwalLoaded() {
 	return window.Swal != undefined;
+}
+
+/* Source: https://flexiple.com/javascript/javascript-capitalize-first-letter/ */
+/* Capitalize first letter of string/word */
+function strCapitalize(str) {
+	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/* Transform string to upper case */
+function strUpper(str) {
+	return str.toUpperCase();
+}
+
+/* Transform string to lower case */
+function strLower(str) {
+	return str.toLowerCase();
+}
+
+/* Transform every words to upper case */
+function strUpperWords(str) {
+	const arr = str.split(" ");
+
+	for (var i = 0; i < arr.length; i++) {
+		arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+	}
+
+	return arr.join(" ");
+}
+
+/* Transform every words to lower case */
+function strUpperWords(str) {
+	const arr = str.split(" ");
+
+	for (var i = 0; i < arr.length; i++) {
+		arr[i] = arr[i].charAt(0).toLowerCase() + arr[i].slice(1);
+	}
+
+	return arr.join(" ");
+}
+
+/* Get the current date in "YYYY-MM-DD" format  */
+function currentDate() {
+	return new Date().toISOString().split("T")[0];
 }

@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Inventory;
 
 use App\Controllers\BaseController;
 use App\Models\InventoryLogsModel;
-use App\Models\InventoryModel;
 use App\Models\InventoryDropdownModel;
 use monken\TablesIgniter;
 
-class InventoryLogs extends BaseController
+class Logs extends BaseController
 {
     /**
      * Use to initialize corresponding model
@@ -69,7 +68,7 @@ class InventoryLogs extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['inventory/logs.js'];
+        $data['custom_js']      = ['inventory/logs/index.js'];
         $data['routes']         = json_encode([
             'dropdown' => [
                 'show'      => url_to('inventory.dropdown.show'),
@@ -93,59 +92,42 @@ class InventoryLogs extends BaseController
      */
     public function save() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => '<strong>ITEM IN!</strong> Item has been saved successfully!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $request    = $this->request->getVar();
+                $inputs     = [
+                    'inventory_id'      => $request['inventory_id'],
+                    'stocks'            => $request['quantity'] ?? $request['stocks_logs'],
+                    'parent_stocks'     => $request['parent_stocks'],
+                    'status'            => $request['status_logs'] ?? '',
+                    'status_date'       => $request['status_date_logs'] ?? NULL,
+                    'action'            => $request['action_logs'],
+                ];
 
-        // Using DB Transaction
-        $this->transBegin();
+                if (! $this->_model->save($inputs)) {
+                    $errors = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
 
-        try {
-            $request    = $this->request->getVar();
-            $inputs     = [
-                'inventory_id'      => $request['inventory_id'],
-                'item_size'         => $request['item_size_logs_out'] ?? $request['item_size_logs'],
-                'item_sdp'          => $request['item_sdp_logs'],
-                'item_srp'          => $request['item_srp_logs'],
-                'project_price'     => $request['project_price_logs'],
-                'stocks'            => $request['quantity'] ?? $request['stocks_logs'],
-                'parent_stocks'     => $request['parent_stocks'],
-                'stock_unit'        => $request['stock_unit_logs_out'] ?? $request['stock_unit_logs'],
-                'date_of_purchase'  => $request['date_of_purchase_logs'],
-                'location'          => $request['location_logs'],
-                'supplier'          => $request['supplier_logs'],
-                'action'            => $request['action_logs'],
-            ];
+                    foreach ($errors as $key => $value) {
+                        $errors[$key .'_logs'] = $value;
+                    }                
+                    $data['errors']     = $errors;
+                }
 
-            
-            if (! $this->_model->save($inputs)) {
-                $errors = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-
-                foreach ($errors as $key => $value) {
-                    $errors[$key .'_logs'] = $value;
-                }                
-                $data['errors']     = $errors;
+                if ($request['action_logs'] === 'ITEM_OUT') {
+                    $data['message']    = '<strong>ITEM OUT!</strong> Item has been updated successfully!';
+                }
+                return $data;
             }
+        );
 
-            if ($request['action_logs'] === 'ITEM_OUT') {
-                $data['message']    = '<strong>ITEM OUT!</strong> Item has been updated successfully!';
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -160,41 +142,48 @@ class InventoryLogs extends BaseController
 
         $table->setTable($this->_model->noticeTable($request))
             ->setSearch([
-                'inventory_id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
                 'encoder',
             ])
             ->setOrder([
-                // null,
                 'action',
                 'inventory_id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
-                'item_size',
                 'stocks',
-                'stock_unit',
+                'parent_stocks',
+                'current_stocks',
+                'size',
+                'unit',
+                'cap_status',
+                'status_date_formatted',
                 'encoder',
+                'created_at_formatted',
             ])
             ->setOutput([
-                // $this->_model->buttons($this->_permissions),
                 $this->_model->actionLogs(),
                 'inventory_id',
-                'category',
-                'sub_category',
-                'item_brand',
+                'category_name',
+                'subcategory_name',
+                'brand',
                 'item_model',
                 'item_description',
-                'item_size',
                 'stocks',
-                'stock_unit',
+                'parent_stocks',
+                'current_stocks',
+                'size',
+                'unit',
+                'cap_status',
+                'status_date_formatted',
                 'encoder',
+                'created_at_formatted',
             ]);
 
         return $table->getDatatable();

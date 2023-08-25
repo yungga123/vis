@@ -9,8 +9,8 @@ var table,
 
 $(document).ready(function () {
 	table = "inventory_table";
-	modal = "modal_inventory";
-	form = "form_inventory";
+	modal = "inventory_modal";
+	form = "inventory_form";
 	elems = [
 		"category",
 		"sub_category",
@@ -87,12 +87,12 @@ $(document).ready(function () {
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			refreshDataTable();
+			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
 			$("#dropdown_id").val("");
 			$("#other_category_type").val("");
 			$("#modal_dropdown").modal("hide");
-			dropdownInit(otherCategoryTypeSelector, otherCategoryType, "", true);
+			dropdownInit(otherCategoryTypeSelector, otherCategoryType);
 		}
 
 		showAlertInForm(["dropdown"], message, res.status);
@@ -129,26 +129,22 @@ function filterData(reset = false) {
 }
 
 /* Dropdown initialization */
-function dropdownInit(select, type, val = "", optional = false) {
+function dropdownInit(select, type, val = "") {
 	type = type || "category";
 
 	$.post(router.dropdown.show, { dropdown_type: type })
 		.then((res) => {
 			if (res.status === STATUS.SUCCESS) {
-				let dropdowns = "";
 				subCategory.data = res.data;
 				subCategory.type = res.type;
 
-				if (inObject(res, "data") && !isEmpty(res.data)) {
-					dropdowns = $.map(res.data, function (val, key) {
-						return `<option value="${val.dropdown_id}">${val.dropdown}</option>`;
-					}).join("");
-				}
-
-				if (isSelect2Initialized(select)) $(select).select2("destroy");
-				if (optional) dropdowns += '<option value="na">Not Applicable</option>';
-				$(select).html("").append(dropdowns);
-				$(select).select2().val(val).trigger("change");
+				const options = formatOptionsForSelect2(
+					res.data,
+					"dropdown_id",
+					"dropdown"
+				);
+				select2Reinit(select, "", options);
+				setSelect2Selection(select, val);
 			} else {
 				console.log(res.message);
 			}
@@ -175,7 +171,7 @@ function clearSelectionSelect2() {
 /* Get item details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Item");
+	$(`#${modal} .modal-title`).text("Edit Item #" + id);
 	$("#inventory_id").val(id);
 
 	clearAlertInForm(elems);
@@ -187,12 +183,14 @@ function edit(id) {
 
 			if (res.status === STATUS.SUCCESS) {
 				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
-				$("#category").val(res.data.category).trigger("change");
+
+				setSelect2Selection("#category", res.data.category);
 				dropdownInit("#sub_category", res.data.category, res.data.sub_category);
 				dropdownInit("#item_brand", "BRAND", res.data.item_brand);
-				dropdownInit("#item_size", "SIZE", res.data.item_size, true);
-				dropdownInit("#stock_unit", "UNIT", res.data.stock_unit, true);
-				$("#encoder").val(res.data.encoder_name);
+				dropdownInit("#item_size", "SIZE", res.data.item_size);
+				dropdownInit("#stock_unit", "UNIT", res.data.stock_unit);
+
+				$("#encoder").val(res.data.created_by_name);
 				$(`#${modal}`).modal("show");
 			} else {
 				$(`#${modal}`).modal("hide");

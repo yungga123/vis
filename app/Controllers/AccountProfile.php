@@ -4,9 +4,12 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\Accounts as ModelsAccounts;
+use App\Traits\AccountMailTrait;
 
 class AccountProfile extends BaseController
 {
+    use AccountMailTrait;
+    
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -92,15 +95,9 @@ class AccountProfile extends BaseController
 
                     if (! empty($new_password)) {
                         // Send mail to employee
-                        $res = $this->sendMail($this->request->getVar(), 'regular');
-                        $msg = $res['message'];
-
-                        if($res['status'] === STATUS_SUCCESS) {
-                            $msg = $data['message'] . $msg;
-                        }
-
-                        $data['status'] = $res['status'];
-                        $data['message'] = $msg;
+                        $employee_id        = $this->request->getVar('employee_id');
+                        $mailMsg            = $this->sendMailAccountNotif($employee_id, $this->request->getVar(), true);
+                        $data['message']    = $data['message'] . $mailMsg;
                     }
                 }
             }

@@ -123,10 +123,39 @@ defined('AAL_USER')         || define('AAL_USER', 'user');
 
 // Actions - add new here
 define('ACTIONS', [
-    'VIEW'      => 'View',
-    'ADD'       => 'Add',
-    'EDIT'      => 'Edit',
-    'DELETE'    => 'Delete',
+    'VIEW'          => 'View',
+    'ADD'           => 'Add',
+    'EDIT'          => 'Edit',
+    'DELETE'        => 'Delete',
+    'OTHERS'        => [
+        // Add here for specific permissions for specific module
+        // Follow the format below
+        // 'MODULE_NAME' => [
+        //     'ACTION_NAME' => 'Action Name',
+        //     'ACTION_NAME' => 'Action Name',
+        //     'ACTION_NAME' => 'Action Name',
+        // ],
+        'INVENTORY'   => [
+            'ITEM_IN'       => 'Item In',
+            'ITEM_OUT'      => 'Item Out',
+        ],
+        'ADMIN_JOB_ORDER'   => [
+            'ACCEPT'        => 'Accept',
+            'DISCARD'       => 'Discard',
+            'FILE'          => 'File',
+            'RESCHEDULE'    => 'Reschedule',
+        ],
+        'ADMIN_DISPATCH'    => [
+            'PRINT'         => 'Print',
+        ],
+        'INVENTORY_PRF'     => [
+            'ACCEPT'        => 'Accept',
+            'REJECT'        => 'Reject',
+            'ITEM_OUT'      => 'Item Out',
+            'FILE'          => 'File',
+            'PRINT'         => 'Print',
+        ],
+    ],
 ]);
 
 // Roles - No need to add new roles here
@@ -162,12 +191,16 @@ define('MODULES', [
     'TASK_LEAD'             => 'Task/Lead Monitoring',
     'MANAGER_OF_SALES'      => 'Manager of Sales',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
-    'INVENTORY'             => 'Inventory',
+    'INVENTORY'             => 'Masterlist',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'SETTINGS_ROLES'        => 'Roles',
     'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
     'PURCHASING_SUPPLIERS'  => 'Suppliers',
+    'ADMIN_JOB_ORDER'       => 'Job Orders',
+    'ADMIN_SCHEDULES'       => 'Schedules',
+    'ADMIN_DISPATCH'        => 'Dispatch',
+    'INVENTORY_PRF'         => 'Project Request Forms',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -188,4 +221,8 @@ define('MODULE_CODES', [
     'roles'                 => 'SETTINGS_ROLES',
     'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
     'suppliers'             => 'PURCHASING_SUPPLIERS',
+    'job_order'             => 'ADMIN_JOB_ORDER',
+    'schedules'             => 'ADMIN_SCHEDULES',
+    'dispatch'              => 'ADMIN_DISPATCH',
+    'inventory_prf'         => 'INVENTORY_PRF',
 ]);

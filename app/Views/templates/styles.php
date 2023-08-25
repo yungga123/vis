@@ -21,6 +21,16 @@
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 <?php endif;?>
 
+<?php if (isset($date_range_picker) && $date_range_picker): ?>
+<!-- Date Range Picker -->
+<link rel="stylesheet" href="<?=base_url('assets')?>/plugins/daterangepicker/daterangepicker.css">
+<?php endif;?>
+
+<?php if (isset($full_calendar) && $full_calendar): ?>
+<!-- fullCalendar -->
+<link rel="stylesheet" href="<?=base_url('assets') ?>/plugins/fullcalendar/main.min.css">
+<?php endif;?>
+
 <!-- Theme style -->
 <link rel="stylesheet" href="<?=base_url('assets')?>/dist/css/adminlte.min.css">
 

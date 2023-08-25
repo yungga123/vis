@@ -29,7 +29,7 @@
             <input type="hidden" id="get_customerresidential" value="<?= url_to('tasklead.getcustomerresidential'); ?>" disabled>
             <input type="hidden" id="get_quotation_num" value="<?= isset($quotation_num) ? $quotation_num : "" ?>">
 
-            <table id="tasklead_table" class="table table-bordered table-striped nowrap" data-url="<?= url_to('tasklead.list'); ?>">
+            <table id="tasklead_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('tasklead.list'); ?>">
                 <thead>
                     <tr>
                         <th>Action</th>

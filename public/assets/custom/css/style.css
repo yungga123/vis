@@ -27,6 +27,13 @@ form.with-label-indicator .form-group label.required::after {
 	color: #6c757d;
 }
 
+.dataTables_wrapper .table tbody td span.td-technicians {
+	color: #fff;
+	background-color: #3c8dbc;
+	padding: 5px 10px;
+	border-radius: 0.25rem;
+}
+
 .dataTables_scrollHead {
 	margin-top: 5px;
 }
@@ -42,4 +49,12 @@ form.with-label-indicator .form-group label.required::after {
 
 .dataTables_wrapper .dataTables_filter input {
 	width: 90% !important;
+}
+
+.fc .fc-header-toolbar .fc-today-button {
+	text-transform: capitalize;
+}
+
+.external-event {
+	cursor: inherit;
 }

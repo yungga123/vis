@@ -37,28 +37,8 @@
                     <div class="form-group">
                         <label class="required" for="role_code">Role</label>
                         <select class="form-control" name="role_code" id="role_code" style="width: 100%;" required>
-                        <option value="">Select Role</option>
-                            <optgroup label="Managerial Level">
-                                <?php foreach (get_roles() as $key => $val): ?>
-                                    <?php if (str_contains($key,'MANAGER')) : ?>
-                                        <option value="<?= $key ?>"><?= $val ?></option>
-                                    <?php endif ?>
-                                <?php endforeach; ?>
-                            </optgroup>
-                            <optgroup label="Supervisory Level">
-                                <?php foreach (get_roles() as $key => $val): ?>
-                                    <?php if (str_contains($key,'SUPERVISOR')) : ?>
-                                        <option value="<?= $key ?>"><?= $val ?></option>
-                                    <?php endif ?>
-                                <?php endforeach; ?>
-                            </optgroup>
-                            <optgroup label="Others">
-                                <?php foreach (get_roles() as $key => $val): ?>
-                                    <?php if (!str_contains($key,'SUPERVISOR') && !str_contains($key,'MANAGER')) : ?>
-                                        <option value="<?= $key ?>"><?= $val ?></option>
-                                    <?php endif ?>
-                                <?php endforeach; ?>
-                            </optgroup>                        
+                            <option value="">Select Role</option>
+                            <?= get_roles_options(); ?>  
                         </select>
                         <small id="alert_role_code" class="text-danger"></small>
                     </div>
