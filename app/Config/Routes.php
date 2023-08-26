@@ -289,7 +289,8 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
 /* PURCHASING */
 // Common
 $routes->group('purchasing', ['filter' => 'checkauth'], static function ($routes) {
-    //
+    // Common
+    $routes->post('suppliers', 'Purchasing\Common::searchSuppliers', ['as' => 'purchasing.common.suppliers']);
 });
 
 //SUPPLIERS

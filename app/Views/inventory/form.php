@@ -99,9 +99,11 @@
                                 <small id="alert_location" class="text-danger"></small>
                             </div>
                             <div class="form-group">
-                                <label for="supplier">Supplier</label>
-                                <input type="text" name="supplier" id="supplier" class="form-control" placeholder="Enter Supplier">
-                                <small id="alert_supplier" class="text-danger"></small>
+                                <label for="supplier_id">Supplier</label>
+                                <small>Enter the supplier name to search.</small>
+                                <select class="custom-select supplier_id" name="supplier_id" id="supplier_id" style="width: 100%;">
+                                </select>
+                                <small id="alert_supplier_id" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label class="required" for="encoder">Encoder</label>

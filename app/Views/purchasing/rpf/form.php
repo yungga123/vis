@@ -21,15 +21,15 @@
                         <input type="hidden" name="id" id="rpf_id" class="form-control" readonly>
                     </div>
                     <div>
-                        <table class="table" id="item_field_table">
+                        <table class="table" id="item_field_table" width="100%">
                             <thead>
                                 <tr>
-                                    <th width="30%">Item Details</th>
-                                    <th width="5%">Available</th>
-                                    <th width="10%">Quantity In</th>
-                                    <th width="30%">Supplier</th>
-                                    <th width="22%">Purpose <i>(Optional)</i></th>
-                                    <th width="3%"></th>
+                                    <th>Item Details</th>
+                                    <th>Available</th>
+                                    <th>Quantity In</th>
+                                    <!-- <th width="30%">Supplier</th> -->
+                                    <th>Purpose <i>(Optional)</i></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -43,9 +43,9 @@
                                     <td>
                                         <input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
-                                    </td>
+                                    </td> -->
                                     <td>
                                         <input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
                                     </td>
@@ -65,9 +65,9 @@
                                     <td>
                                         <small id="alert_quantity_in" class="text-danger"></small>
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <small id="alert_supplier_id" class="text-danger"></small>
-                                    </td>
+                                    </td> -->
                                     <td></td>
                                     <td></td>
                                 </tr>

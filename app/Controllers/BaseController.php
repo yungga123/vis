@@ -166,6 +166,7 @@ abstract class BaseController extends Controller
      */
     public function checkRolePermissions($module, $action = null)
 	{
+        if ($this->isAdmin()) return true;
         if ($action) $this->checkRoleActionPermissions($module, $action);
 		if (! in_array($module, $this->modules)) {
             $this->redirectToAccessDenied();

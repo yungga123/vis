@@ -83,6 +83,7 @@ class RPFItemModel extends Model
                 {$inventoryModel->view}.subcategory_name,
                 {$inventoryModel->view}.brand,
                 {$inventoryModel->view}.unit,
+                {$inventoryModel->view}.supplier_name,
                 {$inventoryModel->view}.created_by_name
             ";
         } else {

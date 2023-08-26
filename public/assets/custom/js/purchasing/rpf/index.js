@@ -34,6 +34,14 @@ $(document).ready(function () {
 	/* Masterlist select2 via ajax data source */
 	_initInventorySelect2();
 
+	/* Suppliers select2 via ajax data source */
+	select2AjaxInit(
+		".supplier_id",
+		"Search & select a supplier",
+		router.purchasing.common.suppliers,
+		"text"
+	);
+
 	// If select2 clear, set the item_available input next to it to empty
 	$(invSelector).on("select2:clear", function (e) {
 		const parentSiblingElem = e.target.parentElement.nextElementSibling;
@@ -148,7 +156,7 @@ function view(id, status) {
 								<td>${val.category_name}</td>
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
-								<td>${val.supplier_id}</td>
+								<td>${val.supplier_name || "N/A"}</td>
 								<td>
 									${val.stocks}
 									${stocks}
@@ -337,6 +345,9 @@ function toggleItemField(row) {
 		return;
 	}
 
+	// <td>
+	// 	<select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
+	// </td>
 	const html = `
 		<tr class="item-row" id="row_${itemFieldCount}">
 			<td>
@@ -347,9 +358,6 @@ function toggleItemField(row) {
 			</td>
 			<td>
 				<input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
-			</td>
-			<td>
-				<select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
 			</td>
 			<td>
 				<input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">

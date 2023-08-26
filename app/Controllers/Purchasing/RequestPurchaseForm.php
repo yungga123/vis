@@ -79,7 +79,12 @@ class RequestPurchaseForm extends BaseController
                 'common' => [
                     'masterlist'    => url_to('inventory.common.masterlist'),
                 ]
-            ]
+            ],
+            'purchasing' => [
+                'common' => [
+                    'suppliers' => url_to('purchasing.common.suppliers'),
+                ]
+            ],
         ]);
 
         return view('purchasing/rpf/index', $data);
@@ -291,8 +296,6 @@ class RequestPurchaseForm extends BaseController
     {
         // Check role & action if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, 'PRINT');
-        d($this->modules);
-        d($this->getSpecificActionsByModule($this->_module_code)); die;
         
         $id                 = $this->request->getUri()->getSegment(3);
         $columns            = $this->_model->columns(true, true);

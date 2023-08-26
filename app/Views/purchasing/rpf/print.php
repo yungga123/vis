@@ -59,7 +59,7 @@
 								<td><?= $item['unit'] ?></td>
 								<td><?= $item['item_sdp'] ?></td>
 								<td><?= floatval($item['item_sdp'] * $item['quantity_in']) ?></td>
-								<td><?= $item['supplier_id'] ?></td>
+								<td><?= $item['supplier_name'] ?></td>
 								<td><?= $item['stocks'] ?></td>
 							</tr>
 					<?php
