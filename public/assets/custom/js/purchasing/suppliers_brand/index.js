@@ -1,28 +1,21 @@
-
 function brand_suppliers() {
-    
-
-
-    /* Form for saving item */
+	/* Form for saving item */
 	formSubmit($("#" + brand_form), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
 
 		if (res.status !== STATUS.ERROR) {
 			self[0].reset();
-			refreshDataTable($("#" + brand_table));
 			notifMsgSwal(res.status, message, res.status);
 
 			if ($(`#${brand_modal}`).hasClass("edit")) {
 				$(`#${brand_modal}`).modal("hide");
+				refreshDataTable($("#" + brand_table));
 			}
 		}
 
-		showAlertInForm(brand_elems, message, res.status, prefix = "alert_brand");
+		showAlertInForm(brand_elems, message, res.status, "alert_brand");
 	});
-
 }
-
-
 
 /* Get supplier details */
 function brand_edit(id) {
@@ -31,8 +24,6 @@ function brand_edit(id) {
 	$("#brand_id").val(id);
 
 	clearAlertInForm(brand_elems);
-	//resetSelected();
-	
 	showLoading();
 
 	$.post(brand_editRoute, { id: id })
@@ -40,22 +31,13 @@ function brand_edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					$.each(res.data, (key, value) => {
 						$(`input[name="${key}"]`).val(value);
-						// $(`#${key}`).val(value);
-						// if (value == "Others" && key == "supplier_type") {
-						// 	selectedOthers(value);
-						// }
-						// if (value == "Others" && key == "payment_mode") {
-						// 	selectedPaymentMode(value);
-						// }
-						// console.log(key,value);
 					});
+					setOptionValue("#brand_warranty", res.data.warranty);
 				}
-				// selectedOthers(val);
-				// selectedPaymentMode(val);
+				$(`#${brand_modal}`).modal("show");
 			} else {
 				$(`#${brand_modal}`).modal("hide");
 				notifMsgSwal(res.status, res.message, res.status);
@@ -86,21 +68,19 @@ function brand_remove(id) {
 function brand_add(id) {
 	// Used in Select Customers from ADD BRANCH modal
 	$("#brand_supplier_id").val(id);
-	// $("#bcustomer_name").val(name);
-	// $("#branch_id").val("");
 
 	$(`#${brand_modal}`).modal("show");
 	$(`#${brand_modal}`).removeClass("edit").addClass("add");
 	$(`#${brand_modal} .modal-title`).text("Add Supplier Brand");
 
-	clearAlertInForm(brand_elems,null);
+	clearAlertInForm(brand_elems);
 	$(`#${brand_form}`)[0].reset();
 }
 
-function supplierbrandRetrieve(id) {
-
+function supplierbrandRetrieve(id, name) {
 	const route = $("#" + brand_table).data("url") + "?supplier_id=" + id;
 
 	$("#modal_supplier_brand").modal("show");
+	$("#modal_supplier_brand .card-title").text(name);
 	loadDataTable(brand_table, route, METHOD.GET, null, true);
 }

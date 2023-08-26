@@ -78,7 +78,7 @@ class SupplierBrands extends BaseController
                 "supplier_brands_remark"
             ])
             ->setOutput([
-                $this->_model->buttons(),
+                $this->_model->buttons($this->_permissions),
                 "brand_name",
                 "product",
                 "warranty",

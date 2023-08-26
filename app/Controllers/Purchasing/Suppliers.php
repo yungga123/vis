@@ -98,7 +98,7 @@ class Suppliers extends BaseController
                 "remarks",
             ])
             ->setOutput([
-                $this->_model->buttons(),
+                $this->_model->buttons($this->_permissions),
                 "id",
                 "supplier_name",
                 $this->_model->supplierType(),

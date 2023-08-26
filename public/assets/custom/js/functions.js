@@ -484,7 +484,8 @@ function loadDataTable(
 			}
 		},
 		initComplete: function (settings, json) {
-			$(".dataTables_wrapper").parent().addClass("p-0");
+			if ($(".dataTables_wrapper").parent().closest(".modal").length == 0)
+				$(".dataTables_wrapper").parent().addClass("p-0");
 			$(".dataTables_wrapper .table").css({ width: "100%" });
 			$(".dataTables_length").addClass("mr-2");
 			$(".dataTables_filter input").removeClass("form-control-sm");
