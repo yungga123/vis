@@ -10,16 +10,9 @@ class Common extends BaseController
     /* Declare trait here to use */
     use PurchasingTrait;
 
-    /* Search Job Order by quotation number */
+    /* Search Suppliers by name */
     public function searchSuppliers()
     {
-        // d($this->fetchSuppliers(
-        //     '',
-        //     [
-        //         'page' => 1,
-        //         'perPage' => 10
-        //     ]
-        // ));
         try {
             $options = $this->request->getVar('options') ?? [];
             $results = $this->fetchSuppliers(
