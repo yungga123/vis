@@ -30,7 +30,7 @@ class InventoryModel extends Model
         'stocks',
         'stock_unit',
         'date_of_purchase',
-        'supplier',
+        'supplier_id',
         'location',
         'created_by',
     ];
@@ -96,8 +96,8 @@ class InventoryModel extends Model
             'rules' => 'permit_empty|min_length[3]|max_length[200]',
             'label' => 'lacation'
         ],
-        'supplier' => [
-            'rules' => 'permit_empty|string|min_length[3]|max_length[200]',
+        'supplier_id' => [
+            'rules' => 'required',
             'label' => 'supplier'
         ],
     ];
@@ -163,7 +163,7 @@ class InventoryModel extends Model
             {$this->table}.stocks,
             {$this->table}.date_of_purchase,
             {$this->table}.location,
-            {$this->table}.supplier
+            {$this->table}.supplier_id
         ";
         $w_dropdown     = ",
             {$this->view}.category_name,
@@ -171,7 +171,8 @@ class InventoryModel extends Model
             {$this->view}.brand,
             {$this->view}.size,
             {$this->view}.unit,
-            {$this->view}.created_by_name
+            {$this->view}.created_by_name,
+            {$this->view}.supplier_name
         ";
         $wo_dropdown    = ",
             {$this->table}.category,

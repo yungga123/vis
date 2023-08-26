@@ -94,26 +94,26 @@ class SuppliersModel extends Model
         return $builder;
     }
 
-    public function buttons()
+    public function buttons($permissions)
     {
-        $closureFun = function($row) {
-            return <<<EOF
-                
+        $id         = $this->primaryKey;
+        $dropdown   = false;
+        $closureFun = function($row) use($id, $permissions, $dropdown) {
+            $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
 
-                <button type="button" class="btn btn-info dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                    Action 
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
+            if (check_permissions($permissions, 'ADD')) {
+                // Add Brand
+                $buttons .= <<<EOF
+                    <button class="btn btn-sm btn-success" onclick="brand_add({$row[$id]})" title="Add Brand"><i class="fas fa-plus-square"></i></button>
+                EOF;
+            }
 
-                <div class="dropdown-menu" role="menu" style="">
-                    <button class="btn btn-sm btn-warning" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_add_supplier" title="Edit"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button>
-
-                    <button class="btn btn-sm btn-success" onclick="brand_add({$row["id"]})" title="Add Brand"><i class="fas fa-plus-square"></i></button>
-                    <button class="btn btn-sm btn-primary" onclick="supplierbrandRetrieve({$row["id"]})" title="View Details"><i class="fas fa-eye"></i></button>
-                </div>
-                
+            // View Brands
+            $buttons .= <<<EOF
+                <button class="btn btn-sm btn-primary" onclick="supplierbrandRetrieve({$row[$id]}, '{$row['supplier_name']}')" title="View Details"><i class="fas fa-eye"></i></button>
             EOF;
+
+            return dt_buttons_dropdown($buttons);
         };
         return $closureFun;
     }

@@ -84,6 +84,62 @@ if (! function_exists('text_badge'))
      */
 	function text_badge(string $color, string $text): string
 	{   
-        return '<span class="rounded text-sm text-white pl-2 pr-2 pt-1 pb-1 bg-'.$color.'">'.$text.'</span>';
+        return '<span class="rounded text-sm text-white pl-2 pr-2 pt-1 pb-1 mr-1 bg-'.$color.'">'.$text.'</span>';
 	}
+}
+
+if (! function_exists('dt_status_color'))
+{
+    /**
+     * DataTable status text label/bagde
+     */
+	function dt_status_color(string $status): string
+    {
+        $color   = 'secondary';
+        switch (strtolower($status)) {
+            case 'pending':
+            case 'edit':
+                $color = 'warning';                   
+                break;
+            case 'accepted':
+            case 'add':
+                $color = 'primary';
+                break;
+            case 'rejected':
+                $color = 'secondary';
+                break;
+            case 'item_out':
+            case 'received':
+                $color   = 'success';
+                break;
+            case 'reviewed':
+            case 'view':
+                $color   = 'info';
+                break;
+            case 'delete':
+                $color   = 'danger';
+                break;
+            case 'filed':
+            case 'print':
+                $color = 'dark';
+                break;
+        }
+
+        return $color;
+    }
+}
+
+if (! function_exists('dt_status_onchange'))
+{
+    /**
+     * DataTable change status action button
+     */
+	function dt_status_onchange(int $id, string $changeTo, string $status, string $title = ''): string
+    {
+        $title  = trim(ucwords($changeTo) . ' '. $title);
+        $title  = $changeTo === 'item_out' ? 'Item Out' : $title;
+        return <<<EOF
+            onclick="change({$id}, '{$changeTo}', '{$status}')" title="{$title}"
+        EOF;
+    }
 }

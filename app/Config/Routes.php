@@ -216,18 +216,18 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('delete', 'Inventory\Home::delete', ['as' => 'inventory.delete']);
 
     // Dropdowns
-    $routes->get('dropdowns', 'Inventory\Dropdown::index', ['as' => 'inventory.dropdown.home']);
-    $routes->get('dropdown/types', 'Inventory\Dropdown::types', ['as' => 'inventory.dropdown.types']);
-    $routes->post('dropdown/show', 'Inventory\Dropdown::show', ['as' => 'inventory.dropdown.show']);
-    $routes->post('dropdown/list', 'Inventory\Dropdown::list', ['as' => 'inventory.dropdown.list']);
-    $routes->post('dropdown/save', 'Inventory\Dropdown::save', ['as' => 'inventory.dropdown.save']);
-    $routes->post('dropdown/edit', 'Inventory\Dropdown::edit', ['as' => 'inventory.dropdown.edit']);
-    $routes->post('dropdown/delete', 'Inventory\Dropdown::delete', ['as' => 'inventory.dropdown.delete']);
+    $routes->get('dropdowns', 'Inventory\\Dropdown::index', ['as' => 'inventory.dropdown.home']);
+    $routes->get('dropdown/types', 'Inventory\\Dropdown::types', ['as' => 'inventory.dropdown.types']);
+    $routes->post('dropdown/show', 'Inventory\\Dropdown::show', ['as' => 'inventory.dropdown.show']);
+    $routes->post('dropdown/list', 'Inventory\\Dropdown::list', ['as' => 'inventory.dropdown.list']);
+    $routes->post('dropdown/save', 'Inventory\\Dropdown::save', ['as' => 'inventory.dropdown.save']);
+    $routes->post('dropdown/edit', 'Inventory\\Dropdown::edit', ['as' => 'inventory.dropdown.edit']);
+    $routes->post('dropdown/delete', 'Inventory\\Dropdown::delete', ['as' => 'inventory.dropdown.delete']);
 
     // Logs (Item In and Out)
-    $routes->get('logs', 'Inventory\Logs::index', ['as' => 'inventory.logs.home']);
-    $routes->post('logs/save', 'Inventory\Logs::save', ['as' => 'inventory.logs.save']);
-    $routes->post('logs/list', 'Inventory\Logs::list', ['as' => 'inventory.logs.list']);
+    $routes->get('logs', 'InventoryLogs::index', ['as' => 'inventory.logs.home']);
+    $routes->post('logs/save', 'InventoryLogs::save', ['as' => 'inventory.logs.save']);
+    $routes->post('logs/list', 'InventoryLogs::list', ['as' => 'inventory.logs.list']);
 
     // Common
     $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
@@ -255,22 +255,6 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
     $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
 });
-
-//SUPPLIERS
-$routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Suppliers::index', ['as' => 'suppliers.home']);
-    $routes->post('list', 'Suppliers::list', ['as' => 'suppliers.list']);
-    $routes->post('save', 'Suppliers::save', ['as' => 'suppliers.save']);
-    $routes->post('edit', 'Suppliers::edit', ['as' => 'suppliers.edit']);
-    $routes->post('delete', 'Suppliers::delete', ['as' => 'suppliers.delete']);
-
-    $routes->get('brands/list','SupplierBrands::list',['as' => 'suppliers.brand.list']);
-    $routes->post('brands/save','SupplierBrands::save',['as' => 'suppliers.brand.save']);
-    $routes->post('brands/edit','SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
-    $routes->post('brands/delete','SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
-
-});
-
     
 // JOB ORDERS
 $routes->group('job-orders', ['filter' => 'checkauth'], static function ($routes) {
@@ -302,6 +286,39 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
 /* ADMIN */
 
 
+/* PURCHASING */
+// Common
+$routes->group('purchasing', ['filter' => 'checkauth'], static function ($routes) {
+    // Common
+    $routes->post('suppliers', 'Purchasing\Common::searchSuppliers', ['as' => 'purchasing.common.suppliers']);
+});
+
+//SUPPLIERS
+$routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Purchasing\Suppliers::index', ['as' => 'suppliers.home']);
+    $routes->post('list', 'Purchasing\Suppliers::list', ['as' => 'suppliers.list']);
+    $routes->post('save', 'Purchasing\Suppliers::save', ['as' => 'suppliers.save']);
+    $routes->post('edit', 'Purchasing\Suppliers::edit', ['as' => 'suppliers.edit']);
+    $routes->post('delete', 'Purchasing\Suppliers::delete', ['as' => 'suppliers.delete']);
+
+    $routes->get('brands/list','Purchasing\SupplierBrands::list',['as' => 'suppliers.brand.list']);
+    $routes->post('brands/save','Purchasing\SupplierBrands::save',['as' => 'suppliers.brand.save']);
+    $routes->post('brands/edit','Purchasing\SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
+    $routes->post('brands/delete','Purchasing\SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
+
+});
+
+// REQUEST TO PURCHASE FORMS
+$routes->group('', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('request-purchase-forms', 'Purchasing\RequestPurchaseForm::index', ['as' => 'rpf.home']);
+    $routes->post('rpf/list', 'Purchasing\RequestPurchaseForm::list', ['as' => 'rpf.list']);
+    $routes->post('rpf/save', 'Purchasing\RequestPurchaseForm::save', ['as' => 'rpf.save']);
+    $routes->post('rpf/fetch', 'Purchasing\RequestPurchaseForm::fetch', ['as' => 'rpf.fetch']);
+    $routes->post('rpf/delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'rpf.delete']);
+    $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
+    $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print', ['as' => 'rpf.print/$1']);
+});
+/* PURCHASING */
 
 
 /***************** PHASE 2 *****************/

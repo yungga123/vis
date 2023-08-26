@@ -108,7 +108,7 @@ trait InventoryTrait
         $fields     = $join && $fields ? $fields .','. $model->inventoryColumns($with_view) : $fields;
         $builder    = $model->select($fields);
 
-        if ($join) $model->joinInventory($builder, $with_view);
+        if ($join) $this->joinInventory($model->table, $builder, $with_view);
         if ($id && is_array($id)) 
             return $builder->whereIn($model->table.'.prf_id', $id)->findAll();
 
@@ -208,5 +208,22 @@ trait InventoryTrait
         }
 
         return false;
+    }
+
+    /**
+     * Join with inventory table and inventory_view
+     *
+     * @param string $table     Table to be joined with inventory
+     * @param object $builder   The builder (db/model object) to use to join the tables
+     * @param bool $withView    Identifier if also join with inventory_view
+     * @return void            
+     */
+    public function joinInventory($table, $builder, $withView = false)
+    {
+        $inventoryModel = new InventoryModel();        
+        // Join with inventory table
+        $builder->join($inventoryModel->table, "{$table}.inventory_id = {$inventoryModel->table}.id", 'left');
+        // Then join inventory with inventory_View
+        if ($withView) $inventoryModel->joinView($builder);
     }
 }

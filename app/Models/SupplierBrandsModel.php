@@ -93,23 +93,27 @@ class SupplierBrandsModel extends Model
         return $builder;
     }
 
-    public function buttons()
+    public function buttons($permissions)
     {
-        $closureFun = function($row) {
-            return <<<EOF
-                
+        $id         = $this->primaryKey;
+        $closureFun = function($row) use($id, $permissions) {
+            $buttons = '';
 
-                <button type="button" class="btn btn-info dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                    Action 
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
+            if (check_permissions($permissions, 'EDIT')) {
+                // Add Brand
+                $buttons .= <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="brand_edit({$row[$id]})"  data-toggle="modal" data-target="#modal_add_supplier_brand" title="Edit"><i class="fas fa-edit"></i></button>
+                EOF;
+            }
 
-                <div class="dropdown-menu" role="menu" style="">
-                    <button class="btn btn-sm btn-warning" onclick="brand_edit({$row["id"]})"  data-toggle="modal" data-target="#modal_add_supplier_brand" title="Edit"><i class="fas fa-edit"></i></button>
+            if (check_permissions($permissions, 'DELETE')) {
+                // Add Brand
+                $buttons .= <<<EOF
                     <button class="btn btn-sm btn-danger" onclick="brand_remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button>
-                </div>
-                
-            EOF;
+                EOF;
+            }
+
+            return $buttons ?? '~~N/A~~';
         };
         return $closureFun;
     }

@@ -2,7 +2,6 @@
 <?= $this->section('content'); ?>
 
 <div class="container-fluid">
-
     <input type="hidden" id="edit_url" value="<?= url_to('suppliers.edit') ?>" readonly>
     <input type="hidden" id="remove_url" value="<?= url_to('suppliers.delete') ?>" readonly>
     <input type="hidden" id="edit_url_brand" value="<?= url_to('suppliers.brand.edit') ?>" readonly>
@@ -10,8 +9,6 @@
     <!-- Suppliers List Card -->
     <div class="card">
         <div class="card-body">
-
-
             <table id="supplier_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('suppliers.list'); ?>">
                 <thead>
                     <tr>
@@ -26,19 +23,14 @@
                         <th>Mode of Payment</th>
                         <th>Product</th>
                         <th>Remarks</th>
-                        
                     </tr>
                 </thead>
             </table>
-
-
         </div>
     </div>
 </div>
-
-<?= $this->include('suppliers/modal') ?>
-
-<?= $this->include('supplier_brands/list') ?>
-<?= $this->include('supplier_brands/modal') ?>
+<?= $this->include('purchasing/suppliers/modal') ?>
+<?= $this->include('purchasing/supplier_brands/list') ?>
+<?= $this->include('purchasing/supplier_brands/modal') ?>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>

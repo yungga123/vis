@@ -89,6 +89,11 @@ class Home extends BaseController
             'logs' => [
                 'save'      => url_to('inventory.logs.save'),
             ],
+            'purchasing' => [
+                'common' => [
+                    'suppliers' => url_to('purchasing.common.suppliers'),
+                ]
+            ],
         ]);
         $data['categories']     = inventory_categories_options($this->_mdropdown, true);
 
@@ -119,6 +124,7 @@ class Home extends BaseController
             ->setOrder([
                 null,
                 'id',
+                'supplier_name',
                 'category_name',
                 'subcategory_name',
                 'brand',
@@ -135,6 +141,7 @@ class Home extends BaseController
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
                 'id',
+                'supplier_name',
                 'category_name',
                 'subcategory_name',
                 'brand',
@@ -181,7 +188,7 @@ class Home extends BaseController
                     'stocks'            => $this->request->getVar('stocks'),
                     'stock_unit'        => $this->request->getVar('stock_unit') ?? '',
                     'date_of_purchase'  => $this->request->getVar('date_of_purchase'),
-                    'supplier'          => $this->request->getVar('supplier'),
+                    'supplier_id'       => $this->request->getVar('supplier_id'),
                     'location'          => $this->request->getVar('location'),
                 ];
     

@@ -30,6 +30,7 @@
                             <tr> 
                                 <th>Action</th>
                                 <th>Item #</th>
+                                <th>Supplier</th>
                                 <th>Category</th>
                                 <th>Sub-Category</th>
                                 <th>Item Brand</th>

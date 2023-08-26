@@ -5,14 +5,14 @@ namespace App\Models;
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
 
-class ProjectRequestFormModel extends Model
+class RequestPurchaseFormModel extends Model
 {
     /* Declare trait here to use */
     use InventoryTrait;
 
     protected $DBGroup          = 'default';
-    protected $table            = 'project_request_forms';
-    protected $view             = 'prf_view';
+    protected $table            = 'request_purchase_forms';
+    protected $view             = 'rpf_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -20,11 +20,10 @@ class ProjectRequestFormModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'job_order_id',
-        'process_date',
         'status',
-        'created_by',
         'remarks',
+        'date_needed',
+        'created_by',
     ];
 
     // Dates
@@ -36,24 +35,28 @@ class ProjectRequestFormModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'job_order_id' => [
-            'rules' => 'required|if_exist',
-            'label' => 'job order'
-        ],
         'inventory_id' => [
             'rules' => 'required|if_exist',
             'label' => 'item'
         ],
-        'quantity_out' => [
+        'supplier_id' => [
             'rules' => 'required|if_exist',
-            'label' => 'quantity out'
+            'label' => 'supplier'
         ],
-        'process_date' => [
+        'quantity_in' => [
             'rules' => 'required|if_exist',
-            'label' => 'process date'
+            'label' => 'quantity in'
+        ],
+        'received_date' => [
+            'rules' => 'permit_empty|if_exist',
+            'label' => 'received date'
+        ],
+        'delivery_date' => [
+            'rules' => 'required|if_exist',
+            'label' => 'delivery date'
         ],
         'remarks' => [
-            'rules' => 'required|if_exist'
+            'rules' => 'permit_empty|if_exist'
         ],
     ];
     protected $validationMessages   = [];
@@ -84,7 +87,7 @@ class ProjectRequestFormModel extends Model
         if (isset($data['data']['status'])) {
             $status = $data['data']['status'];
             $data['data'][$status .'_by'] = session('username');
-            $data['data'][$status .'_at'] = date('Y-m-d H:i:s');
+            $data['data'][$status .'_at'] = current_datetime();
         }
         
         return $data;
@@ -94,24 +97,27 @@ class ProjectRequestFormModel extends Model
     public function updateInventoryStock(array $data)
     {
         if ($data['result'] && isset($data['data']['status'])) {
-            if ($data['data']['status'] === 'item_out') {
-                $prfItemModel   = new PRFItemModel();
+            if ($data['data']['status'] === 'received') {
+                $rpfItemModel   = new RPFItemModel();
                 $columns        = "
-                    {$prfItemModel->table}.inventory_id, 
-                    {$prfItemModel->table}.quantity_out,
+                    {$rpfItemModel->table}.inventory_id, 
+                    {$rpfItemModel->table}.quantity_in,
+                    {$rpfItemModel->table}.received_date,
                     inventory.stocks
                 ";
-                $record         = $prfItemModel->getPrfItemsByPrfId($data['id'], $columns, false, true);
-                $action         = 'ITEM_OUT';
+                log_message('error', 'data => '. json_encode($data));
+                $record         = $rpfItemModel->getRpfItemsByPrfId($data['id'], true, false, $columns);
+                $action         = 'ITEM_IN';
 
                 if (! empty($record)) {
                     $logs_data = [];
                     foreach ($record as $val) {
-                        $this->traitUpdateInventoryStock($val['inventory_id'], $val['quantity_out'], $action);
+                        $this->traitUpdateInventoryStock($val['inventory_id'], $val['quantity_in'], $action);
                         $logs_data[] = [
                             'inventory_id'  => $val['inventory_id'],
-                            'stocks'        => $val['quantity_out'],
+                            'stocks'        => $val['quantity_in'],
                             'parent_stocks' => $val['stocks'],
+                            'status_date'   => $val['received_date'],
                             'action'        => $action,
                             'created_by'    => session('username'),
                         ];
@@ -131,20 +137,18 @@ class ProjectRequestFormModel extends Model
     {
         $columns = "
             {$this->table}.id,
-            {$this->table}.job_order_id,
-            {$this->table}.process_date,
             {$this->table}.status,
-            {$this->table}.remarks
+            {$this->table}.date_needed
         ";
 
         if ($date_format) {
             $columns .= ",
-                DATE_FORMAT({$this->table}.process_date, '%b %e, %Y') AS process_date_formatted,
+                DATE_FORMAT({$this->table}.date_needed, '%b %e, %Y') AS date_needed_formatted,
                 DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted,
                 DATE_FORMAT({$this->table}.accepted_at, '%b %e, %Y at %h:%i %p') AS accepted_at_formatted,
                 DATE_FORMAT({$this->table}.rejected_at, '%b %e, %Y at %h:%i %p') AS rejected_at_formatted,
-                DATE_FORMAT({$this->table}.item_out_at, '%b %e, %Y at %h:%i %p') AS item_out_at_formatted,
-                DATE_FORMAT({$this->table}.filed_at, '%b %e, %Y at %h:%i %p') AS filed_at_formatted
+                DATE_FORMAT({$this->table}.reviewed_at, '%b %e, %Y at %h:%i %p') AS reviewed_at_formatted,
+                DATE_FORMAT({$this->table}.received_at, '%b %e, %Y at %h:%i %p') AS received_at_formatted
             ";
         }
 
@@ -153,40 +157,22 @@ class ProjectRequestFormModel extends Model
                 {$this->view}.created_by_name,
                 {$this->view}.accepted_by_name,
                 {$this->view}.rejected_by_name,
-                {$this->view}.item_out_by_name,
-                {$this->view}.filed_by_name
+                {$this->view}.reviewed_by_name,
+                {$this->view}.received_by_name
             ";
         }
 
         return $columns;
     }
 
-    // Get the Job Order selected columns
-    public function jobOrderColumns($with_text = false, $with_date = false)
-    {
-        $joModel = new JobOrderModel();
-        // Get the selected columns
-        return $joModel->selectedColumns($with_text, $with_date);
-    }
-
-    // Join with prf_view
+    // Join with rpf_view
     public function joinView($builder)
     {
-        $builder->join($this->view, "{$this->table}.id = {$this->view}.prf_id");
-    }
-
-    // Join with job_orders
-    public function joinJobOrder($builder)
-    {
-        $joModel = new JobOrderModel();
-        // Join with job_orders table
-        $builder->join($joModel->table, "{$this->table}.job_order_id = {$joModel->table}.id", 'left');
-        // Then join job_orders with task_lead_booked view and employees table
-        $joModel->_join($builder);
+        $builder->join($this->view, "{$this->table}.id = {$this->view}.rpf_id");
     }
 
     // Get project request forms
-    public function getProjectRequestForms($id = null, $joinView = false, $columns = '')
+    public function getRequestPurchaseForms($id = null, $joinView = false, $columns = '')
     {
         $columns = $columns ? $columns : $this->columns(true, $joinView);
         $builder = $this->select($columns);
@@ -202,12 +188,9 @@ class ProjectRequestFormModel extends Model
    {
        $builder = $this->db->table($this->table);
        $columns = $this->columns(true, true);
-       // Include JO columns
-       $columns .= ','. $this->jobOrderColumns();
 
        $builder->select($columns);
        $this->joinView($builder);
-       $this->joinJobOrder($builder);
 
        $builder->where("{$this->table}.deleted_at", null);
        $builder->orderBy('id', 'DESC');
@@ -248,37 +231,37 @@ class ProjectRequestFormModel extends Model
                 }
             }
 
-            if (check_permissions($permissions, 'ITEM_OUT') && $row['status'] === 'accepted') {
-                // Item Out PRF
-                $changeTo = 'item_out';
-                $buttons .= dt_button_html([
-                    'text'      => $dropdown ? 'Item Out' : '',
-                    'button'    => 'btn-success',
-                    'icon'      => 'fas fa-file-import',
-                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
-                ], $dropdown);
-            }
-
-            if (check_permissions($permissions, 'FILE') && $row['status'] === 'item_out') {
-                // File PRF
-                $changeTo = 'file';
+            if (check_permissions($permissions, 'REVIEW') && $row['status'] === 'accepted') {
+                // Review PRF
+                $changeTo = 'review';
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
-                    'button'    => 'btn-primary',
-                    'icon'      => 'fas fa-file-alt',
+                    'button'    => 'btn-info',
+                    'icon'      => 'fas fa-check-double',
                     'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['item_out', 'filed'])) {
+            if (check_permissions($permissions, 'RECIEVE') && $row['status'] === 'reviewed') {
+                // Receive PRF
+                $changeTo = 'receive';
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? ucfirst($changeTo) : '',
+                    'button'    => 'btn-success',
+                    'icon'      => 'fas fa-sign-in-alt',
+                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
+                ], $dropdown);
+            }
+
+            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed', 'received'])) {
                 // Print PRF
-                $print_url = site_url('prf/print/') . $row[$id];
+                $print_url = site_url('rpf/print/') . $row[$id];
                 $buttons .= <<<EOF
-                    <a href="$print_url" class="btn btn-info btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
+                    <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }
 
-            $buttons = ($row['status'] === 'rejected' && !is_admin()) 
+            $buttons = (in_array($row['status'], ['rejected', 'reviewed', 'received']) && !is_admin()) 
                 ? ($buttonView ?? '~~N/A~~') : dt_buttons_dropdown($buttons);
                 
             return $buttons;
@@ -288,7 +271,7 @@ class ProjectRequestFormModel extends Model
    }
 
    // DataTable status formatter
-   public function dtViewPrfItems()
+   public function dtViewRpfItems()
    {
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id) {
@@ -301,10 +284,10 @@ class ProjectRequestFormModel extends Model
    }
 
    // DataTable status formatter
-   public function dtPRFStatusFormat()
+   public function dtRpfStatusFormat()
    {
        $closureFun = function($row) {
-           $text    = $row['status'] === 'item_out' ? 'Item Out' : ucwords(set_prf_status($row['status']));
+           $text    = ucwords(set_rpf_status($row['status']));
            $color   = dt_status_color($row['status']);
            return text_badge($color, $text);
        };

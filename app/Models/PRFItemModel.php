@@ -115,16 +115,6 @@ class PRFItemModel extends Model
         return $columns;
     }
 
-    // Join with inventory table and inventory_view
-    public function joinInventory($builder, $withView = false)
-    {
-        $inventoryModel = new InventoryModel();        
-        // Join with inventory table
-        $builder->join($inventoryModel->table, "{$this->table}.inventory_id = {$inventoryModel->table}.id", 'left');
-        // Then join inventory with inventory_View
-        if ($withView) $inventoryModel->joinView($builder);
-    }
-
     // Get prf items using prf_id
     public function getPrfItemsByPrfId($prf_id, $columns = '', $concat = false, $joinInventory = false) 
     {
@@ -133,7 +123,8 @@ class PRFItemModel extends Model
         $builder->where('prf_id', $prf_id);
 
         if ($concat) $builder->groupBy('prf_id');
-        if ($joinInventory) $builder->joinInventory($builder);
+        // From InventoryTrait
+        if ($joinInventory) $builder->joinInventory($this->table, $builder);
         return $builder->findAll();
     }
 
@@ -176,8 +167,6 @@ class PRFItemModel extends Model
 
         if (! empty($data) && count($inventory_id)) {
             $arr        = [];
-            $action     = 'ITEM_IN';
-            $logs_data  = [];
             for ($i=0; $i < count($inventory_id); $i++) { 
                 $arr[] = [
                     'prf_id'        => (int)$prf_id,
@@ -186,32 +175,12 @@ class PRFItemModel extends Model
                     'returned_date' => $returned_date[$i],
                     'quantity_out'  => $quantity_out[$i],
                 ];
-
-                if (floatval($returned_q[$i]) > 0) {
-                    $logs_data[] = [
-                        'inventory_id'  => $inventory_id[$i],
-                        'stocks'        => $returned_q[$i],
-                        'parent_stocks' => $stocks[$i],
-                        'action'        => $action,
-                        'status'        => 'RETURN',
-                        'status_date'   => current_date(),
-                        'created_by'    => session('username'),
-                    ];
-
-                    $this->traitUpdateInventoryStock(
-                        $inventory_id[$i],
-                        $returned_q[$i],
-                        $action
-                    );
-                }
             }
 
             if (! empty($arr)) {
                 $constraint = ['prf_id', 'inventory_id', 'quantity_out'];
                 $this->db->table($this->table)->updateBatch($arr, $constraint);
             }
-            // Add inventory logs
-            $this->saveInventoryLogs($logs_data);
         }
     }
 

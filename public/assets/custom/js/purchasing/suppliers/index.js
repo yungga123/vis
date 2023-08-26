@@ -1,23 +1,34 @@
-var table, modal, form, editRoute, removeRoute, elems, branch_table, branch_modal, branch_form, branch_editRoute, branch_removeRoute, branch_elems;
+var table,
+	modal,
+	form,
+	editRoute,
+	removeRoute,
+	elems,
+	branch_table,
+	branch_modal,
+	branch_form,
+	branch_editRoute,
+	branch_removeRoute,
+	branch_elems;
 
-$(document).ready(function(){
-    table = "supplier_table";
+$(document).ready(function () {
+	table = "supplier_table";
 	modal = "modal_add_supplier";
 	form = "form_add_supplier";
 	editRoute = $("#edit_url").val();
 	removeRoute = $("#remove_url").val();
 	elems = [
 		"supplier_name",
-        "supplier_type",
+		"supplier_type",
 		"others_supplier_type",
-        "contact_person",
-        "contact_number",
-        "viber",
-        "payment_terms",
-        "payment_mode",
+		"contact_person",
+		"contact_number",
+		"viber",
+		"payment_terms",
+		"payment_mode",
 		"others_payment_mode",
-        "product",
-        "remarks",
+		"product",
+		"remarks",
 	];
 
 	brand_table = "supplier_table_brand";
@@ -27,13 +38,13 @@ $(document).ready(function(){
 	brand_removeRoute = $("#remove_url_brand").val();
 	brand_elems = [
 		"brand_name",
-        "brand_product",
-        "brand_warranty",
-        "brand_sales_person",
-        "brand_sales_contact_number",
-        "brand_technical_support",
-        "brand_technical_contact_number",
-        "brand_remarks"
+		"brand_product",
+		"brand_warranty",
+		"brand_sales_person",
+		"brand_sales_contact_number",
+		"brand_technical_support",
+		"brand_technical_contact_number",
+		"brand_remarks",
 	];
 
 	$("#btn_add_record").on("click", function () {
@@ -43,14 +54,17 @@ $(document).ready(function(){
 		$(`#${form}`)[0].reset();
 		$("#supplier_id").val("");
 		clearAlertInForm(elems);
-		$('#others_supplier_type').attr('type','hidden').attr('required',false).val("");
+		$("#others_supplier_type")
+			.attr("type", "hidden")
+			.attr("required", false)
+			.val("");
 	});
 
 	/* Load dataTable */
 	const route = $("#" + table).data("url");
 	loadDataTable(table, route, METHOD.POST);
 
-    /* Form for saving item */
+	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
 
@@ -68,7 +82,6 @@ $(document).ready(function(){
 	});
 
 	brand_suppliers();
-
 });
 
 /* Get supplier details */
@@ -79,7 +92,7 @@ function edit(id) {
 
 	clearAlertInForm(elems);
 	resetSelected();
-	
+
 	showLoading();
 
 	$.post(editRoute, { id: id })
@@ -87,10 +100,8 @@ function edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					$.each(res.data, (key, value) => {
-						//$(`input[name="${key}"]`).val(value);
 						$(`#${key}`).val(value);
 						if (value == "Others" && key == "supplier_type") {
 							selectedOthers(value);
@@ -98,11 +109,9 @@ function edit(id) {
 						if (value == "Others" && key == "payment_mode") {
 							selectedPaymentMode(value);
 						}
-						console.log(key,value);
 					});
 				}
-				// selectedOthers(val);
-				// selectedPaymentMode(val);
+				$(`#${modal}`).modal("show");
 			} else {
 				$(`#${modal}`).modal("hide");
 				notifMsgSwal(res.status, res.message, res.status);
@@ -130,24 +139,35 @@ function remove(id) {
 	);
 }
 
-
 function selectedOthers(val) {
 	if (val == "Others") {
-		$('#others_supplier_type').attr('type','text').attr('required',true);
+		$("#others_supplier_type").attr("type", "text").attr("required", true);
 	} else {
-		$('#others_supplier_type').attr('type','hidden').attr('required',false).val("");
+		$("#others_supplier_type")
+			.attr("type", "hidden")
+			.attr("required", false)
+			.val("");
 	}
 }
 
 function selectedPaymentMode(val) {
 	if (val == "Others") {
-		$('#others_payment_mode').attr('type','text').attr('required',true);
+		$("#others_payment_mode").attr("type", "text").attr("required", true);
 	} else {
-		$('#others_payment_mode').attr('type','hidden').attr('required',false).val("");
+		$("#others_payment_mode")
+			.attr("type", "hidden")
+			.attr("required", false)
+			.val("");
 	}
 }
 
 function resetSelected() {
-	$('#others_supplier_type').attr('type','hidden').attr('required',false).val("");
-	$('#others_payment_mode').attr('type','hidden').attr('required',false).val("");
+	$("#others_supplier_type")
+		.attr("type", "hidden")
+		.attr("required", false)
+		.val("");
+	$("#others_payment_mode")
+		.attr("type", "hidden")
+		.attr("required", false)
+		.val("");
 }

@@ -2,7 +2,7 @@
 <div class="modal fade" id="modal_add_supplier_brand" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="form_add_supplier_brand" action="<?= url_to('suppliers.brand.save'); ?>" method="post" autocomplete="off">
+            <form id="form_add_supplier_brand" class="with-label-indicator" action="<?= url_to('suppliers.brand.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="brand_id" name="id" readonly>
                 <input type="hidden" id="brand_supplier_id" name="supplier_id" readonly>
@@ -13,12 +13,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
-
                     <!-- Row -->
                     <div class="row">
                         <!-- Col -->
                         <div class="col-sm-6">
-
                             <!-- Form Text -->
                             <div class="form-group">
                                 <label class="required" for="brand_name">Brand</label>
@@ -36,7 +34,7 @@
                                 <label class="required" for="brand_warranty">Warranty</label>
                                 <select name="warranty" id="brand_warranty" class="form-control" placeholder="Enter here..." required>
                                     <option value="">Please Select</option>
-                                    <option>1 year</option>
+                                    <option value="1 year">1 year</option>
                                 </select>
                                 <small id="alert_brand_warranty" class="text-muted"></small>
                             </div>
@@ -47,7 +45,6 @@
                                 <small id="alert_brand_sales_person" class="text-muted"></small>
                             </div>
                         </div>
-
                         <div class="col-sm-6">
                             <!-- Form Text -->
                             <div class="form-group">
@@ -74,12 +71,11 @@
                                 <small id="alert_brand_remarks" class="text-muted"></small>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-outline-success">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
                 </div>
             </form>
         </div>

@@ -119,6 +119,28 @@ abstract class BaseController extends Controller
 	}
 
     /**
+     * Get specific permissions from $this->permissions based on module code
+     *
+     * @param string $module_code
+     * @return array
+     */
+    protected function getSpecificActionsByModule($module_code)
+	{
+        if ($this->isAdmin()) {
+            $action_others  = get_actions('OTHERS', true);
+            $is_exist       = array_key_exists($module_code, $action_others);
+            return $is_exist ? $action_others[$module_code] : get_actions();
+        }
+
+        foreach ($this->permissions as $permission) {
+            if ($permission['module_code'] === $module_code) 
+                return explode(',', $permission['permissions']);
+        }
+        
+		return [];
+	}
+
+    /**
      * Check permissions based on the passed needle
      *
      * @param string|array $permissions
@@ -129,30 +151,64 @@ abstract class BaseController extends Controller
 	{
         if ($this->isAdmin()) return true;
         if ($permissions) {
-		    return in_array($needle, $permissions) ? true : false;
+		    return in_array($needle, $permissions);
         }
 
         return false;
 	}
 
     /**
-     * Check role permissions based on the passed needle
+     * Check role permissions based on the passed arguments
      * and redirect to denied page
      * @param string $module
-     * @return view
+     * @param string $action
+     * @return void|view
      */
-    public function checkRolePermissions($module)
+    public function checkRolePermissions($module, $action = null)
 	{
+        if ($this->isAdmin()) return true;
+        if ($action) $this->checkRoleActionPermissions($module, $action);
 		if (! in_array($module, $this->modules)) {
-            $data['title']          = 'Access Denied';
-            $data['page_title']     = 'Access Denied!';
-
-            echo view('errors/custom/denied', $data);
-            exit;
+            $this->redirectToAccessDenied();
         }
 	}
 
     /**
+     * Check role & action permissions based on the passed argument
+     * and redirect to denied page if user don't have
+     * @param string $module
+     * @param string $action
+     * @return void|view
+     */
+    public function checkRoleActionPermissions($module, $action)
+	{
+		$this->checkRolePermissions($module);
+        // If has access in the module, then check 
+        // if user has the specific permission/action
+        // Ex. User has access to Dispatch but don't have permission for printing
+        if ($this->getSpecificActionsByModule($module) !== $action)
+            $this->redirectToAccessDenied();
+	}
+
+    /**
+     * Redirect to access denied view
+     * 
+     * @return view
+     */
+    public function redirectToAccessDenied()
+	{
+		$data['title']          = 'Access Denied';
+        $data['page_title']     = 'Access Denied!';
+
+        echo view('errors/custom/denied', $data);
+        exit;
+	}
+
+    /**
+     * The custom try catch function for handling error
+     * 
+     * @param array $data           The $data variable from the parent method
+     * @param function $callback    The callback function where the logic is
      * The custom try catch function for handling error
      * 
      * @param array $data           The $data variable from the parent method

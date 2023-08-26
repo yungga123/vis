@@ -3,6 +3,7 @@ var table,
 	form,
 	elems,
 	selectedCategory,
+	supplierSelector,
 	subCategory = {},
 	otherCategoryType = null,
 	otherCategoryTypeSelector = null;
@@ -24,11 +25,13 @@ $(document).ready(function () {
 		"stocks",
 		"stock_unit",
 		"date_of_purchase",
-		"supplier",
 		"location",
 	];
+	supplierSelector = "#supplier_id";
 
-	select2Init();
+	console.log(router.purchasing.common.suppliers);
+
+	// select2Init();
 	$("#filter_category").on("select2:select", function (e) {
 		let selector = "#filter_sub_category";
 		dropdownInit(selector, $(this).val());
@@ -58,6 +61,7 @@ $(document).ready(function () {
 		$(`#${form}`)[0].reset();
 		$("#inventory_id").val("");
 
+		_initSuppliers();
 		clearSelectionSelect2();
 		clearAlertInForm(elems);
 	});
@@ -161,11 +165,12 @@ function openDropdownModal(title, val, selector) {
 }
 
 function clearSelectionSelect2() {
-	$("#category").val("").trigger("change");
-	$("#sub_category").val("").trigger("change");
-	$("#item_brand").val("").trigger("change");
-	$("#item_size").val("").trigger("change");
-	$("#stock_unit").val("").trigger("change");
+	clearSelect2Selection("#category");
+	clearSelect2Selection("#sub_category");
+	clearSelect2Selection("#item_brand");
+	clearSelect2Selection("#item_size");
+	clearSelect2Selection("#stock_unit");
+	clearSelect2Selection(supplierSelector);
 }
 
 /* Get item details */
@@ -174,6 +179,7 @@ function edit(id) {
 	$(`#${modal} .modal-title`).text("Edit Item #" + id);
 	$("#inventory_id").val(id);
 
+	clearSelectionSelect2();
 	clearAlertInForm(elems);
 	showLoading();
 
@@ -189,6 +195,7 @@ function edit(id) {
 				dropdownInit("#item_brand", "BRAND", res.data.item_brand);
 				dropdownInit("#item_size", "SIZE", res.data.item_size);
 				dropdownInit("#stock_unit", "UNIT", res.data.stock_unit);
+				_initSuppliers();
 
 				$("#encoder").val(res.data.created_by_name);
 				$(`#${modal}`).modal("show");
@@ -217,5 +224,15 @@ function remove(id) {
 		TITLE.WARNING,
 		swalMsg,
 		STATUS.WARNING
+	);
+}
+
+/* Suppliers select2 via ajax data source */
+function _initSuppliers() {
+	select2AjaxInit(
+		supplierSelector,
+		"Search & select a supplier",
+		router.purchasing.common.suppliers,
+		"text"
 	);
 }

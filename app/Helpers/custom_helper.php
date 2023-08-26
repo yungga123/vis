@@ -50,6 +50,28 @@ if (! function_exists('remove_string'))
 if (! function_exists('current_date'))
 {
     /**
+     * Get current date - default format 'Y-m-d'
+     */
+	function current_date(string $format = 'Y-m-d'): string
+	{
+        return date($format);
+	}
+}
+
+if (! function_exists('current_datetime'))
+{
+    /**
+     * Get current date & time - default format 'Y-m-d H:i:s'
+     */
+	function current_datetime(string $format = 'Y-m-d H:i:s'): string
+	{
+        return date($format);
+	}
+}
+
+if (! function_exists('current_date'))
+{
+    /**
      * Get current data - default format 'Y-m-d'
      */
 	function current_date(string $format = 'Y-m-d'): string
@@ -92,6 +114,54 @@ if (! function_exists('format_datetime'))
 	function format_datetime(string $datetime, string $format = 'M d, Y h:i A'): string
 	{
         return !empty($datetime) ? date($format, strtotime($datetime)) : '';
+	}
+}
+
+if (! function_exists('has_empty_value'))
+{
+    /**
+     * Check if array has an empty value
+     */
+	function has_empty_value(array $array): bool
+	{
+        foreach ($array as $value) {
+            if (empty($value)) return true; // Found an empty value
+        }
+        return false; // No empty values found
+	}
+}
+
+if (! function_exists('is_array_multi_dimen'))
+{
+    /**
+     * Check if array is multi-dimensional
+     */
+	function is_array_multi_dimen(array $array): bool
+	{
+        foreach ($array as $element) {
+            if (is_array($element)) return true; // Found a nested array
+        }
+        return false; // No nested arrays found
+	}
+}
+
+if (! function_exists('clean_input'))
+{
+    /**
+     * Clean input using trim default function
+     */
+	function clean_input(string|array $input): string|array
+	{
+        if (is_array($input)) {
+            $arr = [];
+            foreach ($input as $key => $val) {
+                $arr[$key] = trim($val);
+            }
+
+            return $arr;
+        }
+
+        return trim($input);
 	}
 }
 

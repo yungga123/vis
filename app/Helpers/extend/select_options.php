@@ -270,3 +270,64 @@ if (! function_exists('set_prf_status'))
         return $options[$param];
 	}
 }
+
+if (! function_exists('get_rpf_status'))
+{
+    /**
+     * Get status of Request to Purchase Forms (RPF)
+     */
+	function get_rpf_status(string $param = '', bool $pass_tense = false): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'accept'    => 'accept',
+            'reject'    => 'reject',
+            'review'    => 'review',
+            'receive'   => 'receive',
+        ];
+
+        $options_pt = [
+            'pending'   => 'pending',
+            'accepted'  => 'accepted',
+            'rejected'  => 'rejected',
+            'reviewed'  => 'reviewed',
+            'received'  => 'received',
+        ];
+
+        $arr = $pass_tense ? $options_pt : $options;
+
+        return $param ? $arr[$param] : $arr;
+	}
+}
+
+if (! function_exists('set_rpf_status'))
+{
+    /**
+     * Setting status of Request to Purchase Forms (RPF) to its past tense
+     */
+	function set_rpf_status(string|array $param): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'accept'    => 'accepted',
+            'accepted'  => 'accepted',
+            'reject'    => 'rejected',
+            'rejected'  => 'rejected',
+            'review'    => 'reviewed',
+            'reviewed'  => 'reviewed',
+            'receive'   => 'received',
+            'received'  => 'received',
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_prf_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $options[$param];
+	}
+}

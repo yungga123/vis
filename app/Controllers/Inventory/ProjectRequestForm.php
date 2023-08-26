@@ -308,8 +308,7 @@ class ProjectRequestForm extends BaseController
                     }
                 }
                 return $data;
-            }, 
-            false
+            }
         );
 
         return $response;
@@ -323,21 +322,19 @@ class ProjectRequestForm extends BaseController
     public function print() 
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, 'PRINT');
         
         $id             = $this->request->getUri()->getSegment(3);
         $columns        = $this->_model->columns(true, true);
         $columns       .= ','. $this->_model->jobOrderColumns(false, true);
         $builder        = $this->_model->select($columns);
+        
         $this->_model->joinView($builder);
         $this->_model->joinJobOrder($builder);
         
         $data['prf']        = $builder->find($id);
         $data['prf_items']  = $builder->traitFetchPrfItems($id, true, true);
         $data['title']      = 'Print Project Request Form';
-        // d($data['prf']); 
-        // d($data['prf_items']); 
-        // die;
 
         return view('inventory/prf/print', $data);
     }
