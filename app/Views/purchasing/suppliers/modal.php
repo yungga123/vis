@@ -89,6 +89,7 @@
                                     <option>Cash</option>
                                     <option>Check</option>
                                     <option>Online Payment</option>
+                                    <option>Dated Check</option>
                                     <option>Others</option>
                                 </select>
                                 <input type="hidden" name="others_payment_mode" id="others_payment_mode" class="form-control mt-2" placeholder="Please Specify here...">
