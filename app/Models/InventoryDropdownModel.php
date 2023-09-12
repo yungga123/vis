@@ -97,11 +97,11 @@ class InventoryDropdownModel extends Model
                 return $this->insertBatch($data);
             }
         }        
-   }
+    }
     
-   // Save  other category types
-   public function saveOtherCategoryTypes($inputs) 
-   {
+    // Save  other category types
+    public function saveOtherCategoryTypes($inputs) 
+    {
         $id         = 0;
         $other_type = strtoupper($inputs['other_category_type']);
         $record     = $this->select('dropdown_id, dropdown')
@@ -159,7 +159,7 @@ class InventoryDropdownModel extends Model
         
         if ($is_category && !$all_categories) $builder->where('other_category_type', '');            
         return $builder->findAll();
-   }
+    }
     
    // Get unique dropdown types
     public function getDropdownTypes($param = null) 

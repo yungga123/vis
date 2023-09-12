@@ -4,7 +4,7 @@ if (! function_exists('inventory_categories_options'))
     /**
      * Get inventory dropdowns
      */
-	function inventory_categories_options($model, $all = true) 
+	function inventory_categories_options($model, $all = false) 
 	{
 		$option     = '';
         $others     = '';
@@ -28,7 +28,7 @@ if (! function_exists('inventory_categories_options'))
                 }
             }
 
-            $option .= '<optgroup label="Other Categories">'. $others .'</optgroup>';
+            $option .= $others ? '<optgroup label="Other Categories">'. $others .'</optgroup>' : '';
         }
 
         return $option;
