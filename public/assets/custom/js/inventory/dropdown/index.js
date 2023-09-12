@@ -27,6 +27,7 @@ $(document).ready(function () {
 		$(`#${form}`)[0].reset();
 		$("input[name='dropdown_id']").val("");
 		$(select2Dropdown).val("").trigger("change");
+		toggleCategory(true);
 
 		clearAlertInForm(elems);
 	});
@@ -104,7 +105,7 @@ function toggleCategory(isHide = false) {
 	$(".btn-back-to-dropdown").removeAttr("disabled");
 	if (isHide) {
 		$("#form_dropdown_category").fadeOut(500).removeClass(hide).addClass(hide);
-		$("#form_dropdown").removeClass();
+		$("#form_dropdown").removeClass(hide);
 		$(".btn-delete-category").addClass(hide);
 
 		$("#form_dropdown_category #dropdown_id_category").val("");
@@ -149,7 +150,7 @@ function dropdownInit(select, type) {
 
 					let options = '<option value="">Select Category</option>' + dropdowns;
 					$(select).html("").append(options);
-					$(select).select2().val("").trigger("change");
+					$(select).select2({ allowClear: true }).val("").trigger("change");
 				}
 			} else {
 				console.log(res.message);
