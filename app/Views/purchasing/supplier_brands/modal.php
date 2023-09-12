@@ -34,7 +34,12 @@
                                 <label class="required" for="brand_warranty">Warranty</label>
                                 <select name="warranty" id="brand_warranty" class="form-control" placeholder="Enter here..." required>
                                     <option value="">Please Select</option>
+                                    <option value="7 days">7 days</option>
+                                    <option value="1 month">1 month</option>
+                                    <option value="3 months">3 months</option>
+                                    <option value="6 months">6 months</option>
                                     <option value="1 year">1 year</option>
+                                    <option value="2 years">2 years</option>
                                 </select>
                                 <small id="alert_brand_warranty" class="text-muted"></small>
                             </div>
