@@ -48,6 +48,7 @@ $(document).ready(function () {
 				"hostname",
 				"access_type",
 				"recepients",
+				"is_enable",
 			];
 
 		if (res.status !== STATUS.ERROR) {

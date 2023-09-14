@@ -81,11 +81,12 @@
                                 <label for="quotation_num">Quotation Number</label>
                                 <select class="form-control" id="quotation_type">
                                     <option value="">--Select Quotation Type---</option>
-                                    <option value="Q1">Project</option>
-                                    <option value="Q2">Service</option>
-                                    <option value="Q3">Supplies</option>
+                                    <?php foreach (get_quotation_type() as $val => $text): ?>
+                                        <option value="<?= $val ?>"><?= $text ?></option>
+                                    <?php endforeach; ?>
                                 </select>
-                                <input type="text" name="quotation_num" id="quotation_num" class="form-control" placeholder="Enter..." readonly>
+                                <input type="text" name="quotation_num" id="quotation_num" class="form-control mt-2" placeholder="Enter..." readonly>
+                                <input type="hidden" name="tasklead_type" id="tasklead_type" class="form-control" placeholder="Enter..." readonly>
                                 <small id="alert_quotation_num" class="text-danger"></small>
                             </div>
                             <div class="form-group forecast_close_date" hidden>

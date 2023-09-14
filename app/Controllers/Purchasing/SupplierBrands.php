@@ -1,98 +1,99 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
-use App\Models\InventoryModel;
+use App\Models\SupplierBrandsModel;
 use monken\TablesIgniter;
 
-/**
- * Controller for Inventory
- */
-class Inventory extends BaseController
+class SupplierBrands extends BaseController
 {
     /**
-     * Display the inventory view
-     *
-     * @return view
+     * Use to initialize PermissionModel class
+     * @var object
      */
-    public function index()
-    {
-        $data['title']          = 'Inventory | List of Items';
-        $data['page_title']     = 'Inventory | List of Items';
-        $data['can_add']        = true;
-        $data['btn_add_lbl']    = 'Add New Item';
-        $data['with_dtTable']   = true;
-        $data['with_jszip']     = true;
-        $data['custom_js']      = 'inventory/list.js';
-        $data['sweetalert2']    = true;
-
-        return view('inventory/index', $data);
-    }
+    private $_model;
 
     /**
-     * Get list of items
-     *
-     * @return array|dataTable
+     * Use to get current module code
+     * @var string
      */
+    private $_module_code;
+    
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    /**
+     * Use to check if can add
+     * @var bool
+     */
+    private $_can_add;
+
+    /**
+     * Class constructor
+     */
+
+    
+    public function __construct()
+    {
+        $this->_model       = new SupplierBrandsModel(); // Current model
+        $this->_module_code = MODULE_CODES['suppliers']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+    }
+
+
     public function list()
     {
-        $model = new InventoryModel();
         $table = new TablesIgniter();
 
-        $table->setTable($model->noticeTable())
+        $supplier_id = $this->request->getVar('supplier_id');
+        $builder = $this->_model->noticeTable($supplier_id);
+
+        $table->setTable($builder)
             ->setSearch([
-                'item_name',
-                'item_brand',
-                'item_type',
-                // 'item_sdp',
-                // 'item_srp',
-                // 'project_price',
-                // 'stocks',
-                // 'stock_unit',
-                // 'date_of_purchase',
-                'supplier',
-                'location',
-                'encoder',
+                "brand_name",
+                "product",
+                "warranty",
+                "sales_person",
+                "sales_contact_number",
+                "technical_support",
+                "technical_contact_number",
+                "supplier_brands_remark"
             ])
+            ->setDefaultOrder('id','desc')
             ->setOrder([
                 null,
-                'item_name',
-                'item_brand',
-                'item_type',
-                'item_sdp',
-                'item_srp',
-                'project_price',
-                'stocks',
-                'stock_unit',
-                'date_of_purchase',
-                'supplier',
-                'location',
-                'encoder',
-                'created_at',
+                "brand_name",
+                "product",
+                "warranty",
+                "sales_person",
+                "sales_contact_number",
+                "technical_support",
+                "technical_contact_number",
+                "supplier_brands_remark"
             ])
             ->setOutput([
-                $model->buttons(),
-                'item_name',
-                'item_brand',
-                'item_type',
-                'item_sdp',
-                'item_srp',
-                'project_price',
-                'stocks',
-                'stock_unit',
-                'date_of_purchase',
-                'supplier',
-                'location',
-                'encoder',
-                'created_at',
+                $this->_model->buttons($this->_permissions),
+                "brand_name",
+                "product",
+                "warranty",
+                "sales_person",
+                "sales_contact_number",
+                "technical_support",
+                "technical_contact_number",
+                "supplier_brands_remark"
             ]);
 
         return $table->getDatatable();
     }
 
     /**
-     * Saving process of items (inserting and updating items)
+     * Saving process of suppliers (inserting and updating suppliers)
      *
      * @return json
      */
@@ -100,14 +101,14 @@ class Inventory extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been saved successfully!'
+            'message'   => 'Supplier Brands has been saved successfully!'
         ];
 
         // Using DB Transaction
         $this->transBegin();
 
         try {
-            $model = new InventoryModel();
+            $model = $this->_model;
 
             if (! $model->save($this->request->getVar())) {
                 $data['errors']     = $model->errors();
@@ -116,7 +117,7 @@ class Inventory extends BaseController
             }
 
             if ($this->request->getVar('id')) {
-                $data['message']    = 'Item has been updated successfully!';
+                $data['message']    = 'Supplier Brands has been updated successfully!';
             }
 
             // Commit transaction
@@ -134,7 +135,7 @@ class Inventory extends BaseController
     }
     
     /**
-     * For getting the item data using the id
+     * For getting the supplier data using the id
      *
      * @return json
      */
@@ -142,11 +143,11 @@ class Inventory extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been retrieved!'
+            'message'   => 'Supplier Brands has been retrieved!'
         ];
 
         try {
-            $model  = new InventoryModel();
+            $model  = $this->_model;
             $id     = $this->request->getVar('id');
             // $item   = $model->select($model->allowedFields)->find($id);
 
@@ -161,7 +162,7 @@ class Inventory extends BaseController
     }
 
     /**
-     * Saving process of items
+     * Delete process of suppliers
      *
      * @return json
      */
@@ -169,14 +170,14 @@ class Inventory extends BaseController
     {
         $data = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been deleted successfully!'
+            'message'   => 'Supplier Brands has been deleted successfully!'
         ];
 
         // Using DB Transaction
         $this->transBegin();
 
         try {
-            $model = new InventoryModel();
+            $model = $this->_model;
 
             if (! $model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $model->errors();

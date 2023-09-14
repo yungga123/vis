@@ -106,16 +106,16 @@ class Accounts extends Model
         $builder = $this->db->table($this->view);
 
         if (session('access_level') !== AAL_ADMIN) {
-            $builder->whereNotIn('access_level', [AAL_ADMIN]);
+            $builder->whereNotIn('UPPER(access_level)', [strtoupper(AAL_ADMIN)]);
         }
         
         return $builder;
     }
 
-    public function dtAccessLevel($old = false) 
+    public function dtAccessLevel() 
     {
-        $access_level = function($row) use($old) {
-            return account_access_level($old, $row['access_level']);
+        $access_level = function($row) {
+            return get_roles($row['access_level']);
         };
 
         return $access_level;
@@ -130,22 +130,21 @@ class Accounts extends Model
                     <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
                     <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
                 EOF;
-            }
+            } else {
+                $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
+                $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
 
-            $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
+                if (check_permissions($permissions, 'EDIT')) {
+                    $edit = <<<EOF
+                        <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
+                    EOF;
+                }
 
-            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
-                $edit = <<<EOF
-                    <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})"  data-toggle="modal" data-target="#account_modal" title="Edit"><i class="fas fa-edit"></i> </button> 
-                EOF;
-            }
-
-            $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
-
-            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
-                $delete = <<<EOF
-                    <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
-                EOF;
+                if (check_permissions($permissions, 'DELETE') && $row['username'] != session('username')) {
+                    $delete = <<<EOF
+                        <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
+                    EOF;
+                }
             }
 
             return $edit. $delete;

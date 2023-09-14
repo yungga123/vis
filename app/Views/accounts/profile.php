@@ -76,7 +76,7 @@
                                 <div class="form-group row">
                                     <label for="access_level" class="col-sm-2 col-form-label">Access Level</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="access_level" id="access_level" placeholder="Access Level" value="<?= esc(account_access_level(false, session('access_level'))); ?>" readonly>
+                                        <input type="text" class="form-control" name="access_level" id="access_level" placeholder="Access Level" value="<?= get_roles(session('access_level')); ?>" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -89,21 +89,37 @@
                                 <div class="form-group row">
                                     <label for="current_password" class="col-sm-2 col-form-label">Current Password</label>
                                     <div class="col-sm-10">
-                                        <input type="password" class="form-control" name="current_password" id="current_password" placeholder="Current Password" required>
+                                        <!-- <input type="password" class="form-control" name="current_password" id="current_password" placeholder="Current Password" required> -->
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" name="current_password" id="current_password" placeholder="Current Password" required>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" id="show_password" type="button" title="Click here to show password!"><i class="fas fa-eye"></i></button>
+                                            </div>
+                                        </div>
                                         <small id="alert_current_password" class="form-text text-danger"></small>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="new_password" class="col-sm-2 col-form-label">New Password</label>
                                     <div class="col-sm-10">
-                                        <input type="password" class="form-control" name="password" id="password" placeholder="New Password" required>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" name="password" id="password" placeholder="New Password" required>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" id="show_password1" type="button" title="Click here to show password!"><i class="fas fa-eye"></i></button>
+                                            </div>
+                                        </div>
                                         <small id="alert_password" class="form-text text-danger"></small>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="confirm_password" class="col-sm-2 col-form-label">Confirm New Password</label>
                                     <div class="col-sm-10">
-                                        <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Confirm New Password" required>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Confirm New Password" required>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" id="show_password2" type="button" title="Click here to show password!"><i class="fas fa-eye"></i></button>
+                                            </div>
+                                        </div>
                                         <small id="alert_confirm_password" class="form-text text-danger"></small>
                                     </div>
                                 </div>

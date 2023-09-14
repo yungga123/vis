@@ -6,9 +6,12 @@ use App\Controllers\BaseController;
 use App\Models\Accounts as AccountModel;
 use App\Models\EmployeesModel;
 use monken\TablesIgniter;
+use App\Traits\AccountMailTrait;
 
 class Accounts extends BaseController
 {
+    use AccountMailTrait;
+    
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -71,6 +74,7 @@ class Accounts extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
+        $data['select2']        = true;
         $data['can_add']        = $this->_can_add;
         $data['employees']      = $employees;
         $data['access_level']   = $access_level;
@@ -93,7 +97,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 'access_level',
             ])
             ->setDefaultOrder('employee_name','asc')
@@ -101,7 +104,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 'access_level',
                 null,
             ])
@@ -109,7 +111,6 @@ class Accounts extends BaseController
                 'employee_id',
                 'employee_name',
                 'username',
-                // 'password',
                 $this->_model->dtAccessLevel(),
                 $this->_model->buttons($this->_permissions),
             ]);
@@ -139,6 +140,7 @@ class Accounts extends BaseController
 
         try {
             $password       = $this->request->getVar('password');
+            $employee_id    = $this->request->getVar('employee_id');
             $password_hash  = password_hash($password, PASSWORD_BCRYPT);
             $rules          = $this->_model->getValidationRules(['except' => ['password', 'employee_id']]);
             $rule_msg       = $this->_model->getValidationMessages();
@@ -151,7 +153,7 @@ class Accounts extends BaseController
 
                 if (! $checkAcct) {
                     $params = [
-                        'employee_id'   => $this->request->getVar('employee_id'),
+                        'employee_id'   => $employee_id,
                         'username'      => $this->request->getVar('username'),
                         'password'      => $password_hash,
                         'access_level'  => $this->request->getVar('access_level'),
@@ -166,7 +168,8 @@ class Accounts extends BaseController
                     // Turn protection on
                     $this->_model->protect(true);
                     // Send mail
-                    $data = $this->_sendMail($data, true);
+                    $mailMsg            = $this->sendMailAccountNotif($employee_id, $this->request->getVar());
+                    $data['message']    = $data['message'] . $mailMsg;
                 } else {
                     $data['status']     = STATUS_ERROR;
                     $data['message']    = 'Employee has already an account for the selected access level!';
@@ -179,7 +182,7 @@ class Accounts extends BaseController
 
             // Commit transaction
             $this->transCommit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Rollback transaction if there's an error
             $this->transRollback();
 
@@ -205,11 +208,11 @@ class Accounts extends BaseController
 
         try {
             $id     = $this->request->getVar('id');
-            $fields = 'employee_id, username, access_level';
+            $fields = 'employee_id, username, UPPER(access_level) as access_level';
             // $fields = $this->_model->allowedFields;
 
             $data['data'] = $this->_model->select($fields)->find($id);;
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = STATUS_ERROR;
             $data['message']    = 'Error while processing data! Please contact your system administrator.';
@@ -242,7 +245,7 @@ class Accounts extends BaseController
 
             // Commit transaction
             $this->transCommit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Rollback transaction if there's an error
             $this->transRollback();
 
@@ -308,7 +311,9 @@ class Accounts extends BaseController
                     // Turn protection on
                     $this->_model->protect(true);
                     // Send mail
-                    $data = $this->_sendMail($data);
+                    $employee_id        = $this->request->getVar('employee_id');
+                    $mailMsg            = $this->sendMailAccountNotif($employee_id, $this->request->getVar(), true);
+                    $data['message']    = $data['message'] . $mailMsg;
 
                 } else {
                     $data['status'] = STATUS_ERROR;
@@ -322,7 +327,7 @@ class Accounts extends BaseController
 
             // Commit transaction
             $this->transCommit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Rollback transaction if there's an error
             $this->transRollback();
 
@@ -332,29 +337,6 @@ class Accounts extends BaseController
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * Updaing of account
-     * @param array $data
-     * @return json
-     */
-    private function _sendMail($data, $is_add = false)
-    {
-        if (! empty($this->request->getVar('password'))) {
-            // Send mail to employee
-            $res = $this->sendMail($this->request->getVar(), 'regular', $is_add);
-            $msg = $res['message'];
-
-            if ($res['status'] === STATUS_SUCCESS) {
-                $msg = $data['message'] . $msg;
-            }
-
-            $data['status'] = $res['status'];
-            $data['message'] = $msg;
-        }
-
-        return $data;
     }
 
     /**
