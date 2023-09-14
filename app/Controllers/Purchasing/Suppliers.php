@@ -81,6 +81,9 @@ class Suppliers extends BaseController
                 "payment_terms",
                 "payment_mode",
                 "product",
+                "email_address",
+                "bank_name",
+                "bank_number",
                 "remarks",
             ])
             ->setDefaultOrder('id','desc')
@@ -95,6 +98,9 @@ class Suppliers extends BaseController
                 "payment_terms",
                 "payment_mode",
                 "product",
+                "email_address",
+                "bank_name",
+                "bank_number",
                 "remarks",
             ])
             ->setOutput([
@@ -108,6 +114,9 @@ class Suppliers extends BaseController
                 $this->_model->paymentTerms(),
                 $this->_model->paymentMode(),
                 "product",
+                "email_address",
+                "bank_name",
+                "bank_number",
                 "remarks",
             ]);
 

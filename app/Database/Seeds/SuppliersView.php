@@ -30,6 +30,9 @@ class SuppliersView extends Seeder
                 others_payment_mode,
                 product,
                 remarks,
+                email_address,
+                bank_name,
+                bank_number,
                 created_at,
                 updated_at,
                 deleted_at

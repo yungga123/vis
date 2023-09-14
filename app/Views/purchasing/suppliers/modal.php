@@ -34,7 +34,7 @@
                                     <option>Others</option>
                                 </select>
                                 <input type="hidden" name="others_supplier_type" id="others_supplier_type" class="form-control mt-2" placeholder="Please Specify here...">
-                                <small id="alert_supplier_type" class="text-muted"></small>                                
+                                <small id="alert_supplier_type" class="text-muted"></small>
                             </div>
                             <!-- Form Text -->
                             <div class="form-group">
@@ -54,9 +54,7 @@
                                 <input type="text" name="product" id="product" class="form-control" placeholder="Enter here...">
                                 <small id="alert_product" class="text-muted"></small>
                             </div>
-                        </div>
-                        <!-- Col -->
-                        <div class="col-sm-6">
+
                             <!-- Form Text -->
                             <div class="form-group">
                                 <label for="viber">Viber Account</label>
@@ -81,6 +79,11 @@
                                 </select>
                                 <small id="alert_payment_terms" class="text-muted"></small>
                             </div>
+                            
+                        </div>
+                        <!-- Col -->
+                        <div class="col-sm-6">
+                            
                             <!-- Form Text -->
                             <div class="form-group">
                                 <label class="required" for="payment_mode">Mode of Payment</label>
@@ -101,6 +104,35 @@
                                 <input type="text" name="remarks" id="remarks" class="form-control" placeholder="Enter here...">
                                 <small id="alert_remarks" class="text-muted"></small>
                             </div>
+
+                            <!-- Form Text -->
+                            <div class="form-group">
+                                <label class="required" for="email_address">Email Address</label>
+                                <input type="text" name="email_address" id="email_address" class="form-control" placeholder="Enter here...">
+                                <small id="alert_email_address" class="text-muted"></small>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <b>Bank Details</b>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Form Text -->
+                                    <div class="form-group">
+                                        <label class="required" for="bank_name">Bank Name</label>
+                                        <input type="text" name="bank_name" id="bank_name" class="form-control" placeholder="Enter here...">
+                                        <small id="alert_bank_name" class="text-muted"></small>
+                                    </div>
+
+                                    <!-- Form Text -->
+                                    <div class="form-group">
+                                        <label class="required" for="bank_number">Bank Number</label>
+                                        <input type="text" name="bank_number" id="bank_number" class="form-control" placeholder="Enter here...">
+                                        <small id="alert_bank_number" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
