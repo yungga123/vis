@@ -26,6 +26,9 @@ class SuppliersModel extends Model
         "payment_mode",
         "others_payment_mode",
         "product",
+        "email_address",
+        "bank_name",
+        "bank_number",
         "remarks",
     ];
 

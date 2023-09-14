@@ -22,6 +22,9 @@
                         <th>Payment Terms</th>
                         <th>Mode of Payment</th>
                         <th>Product</th>
+                        <th>Email Address</th>
+                        <th>Bank Name</th>
+                        <th>Bank Number</th>
                         <th>Remarks</th>
                     </tr>
                 </thead>
