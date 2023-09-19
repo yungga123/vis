@@ -28,6 +28,7 @@ class SuppliersModel extends Model
         "product",
         "email_address",
         "bank_name",
+        "bank_account_name",
         "bank_number",
         "remarks",
     ];
