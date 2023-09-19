@@ -28,5 +28,6 @@ class AllViews extends Seeder
         $this->call('Roles');
         $this->call('InventoryView');
         $this->call('PRFView');
+        $this->call('RPFView');
     }
 }
