@@ -24,6 +24,7 @@
                         <th>Product</th>
                         <th>Email Address</th>
                         <th>Bank Name</th>
+                        <th>Bank Account Name</th>
                         <th>Bank Number</th>
                         <th>Remarks</th>
                     </tr>
