@@ -119,14 +119,21 @@
                                 <div class="card-body">
                                     <!-- Form Text -->
                                     <div class="form-group">
-                                        <label class="required" for="bank_name">Bank Name</label>
+                                        <label class="optional" for="bank_name">Bank Name</label>
                                         <input type="text" name="bank_name" id="bank_name" class="form-control" placeholder="Enter here...">
                                         <small id="alert_bank_name" class="text-muted"></small>
                                     </div>
 
+                                     <!-- Form Text -->
+                                     <div class="form-group">
+                                        <label class="optional" for="bank_account_name">Bank Account Name</label>
+                                        <input type="text" name="bank_account_name" id="bank_account_name" class="form-control" placeholder="Enter here...">
+                                        <small id="alert_bank_account_name" class="text-muted"></small>
+                                    </div>
+
                                     <!-- Form Text -->
                                     <div class="form-group">
-                                        <label class="required" for="bank_number">Bank Number</label>
+                                        <label class="optional" for="bank_number">Bank Number</label>
                                         <input type="text" name="bank_number" id="bank_number" class="form-control" placeholder="Enter here...">
                                         <small id="alert_bank_number" class="text-muted"></small>
                                     </div>
