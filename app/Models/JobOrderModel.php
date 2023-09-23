@@ -180,7 +180,7 @@ class JobOrderModel extends Model
     public function addToScheduleAfterJOAccepted(array $data)
     {
         if ($data['result']) {
-            if ($data['data']['status'] === 'accepted') {
+            if (isset($data['data']['status']) && $data['data']['status'] === 'accepted') {
                 $id         = $data['id'][0];
                 $columns    = "
                     {$this->tableJoined}.customer_name AS client,
