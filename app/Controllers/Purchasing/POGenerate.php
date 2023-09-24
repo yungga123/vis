@@ -59,13 +59,13 @@ class POGenerate extends BaseController
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['custom_js']      = 'purchasing/generate_po/index.js';
-        $data['router']         = json_encode(
-            [
-                'generate_po' => [
-                    'list' => url_to('generate_po.list')
-                ]
-            ]
-        );
+        // $data['router']         = json_encode(
+        //     [
+        //         'generate_po' => [
+        //             'list' => url_to('generate_po.list')
+        //         ]
+        //     ]
+        // );
 
         return view('purchasing/generate_po/index', $data);
     }

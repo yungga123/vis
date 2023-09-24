@@ -44,7 +44,8 @@ if (! function_exists('get_nav_menus'))
         );
         $is_purchasing  = (
             url_is('suppliers') || 
-            url_is('request-purchase-forms')
+            url_is('request-purchase-forms') ||
+            url_is('generate-po')
         );
         
 		$menu           = [
@@ -222,6 +223,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('rpf.home'),
                 'class'     => (url_is('request-purchase-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-bag',
+            ],
+            'GENERATE_PO'           => [
+                'menu'      => 'PURCHASING', // Leave empty if none
+                'name'      => get_modules('GENERATE_PO'),
+                'url'       => url_to('generate-po.home'),
+                'class'     => (url_is('generate-po') ? 'active' : ''),
+                'icon'      => 'fas fa-list',
             ],
         ];
 
