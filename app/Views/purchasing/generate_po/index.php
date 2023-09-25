@@ -9,6 +9,10 @@
                         <thead class="nowrap">
                             <tr> 
                                 <th>Actions</th>
+                                <th>PO Number</th>
+                                <th>Supplier</th>
+                                <th>Date Generated</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                     </table>

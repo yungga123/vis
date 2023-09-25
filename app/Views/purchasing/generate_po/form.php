@@ -2,84 +2,67 @@
 <div class="modal fade" id="generate_PO_modal" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <form id="rpf_form" class="with-label-indicator" action="<?= url_to('rpf.save'); ?>" method="post" autocomplete="off">
+            <form id="generate_po_form" class="with-label-indicator" action="<?= url_to('generate-po.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <div class="modal-header">
-                    <h5 class="modal-title">Add RPF</h5>
+                    <h5 class="modal-title">Add PO</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">                    
-                    <div class="alert alert-info" role="alert">
-                        <strong>Note:</strong> 
-                        If not empty, initial dropdowns of <strong>Inventory Masterlist & Supplier</strong> are by 10. Type the ITEM MODEL & DESCRIPTION and SUPPLIER NAME to search if not in the options and then, click to select.
-                    </div>
+                <div class="modal-body">        
+
+                    
+                    
+                    sub_total_amount
+                    mode_of_payment
                     <div class="form-group">
-                        <label class="required text-center">Masterlist Items</label>
-                        <div>Format: Item # | Model | Description</div>
-                        <input type="hidden" name="id" id="rpf_id" class="form-control" readonly>
+                        <label class="required" for="purchase_order_number">PO Number</label>
+                        <input type="text" name="purchase_order_number" id="purchase_order_number" class="form-control" placeholder="Enter PO Number">
+                        <small id="alert_purchase_order_number" class="text-danger"></small>
                     </div>
-                    <div>
-                        <table class="table" id="item_field_table" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>Item Details</th>
-                                    <th>Available</th>
-                                    <th>Quantity In</th>
-                                    <!-- <th width="30%">Supplier</th> -->
-                                    <th>Purpose <i>(Optional)</i></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
-                                    </td>
-                                    <td>
-                                        <input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
-                                    </td>
-                                    <td>
-                                        <input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
-                                    </td>
-                                    <!-- <td>
-                                        <select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
-                                    </td> -->
-                                    <td>
-                                        <input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" onclick="toggleItemField()" title="Add new item field">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td>
-                                        <small id="alert_inventory_id" class="text-danger"></small>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                        <small id="alert_quantity_in" class="text-danger"></small>
-                                    </td>
-                                    <!-- <td>
-                                        <small id="alert_supplier_id" class="text-danger"></small>
-                                    </td> -->
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+
                     <div class="form-group">
-                        <label class="required" for="date_needed">Delivery Date</label>
-                        <input type="date" name="date_needed" id="date_needed" class="form-control" value="<?= current_date() ?>">
-                        <small id="alert_date_needed" class="text-danger"></small>
+                        <label class="required" for="purchase_order_date">PO Number</label>
+                        <input type="date" name="purchase_order_date" id="purchase_order_date" class="form-control">
+                        <small id="alert_purchase_order_date" class="text-danger"></small>
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <label class="required" for="supplier">Supplier</label>
+                        <select type="text" name="supplier" id="supplier" class="form-control" placeholder="Enter PO Number">
+                            <option value="">--- Please Select ---</option>
+                        </select>
+                        <small id="alert_supplier" class="text-danger"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="optional" for="ship_to">Shipped To</label>
+                        <input type="text" name="ship_to" id="ship_to" class="form-control" placeholder="Default value is VINCULUM TECHNOLOGIES.">
+                        <small id="alert_ship_to" class="text-danger"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required" for="attention_to">Attention To</label>
+                        <input type="text" name="attention_to" id="attention_to" class="form-control" placeholder="Enter here...">
+                        <small id="alert_attention_to" class="text-danger"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required" for="requestor">Requestor</label>
+                        <input type="text" name="requestor" id="requestor" class="form-control" placeholder="Enter here...">
+                        <small id="alert_requestor" class="text-danger"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required" for="request_form_number">RPF No.</label>
+                        <select type="text" name="request_form_number" id="request_form_number" class="form-control" placeholder="Enter PO Number">
+                            <option value="">--- Please Select ---</option>
+                        </select>
+                        <small id="alert_request_form_number" class="text-danger"></small>
+                    </div>
+
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-success">Save Changes</button>

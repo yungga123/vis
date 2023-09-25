@@ -323,6 +323,7 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
 $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('generate-po', 'Purchasing\POGenerate::index', ['as' => 'generate-po.home']);
     //$routes->post('generate-po/list', 'Purchasing\POGenerate::list', ['as' => 'generate-po.list']);
+    //$routes->post('generate-po/save', 'Purchasing\POGenerate::save', ['as' => 'generate-po.save']);
 });
 
 /* PURCHASING */
