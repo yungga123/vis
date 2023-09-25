@@ -83,7 +83,7 @@ class Suppliers extends BaseController
                 "product",
                 "email_address",
                 "bank_name",
-                "bank_account_number",
+                "bank_account_name",
                 "bank_number",
                 "remarks",
             ])
