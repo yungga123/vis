@@ -11,8 +11,8 @@ class AllViews extends Seeder
         $db = \Config\Database::connect();
         
         $this->call('AccountsView');
-        $this->call('CustomerBranchView');
-        $this->call('CustomerView');
+        //$this->call('CustomerBranchView');
+        //$this->call('CustomerView');
         $this->call('EmployeesView');
         $this->call('TaskleadBookedView');
         $this->call('TaskleadHistoryView');
@@ -20,7 +20,7 @@ class AllViews extends Seeder
         $this->call('CustomerVtView');
         $this->call('CustomerVtBranchView');
         //$this->call('TaskleadViewExistingCustomer');
-        $this->call('CustomersResidentialView');
+        //$this->call('CustomersResidentialView');
         $this->call('SalesTargetView');
         $this->call('SuppliersView');
         $this->call('SuppliersBrandView');

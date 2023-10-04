@@ -318,6 +318,14 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
     $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print', ['as' => 'rpf.print/$1']);
 });
+
+// GENERATE PO
+$routes->group('', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('generate-po', 'Purchasing\POGenerate::index', ['as' => 'generate-po.home']);
+    //$routes->post('generate-po/list', 'Purchasing\POGenerate::list', ['as' => 'generate-po.list']);
+    //$routes->post('generate-po/save', 'Purchasing\POGenerate::save', ['as' => 'generate-po.save']);
+});
+
 /* PURCHASING */
 
 

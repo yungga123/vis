@@ -29,6 +29,7 @@ $(document).ready(function () {
 		"source",
 		"notes",
 		"referred_by",
+		"customer_type"
 	];
 
 	branch_table = "customervtbranch_table";

@@ -208,6 +208,7 @@ define('MODULES', [
     'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
     'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
     'INVENTORY_PRF'         => 'Project Request Forms',
+    'GENERATE_PO'           => 'Generate Purchase Order',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -233,4 +234,5 @@ define('MODULE_CODES', [
     'dispatch'              => 'ADMIN_DISPATCH',
     'inventory_prf'         => 'INVENTORY_PRF',
     'purchasing_rpf'        => 'PURCHASING_RPF',
+    'generate_PO'           => 'GENERATE_PO',
 ]);

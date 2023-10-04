@@ -77,7 +77,7 @@ class CustomersVt extends BaseController
     {
         $table  = new TablesIgniter();
         $params = $this->request->getVar('params');
-        $builder = $this->_model->noticeTable();
+        $builder = $this->_model->noticeTable()->where('customer_type','Commercial');
 
         if ($params && $params['filter'] !== 'all') {
             $builder->where('forecast', $params['filter']);

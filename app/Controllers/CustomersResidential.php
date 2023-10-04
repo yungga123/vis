@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\CustomersResidentialModel;
+use App\Models\CustomersVtModel;
 use monken\TablesIgniter;
 
 class CustomersResidential extends BaseController
@@ -38,7 +38,7 @@ class CustomersResidential extends BaseController
      */
     public function __construct()
     {
-        $this->_model       = new CustomersResidentialModel(); // Current model
+        $this->_model       = new CustomersVtModel(); // Current model
         $this->_module_code = MODULE_CODES['customers_residential']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
@@ -75,7 +75,7 @@ class CustomersResidential extends BaseController
     public function list() {
         $table = new TablesIgniter();
         $params = $this->request->getVar('params');
-        $builder = $this->_model->noticeTable();
+        $builder = $this->_model->noticeTable()->where('customer_type','Residential');;
 
         if ($params && $params['filter'] !== 'all') {
             $builder->where('forecast', $params['filter']);
@@ -137,7 +137,7 @@ class CustomersResidential extends BaseController
         $this->transBegin();
 
         try {
-            $model = new CustomersResidentialModel();
+            $model = $this->_model;
 
             if (! $model->save($this->request->getVar())) {
                 $data['errors']     = $model->errors();
@@ -176,7 +176,7 @@ class CustomersResidential extends BaseController
         ];
 
         try {
-            $model  = new CustomersResidentialModel();
+            $model  = $this->_model;
             $id     = $this->request->getVar('id');
             // $item   = $model->select($model->allowedFields)->find($id);
 
@@ -206,7 +206,7 @@ class CustomersResidential extends BaseController
         $this->transBegin();
 
         try {
-            $model = new CustomersResidentialModel();
+            $model = $this->_model;
 
             if (! $model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $model->errors();

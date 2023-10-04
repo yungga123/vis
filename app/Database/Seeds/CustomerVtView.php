@@ -27,6 +27,7 @@ class CustomerVtView extends Seeder
                 source,
                 notes,
                 referred_by,
+                customer_type,
                 deleted_at
             FROM
                 customers_vt
