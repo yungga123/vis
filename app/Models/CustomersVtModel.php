@@ -28,6 +28,7 @@ class CustomersVtModel extends Model
         "source", 
         "notes",
         "referred_by",
+        "customer_type",
     ];
 
     // Dates
@@ -49,7 +50,8 @@ class CustomersVtModel extends Model
         "contact_number" => 'required|max_length[500]',
         "email_address" => 'max_length[500]',
         "source" => 'max_length[100]',
-        "notes" => 'required|max_length[100]'
+        "notes" => 'required|max_length[100]',
+        "customer_type" => 'required|max_length[100]',
     ];
     protected $validationMessages   = [
         "forecast" => [
@@ -98,7 +100,10 @@ class CustomersVtModel extends Model
         "notes" => [
             "required" => "Additional Notes is required.",
             "max_length" => "Max length is 100.",
-            
+        ],
+        "customer_type" => [
+            "required" => "Customer Type is required.",
+            "max_length" => "Max length is 100.",
         ]
 
     ];

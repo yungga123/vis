@@ -20,6 +20,16 @@
                                 <div class="card-body row">
                                     <div class="col-sm-12">
                                         <div class="form-group">
+                                            <label class="required">Customer Type</label>
+                                            <select name="customer_type" id="customer_type" type="text" class="form-control" required>
+                                                <option value="">---Please Select---</option>
+                                                <option>Commercial</option>
+                                                <option>Residential</option>
+                                            </select>
+                                            <small id="alert_customer_type" class="form-text text-danger"></small>
+                                        </div>
+                                        
+                                        <div class="form-group">
                                             <label class="required">New Client?</label>
                                             <select name="forecast" id="forecast" type="text" class="form-control">
                                                 <option value="">---Please Select---</option>
