@@ -119,7 +119,9 @@ if (! function_exists('get_modules'))
 
         // if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
 
-		return $param ? $modules[strtoupper($param)] : $modules;
+		return $param 
+			? (isset($modules[strtoupper($param)]) ? $modules[strtoupper($param)] : '')
+		 	: $modules;
 	}
 }
 

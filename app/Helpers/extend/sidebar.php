@@ -79,12 +79,6 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => (url_is('job-orders') || url_is('schedules') || url_is('dispatch')),
                 'icon'      => 'fas fa-users-cog',
             ],
-            'CLIENTS'       => [
-                'name'      => 'Clients',
-                // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential')),
-                'icon'      => 'fas fa-clipboard-list',
-            ],
             'INVENTORY'         => [
                 'name'      => 'Inventory',
                 // Level two urls (modules) - need to add ||/OR in every new module
@@ -119,19 +113,12 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('employees') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
             ],
-            'CUSTOMERS_COMMERCIAL'  => [
-                'menu'      => 'CLIENTS', // Leave empty if none
-                'name'      => get_modules('CUSTOMERS_COMMERCIAL'),
-                'url'       => url_to('customervt.home'),
-                'class'     => (url_is('customers/commercial') ? 'active' : ''),
+            'CUSTOMERS'  => [
+                'menu'      => '', // Leave empty if none
+                'name'      => get_modules('CUSTOMERS'),
+                'url'       => url_to('customer.home'),
+                'class'     => (url_is('clients') ? 'active' : ''),
                 'icon'      => 'far fa-address-card',
-            ],
-            'CUSTOMERS_RESIDENTIAL' => [
-                'menu'      => 'CLIENTS', // Leave empty if none
-                'name'      => get_modules('CUSTOMERS_RESIDENTIAL'),
-                'url'       => url_to('customersresidential.home'),
-                'class'     => (url_is('customers/residential') ? 'active' : ''),
-                'icon'      => 'far fa-address-book',
             ],
             'TASK_LEAD'             => [
                 'menu'      => 'SALES', // Leave empty if none

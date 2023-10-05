@@ -1,11 +1,9 @@
-<div class="modal fade" id="modal_branchcustomervt" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="customer_branch_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="form_branchcustomervt" class="with-label-indicator" action="<?= url_to('customervtbranch.save'); ?>" method="post" autocomplete="off">
+            <form id="customer_branch_form" class="with-label-indicator" action="<?= url_to('customer.branch.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="branch_id" name="id" readonly>
-                <input type="hidden" id="editBranch_url" value="<?= url_to('customervtbranch.edit') ?>">
-                <input type="hidden" id="removeBranch_url" value="<?= url_to('customervtbranch.delete') ?>">
                 <div class="modal-header">
                     <h5 class="modal-title">Add Client Branch</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -45,8 +43,8 @@
                                         <small id="alert_bemail_address" class="form-text text-danger"></small>
                                     </div>
                                     <div class="form-group">
-                                        <label class="required" for="bnotes">Notes</label>
-                                        <input type="text" class="form-control" name="notes" id="bnotes" placeholder="Enter here..." required>
+                                        <label for="bnotes">Notes</label>
+                                        <input type="text" class="form-control" name="notes" id="bnotes" placeholder="Enter here...">
                                         <small id="alert_bnotes" class="form-text text-danger"></small>
                                     </div>
                                 </div>
@@ -60,23 +58,23 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label class="required" for="baddress_province">Province</label>
-                                        <input type="text" class="form-control" name="address_province" id="baddress_province" placeholder="Enter here..." required>
-                                        <small id="alert_baddress_province" class="form-text text-danger"></small>
+                                        <input type="text" class="form-control" name="province" id="bprovince" placeholder="Enter here..." required>
+                                        <small id="alert_bprovince" class="form-text text-danger"></small>
                                     </div>
                                     <div class="form-group">
-                                        <label class="required" for="baddress_city">City</label>
-                                        <input type="text" class="form-control" name="address_city" id="baddress_city" placeholder="Enter here..." required>
-                                        <small id="alert_baddress_city" class="form-text text-danger"></small>
+                                        <label class="required" for="bcity">City</label>
+                                        <input type="text" class="form-control" name="city" id="bcity" placeholder="Enter here..." required>
+                                        <small id="alert_bcity" class="form-text text-danger"></small>
                                     </div>
                                     <div class="form-group">
-                                        <label class="required" for="baddress_brgy">Barangay</label>
-                                        <input type="text" class="form-control" name="address_brgy" id="baddress_brgy" placeholder="Enter here..." required>
-                                        <small id="alert_baddress_brgy" class="form-text text-danger"></small>
+                                        <label for="bbarangay">Barangay</label>
+                                        <input type="text" class="form-control" name="barangay" id="bbarangay" placeholder="Enter here..." >
+                                        <small id="alert_bbarangay" class="form-text text-danger"></small>
                                     </div>
                                     <div class="form-group">
-                                        <label class="required" for="baddress_sub">Sub Address</label>
-                                        <input type="text" class="form-control" name="address_sub" id="baddress_sub" placeholder="Enter here..." required>
-                                        <small id="alert_baddress_sub" class="form-text text-danger"></small>
+                                        <label class="required" for="bsubdivision">Subdivision Address</label>
+                                        <input type="text" class="form-control" name="subdivision" id="bsubdivision" placeholder="Enter here..." required>
+                                        <small id="alert_baddress_subdivision" class="form-text text-danger"></small>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +82,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary btn-close" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-success">Save Changes</button>
                 </div>
             </form>

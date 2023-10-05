@@ -85,43 +85,19 @@ $routes->group('employee', ['filter' => 'checkauth'], static function ($routes) 
 /* HUMAN RESOURCE */
 
 /* SALES */
-// CUSTOMERS - FORECAST
-// $routes->group('customers',['filter' => 'checkauth'], static function($routes) {
-//     $routes->get('/','Customers::index', ['as' => 'customers.home']);
-//     $routes->post('list','Customers::list',['as' => 'customers.list']);
-//     $routes->post('save','Customers::save',['as' => 'customers.save']);
-//     $routes->post('edit','Customers::edit',['as' => 'customers.edit']);
-//     $routes->post('delete','Customers::delete',['as' => 'customers.delete']);
-//     $routes->get('branch','Customers::branchCustomersList',['as' => 'customers.branchlist']);
-//     $routes->post('customerget','Customers::getCustomers',['as' => 'customersbranch.getcustomer']);
-//     $routes->post('saveBranch','Customers::saveBranch',['as' => 'customersbranch.save']);
-//     $routes->post('editBranch','Customers::editBranch',['as' => 'customersbranch.edit']);
-//     $routes->post('deleteBranch','Customers::deleteBranch',['as' => 'customersbranch.delete']);
-// });
-
-// CUSTOMERS VT 
-$routes->group('customers/commercial',['filter' => 'checkauth'],static function($routes){
-    $routes->get('/','CustomersVt::index', ['as' => 'customervt.home']);
-    $routes->post('list','CustomersVt::list',['as' => 'customervt.list']);
-    $routes->get('list','CustomersVt::list',['as' => 'customervt.listget']);
-    $routes->post('save','CustomersVt::save',['as' => 'customervt.save']);
-    $routes->post('edit','CustomersVt::edit',['as' => 'customervt.edit']);
-    $routes->post('delete','CustomersVt::delete',['as' => 'customervt.delete']);
-    $routes->get('branch','CustomersVt::branchCustomervtList',['as' => 'customervt.branchlist']);
-    $routes->post('customerget','CustomersVt::getCustomers',['as' => 'customervtbranch.getcustomer']);
-    $routes->post('saveBranch','CustomersVt::saveBranch',['as' => 'customervtbranch.save']);
-    $routes->post('editBranch','CustomersVt::editBranch',['as' => 'customervtbranch.edit']);
-    $routes->post('deleteBranch','CustomersVt::deleteBranch',['as' => 'customervtbranch.delete']);
-});
-
-// CUSTOMERS RESIDENTIAL
-$routes->group('customers/residential',['filter' => 'checkauth'],static function($routes){
-    $routes->get('/','CustomersResidential::index', ['as' => 'customersresidential.home']);
-    $routes->post('list','CustomersResidential::list',['as' => 'customersresidential.list']);
-    $routes->get('list','CustomersResidential::list',['as' => 'customersresidential.listget']);
-    $routes->post('save','CustomersResidential::save',['as' => 'customersresidential.save']);
-    $routes->post('edit','CustomersResidential::edit',['as' => 'customersresidential.edit']);
-    $routes->post('delete','CustomersResidential::delete',['as' => 'customersresidential.delete']);
+// CUSTOMERS
+$routes->group('clients', ['filter' => 'checkauth'], static function($routes) {
+    $routes->get('/','Clients\Customers::index', ['as' => 'customer.home']);
+    $routes->post('list','Clients\Customers::list',['as' => 'customer.list']);
+    $routes->post('save','Clients\Customers::save',['as' => 'customer.save']);
+    $routes->post('fetch','Clients\Customers::fetch',['as' => 'customer.fetch']);
+    $routes->post('delete','Clients\Customers::delete',['as' => 'customer.delete']);
+    
+    // BRANCH
+    $routes->post('branches','Clients\CustomerBranch::list',['as' => 'customer.branch.list']);
+    $routes->post('branches/save','Clients\CustomerBranch::save',['as' => 'customer.branch.save']);
+    $routes->post('branches/fetch','Clients\CustomerBranch::fetch',['as' => 'customer.branch.fetch']);
+    $routes->post('branches/delete','Clients\CustomerBranch::delete',['as' => 'customer.branch.delete']);
 });
 
 //Task Lead

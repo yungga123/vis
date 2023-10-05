@@ -331,3 +331,22 @@ if (! function_exists('set_rpf_status'))
         return $options[$param];
 	}
 }
+
+if (! function_exists('get_client_sources'))
+{
+    /**
+     * Get the sources for client module
+     */
+	function get_client_sources(string $param = ''): string|array
+	{
+        $options = [
+            'BNI REFERRAL'          => 'BNI REFERRAL',
+            'SOCIAL MEDIA'          => 'SOCIAL MEDIA',
+            'WALK IN'               => 'WALK IN',
+            'SATURATION'            => 'SATURATION',
+            'THIRD PARTY REFERRAL'  => 'THIRD PARTY REFERRAL',
+        ];
+
+        return $param ? $options[strtoupper($param)] : $options;
+	}
+}
