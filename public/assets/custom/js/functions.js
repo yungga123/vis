@@ -391,13 +391,7 @@ function formSubmit(
  * @param {string} type     - type of request method (GET, POST)
  * @param {object} options  - other options for the dataTable
  */
-function loadDataTable(
-	table,
-	route,
-	type = METHOD.GET,
-	options = {},
-	destroy = false
-) {
+function loadDataTable(table, route, type, options = {}, destroy = false) {
 	let columnDefs = [
 			inObject(options, "columnDefs")
 				? options.columnDefs
@@ -467,7 +461,7 @@ function loadDataTable(
 		serverSide: true,
 		ajax: {
 			url: route,
-			type: type.toUpperCase() !== METHOD.POST ? METHOD.GET : METHOD.POST,
+			type: type || METHOD.GET,
 			data: function (d) {
 				if (inObject(options, "params") && !isEmpty(options.params)) {
 					d.params = options.params;
@@ -484,8 +478,8 @@ function loadDataTable(
 			}
 		},
 		initComplete: function (settings, json) {
-			if ($(".dataTables_wrapper").parent().closest(".modal").length == 0)
-				$(".dataTables_wrapper").parent().addClass("p-0");
+			// if ($(".dataTables_wrapper").parent().closest(".modal").length == 0)
+			$(".dataTables_wrapper").parent().addClass("p-0");
 			$(".dataTables_wrapper .table").css({ width: "100%" });
 			$(".dataTables_length").addClass("mr-2");
 			$(".dataTables_filter input").removeClass("form-control-sm");
@@ -937,4 +931,93 @@ function strUpperWords(str) {
 /* Get the current date in "YYYY-MM-DD" format  */
 function currentDate() {
 	return new Date().toISOString().split("T")[0];
+}
+
+/**
+ * Add a query string in url
+ *
+ * @param {object} params		the params to add in the url
+ * @returns {void}
+ */
+function addQueryStringInUrl(params) {
+	// Get the current query string
+	const url = new URLSearchParams(window.location.search);
+
+	// Add or update query parameters
+	for (let key in params) {
+		url.set(key, params[key]);
+	}
+
+	// Reconstruct the URL with the updated query string
+	const updatedUrl = url.toString();
+
+	// Update the address bar URL without reloading the page
+	const newUrl = `${window.location.pathname}?${updatedUrl}`;
+	window.history.pushState({}, "", newUrl);
+}
+
+/**
+ * Get the query string in url
+ *
+ * @param {string} param		the specific param to return
+ * @returns {object|string}
+ */
+function getQueryStringInUrl(param) {
+	// Get the query string from the current URL
+	const queryString = window.location.search;
+
+	// Remove the leading '?' character if present
+	const queryStringWithoutQuestionMark = queryString.slice(1);
+
+	// Split the query string into an array of key-value pairs
+	const queryParams = queryStringWithoutQuestionMark.split("&");
+
+	// Create an object to store the parameters
+	const params = {};
+
+	// Iterate over the key-value pairs and populate the object
+	for (const param of queryParams) {
+		const [key, value] = param.split("=");
+		params[key] = decodeURIComponent(value);
+	}
+
+	// Now, return the params
+	return param ? params[param] : params;
+}
+
+/**
+ * Get the query string in url
+ *
+ * @param {array|string} params		the params to remove
+ * @returns {void}
+ */
+function removeQueryStringInUrl(params) {
+	// Get the current query string from the URL
+	const queryString = window.location.search;
+
+	// Create a URLSearchParams object from the query string
+	const searchParams = new URLSearchParams(queryString);
+
+	// Remove a specific query parameter
+	if (isArray(params)) {
+		for (let index = 0; index < params.length; index++) {
+			searchParams.delete(params[index]);
+		}
+	} else {
+		searchParams.delete(params);
+	}
+
+	// Generate the new query string
+	const newQueryString = searchParams.toString();
+
+	// Create a new URL with the updated query string
+	const newUrl = `${window.location.pathname}${
+		newQueryString ? `?${newQueryString}` : ""
+	}`;
+
+	// Update the URL without reloading the page
+	window.history.pushState({}, "", newUrl);
+
+	// Optionally, you can also update the address bar directly
+	// window.location.search = newQueryString;
 }
