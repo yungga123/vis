@@ -335,7 +335,7 @@ function appendCustomer(id, forecast) {
 				$("#customer_id").append(
 					$("<option>", {
 						value: value["id"],
-						text: value["id"] + " --- " + value["customer_name"],
+						text: value["id"] + " --- " + value["name"],
 					})
 				);
 			});
