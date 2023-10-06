@@ -4,8 +4,7 @@ namespace App\Traits;
 
 use App\Models\TaskLeadView;
 use App\Models\ScheduleModel;
-use App\Models\CustomersVtModel as ClientCommercial;
-use App\Models\CustomersResidentialModel as ClientResidential;
+use App\Models\CustomerModel;
 
 trait AdminTrait
 {
@@ -164,20 +163,20 @@ trait AdminTrait
      */
     public function fetchCustomers($q, $options = [], $fields = '')
     {
-        if ($options['customer_type'] === 'residential') $model = new ClientResidential();
-        else $model = new ClientCommercial();
-
-        $fields = $fields ? $fields : 'id, customer_name AS text';
+        $model  = new CustomerModel();
+        $type   = strtoupper($options['customer_type']);
+        $fields = $fields ? $fields : 'id, name AS text';
 
         $model->select($fields);
+        $model->where('type', $type);
 
         if (! empty($q)) {
             if (empty($options)) return $model->find($q);
 
-            $model->like('LOWER(customer_name)', strtolower($q));
+            $model->like('LOWER(name)', strtolower($q));
         }
 
-        $model->orderBy('customer_name', 'ASC');
+        $model->orderBy('name', 'ASC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total  = $model->countAllResults();
 

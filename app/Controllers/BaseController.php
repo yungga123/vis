@@ -208,10 +208,6 @@ abstract class BaseController extends Controller
      * The custom try catch function for handling error
      * 
      * @param array $data           The $data variable from the parent method
-     * @param function $callback    The callback function where the logic is
-     * The custom try catch function for handling error
-     * 
-     * @param array $data           The $data variable from the parent method
      * @param function $callback    The callback function where logic is
      * @param bool $dbTrans         [Optional - default true] The identifier if will use db transactions
      * @return array                The passed/response $data variable

@@ -18,7 +18,7 @@
 						<tbody>
 							<tr>
 								<td width="20%" style="font-weight: bold">Client Name</td>
-								<td width="80%"><?= $dispatch['customer_id'].' --- '.$dispatch['customer'] ?></td>
+								<td width="80%"><?= $dispatch['customer_id'].' --- '.$dispatch['customer_name'] ?></td>
 							</tr>
 							<tr>
 								<td width="20%" style="font-weight: bold">Contact Person</td>

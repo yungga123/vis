@@ -128,7 +128,8 @@ class CustomerBranch extends BaseController
                     $data['message']    = 'Customer Branch has been updated successfully!';
                 }
                 return $data;
-            }
+            },
+            true
         );
 
         return $response;
@@ -178,7 +179,8 @@ class CustomerBranch extends BaseController
                     $data['message']    = "Validation error!";
                 }
                 return $data;
-            }
+            },
+            true
         );
 
         return $response;

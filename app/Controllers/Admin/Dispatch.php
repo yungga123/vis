@@ -101,7 +101,6 @@ class Dispatch extends BaseController
         $table->setTable($builder)
             ->setSearch([
                 'title',
-                'customer',
                 'technicians',
                 'service_type',
                 'sr_number',
@@ -113,7 +112,7 @@ class Dispatch extends BaseController
                 'id',
                 'schedule_id',
                 'schedule',
-                'customer',
+                'customer_name',
                 'dispatch_date',
                 'dispatch_out',
                 'time_in',
@@ -132,7 +131,7 @@ class Dispatch extends BaseController
                 'id',
                 'schedule_id',
                 'schedule',
-                'customer',
+                'customer_name',
                 'dispatch_date',
                 'dispatch_out',
                 'time_in',
@@ -157,66 +156,57 @@ class Dispatch extends BaseController
      */
     public function save() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Dispatch has been added successfully!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id     = $this->request->getVar('id');
+                $inputs = [
+                    'schedule_id'   => $this->request->getVar('schedule_id'),
+                    'customer_id'   => $this->request->getVar('customer_id'),
+                    'customer_type' => $this->request->getVar('customer_type'),
+                    'sr_number'     => $this->request->getVar('sr_number'),
+                    'dispatch_date' => $this->request->getVar('dispatch_date'),
+                    'dispatch_out'  => $this->request->getVar('dispatch_out'),
+                    'time_in'       => $this->request->getVar('time_in'),
+                    'time_out'      => $this->request->getVar('time_out'),
+                    'remarks'       => $this->request->getVar('remarks'),
+                    'service_type'  => $this->request->getVar('service_type'),
+                    'comments'      => $this->request->getVar('comments'),
+                    'with_permit'   => $this->request->getVar('with_permit'),
+                    'technicians'   => $this->request->getVar('technicians'),
+                    'checked_by'    => $this->request->getVar('checked_by'),
+                    'created_by'    => session('username'),
+                ];
 
-        // Using DB Transaction
-        $this->transBegin();
+                if (! empty($id)) {
+                    $inputs['id']       = $id;
+                    $data['message']    = 'Dispatch has been updated successfully!';
 
-        try {
-            $id     = $this->request->getVar('id');
-            $inputs = [
-                'schedule_id'   => $this->request->getVar('schedule_id'),
-                'customer_id'   => $this->request->getVar('customer_id'),
-                'customer_type' => $this->request->getVar('customer_type'),
-                'sr_number'     => $this->request->getVar('sr_number'),
-                'dispatch_date' => $this->request->getVar('dispatch_date'),
-                'dispatch_out'  => $this->request->getVar('dispatch_out'),
-                'time_in'       => $this->request->getVar('time_in'),
-                'time_out'      => $this->request->getVar('time_out'),
-                'remarks'       => $this->request->getVar('remarks'),
-                'service_type'  => $this->request->getVar('service_type'),
-                'comments'      => $this->request->getVar('comments'),
-                'with_permit'   => $this->request->getVar('with_permit'),
-                'technicians'   => $this->request->getVar('technicians'),
-                'checked_by'    => $this->request->getVar('checked_by'),
-                'created_by'    => session('username'),
-            ];
+                    unset($inputs['created_by']);
+                } 
+                
+                if (! $this->_model->save($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                } else {
+                    $dispatch_id    = !empty($id) ? $id : $this->_model->insertID();
+                    $dTModel        = new DispatchedTechniciansModel();
+                    $dTModel->saveDispatchedTechnicians(
+                        $dispatch_id,
+                        $this->request->getVar('technicians')
+                    );
+                }
+                return $data;
+            },
+            true
+        );
 
-            if (! empty($id)) {
-                $inputs['id']       = $id;
-                $data['message']    = 'Dispatch has been updated successfully!';
-
-                unset($inputs['created_by']);
-            } 
-            
-            if (! $this->_model->save($inputs)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            } else {
-                $dispatch_id    = !empty($id) ? $id : $this->_model->insertID();
-                $dTModel        = new DispatchedTechniciansModel();
-                $dTModel->saveDispatchedTechnicians(
-                    $dispatch_id,
-                    $this->request->getVar('technicians')
-                );
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
     
     /**
@@ -226,24 +216,24 @@ class Dispatch extends BaseController
      */
     public function fetch() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Dispatch has been retrieved!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id         = $this->request->getVar('id');
+                $dTModel    = new DispatchedTechniciansModel();
 
-        try {
-            $id         = $this->request->getVar('id');
-            $dTModel    = new DispatchedTechniciansModel();
+                $data['data']                   = $this->_model->getDispatch($id, false, true, true);
+                $data['data']['technicians']    = $dTModel->getDispatchedTechnicians($id);
+                
+                return $data;
+            }
+        );
 
-            $data['data']                   = $this->_model->getDispatch($id, false, true);
-            $data['data']['technicians']    = $dTModel->getDispatchedTechnicians($id);
-        } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -253,37 +243,29 @@ class Dispatch extends BaseController
      */
     public function delete() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Dispatch has been deleted successfully!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id = $this->request->getVar('id');
 
-        // Using DB Transaction
-        $this->transBegin();
+                if (! $this->_model->delete($id)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                } else {
+                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
+                }
 
-        try {
-            $id = $this->request->getVar('id');
+                return $data;
+            },
+            true
+        );
 
-            if (! $this->_model->delete($id)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            } else {
-                log_message('error', 'Deleted by {username}', ['username' => session('username')]);
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
