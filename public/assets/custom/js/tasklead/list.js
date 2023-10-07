@@ -51,6 +51,11 @@ $(document).ready(function () {
 
 		$("#status").val("10.00");
 		$(".status_text").val("10% -- Identified");
+		$("option[value='10.00']","#change_tasklead").attr('disabled', true);
+		$("option[value='30.00']","#change_tasklead").attr('disabled', true);
+		$("option[value='50.00']","#change_tasklead").attr('disabled', true);
+		$("option[value='70.00']","#change_tasklead").attr('disabled', true);
+		$("option[value='90.00']","#change_tasklead").attr('disabled', true);
 
 		clearAlertInForm(elems);
 	});
@@ -122,20 +127,29 @@ $(document).ready(function () {
 
 	$("#quotation_type").on("change", function () {
 		$("#quotation_num").val(
-			$(this).val() + $("#get_quotation_num").val() + $("#tasklead_id").val()
+			$(this).val() + $("#get_quotation_num").val() + $("#tasklead_id").val() + $("#quotation_color").val()
 		);
 		$('#tasklead_type').val($('#quotation_type option:selected').text());
+	});
+
+	$("#quotation_color").on("change", function () {
+		$("#quotation_num").val(
+			$("#quotation_type").val() + $("#get_quotation_num").val() + $("#tasklead_id").val() + $(this).val()
+		);
+		$('#tasklead_type').val($('#quotation_color option:selected').text());
 	});
 
 	$("#change_tasklead").on("change", function () {
 		hideElements();
 		$("#quotation_type").attr("required", false);
+		$("#quotation_color").attr("required", false);
 		if ($(this).val() == "10.00") {
 			$("#status").val("10.00");
 			$(".tasklead").prepend(
 				"<p>You are updating this lead to IDENTIFIED(10%). Press Save to update.</p>"
 			);
 			$(`#${modal} .modal-title`).text("Update tasklead to IDENTIFIED(10%)");
+			
 		}
 
 		if ($(this).val() == "30.00") {
@@ -147,6 +161,7 @@ $(document).ready(function () {
 
 		if ($(this).val() == "50.00") {
 			$("#quotation_type").attr("required", true);
+			$("#quotation_color").attr("required", true);
 			$(".quotation_num").attr("hidden", false);
 
 			$(".remark_next_step").attr("hidden", false);
@@ -194,6 +209,7 @@ function edit(id) {
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					hideElements();
+					$('#change_tasklead').val("");
 					$("#quotation_type").attr("required", false);
 					$.each(res.data, (key, value) => {
 						if (value == "0000-00-00" || value == "0.00") {
@@ -233,10 +249,16 @@ function edit(id) {
 							$(`#${modal} .modal-title`).text(
 								"Update tasklead to QUALIFIED(30%)"
 							);
+							$("option[value='10.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='30.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='50.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='70.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='90.00']","#change_tasklead").attr('disabled', true);
 						}
 
 						if (key == "status" && value == "30.00") {
 							$("#quotation_type").attr("required", true);
+							$("#quotation_color").attr("required", true);
 							$(".quotation_num").attr("hidden", false);
 
 							$(".remark_next_step").attr("hidden", false);
@@ -244,6 +266,11 @@ function edit(id) {
 							$(`#${modal} .modal-title`).text(
 								"Update tasklead to DEVELOPED SOLUTION(50%)"
 							);
+							$("option[value='10.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='30.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='50.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='70.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='90.00']","#change_tasklead").attr('disabled', true);
 						}
 
 						if (key == "status" && value == "50.00") {
@@ -254,6 +281,11 @@ function edit(id) {
 							$(`#${modal} .modal-title`).text(
 								"Update tasklead to EVALUATION(70%)"
 							);
+							$("option[value='10.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='30.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='50.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='70.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='90.00']","#change_tasklead").attr('disabled', true);
 						}
 
 						if (key == "status" && value == "70.00") {
@@ -263,6 +295,11 @@ function edit(id) {
 							$(`#${modal} .modal-title`).text(
 								"Update tasklead to NEGOTIATION(90%)"
 							);
+							$("option[value='10.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='30.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='50.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='70.00']","#change_tasklead").attr('disabled', true);
+							$("option[value='90.00']","#change_tasklead").attr('disabled', true);
 						}
 
 						if (key == "status" && value == "90.00") {
@@ -274,6 +311,11 @@ function edit(id) {
 							$(`#${modal} .modal-title`).text(
 								"Update tasklead to BOOKED(100%)"
 							);
+							$("option[value='10.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='30.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='50.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='70.00']","#change_tasklead").attr('disabled', false);
+							$("option[value='90.00']","#change_tasklead").attr('disabled', true);
 						}
 					});
 
