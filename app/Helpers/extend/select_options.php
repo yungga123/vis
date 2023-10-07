@@ -143,6 +143,25 @@ if (! function_exists('get_quotation_type'))
 	}
 }
 
+if (! function_exists('get_quotation_color'))
+{
+    /**
+     * Get tasklead quotation type of Tasklead module
+     */
+	function get_quotation_color(string $param = ''): string|array
+	{
+        $options = [
+            'B' => 'Blue',
+            'G' => 'Green',
+            'Y' => 'Yellow',
+            'O' => 'Orange',
+            'R' => 'Red',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
+
 if (! function_exists('get_schedule_type'))
 {
     /**

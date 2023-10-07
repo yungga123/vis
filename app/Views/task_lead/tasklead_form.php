@@ -85,6 +85,13 @@
                                         <option value="<?= $val ?>"><?= $text ?></option>
                                     <?php endforeach; ?>
                                 </select>
+
+                                <select class="form-control mt-2" id="quotation_color">
+                                    <option value="">--Select Quotation Color---</option>
+                                    <?php foreach (get_quotation_color() as $val => $text): ?>
+                                        <option value="<?= $val ?>"><?= $text ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                                 <input type="text" name="quotation_num" id="quotation_num" class="form-control mt-2" placeholder="Enter..." readonly>
                                 <input type="hidden" name="tasklead_type" id="tasklead_type" class="form-control" placeholder="Enter..." readonly>
                                 <small id="alert_quotation_num" class="text-danger"></small>

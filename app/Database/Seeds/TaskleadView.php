@@ -25,9 +25,9 @@ class TaskleadView extends Seeder
             status_percent,
             customer_type,
             existing_customer,
-            IF(customer_type='Commercial',customers_vt.customer_name,customers_residential.customer_name) as customer_name,
+            customers.name as customer_name,
             branch_name,
-            customers_vt.contact_number as contact_number,
+            customers.contact_number as contact_number,
             project,
             project_amount,
             quotation_num,
@@ -44,13 +44,9 @@ class TaskleadView extends Seeder
         FROM 
             tasklead
         LEFT JOIN
-            customers_vt
+            customers
         ON
-            tasklead.customer_id=customers_vt.id
-        LEFT JOIN
-            customers_residential
-        ON
-            tasklead.customer_id=customers_residential.id
+            tasklead.customer_id=customers.id
         LEFT JOIN
             tasklead_status
         ON
