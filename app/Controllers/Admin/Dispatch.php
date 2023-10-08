@@ -64,7 +64,7 @@ class Dispatch extends BaseController
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['moment']         = true;
-        $data['custom_js']      = 'admin/dispatch/index.js';
+        $data['custom_js']      = ['admin/dispatch/index.js', 'admin/common.js'];
         $data['routes']         = json_encode([
             'dispatch' => [
                 'list'      => url_to('dispatch.list'),

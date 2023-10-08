@@ -54,11 +54,7 @@ $(document).ready(function () {
 
 	/* Initial init of customers (commerical) via ajax data source */
 	initSelect2Customers();
-	$('input[name="customer_type"]').on("change", function () {
-		/* Change customers display based on 
-		checked type (commerical or residential) */
-		initSelect2Customers($(this).val());
-	});
+	onChangeCustomerType();
 
 	/* Initialize select2 employees/technicians */
 	select2Init("#technicians", "Select technicians", $technicians);
@@ -211,22 +207,6 @@ function loadScheduleDetails(data) {
 
 	$("#schedule_id").val(id);
 	$(".schedule-details").html(html);
-}
-
-/* Customers select2 via ajax data source */
-function initSelect2Customers(customer_type) {
-	const options = {
-		customer_type: customer_type || "commercial",
-	};
-
-	select2AjaxInit(
-		"#customer_id",
-		"Select a client",
-		router.admin.common.customers,
-		"text",
-		null,
-		options
-	);
 }
 
 /* Set select2 technicians */
