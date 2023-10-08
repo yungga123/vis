@@ -168,7 +168,7 @@ class JobOrderModel extends Model
         if ($with_text) {
             $columns .= ", 
                 {$this->table}.id,
-                CONCAT({$this->table}.id, ' | ', IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation) AS quotation, ' | ',  IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client) AS option_text
+                CONCAT({$this->table}.id, ' | ', IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation), ' | ', IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name)) AS option_text
             ";
         }
 
