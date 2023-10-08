@@ -201,7 +201,7 @@ function edit(id) {
 					clearSelect2Selection("#customer_id");
 				} else {
 					$("#is_manual").prop("checked", true);
-					$("#" + res.data.customer_type).prop("checked", true);
+					$("#" + strLower(res.data.customer_type)).prop("checked", true);
 					setSelect2AjaxSelection(
 						"#customer_id",
 						res.data.client,

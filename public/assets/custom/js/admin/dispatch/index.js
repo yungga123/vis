@@ -120,7 +120,7 @@ function edit(id) {
 				// Set selected technicians in select2
 				initSelect2Customers(strLower(res.data.customer_type));
 				setSelect2Technicians(res.data.technicians);
-				$("#" + res.data.customer_type).prop("checked", true);
+				$("#" + strLower(res.data.customer_type)).prop("checked", true);
 
 				// Set selected employee/checked by in select2
 				setSelect2Selection("#checked_by", res.data.checked_by);
