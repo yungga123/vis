@@ -99,7 +99,11 @@ class ProjectRequestForm extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'work_type',
+                'job_orders.work_type',
+                'job_orders.manual_quotation',
+                'task_lead_booked.quotation_num',
+                'task_lead_booked.customer_name',
+                'customers.name',
             ])
             ->setOrder([
                 null,

@@ -32,6 +32,6 @@ class ModifyJobOrdersTable extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn(self::TABLE, ['is_manual', 'manual_quotation']);
+        $this->forge->dropColumn(self::TABLE, ['customer_id', 'is_manual', 'manual_quotation']);
     }
 }

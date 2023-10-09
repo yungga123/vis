@@ -12,6 +12,7 @@ $(document).ready(function () {
 		"date_reported",
 		"date_committed",
 		"warranty",
+		"manual_quotation",
 	];
 
 	/* Filters */
@@ -40,6 +41,8 @@ $(document).ready(function () {
 		$("#job_order_id").val("");
 		$("#orig_qn").addClass("d-none");
 
+		clearSelect2Selection("#customer_id");
+		toggleQuotationFields(is_manual);
 		clearAlertInForm(elems);
 	});
 
@@ -47,7 +50,7 @@ $(document).ready(function () {
 		if (e.target.checked) {
 			is_manual = true;
 			toggleQuotationFields(is_manual);
-			if (!isSelect2Initialized("#customer_id")) initSelect2Customers();
+			initSelect2Customers("commercial");
 			return;
 		}
 
@@ -56,6 +59,14 @@ $(document).ready(function () {
 
 	/* Initial init of customers (commerical) via ajax data source */
 	onChangeCustomerType();
+	$("#customer_id").on("select2:select", function () {
+		$("#client_branch_wrapper").addClass("d-none");
+		const customer_type = $('input[name="customer_type"]:checked').val();
+		if (customer_type === "commercial") {
+			initSelect2CustomerBranches($(this).val());
+			$("#client_branch_wrapper").removeClass("d-none");
+		}
+	});
 
 	/* Initialize employee_id select2 */
 	select2Init("#employee_id_status", "Select person incharge");
@@ -209,6 +220,17 @@ function edit(id) {
 					);
 					initSelect2Customers(strLower(res.data.customer_type));
 					clearSelect2Selection("#select2Quotation");
+
+					$("#client_branch_wrapper").addClass("d-none");
+					if (strLower(res.data.customer_type) === "commercial") {
+						setTimeout(() => {
+							setSelect2Selection(
+								"#customer_branch_id",
+								res.data.customer_branch_id
+							);
+						}, 500);
+						$("#client_branch_wrapper").removeClass("d-none");
+					}
 				}
 
 				toggleQuotationFields(!isNotManual);
@@ -331,6 +353,22 @@ function initSelect2Filters(id, options) {
 		allowClear: true,
 		width: "100%",
 	});
+}
+
+/* Initialize select2 customer branches */
+function initSelect2CustomerBranches(customer_id) {
+	const options = {
+		options: {
+			not_select2_ajax: true,
+			customer_id: customer_id,
+		},
+	};
+	/* Get customer branches via ajax post */
+	$.post(router.admin.common.customer_branches, options)
+		.then((res) => {
+			select2Reinit("#customer_branch_id", "Please select a branch.", res.data);
+		})
+		.catch((err) => catchErrMsg(err));
 }
 
 /* Toggle (hide or show) default or manual quotation */

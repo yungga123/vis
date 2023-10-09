@@ -12,6 +12,7 @@ class JobOrderModel extends Model
     protected $tableJoined      = 'task_lead_booked';
     protected $tableEmployees   = 'employees';
     protected $tableCustomers   = 'customers';
+    protected $tableCustomerBranches   = 'customer_branches';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -33,6 +34,7 @@ class JobOrderModel extends Model
         'is_manual',
         'manual_quotation',
         'customer_id',
+        'customer_branch_id',
     ];
 
     // Dates
@@ -112,8 +114,6 @@ class JobOrderModel extends Model
             {$this->table}.status,
             IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation) AS quotation,
             IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, 'N/A') AS tasklead_type,
-            IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client,
-            IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_type, {$this->tableCustomers}.type) AS customer_type,
             CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager,
             {$this->tableEmployees}.firstname,
             {$this->tableEmployees}.lastname,
@@ -124,6 +124,10 @@ class JobOrderModel extends Model
             {$this->table}.is_manual,
             {$this->table}.manual_quotation,
             {$this->table}.customer_id,
+            {$this->table}.customer_branch_id,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_type, {$this->tableCustomers}.type) AS customer_type,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.branch_name, {$this->tableCustomerBranches}.branch_name) AS customer_branch_name,
             {$this->table}.created_by
         ";
         $dates = "
@@ -189,6 +193,7 @@ class JobOrderModel extends Model
     {
         $builder->join($this->tableJoined, "{$this->table}.tasklead_id = {$this->tableJoined}.id", 'left');
         $builder->join($this->tableCustomers, "{$this->table}.customer_id = {$this->tableCustomers}.id", 'left');
+        $builder->join($this->tableCustomerBranches, "({$this->table}.customer_branch_id = {$this->tableCustomerBranches}.id AND {$this->table}.customer_branch_id IS NOT NULL)", 'left');
         $builder->join($this->tableEmployees, "{$this->table}.employee_id = {$this->tableEmployees}.employee_id", 'left');
         $builder->where("{$this->table}.deleted_at IS NULL");
     }
@@ -200,6 +205,8 @@ class JobOrderModel extends Model
         $builder = $this->select($columns);
 
         if ($join) $this->_join($builder);
+        else $builder->where("{$this->table}.deleted_at IS NULL");
+
         return $id ? $builder->find($id) : $builder->findAll();
     }
 

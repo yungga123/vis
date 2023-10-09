@@ -100,12 +100,13 @@ class Dispatch extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'title',
-                'technicians',
-                'service_type',
-                'sr_number',
-                'dispatched_by',
-                'checked_by_name',
+                "{$this->_model->tableSchedules}.title",
+                "{$this->_model->view}.technicians",
+                "{$this->_model->table}.service_type",
+                "{$this->_model->table}.sr_number",
+                "{$this->_model->view}.dispatched_by",
+                "{$this->_model->view}.checked_by_name",
+                "{$this->_model->customersTable}.name",
             ])
             ->setOrder([
                 null,

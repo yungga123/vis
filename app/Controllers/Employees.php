@@ -82,14 +82,11 @@ class Employees extends BaseController
             ->setSearch([
                 "employee_id", 
                 "employee_name", 
-                "address", 
                 "gender", 
                 "civil_status", 
-                "date_of_birth", 
                 "place_of_birth", 
                 "position", 
                 "employment_status", 
-                "date_hired", 
                 "contact_number", 
                 "email_address", 
                 "sss_no", 
@@ -97,13 +94,7 @@ class Employees extends BaseController
                 "philhealth_no", 
                 "pag_ibig_no", 
                 "educational_attainment", 
-                "course", "emergency_name", 
-                "emergency_contact_no", 
-                "emergency_address", 
-                "name_of_spouse", 
-                "spouse_contact_no", 
-                "no_of_children", 
-                "spouse_address"
+                "course",
             ])
             ->setOrder([
                 null,

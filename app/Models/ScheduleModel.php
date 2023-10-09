@@ -69,6 +69,8 @@ class ScheduleModel extends Model
     public function getSchedules($id = false, $columns = '*')
     {
         $builder = $this->select($columns);
+        $builder->where("{$this->table}.deleted_at IS NULL");
+        
         return $id ? $builder->find($id) : $builder->findAll();
     }
 
@@ -78,6 +80,8 @@ class ScheduleModel extends Model
         $where      = "(start BETWEEN '".date("Y-m-d")." 00:00:00' AND '".date("Y-m-d")." 23:59:59') OR '".date("Y-m-d")." 00:00:00' BETWEEN start AND end";
         $builder    = $this->select('title, description, type, start, end');
         $builder->where($where);
+        $builder->where("{$this->table}.deleted_at IS NULL");
+
         return $builder->findAll();
     }
 }

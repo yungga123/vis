@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\TaskLeadView;
 use App\Models\ScheduleModel;
 use App\Models\CustomerModel;
+use App\Models\CustomerBranchModel;
 
 trait AdminTrait
 {
@@ -134,6 +135,7 @@ trait AdminTrait
         $fields = $fields ? $fields : 'id, title, description, type, start, end';
 
         $model->select($fields);
+        $model->where("{$model->table}.deleted_at IS NULL");
 
         if (! empty($q)) {
             if (empty($options)) return $model->find($q);
@@ -154,7 +156,7 @@ trait AdminTrait
     }
 
     /**
-     * Get the current schedules
+     * Fetch customers
      * 
      * @param string $q         The query to search for
      * @param string $options   Identifier for the options - pagination or not
@@ -165,10 +167,13 @@ trait AdminTrait
     {
         $model  = new CustomerModel();
         $type   = strtoupper($options['customer_type']);
-        $fields = $fields ? $fields : 'id, name AS text';
+        $fields = $fields ? $fields : "{$model->table}.id, {$model->table}.name AS text";
+        // $fields = $fields ? $fields : "{$model->table}.id, {$model->table}.name AS text, IF(cb.branch_name IS NULL, '', 'YES') AS have_branches";
 
         $model->select($fields);
+        $model->join('customer_branches AS cb', "cb.customer_id = {$model->table}.id", 'left');
         $model->where('type', $type);
+        $model->where("{$model->table}.deleted_at IS NULL");
 
         if (! empty($q)) {
             if (empty($options)) return $model->find($q);
@@ -176,7 +181,45 @@ trait AdminTrait
             $model->like('LOWER(name)', strtolower($q));
         }
 
+        $model->groupBy("{$model->table}.id, {$model->table}.name");
         $model->orderBy('name', 'ASC');
+        $result = $model->paginate($options['perPage'], 'default', $options['page']);
+        $total  = $model->countAllResults();
+
+        return [
+            'data'  => $result,
+            'total' => $total
+        ];
+    }
+
+    /**
+     * Fetch customer branches either all or via customer id
+     * 
+     * @param string $q         The query to search for
+     * @param string $options   Identifier for the options - pagination or not
+     * @param string $fields    Columns or fields in the select
+     * @return array            The results of the search
+     */
+    public function fetchCustomerBranches($q, $options = [], $fields = '')
+    {
+        $model  = new CustomerBranchModel();
+        $fields = $fields ? $fields : 'id, branch_name AS text';
+
+        $model->select($fields);
+        $model->where('customer_id', $options['customer_id']);
+        $model->where('deleted_at IS NULL');
+
+        if (isset($options['not_select2_ajax'])) {
+            return json_encode(['data' => $model->findAll()]);
+        }
+
+        if (! empty($q)) {
+            if (empty($options)) return $model->find($q);
+
+            $model->like('LOWER(branch_name)', strtolower($q));
+        }
+        
+        $model->orderBy('branch_name', 'ASC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total  = $model->countAllResults();
 

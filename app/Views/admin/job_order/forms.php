@@ -60,6 +60,11 @@
                                 <select class="custom-select" id="customer_id" name="customer_id" style="width: 100%;"></select>
                                 <small id="alert_customer_id" class="text-danger"></small>
                             </div>
+                            <div class="form-group d-none" id="client_branch_wrapper">
+                                <label for="customer_branch_id">Client Branch</label>
+                                <select class="custom-select" id="customer_branch_id" name="customer_branch_id" style="width: 100%;"></select>
+                                <small id="alert_customer_branch_id" class="text-danger"></small>
+                            </div>
                         </div>
                     </div>
                     <div class="row">

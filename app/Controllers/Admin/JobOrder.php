@@ -73,8 +73,9 @@ class JobOrder extends BaseController
             ],
             'admin' => [
                 'common' => [
-                    'quotations' => url_to('admin.common.quotations'),
-                    'customers' => url_to('admin.common.customers'),
+                    'quotations'        => url_to('admin.common.quotations'),
+                    'customers'         => url_to('admin.common.customers'),
+                    'customer_branches' => url_to('admin.common.customer.branches'),
                 ]
             ]
         ]);
@@ -100,12 +101,14 @@ class JobOrder extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'quotation_num',
-                'tasklead_type',
-                'customer_name',
-                'firstname',
-                'lastname',
-                'work_type',
+                "{$this->_model->tableEmployees}.firstname",
+                "{$this->_model->tableEmployees}.lastname",
+                "{$this->_model->tableJoined}.customer_name",
+                "{$this->_model->tableCustomers}.name",
+                "{$this->_model->tableJoined}.quotation_num",
+                "{$this->_model->table}.manual_quotation",
+                "{$this->_model->tableCustomerBranches}.branch_name",
+                "{$this->_model->tableJoined}.branch_name",
             ])
             ->setOrder([
                 null,
@@ -115,6 +118,7 @@ class JobOrder extends BaseController
                 'quotation',
                 'tasklead_type',
                 'client',
+                'customer_branch_name',
                 'manager',
                 'work_type',
                 'date_requested',
@@ -132,6 +136,7 @@ class JobOrder extends BaseController
                 'quotation',
                 'tasklead_type',
                 'client',
+                'customer_branch_name',
                 'manager',
                 'work_type',
                 'date_requested',
@@ -141,7 +146,6 @@ class JobOrder extends BaseController
                 'comments',
                 'remarks',
             ]);
-        log_message('error', $builder->getCompiledSelect());
 
         return $table->getDatatable();
     }
@@ -178,6 +182,7 @@ class JobOrder extends BaseController
                     'is_manual'         => isset($is_manual),
                     'manual_quotation'  => isset($is_manual) ? $this->request->getVar('manual_quotation') : null,
                     'customer_id'       => $is_manual ? $this->request->getVar('customer_id') : null,
+                    'customer_branch_id' => $is_manual ?$this->request->getVar('customer_branch_id') : null,
                     'created_by'        => session('username'),
                 ];
     
@@ -233,6 +238,7 @@ class JobOrder extends BaseController
                 }   
 
                 $data['data']   = $record;
+
                 return $data;
             }
         );

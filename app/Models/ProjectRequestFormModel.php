@@ -210,14 +210,6 @@ class ProjectRequestFormModel extends Model
         $this->joinView($builder);
         $this->joinJobOrder($builder);
 
-        if (isset($request['search']['value']) && !empty($request['search']['value'])) {
-            $search = $request['search']['value'];
-            $builder->like('task_lead_booked.quotation_num', $search);
-            $builder->orLike('job_orders.manual_quotation', $search);
-            $builder->orLike('task_lead_booked.customer_name', $search);
-            $builder->orLike('customers.name', $search);
-        }
-
         $builder->where("{$this->table}.deleted_at", null);
         $builder->orderBy('id', 'DESC');
 

@@ -57,4 +57,20 @@ class Common extends BaseController
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
         }
     }
+
+    /* Search customer branches by id or branch_name */
+    public function searchCustomerBranches()
+    {
+        try {
+            $options    = $this->request->getVar('options') ?? [];
+            $result     = $this->fetchCustomerBranches(
+                $this->request->getVar('q'),
+                $options
+            );
+            
+            return $this->response->setJSON($result);
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+        }
+    }
 }

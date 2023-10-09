@@ -630,11 +630,11 @@ function select2AjaxInit(
  */
 function select2Reinit(select, placeholder, newData) {
 	$(select).html("");
-	$(select).select2("destroy");
+	if (isSelect2Initialized(select)) $(select).select2("destroy");
 
 	select2Init(select, placeholder, newData);
 
-	$(select).trigger("change");
+	$(select).val("").trigger("change");
 }
 
 /* Check if select2 was initialized */
