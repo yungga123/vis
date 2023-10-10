@@ -76,6 +76,7 @@ class Dashboard extends BaseController
                                 $bg         = isset($value['bg']) ? $value['bg'] : 'info';
                                 $icon       = isset($value['icon']) ? $value['icon'] : $module['icon'];
                                 $text       = ucwords(str_replace('_', ' ', $key));
+                                $text       = isset($value['link']) ? "<a href='{$value['link']}'>{$text}</a>" : $text;
                                 $more_info  .= <<<EOF
                                     <div class="info-box text-dark">
                                         <span class="info-box-icon bg-{$bg}">
@@ -338,9 +339,9 @@ class Dashboard extends BaseController
                         'count' => $taskLeadModel->countRecords('90'),
                     ],
                     'booked (100%)' => [
-                        'icon'  => 'fas fa-check-double',
                         'count' => $taskLeadBookedCount,
                         'bg'    => 'success',
+                        'link'  => url_to('tasklead.booked.home'),
                     ],
                 ]
             ],
