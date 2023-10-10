@@ -118,26 +118,26 @@ class CustomerModel extends Model
         $columns = "
             {$this->table}.id,
             {$this->table}.name,
-            province,
-            city,
-            barangay,
-            subdivision,
-            contact_person,
-            contact_number,
-            email_address,
-            type,
-            forecast,
-            IF(forecast = 0, 'NO', 'YES') AS new_client,
-            source, 
-            notes,
-            referred_by
+            {$this->table}.province,
+            {$this->table}.city,
+            {$this->table}.barangay,
+            {$this->table}.subdivision,
+            {$this->table}.contact_person,
+            {$this->table}.contact_number,
+            {$this->table}.email_address,
+            {$this->table}.type,
+            {$this->table}.forecast,
+            IF({$this->table}.forecast = 0, 'NO', 'YES') AS new_client,
+            {$this->table}.source, 
+            {$this->table}.notes,
+            {$this->table}.referred_by
         ";
 
         if ($dtTable) {
             $addressConcat = $this->customerAddressQueryConcat();
             $columns .= ",
                 {$addressConcat},
-                DATE_FORMAT(created_at, '%b %e, %Y') AS created_at,
+                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y') AS created_at,
                 {$this->accountsView}.employee_name AS created_by
             ";
         }
