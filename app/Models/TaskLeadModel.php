@@ -94,6 +94,15 @@ class TaskLeadModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    public function countRecords($param = null)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if (! $param) return $builder->countAllResults();
+        return $builder->where('status', strtolower($param))->countAllResults();
+        
+    }
+
     public function noticeTable()
     {
         $booked     = '100.00%';

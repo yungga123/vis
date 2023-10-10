@@ -187,6 +187,15 @@ class JobOrderModel extends Model
 
         return $columns;
     }
+
+    public function countRecords($param = null)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if (! $param) return $builder->countAllResults();
+        return $builder->where('status', strtolower($param))->countAllResults();
+        
+    }
     
     // Join job_orders with task_lead_booked 
     public function _join($builder)

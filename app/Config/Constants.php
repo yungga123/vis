@@ -234,3 +234,6 @@ define('MODULE_CODES', [
     'purchasing_rpf'        => 'PURCHASING_RPF',
     'generate_PO'           => 'GENERATE_PO',
 ]);
+
+// Developer Account
+define("DEVELOPER_ACCOUNT", "SOFTWAREDEV");
