@@ -270,12 +270,12 @@ class Dashboard extends BaseController
                     'accepted' => [
                         'icon'  => 'fas fa-check-circle',
                         'count' => $prfModel->countRecords('accepted'),
-                        'bg'    => 'success',
+                        'bg'    => 'primary',
                     ],
                     'item_out' => [
                         'icon'  => 'fas fa-file-import',
                         'count' => $prfModel->countRecords('item_out'),
-                        'bg'    => 'primary',
+                        'bg'    => 'success',
                     ],
                     'filed' => [
                         'icon'  => 'fas fa-file-alt',
