@@ -11,6 +11,7 @@ class DispatchModel extends Model
     protected $table            = 'dispatch';
     protected $view             = 'dispatch_view';
     protected $tableSchedules   = 'schedules';
+    protected $customersTable   = 'customers';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -129,8 +130,6 @@ class DispatchModel extends Model
             {$this->table}.with_permit,
             {$this->table}.created_by,
             {$this->table}.checked_by,
-            {$this->table}.customer_type,
-            {$this->view}.customer,
             {$this->view}.technicians,
             {$this->view}.technicians_formatted,
             {$this->view}.dispatched_by,
@@ -161,11 +160,15 @@ class DispatchModel extends Model
         }
 
         if ($withClientDetials) {
+            $customerModel = new CustomerModel();
+            $addressConcat = $customerModel->customerAddressQueryConcat();
             $columns .= ",
-                {$this->view}.contact_person,
-                {$this->view}.contact_number,
-                {$this->view}.email_address,
-                {$this->view}.address
+                {$this->customersTable}.name as customer_name,
+                {$this->customersTable}.type as customer_type,
+                {$this->customersTable}.contact_person,
+                {$this->customersTable}.contact_number,
+                {$this->customersTable}.email_address,
+                {$addressConcat}
             ";
         }
 
@@ -179,7 +182,12 @@ class DispatchModel extends Model
             $builder->join($this->tableSchedules, "{$this->table}.schedule_id = {$this->tableSchedules}.id");
 
         $builder->join($this->view, "{$this->table}.id = {$this->view}.dispatch_id");
-        $builder->where("{$this->table}.deleted_at IS NULL");
+    }
+    
+    // Join with customers table 
+    public function joinCustomers($builder)
+    {
+        $builder->join($this->customersTable, "{$this->table}.customer_id = {$this->customersTable}.id");
     }
     
     // Get dispatch data - either by id or all
@@ -188,6 +196,10 @@ class DispatchModel extends Model
         $builder = $this->select($this->_columns($dateTimeformmated, $joinSchedule, $withClientDetials));
         
         $this->_join($builder, $joinSchedule);
+        if ($withClientDetials) $this->joinCustomers($builder);
+        
+        $builder->where("{$this->table}.deleted_at IS NULL");
+
         return $id ? $builder->find($id) : $builder->findAll();
     }
 
@@ -195,10 +207,13 @@ class DispatchModel extends Model
     public function noticeTable($request) 
     {
         $builder = $this->db->table($this->table);
-        $builder->select($this->_columns(true, true));
+        $builder->select($this->_columns(true, true, true));
 
         // Join with schedules table
         $this->_join($builder, true);
+        $this->joinCustomers($builder);
+
+        $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy('id', 'DESC');
 
         return $builder;

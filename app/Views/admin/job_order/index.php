@@ -46,6 +46,7 @@
                                 <th>Quotation</th>
                                 <th>Q Type</th>
                                 <th>Client</th>
+                                <th>Client Branch</th>
                                 <th>Manager</th>
                                 <th>Work Type</th>
                                 <th>Date Requested</th>

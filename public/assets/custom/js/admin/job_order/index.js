@@ -1,4 +1,4 @@
-var table, modal, form, elems;
+var table, modal, form, elems, is_manual;
 
 $(document).ready(function () {
 	table = "job_order_table";
@@ -12,6 +12,7 @@ $(document).ready(function () {
 		"date_reported",
 		"date_committed",
 		"warranty",
+		"manual_quotation",
 	];
 
 	/* Filters */
@@ -40,7 +41,31 @@ $(document).ready(function () {
 		$("#job_order_id").val("");
 		$("#orig_qn").addClass("d-none");
 
+		clearSelect2Selection("#customer_id");
+		toggleQuotationFields(is_manual);
 		clearAlertInForm(elems);
+	});
+
+	$("#is_manual").on("change", function (e) {
+		if (e.target.checked) {
+			is_manual = true;
+			toggleQuotationFields(is_manual);
+			initSelect2Customers("commercial");
+			return;
+		}
+
+		toggleQuotationFields();
+	});
+
+	/* Initial init of customers (commerical) via ajax data source */
+	onChangeCustomerType();
+	$("#customer_id").on("select2:select", function () {
+		$("#client_branch_wrapper").addClass("d-none");
+		const customer_type = $('input[name="customer_type"]:checked').val();
+		if (customer_type === "commercial") {
+			initSelect2CustomerBranches($(this).val());
+			$("#client_branch_wrapper").removeClass("d-none");
+		}
 	});
 
 	/* Initialize employee_id select2 */
@@ -59,6 +84,11 @@ $(document).ready(function () {
 			$("#tasklead_id").val("");
 			$("#quotation").val("");
 			$("#orig_qn").addClass("d-none");
+
+			if (is_manual) {
+				clearSelect2Selection("#customer_id");
+				toggleQuotationFields();
+			}
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -175,10 +205,38 @@ function edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				// Set selected quotation in select2
-				setSelect2AjaxSelection("#select2Quotation", res.data.quotation, id);
+				const isNotManual = res.data.is_manual == "0";
+				if (isNotManual) {
+					// Set selected quotation in select2
+					setSelect2AjaxSelection("#select2Quotation", res.data.quotation, id);
+					clearSelect2Selection("#customer_id");
+				} else {
+					$("#is_manual").prop("checked", true);
+					$("#" + strLower(res.data.customer_type)).prop("checked", true);
+					setSelect2AjaxSelection(
+						"#customer_id",
+						res.data.client,
+						res.data.customer_id
+					);
+					initSelect2Customers(strLower(res.data.customer_type));
+					clearSelect2Selection("#select2Quotation");
 
-				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+					$("#client_branch_wrapper").addClass("d-none");
+					if (strLower(res.data.customer_type) === "commercial") {
+						setTimeout(() => {
+							setSelect2Selection(
+								"#customer_branch_id",
+								res.data.customer_branch_id
+							);
+						}, 500);
+						$("#client_branch_wrapper").removeClass("d-none");
+					}
+				}
+
+				toggleQuotationFields(!isNotManual);
+				$.each(res.data, (key, value) => {
+					if (key !== "customer_type") $(`input[name="${key}"]`).val(value);
+				});
 				$("#orig_qn")
 					.removeClass()
 					.html(`Original Quotation #: <strong>${res.data.quotation}</strong>`);
@@ -295,4 +353,31 @@ function initSelect2Filters(id, options) {
 		allowClear: true,
 		width: "100%",
 	});
+}
+
+/* Initialize select2 customer branches */
+function initSelect2CustomerBranches(customer_id) {
+	const options = {
+		options: {
+			not_select2_ajax: true,
+			customer_id: customer_id,
+		},
+	};
+	/* Get customer branches via ajax post */
+	$.post(router.admin.common.customer_branches, options)
+		.then((res) => {
+			select2Reinit("#customer_branch_id", "Please select a branch.", res.data);
+		})
+		.catch((err) => catchErrMsg(err));
+}
+
+/* Toggle (hide or show) default or manual quotation */
+function toggleQuotationFields(isManual = false) {
+	if (isManual) {
+		$("#quotation_wrapper").addClass("d-none");
+		$("#manual_quotation_wrapper").removeClass("d-none");
+	} else {
+		$("#quotation_wrapper").removeClass("d-none");
+		$("#manual_quotation_wrapper").addClass("d-none");
+	}
 }

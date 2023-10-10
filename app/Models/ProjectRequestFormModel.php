@@ -13,6 +13,7 @@ class ProjectRequestFormModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'project_request_forms';
     protected $view             = 'prf_view';
+    protected $jobOrderTable    = 'job_orders';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -200,19 +201,19 @@ class ProjectRequestFormModel extends Model
     // For DataTables
    public function noticeTable($request) 
    {
-       $builder = $this->db->table($this->table);
-       $columns = $this->columns(true, true);
-       // Include JO columns
-       $columns .= ','. $this->jobOrderColumns();
+        $builder = $this->db->table($this->table);
+        $columns = $this->columns(true, true);
+        // Include JO columns
+        $columns .= ','. $this->jobOrderColumns();
 
-       $builder->select($columns);
-       $this->joinView($builder);
-       $this->joinJobOrder($builder);
+        $builder->select($columns);
+        $this->joinView($builder);
+        $this->joinJobOrder($builder);
 
-       $builder->where("{$this->table}.deleted_at", null);
-       $builder->orderBy('id', 'DESC');
+        $builder->where("{$this->table}.deleted_at", null);
+        $builder->orderBy('id', 'DESC');
 
-       return $builder;
+        return $builder;
    }
 
    // DataTable action buttons

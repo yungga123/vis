@@ -163,7 +163,8 @@ class Customers extends BaseController
                     $data['message']    = 'Customer has been updated successfully!';
                 }
                 return $data;
-            }
+            },
+            true
         );
 
         return $response;
@@ -212,7 +213,8 @@ class Customers extends BaseController
                     $data['message']    = "Validation error!";
                 }
                 return $data;
-            }
+            },
+            true
         );
 
         return $response;

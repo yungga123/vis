@@ -16,7 +16,15 @@
                         <strong>Note for Quotation Number:</strong> 
                         If not empty, initial dropdowns are by 10. Type the number to search if not in the options and then, click to select.
                     </div>
-                    <div class="form-group">
+                    <div class="form-group">                        
+                        <div class="form-check text-center">
+                            <input type="checkbox" class="form-check-input" name="is_manual" id="is_manual">
+                            <label class="form-check-label" for="is_manual">
+                                <strong>Manually enter a quotation number?</strong>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="quotation_wrapper">
                         <input type="hidden" name="id" id="job_order_id" readonly>
                         <input type="hidden" name="tasklead_id" id="tasklead_id" readonly>
                         <input type="hidden" name="quotation" id="quotation" readonly>
@@ -28,11 +36,42 @@
                         <small id="alert_quotation" class="text-danger"></small>
                     </div>
                     <div class="form-group q-details"></div>
+                    <div class="row d-none" id="manual_quotation_wrapper">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="required" for="manual_quotation">Manaul Quotation Number</label>
+                                <input type="text" name="manual_quotation" id="manual_quotation" class="form-control" placeholder="Enter quotation number">
+                                <small id="alert_manual_quotation" class="text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="required" for="customer_id">Client</label>
+                                <div class="mb-2">                                    
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="customer_type" id="commercial" value="commercial" checked>
+                                        <label class="form-check-label" for="commercial">Commercial</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="customer_type" id="residential" value="residential">
+                                        <label class="form-check-label" for="residential">Residentail</label>
+                                    </div>
+                                </div>
+                                <select class="custom-select" id="customer_id" name="customer_id" style="width: 100%;"></select>
+                                <small id="alert_customer_id" class="text-danger"></small>
+                            </div>
+                            <div class="form-group d-none" id="client_branch_wrapper">
+                                <label for="customer_branch_id">Client Branch</label>
+                                <select class="custom-select" id="customer_branch_id" name="customer_branch_id" style="width: 100%;"></select>
+                                <small id="alert_customer_branch_id" class="text-danger"></small>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
                                 <label class="required" for="date_requested">Date Requested</label>
-                                <input type="date" name="date_requested" id="date_requested" class="form-control">
+                                <input type="date" name="date_requested" id="date_requested" class="form-control" value="<?= current_date() ?>">
                                 <small id="alert_date_requested" class="text-danger"></small>
                             </div>
                             <div class="form-group">
@@ -42,7 +81,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="required" for="date_reported">Date Reported</label>
-                                <input type="date" name="date_reported" id="date_reported" class="form-control">
+                                <input type="date" name="date_reported" id="date_reported" class="form-control" value="<?= current_date() ?>">
                                 <small id="alert_date_reported" class="text-danger"></small>
                             </div>                          
                             <div class="form-group">

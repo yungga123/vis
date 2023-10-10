@@ -35,6 +35,7 @@ trait InventoryTrait
             }
 
             $builder->like("{$join}.quotation_num", $q);
+            $builder->like("IF({$table}.is_manual = 0, {$join}.quotation_num, {$table}.manual_quotation)", $q);
         }
 
         $builder->orderBy("{$table}.id", 'DESC');

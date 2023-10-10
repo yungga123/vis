@@ -56,9 +56,9 @@ class TaskleadView extends Seeder
         ON
             tasklead.employee_id=employees.employee_id
         LEFT JOIN
-            customervt_branch
+            customer_branches
         ON
-            tasklead.branch_id=customervt_branch.id
+            tasklead.branch_id=customer_branches.id
         WHERE
             tasklead.deleted_at IS NULL
         ");

@@ -113,13 +113,12 @@ class Home extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'id',
-                'category',
-                'sub_category',
-                'item_brand',
-                'item_model',
-                'item_description',
-                'created_by_name',
+                "{$this->_model->view}.category_name",
+                "{$this->_model->view}.subcategory_name",
+                "{$this->_model->view}.brand",
+                "{$this->_model->table}.item_model",
+                "{$this->_model->table}.item_description",
+                "{$this->_model->view}.supplier_name",
             ])
             ->setOrder([
                 null,

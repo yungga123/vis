@@ -40,7 +40,6 @@ $(document).ready(function () {
 		clearSelect2Selection("#schedules");
 		clearSelect2Selection("#customer_id");
 		clearSelect2Selection("#technicians");
-
 		clearAlertInForm(elems);
 	});
 
@@ -55,11 +54,7 @@ $(document).ready(function () {
 
 	/* Initial init of customers (commerical) via ajax data source */
 	initSelect2Customers();
-	$('input[name="customer_type"]').on("change", function () {
-		/* Change customers display based on 
-		checked type (commerical or residential) */
-		initSelect2Customers($(this).val());
-	});
+	onChangeCustomerType();
 
 	/* Initialize select2 employees/technicians */
 	select2Init("#technicians", "Select technicians", $technicians);
@@ -118,26 +113,29 @@ function edit(id) {
 				// Set selected customer in select2
 				setSelect2AjaxSelection(
 					"#customer_id",
-					res.data.customer,
+					res.data.customer_name,
 					res.data.customer_id
 				);
 
 				// Set selected technicians in select2
-				initSelect2Customers(res.data.customer_type);
+				initSelect2Customers(strLower(res.data.customer_type));
 				setSelect2Technicians(res.data.technicians);
-				$("#" + res.data.customer_type).prop("checked", true);
+				$("#" + strLower(res.data.customer_type)).prop("checked", true);
 
 				// Set selected employee/checked by in select2
 				setSelect2Selection("#checked_by", res.data.checked_by);
 
-				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+				$.each(res.data, (key, value) => {
+					if (key !== "customer_type") $(`input[name="${key}"]`).val(value);
+				});
+
 				$("#orig_schedule")
 					.removeClass()
 					.html(`Original schedule: <strong>${res.data.schedule}</strong>`);
-
 				$("#remarks").val(res.data.remarks);
 				$("#comments").val(res.data.comments);
 				setOptionValue("#service_type", res.data.service_type);
+				setOptionValue("#with_permit", res.data.with_permit);
 
 				setTimeout(() => {
 					$("#schedule_id").val(res.data.schedule_id);
@@ -209,22 +207,6 @@ function loadScheduleDetails(data) {
 
 	$("#schedule_id").val(id);
 	$(".schedule-details").html(html);
-}
-
-/* Customers select2 via ajax data source */
-function initSelect2Customers(customer_type) {
-	const options = {
-		customer_type: customer_type || "commercial",
-	};
-
-	select2AjaxInit(
-		"#customer_id",
-		"Select a client",
-		router.admin.common.customers,
-		"text",
-		null,
-		options
-	);
 }
 
 /* Set select2 technicians */

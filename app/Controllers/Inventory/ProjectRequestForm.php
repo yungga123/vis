@@ -99,9 +99,11 @@ class ProjectRequestForm extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'quotation_num',
-                'customer_name',
-                'work_type',
+                'job_orders.work_type',
+                'job_orders.manual_quotation',
+                'task_lead_booked.quotation_num',
+                'task_lead_booked.customer_name',
+                'customers.name',
             ])
             ->setOrder([
                 null,
@@ -109,8 +111,8 @@ class ProjectRequestForm extends BaseController
                 null,
                 'id',
                 'job_order_id',
-                'quotation_num',
-                'customer_name',
+                'quotation',
+                'client',
                 'work_type',
                 'process_date_formatted',
                 'remarks',
@@ -131,8 +133,8 @@ class ProjectRequestForm extends BaseController
                 $this->_model->dtPRFStatusFormat(),
                 'id',
                 'job_order_id',
-                'quotation_num',
-                'customer_name',
+                'quotation',
+                'client',
                 'work_type',
                 'process_date_formatted',
                 'remarks',
@@ -308,7 +310,8 @@ class ProjectRequestForm extends BaseController
                     }
                 }
                 return $data;
-            }
+            },
+            true
         );
 
         return $response;

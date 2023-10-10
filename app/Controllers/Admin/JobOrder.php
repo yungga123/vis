@@ -53,7 +53,7 @@ class JobOrder extends BaseController
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
-        
+
         $data['title']          = 'Job Order List';
         $data['page_title']     = 'Job Order List';
         $data['can_add']        = $this->_can_add;
@@ -62,7 +62,7 @@ class JobOrder extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'admin/job_order/index.js';
+        $data['custom_js']      = ['admin/job_order/index.js', 'admin/common.js'];
         $data['routes']         = json_encode([
             'job_order' => [
                 'list'      => url_to('job_order.list'),
@@ -73,7 +73,9 @@ class JobOrder extends BaseController
             ],
             'admin' => [
                 'common' => [
-                    'quotations' => url_to('admin.common.quotations'),
+                    'quotations'        => url_to('admin.common.quotations'),
+                    'customers'         => url_to('admin.common.customers'),
+                    'customer_branches' => url_to('admin.common.customer.branches'),
                 ]
             ]
         ]);
@@ -99,12 +101,14 @@ class JobOrder extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'quotation_num',
-                'tasklead_type',
-                'customer_name',
-                'firstname',
-                'lastname',
-                'work_type',
+                "{$this->_model->tableEmployees}.firstname",
+                "{$this->_model->tableEmployees}.lastname",
+                "{$this->_model->tableJoined}.customer_name",
+                "{$this->_model->tableCustomers}.name",
+                "{$this->_model->tableJoined}.quotation_num",
+                "{$this->_model->table}.manual_quotation",
+                "{$this->_model->tableCustomerBranches}.branch_name",
+                "{$this->_model->tableJoined}.branch_name",
             ])
             ->setOrder([
                 null,
@@ -112,8 +116,9 @@ class JobOrder extends BaseController
                 'id',
                 'tasklead_id',
                 'quotation',
-                'type',
+                'tasklead_type',
                 'client',
+                'customer_branch_name',
                 'manager',
                 'work_type',
                 'date_requested',
@@ -129,8 +134,9 @@ class JobOrder extends BaseController
                 'id',
                 'tasklead_id',
                 'quotation',
-                'type',
+                'tasklead_type',
                 'client',
+                'customer_branch_name',
                 'manager',
                 'work_type',
                 'date_requested',
@@ -151,56 +157,56 @@ class JobOrder extends BaseController
      */
     public function save() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Job Order has been added successfully!'
         ];
 
-        // Using DB Transaction
-        $this->transBegin();
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id             = $this->request->getVar('id');
+                $is_manual      = $this->request->getVar('is_manual');
+                $employee_id    = $this->request->getVar('employee_id');
+                $inputs         = [
+                    'tasklead_id'       => isset($is_manual) ? 0 : ($this->request->getVar('tasklead_id') ?? 0),
+                    'employee_id'       => isset($is_manual) ? 0 : $employee_id,
+                    'quotation'         => $this->request->getVar('quotation'),
+                    'work_type'         => $this->request->getVar('work_type'),
+                    'comments'          => $this->request->getVar('comments'),
+                    'date_requested'    => $this->request->getVar('date_requested'),
+                    'date_reported'     => $this->request->getVar('date_reported'),
+                    'date_committed'    => $this->request->getVar('date_committed'),
+                    'warranty'          => $this->request->getVar('warranty'),
+                    'status'            => 'pending',
+                    'is_manual'         => isset($is_manual),
+                    'manual_quotation'  => isset($is_manual) ? $this->request->getVar('manual_quotation') : null,
+                    'customer_id'       => $is_manual ? $this->request->getVar('customer_id') : null,
+                    'customer_branch_id' => $is_manual ?$this->request->getVar('customer_branch_id') : null,
+                    'created_by'        => session('username'),
+                ];
+    
+                if (! empty($id)) {
+                    $inputs['id']           = $id;
+                    $inputs['employee_id']  = $employee_id;
+                    $data['message']        = 'Job Order has been updated successfully!';
+    
+                    unset($inputs['status']);
+                    unset($inputs['created_by']);
+                } 
+    
+                if (! $this->_model->save($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                }
 
-        try {
-            $id         = $this->request->getVar('id');
-            $inputs = [
-                'tasklead_id'       => $this->request->getVar('tasklead_id'),
-                'employee_id'       => $this->request->getVar('employee_id'),
-                'quotation'         => $this->request->getVar('quotation'),
-                'work_type'         => $this->request->getVar('work_type'),
-                'comments'          => $this->request->getVar('comments'),
-                'date_requested'    => $this->request->getVar('date_requested'),
-                'date_reported'     => $this->request->getVar('date_reported'),
-                'date_committed'    => $this->request->getVar('date_committed'),
-                'warranty'          => $this->request->getVar('warranty'),
-                'status'            => 'pending',
-                'created_by'        => session('username'),
-            ];
+                return $data;
+            },
+            true
+        );
 
-            if (! empty($id)) {
-                $inputs['id']       = $id;
-                $data['message']    = 'Job Order has been updated successfully!';
-
-                unset($inputs['status']);
-                unset($inputs['created_by']);
-            } 
-
-            if (! $this->_model->save($inputs)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
     
     /**
@@ -210,34 +216,34 @@ class JobOrder extends BaseController
      */
     public function fetch() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Job Order has been retrieved!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id = $this->request->getVar('id');
 
-        try {
-            $id = $this->request->getVar('id');
+                if ($this->request->getVar('status')) {
+                    $columns    = '
+                        job_orders.remarks,
+                        job_orders.date_committed,
+                        task_lead_booked.tasklead_type AS type,
+                        task_lead_booked.employee_id,
+                    ';                
+                    $record     = $this->_model->getJobOrders($id, $columns);
+                } else {
+                    $record     = $this->_model->getJobOrders($id);
+                }   
 
-            if ($this->request->getVar('status')) {
-                $columns    = '
-                    job_orders.remarks,
-                    job_orders.date_committed,
-                    task_lead_booked.tasklead_type AS type,
-                    task_lead_booked.employee_id,
-                ';                
-                $record     = $this->_model->getJobOrders($id, $columns);
-            } else {
-                $record     = $this->_model->getJobOrders($id);
-            }            
+                $data['data']   = $record;
 
-            $data['data']       = $record;
-        } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
+                return $data;
+            }
+        );
 
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -247,37 +253,29 @@ class JobOrder extends BaseController
      */
     public function delete() 
     {
-        $data = [
+        $data       = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'Job Order has been deleted successfully!'
         ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id = $this->request->getVar('id');
 
-        // Using DB Transaction
-        $this->transBegin();
+                if (! $this->_model->delete($id)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                } else {
+                    log_message('error', "Job Order #: {$id} \n Deleted by {username}", ['username' => session('username')]);
+                }
 
-        try {
-            $id = $this->request->getVar('id');
+                return $data;
+            },
+            true
+        );
 
-            if (! $this->_model->delete($id)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            } else {
-                log_message('error', 'Deleted by {username}', ['username' => session('username')]);
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -287,42 +285,34 @@ class JobOrder extends BaseController
      */
     public function change() 
     {
-        $data = [];
+        $data       = [];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id     = $this->request->getVar('id');
+                $status = set_jo_status($this->request->getVar('status'));
+                $inputs = ['status' => $status];
+    
+                if ($this->request->getVar('is_form')) { 
+                    $inputs['employee_id']      = $this->request->getVar('employee_id');
+                    $inputs['date_committed']   = $this->request->getVar('date_committed');
+                    $inputs['remarks']          = $this->request->getVar('remarks');
+                }
+    
+                if (! $this->_model->update($id, $inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "Validation error!";
+                } else {
+                    $data['status']     = STATUS_SUCCESS;
+                    $data['message']    = 'Job Order has been '. strtoupper($status) .' successfully!';
+                }
 
-        // Using DB Transaction
-        $this->transBegin();
+                return $data;
+            },
+            true
+        );
 
-        try {
-            $id     = $this->request->getVar('id');
-            $status = set_jo_status($this->request->getVar('status'));
-            $inputs = ['status' => $status];
-
-            if ($this->request->getVar('is_form')) { 
-                $inputs['employee_id']      = $this->request->getVar('employee_id');
-                $inputs['date_committed']   = $this->request->getVar('date_committed');
-                $inputs['remarks']          = $this->request->getVar('remarks');
-            }
-
-            if (! $this->_model->update($id, $inputs)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
-            } else {
-                $data['status']     = STATUS_SUCCESS;
-                $data['message']    = 'Job Order has been '. strtoupper($status) .' successfully!';
-            }
-
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 }

@@ -11,6 +11,8 @@ class JobOrderModel extends Model
     protected $table            = 'job_orders';
     protected $tableJoined      = 'task_lead_booked';
     protected $tableEmployees   = 'employees';
+    protected $tableCustomers   = 'customers';
+    protected $tableCustomerBranches   = 'customer_branches';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -29,6 +31,10 @@ class JobOrderModel extends Model
         'warranty',
         'created_by',
         'remarks',
+        'is_manual',
+        'manual_quotation',
+        'customer_id',
+        'customer_branch_id',
     ];
 
     // Dates
@@ -41,7 +47,7 @@ class JobOrderModel extends Model
     // Validation
     protected $validationRules      = [
         'quotation' => [
-            'rules' => 'required',
+            'rules' => 'required_without[is_manual,manual_quotation]',
             'label' => 'quotation number'
         ],
         'work_type' => [
@@ -64,8 +70,26 @@ class JobOrderModel extends Model
             'rules' => 'required',
             'label' => 'warranty'
         ],
+        'manual_quotation' => [
+            'rules' => 'required_with[is_manual]',
+            'label' => 'manual quotation number'
+        ],
+        'customer_id' => [
+            'rules' => 'required_with[is_manual]',
+            'label' => 'client'
+        ],
     ];
-    protected $validationMessages   = [];
+    protected $validationMessages   = [
+        'quotation' => [
+            'required_without' => 'The quotation number field is required.'
+        ],
+        'manual_quotation' => [
+            'required_with' => 'The manual quotation number field is required.'
+        ],
+        'customer_id' => [
+            'required_with' => 'The client field is required.'
+        ],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
@@ -88,10 +112,8 @@ class JobOrderModel extends Model
             {$this->table}.tasklead_id,
             {$this->table}.employee_id,
             {$this->table}.status,
-            {$this->tableJoined}.quotation_num AS quotation,
-            {$this->tableJoined}.tasklead_type AS type,
-            {$this->tableJoined}.tasklead_type,
-            {$this->tableJoined}.customer_name AS client,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation) AS quotation,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, 'N/A') AS tasklead_type,
             CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager,
             {$this->tableEmployees}.firstname,
             {$this->tableEmployees}.lastname,
@@ -99,6 +121,13 @@ class JobOrderModel extends Model
             {$this->table}.comments,            
             {$this->table}.warranty,
             {$this->table}.remarks,
+            {$this->table}.is_manual,
+            {$this->table}.manual_quotation,
+            {$this->table}.customer_id,
+            {$this->table}.customer_branch_id,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_type, {$this->tableCustomers}.type) AS customer_type,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.branch_name, {$this->tableCustomerBranches}.branch_name) AS customer_branch_name,
             {$this->table}.created_by
         ";
         $dates = "
@@ -108,8 +137,9 @@ class JobOrderModel extends Model
         ";
 
         if ($isDateFormatted) {
-            $dates = "
-                ,IF({$this->table}.date_requested IS NULL, 'N/A', DATE_FORMAT({$this->table}.date_requested, '%b %e, %Y')) AS date_requested,
+            $dates = ",
+                IF({$this->table}.is_manual = 0, 'NO', 'YES') AS is_manual_formatted,
+                IF({$this->table}.date_requested IS NULL, 'N/A', DATE_FORMAT({$this->table}.date_requested, '%b %e, %Y')) AS date_requested,
                 IF({$this->table}.date_committed IS NULL, 'N/A', DATE_FORMAT({$this->table}.date_committed, '%b %e, %Y')) AS date_committed,
                 IF({$this->table}.date_reported IS NULL, 'N/A', DATE_FORMAT({$this->table}.date_reported, '%b %e, %Y')) AS date_reported
             ";
@@ -131,10 +161,10 @@ class JobOrderModel extends Model
     {
         $columns = "
             {$this->table}.tasklead_id,
-            {$this->tableJoined}.customer_name,
             {$this->table}.status AS jo_status,
-            {$this->tableJoined}.quotation_num,
-            {$this->tableJoined}.tasklead_type,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation) AS quotation,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, 'N/A') AS tasklead_type,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client,
             {$this->table}.work_type,
             CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager
         ";
@@ -142,7 +172,7 @@ class JobOrderModel extends Model
         if ($with_text) {
             $columns .= ", 
                 {$this->table}.id,
-                CONCAT({$this->table}.id, ' | ', {$this->tableJoined}.quotation_num, ' | ', {$this->tableJoined}.customer_name) AS option_text
+                CONCAT({$this->table}.id, ' | ', IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation), ' | ', IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name)) AS option_text
             ";
         }
 
@@ -161,8 +191,10 @@ class JobOrderModel extends Model
     // Join job_orders with task_lead_booked 
     public function _join($builder)
     {
-        $builder->join($this->tableJoined, "{$this->table}.tasklead_id = {$this->tableJoined}.id");
-        $builder->join($this->tableEmployees, "{$this->table}.employee_id = {$this->tableEmployees}.employee_id");
+        $builder->join($this->tableJoined, "{$this->table}.tasklead_id = {$this->tableJoined}.id", 'left');
+        $builder->join($this->tableCustomers, "{$this->table}.customer_id = {$this->tableCustomers}.id", 'left');
+        $builder->join($this->tableCustomerBranches, "({$this->table}.customer_branch_id = {$this->tableCustomerBranches}.id AND {$this->table}.customer_branch_id IS NOT NULL)", 'left');
+        $builder->join($this->tableEmployees, "{$this->table}.employee_id = {$this->tableEmployees}.employee_id", 'left');
         $builder->where("{$this->table}.deleted_at IS NULL");
     }
 
@@ -173,6 +205,8 @@ class JobOrderModel extends Model
         $builder = $this->select($columns);
 
         if ($join) $this->_join($builder);
+        else $builder->where("{$this->table}.deleted_at IS NULL");
+
         return $id ? $builder->find($id) : $builder->findAll();
     }
 
@@ -183,8 +217,8 @@ class JobOrderModel extends Model
             if (isset($data['data']['status']) && $data['data']['status'] === 'accepted') {
                 $id         = $data['id'][0];
                 $columns    = "
-                    {$this->tableJoined}.customer_name AS client,
-                    {$this->tableJoined}.tasklead_type AS type,
+                    IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client,
+                    IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, 'project') AS tasklead_type,
                     {$this->table}.comments,
                 ";
                 $job_order  = $this->getJobOrders($id, $columns);
@@ -193,7 +227,7 @@ class JobOrderModel extends Model
                     'job_order_id'  => $id,
                     'title'         => $job_order['client'],
                     'description'   => $job_order['comments'],
-                    'type'          => $job_order['type'] ? strtolower($job_order['type']) : 'project',
+                    'type'          => !empty($job_order['type']) ? strtolower($job_order['type']) : 'project',
                     'start'         => $data['data']['date_committed'],
                     'end'           => $data['data']['date_committed'] .' 23:00', // set to 11pm
                     'created_by'    => session('username'),
@@ -235,7 +269,7 @@ class JobOrderModel extends Model
         $dropdown   = false;
         $no_actions = ['filed', 'discarded'];
         $closureFun = function($row) use($id, $permissions, $dropdown, $no_actions) {
-            $buttons = 'No actions';
+            $buttons = '~~N/A~~';
 
             if (! in_array($row['status'], $no_actions)) {                
                 $buttons = dt_button_actions($row, $id, $permissions, $dropdown);

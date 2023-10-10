@@ -410,15 +410,15 @@ function _loadJobOrderDetails(data) {
 				<tbody>
                     <tr>
                         <th class="text-right" width="50%">Task Lead #</th>
-						<td class="text-left" width="50%">${data.tasklead_id}</td>
+						<td class="text-left" width="50%">${data.tasklead_id || "N/A"}</td>
                     </tr>
                     <tr>
                         <th class="text-right" width="50%">Client</th>
-						<td class="text-left" width="50%">${data.customer_name}</td>
+						<td class="text-left" width="50%">${data.client}</td>
                     </tr>
                     <tr>
                         <th class="text-right" width="50%">Manager</th>
-						<td class="text-left" width="50%">${data.manager}</td>
+						<td class="text-left" width="50%">${data.manager || "N/A"}</td>
                     </tr>
                     <tr>
                         <th class="text-right" width="50%">Work Type</th>
@@ -441,7 +441,7 @@ function _loadItemDetails(data) {
 	if (data.id) {
 		const parentSiblingElem =
 			data.element.parentElement.parentElement.nextElementSibling;
-		if (data.stocks)
+		if (!isEmpty(data.stocks))
 			_populateAvailableItemStocks(parentSiblingElem, data.stocks);
 	}
 }
