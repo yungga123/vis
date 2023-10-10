@@ -93,15 +93,14 @@ class Customers extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'id',
-                'name',
-                'contact_person',
-                'province',
-                'city',
-                'subdivision',
-                'source',
+                "{$this->_model->table}.id",
+                "{$this->_model->table}.name",
+                "{$this->_model->table}.contact_person",
+                "{$this->_model->table}.province",
+                "{$this->_model->table}.city",
+                "{$this->_model->table}.subdivision",
             ])
-            ->setDefaultOrder('id','desc')
+            ->setDefaultOrder("id",'desc')
             ->setOrder([
                 null,
                 'new_client',
