@@ -91,6 +91,15 @@ class ProjectRequestFormModel extends Model
         return $data;
     }
 
+    public function countRecords($param = null)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if (! $param) return $builder->countAllResults();
+        return $builder->where('status', strtolower($param))->countAllResults();
+        
+    }
+
     // Update inventory stock after item out
     public function updateInventoryStock(array $data)
     {
