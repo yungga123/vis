@@ -75,12 +75,14 @@ class ScheduleModel extends Model
     }
 
     // Get the current schedules
-    public function getSchedulesForToday()
+    public function getSchedulesForToday($count = false)
     {
         $where      = "(start BETWEEN '".date("Y-m-d")." 00:00:00' AND '".date("Y-m-d")." 23:59:59') OR '".date("Y-m-d")." 00:00:00' BETWEEN start AND end";
         $builder    = $this->select('title, description, type, start, end');
         $builder->where($where);
         $builder->where("{$this->table}.deleted_at IS NULL");
+
+        if ($count) return $builder->countAllResults();
 
         return $builder->findAll();
     }

@@ -145,6 +145,15 @@ class CustomerModel extends Model
         return $columns;
     }
 
+    public function countRecords($param = null)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if (! $param) return $builder->countAllResults();
+        return $builder->where('type', strtoupper($param))->countAllResults();
+        
+    }
+
     // For dataTables
     public function noticeTable($request) 
     {
