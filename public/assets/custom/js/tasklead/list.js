@@ -211,6 +211,7 @@ function edit(id) {
 					hideElements();
 					$('#change_tasklead').val("");
 					$("#quotation_type").attr("required", false);
+					$("#quotation_color").attr("required", false);
 					$.each(res.data, (key, value) => {
 						if (value == "0000-00-00" || value == "0.00") {
 							value = null;
