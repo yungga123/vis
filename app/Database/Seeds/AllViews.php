@@ -22,8 +22,8 @@ class AllViews extends Seeder
         $this->call('InventoryView');
         $this->call('PRFView');
         $this->call('RPFView');
-        $this->call('CustomersVTToCustomersDataTransfer');
-        $this->call('CustomersVTBranchToCustomerBranchessDataTransfer');
+        //$this->call('CustomersVTToCustomersDataTransfer');
+        //$this->call('CustomersVTBranchToCustomerBranchessDataTransfer');
         $this->call('DropViews');
         $this->call('DeleteClientsPermissions');
     }

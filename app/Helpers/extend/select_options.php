@@ -369,3 +369,22 @@ if (! function_exists('get_client_sources'))
         return $param ? $options[strtoupper($param)] : $options;
 	}
 }
+
+if (! function_exists('get_rpf'))
+{
+    /**
+     * Select Reviewed RPF
+     */
+	function get_rpf(string $param = ''): string|array
+	{
+        $options = [
+            'B' => 'Blue',
+            'G' => 'Green',
+            'Y' => 'Yellow',
+            'O' => 'Orange',
+            'R' => 'Red',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
