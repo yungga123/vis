@@ -127,6 +127,16 @@ class JobOrder extends BaseController
                 'warranty',
                 'comments',
                 'remarks',
+                'created_by_formatted',
+                'created_at_formatted',
+                'accepted_by_formatted',
+                'accepted_at_formatted',
+                'filed_by_formatted',
+                'filed_at_formatted',
+                'discarded_by_formatted',
+                'discarded_at_formatted',
+                'reverted_by_formatted',
+                'reverted_at_formatted',
             ])
             ->setOutput([
                 $this->_model->buttons($this->_permissions),
@@ -145,6 +155,16 @@ class JobOrder extends BaseController
                 'warranty',
                 'comments',
                 'remarks',
+                'created_by_formatted',
+                'created_at_formatted',
+                'accepted_by_formatted',
+                'accepted_at_formatted',
+                'filed_by_formatted',
+                'filed_at_formatted',
+                'discarded_by_formatted',
+                'discarded_at_formatted',
+                'reverted_by_formatted',
+                'reverted_at_formatted',
             ]);
 
         return $table->getDatatable();

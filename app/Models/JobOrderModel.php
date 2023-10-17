@@ -29,12 +29,12 @@ class JobOrderModel extends Model
         'date_reported',
         'date_committed',
         'warranty',
-        'created_by',
         'remarks',
         'is_manual',
         'manual_quotation',
         'customer_id',
         'customer_branch_id',
+        'created_by',
     ];
 
     // Dates
@@ -97,7 +97,7 @@ class JobOrderModel extends Model
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
+    protected $beforeUpdate   = ['setStatusByAndAt'];
     protected $afterUpdate    = ['addToScheduleAfterJOAccepted'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
@@ -149,11 +149,24 @@ class JobOrderModel extends Model
 
         if ($withRequestBy) {
             $columns .= "
-               , (SELECT av.employee_name FROM accounts_view AS av WHERE {$this->table}.created_by = av.username) AS requested_by 
+               , (SELECT av.employee_name FROM `accounts_view` AS av WHERE {$this->table}.created_by = av.username) AS requested_by 
             ";
         }
 
         return $columns;
+    }
+
+    // Set the value for 'status_' by and at before updating status
+    protected function setStatusByAndAt(array $data)
+    {
+        if (isset($data['data']['status'])) {
+            $status = $data['data']['status'];
+            $status = $status === 'pending' ? 'reverted' : $status;
+            $data['data'][$status .'_by'] = session('username');
+            $data['data'][$status .'_at'] = date('Y-m-d H:i:s');
+        }
+        
+        return $data;
     }
 
     // Common columns
@@ -198,12 +211,22 @@ class JobOrderModel extends Model
     }
     
     // Join job_orders with task_lead_booked 
-    public function _join($builder)
+    public function _join($builder, $withStatusByAndAt = false)
     {
         $builder->join($this->tableJoined, "{$this->table}.tasklead_id = {$this->tableJoined}.id", 'left');
         $builder->join($this->tableCustomers, "{$this->table}.customer_id = {$this->tableCustomers}.id", 'left');
         $builder->join($this->tableCustomerBranches, "({$this->table}.customer_branch_id = {$this->tableCustomerBranches}.id AND {$this->table}.customer_branch_id IS NOT NULL)", 'left');
         $builder->join($this->tableEmployees, "{$this->table}.employee_id = {$this->tableEmployees}.employee_id", 'left');
+
+        if ($withStatusByAndAt) {
+            $accountView    = '`accounts_view`';
+            $builder->join("{$accountView} AS av1", "({$this->table}.created_by = av1.username AND {$this->table}.created_by IS NOT NULL)", 'left');
+            $builder->join("{$accountView} AS av2", "({$this->table}.accepted_by = av2.username AND {$this->table}.accepted_by IS NOT NULL)", 'left');
+            $builder->join("{$accountView} AS av3", "({$this->table}.filed_by = av3.username AND {$this->table}.filed_by IS NOT NULL)", 'left');
+            $builder->join("{$accountView} AS av4", "({$this->table}.discarded_by = av4.username AND {$this->table}.discarded_by IS NOT NULL)", 'left');
+            $builder->join("{$accountView} AS av5", "({$this->table}.reverted_by = av5.username AND {$this->table}.reverted_by IS NOT NULL)", 'left');
+        }
+
         $builder->where("{$this->table}.deleted_at IS NULL");
     }
 
@@ -250,9 +273,22 @@ class JobOrderModel extends Model
     // For dataTables
     public function noticeTable($request) 
     {
+        $columns = $this->_columns(false, true);
+        $columns .= ', ' 
+            . $this->_dtStatusByFormat('created_by', 'av1', true)
+            . $this->_dtStatusByFormat('accepted_by', 'av2', true)
+            . $this->_dtStatusByFormat('filed_by', 'av3', true)
+            . $this->_dtStatusByFormat('discarded_by', 'av4', true)
+            . $this->_dtStatusByFormat('reverted_by', 'av5', true)
+            . $this->_dtStatusAtFormat('created_at', true)
+            . $this->_dtStatusAtFormat('accepted_at', true)
+            . $this->_dtStatusAtFormat('filed_at', true)
+            . $this->_dtStatusAtFormat('discarded_at', true)
+            . $this->_dtStatusAtFormat('reverted_at', true);
+
         $builder = $this->db->table($this->table);
-        $builder->select($this->_columns(false, true));        
-        $this->_join($builder);
+        $builder->select($columns);        
+        $this->_join($builder, true);
 
         if (isset($request['params'])) {
             $params = $request['params'];
@@ -376,5 +412,30 @@ class JobOrderModel extends Model
         return <<<EOF
             onclick="status({$id}, '{$changeTo}', '{$status}')" title="{$title} JO"
         EOF;
+    }
+
+    // For status by format
+    private function _dtStatusByFormat($columnName, $alias, $comma = false)
+    {
+        $aliasCol   = $columnName .'_formatted';
+        $comma      = $comma ? ',' : '';
+        $statement  = "
+            IF({$this->table}.$columnName IS NULL, 'N/A', {$alias}.employee_name) AS {$aliasCol}
+        ";
+
+        return $statement . $comma;
+    }
+
+    // For status at format
+    private function _dtStatusAtFormat($columnName, $comma = false)
+    {
+        $atFormat   = dt_sql_date_format();
+        $alias      = $columnName .'_formatted';
+        $comma      = $comma ? ',' : '';
+        $statement  = "
+            IF({$this->table}.$columnName IS NULL, 'N/A', DATE_FORMAT({$this->table}.$columnName, '{$atFormat}')) AS {$alias}
+        ";
+
+        return $statement . $comma;
     }
 }
