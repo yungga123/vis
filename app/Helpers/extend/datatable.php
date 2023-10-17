@@ -143,3 +143,14 @@ if (! function_exists('dt_status_onchange'))
         EOF;
     }
 }
+
+if (! function_exists('dt_sql_date_format'))
+{
+    /**
+     * DataTable SQL date format
+     */
+	function dt_sql_date_format(): string
+    {
+        return '%b %e, %Y at %h:%i %p';
+    }
+}
