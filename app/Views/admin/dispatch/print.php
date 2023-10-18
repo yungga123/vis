@@ -5,10 +5,10 @@
 		<div class="col-12">
 			<div class="row">
 				<div class="col-3">
-					<img src="<?= base_url('assets/images/vinculumnew.jpg') ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 80px;width: 200px">
+					<img src="<?= base_url($company_logo) ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 80px; width: 200px">
 				</div>
 				<div class="col-6">
-					<p class="text-center mx-auto" style="font-size: 23px;font-weight: bold;">DISPATCH FORM</p>
+					<p class="text-center mx-auto" style="font-size: 23px; font-weight: bold;">DISPATCH FORM</p>
 					<p class="text-center mx-auto">ID No. <?= $dispatch['id'] ?></p>
 				</div>
 			</div>

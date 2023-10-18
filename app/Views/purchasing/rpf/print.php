@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-3 text-center mx-auto">
-			<img src="<?= base_url('assets/images/vinculumnew.jpg') ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px;width: 200px">
+			<img src="<?= base_url($company_logo) ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px; width: 200px">
 		</div>
 	</div>
 	<div class="row">
@@ -54,13 +54,13 @@
 								<td><?= $item['inventory_id'] ?></td>
 								<td><?= $item['item_description'] ?></td>
 								<td><?= $item['item_model'] ?></td>
-								<td><?= $item['quantity_in'] ?></td>
-								<td><?= $item['received_q'] ?></td>
+								<td><?= number_format($item['quantity_in'], 2) ?></td>
+								<td><?= number_format($item['received_q'], 2) ?></td>
 								<td><?= $item['unit'] ?></td>
-								<td><?= $item['item_sdp'] ?></td>
-								<td><?= floatval($item['item_sdp'] * $item['quantity_in']) ?></td>
+								<td><?= number_format($item['item_sdp'], 2) ?></td>
+								<td><?= number_format(floatval($item['item_sdp'] * $item['quantity_in']), 2) ?></td>
 								<td><?= $item['supplier_name'] ?></td>
-								<td><?= $item['stocks'] ?></td>
+								<td><?= number_format($item['stocks'], 2) ?></td>
 							</tr>
 					<?php
 						endforeach;
