@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="<?=base_url('assets')?>/plugins/datatables-colreorder/css/colReorder.bootstrap4.min.css">
 <?php endif;?>
 
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
@@ -29,6 +30,11 @@
 <?php if (isset($full_calendar) && $full_calendar): ?>
 <!-- fullCalendar -->
 <link rel="stylesheet" href="<?=base_url('assets') ?>/plugins/fullcalendar/main.min.css">
+<?php endif;?>
+
+<?php if (isset($dropzone) && $dropzone): ?>
+<!-- Dropzone for uploading files -->
+<link rel="stylesheet" href="<?=base_url('assets') ?>/plugins/dropzone/min/dropzone.min.css">
 <?php endif;?>
 
 <!-- Theme style -->

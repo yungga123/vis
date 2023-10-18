@@ -14,6 +14,7 @@
 <script src="<?=base_url('assets')?>/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
 <script src="<?=base_url('assets')?>/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="<?=base_url('assets')?>/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="<?=base_url('assets')?>/plugins/datatables-colreorder/js/colReorder.bootstrap4.min.js"></script>
 <?php endif;?>
 
 <?php if (isset($with_jszip) && $with_jszip): ?>
@@ -61,6 +62,11 @@
 <?php if (isset($full_calendar) && $full_calendar): ?>
 <!-- Date Range Picker -->
 <script src="<?=base_url('assets')?>/plugins/fullcalendar/main.min.js"></script>
+<?php endif;?>
+
+<?php if (isset($dropzone) && $dropzone): ?>
+<!-- Dropzone for uploading files -->
+<script src="<?=base_url('assets')?>/plugins/dropzone/min/dropzone.min.js"></script>
 <?php endif;?>
 
 <!-- AdminLTE App -->
