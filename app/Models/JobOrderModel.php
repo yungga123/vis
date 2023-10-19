@@ -32,6 +32,7 @@ class JobOrderModel extends Model
         'remarks',
         'is_manual',
         'manual_quotation',
+        'manual_quotation_type',
         'customer_id',
         'customer_branch_id',
         'created_by',
@@ -113,7 +114,7 @@ class JobOrderModel extends Model
             {$this->table}.employee_id,
             {$this->table}.status,
             IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, 'N/A') AS tasklead_type,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
             CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager,
             {$this->tableEmployees}.firstname,
             {$this->tableEmployees}.lastname,
@@ -176,7 +177,7 @@ class JobOrderModel extends Model
             {$this->table}.tasklead_id,
             {$this->table}.status AS jo_status,
             IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, 'N/A') AS tasklead_type,
+            IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
             IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client,
             {$this->table}.work_type,
             CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager
@@ -250,7 +251,7 @@ class JobOrderModel extends Model
                 $id         = $data['id'][0];
                 $columns    = "
                     IF({$this->table}.is_manual = 0, {$this->tableJoined}.customer_name, {$this->tableCustomers}.name) AS client,
-                    IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, 'project') AS tasklead_type,
+                    IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
                     {$this->table}.comments,
                 ";
                 $job_order  = $this->getJobOrders($id, $columns);
@@ -259,7 +260,7 @@ class JobOrderModel extends Model
                     'job_order_id'  => $id,
                     'title'         => $job_order['client'],
                     'description'   => $job_order['comments'],
-                    'type'          => !empty($job_order['type']) ? strtolower($job_order['type']) : 'project',
+                    'type'          => !empty($job_order['tasklead_type']) ? strtolower($job_order['tasklead_type']) : 'project',
                     'start'         => $data['data']['date_committed'],
                     'end'           => $data['data']['date_committed'] .' 23:00', // set to 11pm
                     'created_by'    => session('username'),

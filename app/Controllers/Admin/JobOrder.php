@@ -249,7 +249,8 @@ class JobOrder extends BaseController
                     $columns    = '
                         job_orders.remarks,
                         job_orders.date_committed,
-                        task_lead_booked.tasklead_type AS type,
+                        job_orders.is_manual,
+                        IF(job_orders.is_manual = 0, task_lead_booked.tasklead_type, job_orders.manual_quotation_type) AS type,
                         task_lead_booked.employee_id,
                     ';                
                     $record     = $this->_model->getJobOrders($id, $columns);
@@ -317,6 +318,7 @@ class JobOrder extends BaseController
                     $inputs['employee_id']      = $this->request->getVar('employee_id');
                     $inputs['date_committed']   = $this->request->getVar('date_committed');
                     $inputs['remarks']          = $this->request->getVar('remarks');
+                    $inputs['manual_quotation_type'] = $this->request->getVar('manual_quotation_type') ?? null;
                 }
     
                 if (! $this->_model->update($id, $inputs)) {
