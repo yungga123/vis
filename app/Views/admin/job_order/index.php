@@ -55,6 +55,16 @@
                                 <th>Warranty</th>
                                 <th>Comments</th>
                                 <th>Remarks</th>
+                                <th>Requested By</th>
+                                <th>Requested At</th>
+                                <th>Accepted By</th>
+                                <th>Accepted At</th>
+                                <th>Filed By</th>
+                                <th>Filed At</th>
+                                <th>Discarded By</th>
+                                <th>Discarded At</th>
+                                <th>Reverted By</th>
+                                <th>Reverted At</th>
                             </tr>
                         </thead>
                     </table>
