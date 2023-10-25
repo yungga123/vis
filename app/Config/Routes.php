@@ -157,7 +157,7 @@ $routes->group('settings/mail', ['filter' => 'checkauth'], static function ($rou
     $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail.reset']);
 });
 
-//PERMISSIONS
+// PERMISSIONS
 $routes->group('settings/permissions', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'Settings\Permission::index', ['as' => 'permission.home']);
     $routes->post('list', 'Settings\Permission::list', ['as' => 'permission.list']);
@@ -166,13 +166,21 @@ $routes->group('settings/permissions', ['filter' => 'checkauth'], static functio
     $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
 });
 
-//ROLES
+// ROLES
 $routes->group('settings/roles', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'Settings\Roles::index', ['as' => 'roles.home']);
     $routes->post('list', 'Settings\Roles::list', ['as' => 'roles.list']);
     $routes->post('save', 'Settings\Roles::save', ['as' => 'roles.save']);
     $routes->post('edit', 'Settings\Roles::edit', ['as' => 'roles.edit']);
     $routes->post('delete', 'Settings\Roles::delete', ['as' => 'roles.delete']);
+});
+
+// GENERAL INFO
+$routes->group('settings/general-info', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Settings\GeneralInfo::index', ['as' => 'general_info.home']);
+    $routes->post('save', 'Settings\GeneralInfo::save', ['as' => 'general_info.save']);
+    $routes->post('upload', 'Settings\GeneralInfo::upload', ['as' => 'general_info.upload']);
+    $routes->get('fetch', 'Settings\GeneralInfo::fetch', ['as' => 'general_info.fetch']);
 });
 
 /* Access denied */

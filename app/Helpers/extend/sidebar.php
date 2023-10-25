@@ -47,6 +47,12 @@ if (! function_exists('get_nav_menus'))
             url_is('request-purchase-forms') ||
             url_is('generate-po')
         );
+        $is_settings    = (
+            url_is('settings/mail') || 
+            url_is('settings/permissions') || 
+            url_is('settings/roles') || 
+            url_is('settings/general-info')
+        );
         
 		$menu           = [
             'SALES'          => [
@@ -64,7 +70,7 @@ if (! function_exists('get_nav_menus'))
             'SETTINGS'      => [
                 'name'      => 'Settings',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('settings/mail') || url_is('settings/permissions') || url_is('settings/roles')),
+                'urls'      => $is_settings,
                 'icon'      => 'fas fa-cog',
             ],
             'PURCHASING'        => [
@@ -217,6 +223,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('generate-po.home'),
                 'class'     => (url_is('generate-po') ? 'active' : ''),
                 'icon'      => 'fas fa-list',
+            ],
+            'SETTINGS_GENERAL_INFO'  => [
+                'menu'      => 'SETTINGS', // Leave empty if none
+                'name'      => get_modules('SETTINGS_GENERAL_INFO'),
+                'url'       => url_to('general_info.home'),
+                'class'     => (url_is('settings/general-info') ? 'active' : ''),
+                'icon'      => 'fas fa-info-circle',
             ],
         ];
 

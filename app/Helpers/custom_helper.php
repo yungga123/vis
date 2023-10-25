@@ -87,7 +87,8 @@ if (! function_exists('format_date'))
      */
 	function format_date(string $date, string $format = 'M d, Y'): string
 	{
-        return !empty($date) ?date($format, strtotime($date)) : '';
+        if (! is_date_valid($date)) return '';
+        return !empty($date) ? date($format, strtotime($date)) : '';
 	}
 }
 
@@ -98,6 +99,7 @@ if (! function_exists('format_time'))
      */
 	function format_time(string $time, string $format = 'h:i A', bool $print = false): string
 	{
+        if (! is_date_valid($time)) return '';
         if ($print) {
             if (empty($time) || $time == '00:00:00') return ''; 
         }
@@ -113,7 +115,20 @@ if (! function_exists('format_datetime'))
      */
 	function format_datetime(string $datetime, string $format = 'M d, Y h:i A'): string
 	{
+        if (! is_date_valid($datetime)) return '';
         return !empty($datetime) ? date($format, strtotime($datetime)) : '';
+	}
+}
+
+if (! function_exists('is_date_valid'))
+{
+    /**
+     * Check date or datetime if valid
+     */
+	function is_date_valid(string $datetime): string
+	{
+        $check = strtotime($datetime);
+        return ($check > 0);
 	}
 }
 

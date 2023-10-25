@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-3 text-center mx-auto">
-			<img src="<?= base_url('assets/images/vinculumnew.jpg') ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px;width: 200px">
+			<img src="<?= base_url($company_logo) ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px;width: 200px">
 		</div>
 	</div>
 	<div class="row">
@@ -16,11 +16,11 @@
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Project/Client Name:</td>
-						<td width="50%"><?= $prf['customer_name'] ?></td>
+						<td width="50%"><?= $prf['client'] ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Quotation No:</td>
-						<td width="50%"><?= $prf['quotation_num'] ?></td>
+						<td width="50%"><?= $prf['quotation'] ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Work Type:</td>
@@ -87,10 +87,10 @@
 								<td><?= $item['inventory_id'] ?></td>
 								<td><?= $item['category_name'] ?></td>
 								<td><?= $item['item_description'] ?></td>
-								<td><?= $item['quantity_out'] ?></td>
-								<td><?= $item['stocks'] ?></td>
-								<td><?= $item['consumed'] ?></td>
-								<td><?= $item['returned_q'] ?></td>
+								<td><?= number_format($item['quantity_out'], 2) ?></td>
+								<td><?= number_format($item['stocks'], 2) ?></td>
+								<td><?= number_format($item['consumed'], 2) ?></td>
+								<td><?= $item['returned_q'] ? number_format($item['returned_q'], 2) : $item['returned_q'] ?></td>
 								<td><?= $item['returned_date_formatted'] ?></td>
 							</tr>
 					<?php

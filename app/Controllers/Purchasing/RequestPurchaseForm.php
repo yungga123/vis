@@ -6,12 +6,13 @@ use App\Controllers\BaseController;
 use App\Models\RequestPurchaseFormModel;
 use App\Models\RPFItemModel;
 use App\Traits\InventoryTrait;
+use App\Traits\GeneralInfoTrait;
 use monken\TablesIgniter;
 
 class RequestPurchaseForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait;
+    use InventoryTrait, GeneralInfoTrait;
 
     /**
      * Use to initialize corresponding model
@@ -303,11 +304,12 @@ class RequestPurchaseForm extends BaseController
         
         $this->_model->joinView($builder);
 
-        $rpfItemModel       = new RPFItemModel(); 
-        $items              = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
-        $data['rpf']        = $builder->find($id);
-        $data['rpf_items']  = $items;
-        $data['title']      = 'Print Requisition Form';
+        $rpfItemModel           = new RPFItemModel(); 
+        $items                  = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+        $data['rpf']            = $builder->find($id);
+        $data['rpf_items']      = $items;
+        $data['title']          = 'Print Requisition Form';
+        $data['company_logo']   = $this->getGeneralInfo('company_logo');
 
         return view('purchasing/rpf/print', $data);
     }
