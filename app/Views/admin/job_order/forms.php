@@ -150,7 +150,7 @@
                             <small id="alert_date_committed_status" class="text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label class="required" for="employee_id">Manager / Incharge</label>
+                            <label class="required" for="employee_id_status">Manager / Incharge</label>
                             <select class="custom-select select2" name="employee_id" id="employee_id_status" placeholder="Please a manager" style="width: 100%;">
                                 <?php if (! empty(get_employees())): ?>
                                 <?php foreach (get_employees() as $val): ?>
@@ -160,8 +160,22 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="type">Quotation Type</label>
-                            <input type="text" name="type" id="type" class="form-control" readonly>
+                            <label for="manual_quotation_type">Quotation Type</label>
+                            <!-- For manual quotation number -->
+                            <select class="form-control d-none" name="manual_quotation_type" id="manual_quotation_type">
+                                <?php foreach (get_tasklead_type() as $val => $text): ?>
+                                    <option value="<?= strtolower($val) ?>"><?= $text ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <!-- For tasklead quotation number - not selectable -->
+                            <div id="quotation_type_wrapper">
+                                <select class="form-control" id="quotation_type" disabled>
+                                    <?php foreach (get_quotation_type() as $val => $text): ?>
+                                        <option value="<?= $val ?>"><?= $text ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <small>Changeable only in task/lead module.</small>
+                            </div>
                         </div>
                     </div>
                     <div class="d-none" id="fields_file">

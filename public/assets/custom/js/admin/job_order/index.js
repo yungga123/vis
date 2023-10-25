@@ -317,6 +317,7 @@ function status(id, changeTo, status) {
 	} else {
 		toggleStatusFields(changeTo, "accept");
 		toggleStatusFields(changeTo, "file");
+		clearSelect2Selection("#employee_id_status");
 
 		$("#status_modal").modal("show");
 		$("#job_order_id_status").val(id);
@@ -331,8 +332,19 @@ function status(id, changeTo, status) {
 			.then((res) => {
 				$("#date_committed_status").val(res.data.date_committed);
 				setSelect2Selection("#employee_id_status", res.data.employee_id);
-				$("#type").val(res.data.type || "Project");
 				$("#remarks").val(res.data.remarks);
+				$("#is_manual_status").val(res.data.is_manual);
+				$("#quotation_type").val(res.data.type || "Q1"); // Default Project
+				$("#quotation_type_wrapper").removeClass("d-none");
+				$("#manual_quotation_type").addClass("d-none");
+				$("#manual_quotation_type").attr("disabled", true);
+
+				if (res.data.is_manual !== "0") {
+					$("#manual_quotation_type").val(res.data.type || "project"); // Default Project
+					$("#manual_quotation_type").removeClass("d-none");
+					$("#manual_quotation_type").removeAttr("disabled");
+					$("#quotation_type_wrapper").addClass("d-none");
+				}
 			})
 			.catch((err) => catchErrMsg(err));
 	}
