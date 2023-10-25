@@ -334,7 +334,7 @@ function status(id, changeTo, status) {
 				setSelect2Selection("#employee_id_status", res.data.employee_id);
 				$("#remarks").val(res.data.remarks);
 				$("#is_manual_status").val(res.data.is_manual);
-				$("#quotation_type").val(res.data.type || "Q1"); // Default Project
+				$("#quotation_type").val(res.data.type || "Project"); // Default Project
 				$("#quotation_type_wrapper").removeClass("d-none");
 				$("#manual_quotation_type").addClass("d-none");
 				$("#manual_quotation_type").attr("disabled", true);
