@@ -171,7 +171,7 @@
                             <div id="quotation_type_wrapper">
                                 <select class="form-control" id="quotation_type" disabled>
                                     <?php foreach (get_quotation_type() as $val => $text): ?>
-                                        <option value="<?= $val ?>"><?= $text ?></option>
+                                        <option value="<?= $text ?>"><?= $text ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <small>Changeable only in task/lead module.</small>
