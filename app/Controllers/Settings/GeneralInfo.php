@@ -78,10 +78,11 @@ class GeneralInfo extends BaseController
             'status'    => STATUS_SUCCESS,
             'message'   => 'Data has been saved successfully!'
         ];
-
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->_canUserSave();
+
                 $inputs     = [];
                 $request    = $this->request->getVar();
                 unset($request['csrf_test_name']);
@@ -118,6 +119,8 @@ class GeneralInfo extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->_canUserSave();
+
                 $fileName = 'company_logo';
                 $validate = $this->_validationRule($fileName);
 
@@ -205,5 +208,17 @@ class GeneralInfo extends BaseController
         ];
 
         return $validate;
+    }
+
+    /**
+     * Check if user can save
+     *
+     * @return void|Exception
+     */
+    private function _canUserSave()
+    {
+        if (! $this->_can_add) {
+            throw new \Exception("You don't have permission for saving data. Kindly add the <strong>ADD</strong> permission first!", 2);
+        }
     }
 }
