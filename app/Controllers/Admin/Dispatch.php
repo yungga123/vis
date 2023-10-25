@@ -5,10 +5,14 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\DispatchModel;
 use App\Models\DispatchedTechniciansModel;
+use App\Traits\GeneralInfoTrait;
 use monken\TablesIgniter;
 
 class Dispatch extends BaseController
 {
+    /* Declare trait here to use */
+    use GeneralInfoTrait;
+
     /**
      * Use to initialize model class
      * @var object
@@ -279,9 +283,10 @@ class Dispatch extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
         
-        $id                 = $this->request->getUri()->getSegment(3);
-        $data['dispatch']   = $this->_model->getDispatch($id, false, false, true);
-        $data['title']      = 'Print Dispatch';
+        $id                     = $this->request->getUri()->getSegment(3);
+        $data['dispatch']       = $this->_model->getDispatch($id, false, false, true);
+        $data['title']          = 'Print Dispatch';
+        $data['company_logo']   = $this->getGeneralInfo('company_logo');
 
         return view('admin/dispatch/print', $data);
     }
