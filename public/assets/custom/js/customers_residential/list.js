@@ -17,7 +17,8 @@ $(document).ready(function () {
 		"email_address",
 		"source",
 		"notes",
-		"referred_by"
+		"referred_by",
+		"customer_type"
 	];
 
 	/* Load dataTable */

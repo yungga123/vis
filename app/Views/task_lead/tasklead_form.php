@@ -22,7 +22,12 @@
                             </div>
                             <div class="form-group quarter" hidden>
                                 <label for="quarter">Quarter</label>
-                                <input type="text" name="quarter" id="quarter" class="form-control" placeholder="Enter..." value="<?= $quarter ?>" readonly>
+                                <select type="text" name="quarter" id="quarter" class="form-control">
+                                    <option value="1" <?= ($quarter==1) ? "selected" : "" ?>>1st Quarter</option>
+                                    <option value="2" <?= ($quarter==2) ? "selected" : "" ?>>2nd Quarter</option>
+                                    <option value="3" <?= ($quarter==3) ? "selected" : "" ?>>3rd Quarter</option>
+                                    <option value="4" <?= ($quarter==4) ? "selected" : "" ?>>4th Quarter</option>
+                                </select>
                                 <small id="alert_quarter" class="text-danger"></small>
                             </div>
                             <div class="form-group status" hidden>
@@ -51,7 +56,7 @@
                             </div>
                             <div class="form-group customer_id" hidden>
                                 <label for="customer_id">Customer</label>
-                                <select name="customer_id" id="customer_id" class="form-control" placeholder="Enter..." disabled>
+                                <select name="customer_id" id="customer_id" class="form-control" placeholder="Enter..." disabled style="width: 100%;">
                                     
                                 </select>
                                 <small id="alert_customer_id" class="text-danger"></small>
@@ -76,11 +81,19 @@
                                 <label for="quotation_num">Quotation Number</label>
                                 <select class="form-control" id="quotation_type">
                                     <option value="">--Select Quotation Type---</option>
-                                    <option value="Q1">Project</option>
-                                    <option value="Q2">Service</option>
-                                    <option value="Q3">Supplies</option>
+                                    <?php foreach (get_quotation_type() as $val => $text): ?>
+                                        <option value="<?= $val ?>"><?= $text ?></option>
+                                    <?php endforeach; ?>
                                 </select>
-                                <input type="text" name="quotation_num" id="quotation_num" class="form-control" placeholder="Enter..." readonly>
+
+                                <select class="form-control mt-2" id="quotation_color">
+                                    <option value="">--Select Quotation Color---</option>
+                                    <?php foreach (get_quotation_color() as $val => $text): ?>
+                                        <option value="<?= $val ?>"><?= $text ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input type="text" name="quotation_num" id="quotation_num" class="form-control mt-2" placeholder="Enter..." readonly>
+                                <input type="hidden" name="tasklead_type" id="tasklead_type" class="form-control" placeholder="Enter..." readonly>
                                 <small id="alert_quotation_num" class="text-danger"></small>
                             </div>
                             <div class="form-group forecast_close_date" hidden>

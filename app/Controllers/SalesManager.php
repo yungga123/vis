@@ -4,60 +4,118 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\TaskLeadModel;
-use App\Models\TaskLeadView;
 
 class SalesManager extends BaseController
 {
+    /**
+     * Use to initialize PermissionModel class
+     * @var object
+     */
+    private $_model;
+
+    /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+
+    /**
+     * Use to get current permissions
+     * @var string
+     */
+
+    private $_permissions;
+
+    public function __construct()
+    {
+        $this->_model       = new TaskLeadModel(); // Current model
+        $this->_module_code = MODULE_CODES['manager_sales']; // Current module
+        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+    }
+
+    
+
     public function index()
     {
-        if (session('logged_in')==true)
-        {
-            $data['title'] = 'Manager of Sales';
-            $data['page_title'] = 'Manager of Sales';
-            $data['uri'] = service('uri');
+        // Check role if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code);
 
-            return view('manager_of_sales/menu',$data);
-        }
-        else
-        {
-            return redirect()->to('login');
-        }
+        
+
+        $data['title']          = 'Manager of Sales';
+        $data['page_title']     = 'Manager of Sales';
+        $data['custom_js']      = 'sales_manager/index.js';
+        $data['custom_css']     = 'sales_manager/index.css';
+        $data['highcharts']     = true;
+        $data['sweetalert2']    = true;
+        $data['with_dtTable']   = true;
+        $data['with_jszip']     = true;
+
+
+        return view('manager_of_sales/index', $data);
     }
 
-    public function consolidated_forecast() {
-        if (session('logged_in')==false) {
-            return redirect()->to('login');
-        }
+    // Data for PIE CHARTS
+    public function taskleads() 
+    {
+        $model = $this->_model;
 
-        $taskleadModel = new TaskLeadModel();
-        $taskleadView = new TaskLeadView();
+        $quarter = $this->request->getVar('quarter');
 
-        $data['title'] = 'Consolidated Sales Forecast';
-        $data['page_title'] = 'Consolidated Sales Forecast';
-        $data['uri'] = service('uri');
-        $data['bookedNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->find();
-        $data['negotiationNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','90.00')->find();
-        $data['evalNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','70.00')->find();
-        $data['devsolNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','50.00')->find();
-        $data['qualifiedNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','30.00')->find();
-        $data['identifiedNumber'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','10.00')->find();
+        $data['booked'] = count($model->where('quarter',$quarter)->where('status',100.00)->find());
+        $data['negotiation'] = count($model->where('quarter',$quarter)->where('status',90.00)->find());
+        $data['evaluation'] = count($model->where('quarter',$quarter)->where('status',70.00)->find());
+        $data['dev_sol'] = count($model->where('quarter',$quarter)->where('status',50.00)->find());
+        $data['qualified'] = count($model->where('quarter',$quarter)->where('status',30.00)->find());
+        $data['identified'] = count($model->where('quarter',$quarter)->where('status',10.00)->find());
 
-        $data['Q1stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','1')->find();
-        $data['Q2stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','2')->find();
-        $data['Q3stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','3')->find();
-        $data['Q4stats'] = $taskleadModel->where('employee_id',session('employee_id'))->where('status','100.00')->where('quarter','4')->find();
+        return $this->response->setJSON($data);
 
-        $data['Q1hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','1')->find();
-        $data['Q2hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','2')->find();
-        $data['Q3hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','3')->find();
-        $data['Q4hits'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','HIT')->where('quarter','4')->find();
-
-        $data['Q1miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','1')->find();
-        $data['Q2miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','2')->find();
-        $data['Q3miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','3')->find();
-        $data['Q4miss'] = $taskleadView->where('employee_id',session('employee_id'))->where('status1','MISSED')->where('quarter','4')->find();
-
-
-        return view('manager_of_sales/sales_forecast', $data);
     }
+
+    // Data for Over-All Stats
+    public function taskleads_stats()
+    {
+        $model = $this->_model;
+
+        $data['booked'] = count($model->where('status',100.00)->find());
+        $data['negotiation'] = count($model->where('status',90.00)->find());
+        $data['evaluation'] = count($model->where('status',70.00)->find());
+        $data['dev_sol'] = count($model->where('status',50.00)->find());
+        $data['qualified'] = count($model->where('status',30.00)->find());
+        $data['identified'] = count($model->where('status',10.00)->find());
+
+        $data['booked_amt'] = $model->selectSum('project_amount')->where('status',100.00)->find();
+        $data['negotiation_amt'] = $model->selectSum('project_amount')->where('status',90.00)->find();
+        $data['evaluation_amt'] = $model->selectSum('project_amount')->where('status',70.00)->find();
+        $data['dev_sol_amt'] = $model->selectSum('project_amount')->where('status',50.00)->find();
+        $data['qualified_amt'] = $model->selectSum('project_amount')->where('status',30.00)->find();
+        $data['identified_amt'] = $model->selectSum('project_amount')->where('status',10.00)->find();
+
+        return $this->response->setJSON($data);
+    }
+
+    // Data for Quarterly Stats
+    public function taskleads_quarterly()
+    {
+        $model = $this->_model;
+
+        $quarter = $this->request->getVar('quarter');
+
+        $data['booked'] = $model->where('quarter',$quarter)->where('status',100.00)->find();
+        $data['negotiation'] = $model->where('quarter',$quarter)->where('status',90.00)->find();
+        $data['evaluation'] = $model->where('quarter',$quarter)->where('status',70.00)->find();
+        $data['dev_sol'] = $model->where('quarter',$quarter)->where('status',50.00)->find();
+        $data['qualified'] = $model->where('quarter',$quarter)->where('status',30.00)->find();
+        $data['identified'] = $model->where('quarter',$quarter)->where('status',10.00)->find();
+
+        $data['booked_amt'] = $model->selectSum('project_amount')->where('quarter',$quarter)->where('status',100.00)->find();
+        $data['status1'] = $model->select("IF(close_deal_date<DATE_ADD(forecast_close_date, INTERVAL 6 DAY) AND close_deal_date>DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'HIT','MISSED') as status1")->where('quarter',$quarter)->where('status',100.00)->find();
+
+        return $this->response->setJSON($data);
+
+    }
+
+    
+    
 }

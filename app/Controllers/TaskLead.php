@@ -3,10 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\CustomersModel;
-use App\Models\CustomersResidentialModel;
-use App\Models\CustomersVtBranchModel;
-use App\Models\CustomersVtModel;
+use App\Models\CustomerBranchModel;
+use App\Models\CustomerModel;
 use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
 use CodeIgniter\Files\File;
@@ -76,6 +74,7 @@ class Tasklead extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
+        $data['select2']        = true;
         $data['can_add']        = $this->_can_add;
         $data['quarter']        = $this->_time->getQuarter();
         $data['btn_add_lbl']    = 'Add New Tasklead';
@@ -96,11 +95,14 @@ class Tasklead extends BaseController
     public function list()
     {
         $table = new TablesIgniter();
-        $booked = $this->request->getVar('get_booked');
-        $employee_id = $this->request->getVar('employee_id');
+        $params = $this->request->getVar('params');
+        $builder = $this->_model->noticeTable();
 
+        if ($params && $params['filter'] !== 'all') {
+            $builder->where('status', $params['filter']);
+        }
 
-        $table->setTable($employee_id ? $this->_model->noticeTable()->where('status !=',$booked)->where('employee_id',$employee_id) : $this->_model->noticeTable()->where('status !=',$booked))
+        $table->setTable($builder)
             ->setSearch([
                 "id",
                 "employee_name",
@@ -211,7 +213,7 @@ class Tasklead extends BaseController
 
             //update customer to existing customer if customer is forecast after booked
             if ($this->request->getVar('existing_customer')==0 && $this->request->getVar('status')=='100.00' && $this->request->getVar('customer_type')=='Commercial') {
-                $customersVtModel = new CustomersVtModel();
+                $customersVtModel = new CustomerModel();
 
                 $customersVtModel->update(
                     $this->request->getVar('customer_id'),
@@ -221,7 +223,7 @@ class Tasklead extends BaseController
                 );
             } elseif(($this->request->getVar('existing_customer')==0 && $this->request->getVar('status')=='100.00' && $this->request->getVar('customer_type')=='Residential')) {
 
-                $customersResidentialModel = new CustomersResidentialModel();
+                $customersResidentialModel = new CustomerModel();
 
                 $customersResidentialModel->update(
                     $this->request->getVar('customer_id'),
@@ -325,9 +327,9 @@ class Tasklead extends BaseController
 
 
     public function getVtCustomer() {
-        $model = new CustomersVtModel();
+        $model = new CustomerModel();
         $forecast = $this->request->getVar('forecast');
-        $data['data'] = $model->where('forecast', $forecast)->find();
+        $data['data'] = $model->where('forecast', $forecast)->where('type','COMMERCIAL')->find();
         $data['success'] = true;
 
         return $this->response->setJSON($data);
@@ -343,16 +345,16 @@ class Tasklead extends BaseController
     // }
 
     public function getResidentialCustomers() {
-        $model = new CustomersResidentialModel();
+        $model = new CustomerModel();
         $forecast = $this->request->getVar('forecast');
-        $data['data'] = $model->where('forecast', $forecast)->find();
+        $data['data'] = $model->where('forecast', $forecast)->where('type','RESIDENTIAL')->find();
         $data['success'] = true;
 
         return $this->response->setJSON($data);
     }
 
     public function getCustomerVtBranch() {
-        $model = new CustomersVtBranchModel();
+        $model = new CustomerBranchModel();
         $id = $this->request->getVar('id');
         $data['data'] = $model->where('customer_id',$id)->find();
         $data['success'] = true;

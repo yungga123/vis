@@ -1,379 +1,240 @@
 <?php
+// Helper functions for sidebar rendering
+require APPPATH.'Helpers/extend/sidebar.php';
 
-/**
- * Get the permissions of the current logged user
- */
-if (! function_exists('get_permissions'))
+// Helper functions for user related functionality
+require APPPATH.'Helpers/extend/user_mngmt.php';
+
+// Helper functions for datatable related functionality
+require APPPATH.'Helpers/extend/datatable.php';
+
+// Helper functions for select/options related
+require APPPATH.'Helpers/extend/select_options.php';
+
+// Mixed helper functions - start from here
+if (! function_exists('check_string_contains'))
 {
-	function get_permissions(): array 
+    /**
+     * Check string if contains the passed value
+     */
+	function check_string_contains(string $string, string $val): bool
 	{
-		$model = new \App\Models\PermissionModel();
-        return $model->getCurrUserPermissions();
+        return (strpos($string, $val) !== false);
 	}
 }
 
-/**
- * Get the modules of the current logged user
- */
-if (! function_exists('get_user_modules'))
+if (! function_exists('remove_string'))
 {
-	function get_user_modules(array|null $permissions = null): array 
+    /**
+     * Clear variable based on the passed params
+     */
+	function remove_string(string|array|null $subject, string $search, string $replace = ''): string|array|null
 	{
-        if (session('access_level') === AAL_ADMIN) {
-            return array_keys(MODULES);
+        if (! empty($subject)) {
+            if (is_array($subject)) {
+                $arr = [];
+                foreach ($subject as $val) {
+                    $arr[] = str_replace($search, $replace, $val);
+                }
+    
+                $subject = $arr;
+            } else {
+                $subject = str_replace($search, $replace, $subject);
+            }
         }
 
-        $permissions = $permissions ?? get_permissions();
-		return !empty($permissions) 
-                ? array_column($permissions, 'module_code') : [];
+        return $subject;
 	}
 }
 
-/**
- * Get the nav menus of some of the modules
- */
-if (! function_exists('get_nav_menus'))
+if (! function_exists('current_date'))
 {
-	function get_nav_menus(string $param): array
+    /**
+     * Get current date - default format 'Y-m-d'
+     */
+	function current_date(string $format = 'Y-m-d'): string
 	{
-		$menu = [
-            'SALES'            => [
-                'name'      => 'Sales',
-                // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead')),
-                'icon'      => 'far fa-credit-card',
-            ],
-            'HUMAN_RESOURCE'   => [
-                'name'      => 'Human Resource',
-                // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('accounts') || url_is('employees')),
-                'icon'      => 'fas fa-users',
-            ],
-            'SETTINGS'          => [
-                'name'      => 'Settings',
-                // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('settings/mail') || url_is('settings/permissions')),
-                'icon'      => 'fas fa-cog',
-            ],
-        ];
-
-        return $menu[$param];
+        return date($format);
 	}
 }
 
-/**
- * Setup modules - like icons, urls etc..
- */
-if (! function_exists('setup_modules'))
+if (! function_exists('current_datetime'))
 {
-	function setup_modules(string $param = null)
+    /**
+     * Get current date & time - default format 'Y-m-d H:i:s'
+     */
+	function current_datetime(string $format = 'Y-m-d H:i:s'): string
 	{
-		$modules = [
-            // 'DASHBOARD'             => 'Dashboard',
-            'ACCOUNTS'              => [
-                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
-                'name'      => get_modules('ACCOUNTS'),
-                'url'       => url_to('account.home'),
-                'class'     => (url_is('accounts') ? 'active' : ''),
-                'icon'      => 'fas fa-user-cog',
-            ],
-            'EMPLOYEES'             => [
-                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
-                'name'      => get_modules('EMPLOYEES'),
-                'url'       => url_to('employee.home'),
-                'class'     => (url_is('employees') ? 'active' : ''),
-                'icon'      => 'fas fa-user-clock',
-            ],
-            // 'CUSTOMERS'             => [
-            //     'menu'      => 'SALES', // Leave empty if none
-            //     'name'      => get_modules('CUSTOMERS'),
-            //     'url'       => url_to('customers.home'),
-            //     'class'     => (url_is('customers') ? 'active' : ''),
-            //     'icon'      => 'far fa-address-card',
-            // ],
-            'CUSTOMERS_COMMERCIAL'             => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('CUSTOMERS_COMMERCIAL'),
-                'url'       => url_to('customervt.home'),
-                'class'     => (url_is('customers/commercial') ? 'active' : ''),
-                'icon'      => 'far fa-address-card',
-            ],
-            'CUSTOMERS_RESIDENTIAL'             => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('CUSTOMERS_RESIDENTIAL'),
-                'url'       => url_to('customersresidential.home'),
-                'class'     => (url_is('customers/residential') ? 'active' : ''),
-                'icon'      => 'far fa-address-book',
-            ],
-            'TASK_LEAD'             => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('TASK_LEAD'),
-                'url'       => url_to('tasklead.home'),
-                'class'     => (url_is('tasklead') ? 'active' : ''),
-                'icon'      => 'fas fa-tasks',
-            ],
-            // 'MANAGER_OF_SALES'      => [
-            //     'menu'      => 'SALES', // Leave empty if none
-            //     'name'      => get_modules('MANAGER_OF_SALES'),
-            //     'url'       => '#',
-            //     'class'     => (url_is('employees') ? 'active' : ''),
-            //     'icon'      => 'far fa-circle',
-            // ],
-            'SETTINGS_MAILCONFIG'   => [
-                'menu'      => 'SETTINGS', // Leave empty if none
-                'name'      => get_modules('SETTINGS_MAILCONFIG'),
-                'url'       => url_to('mail.home'),
-                'class'     => (url_is('settings/mail') ? 'active' : ''),
-                'icon'      => 'fas fa-envelope',
-            ],
-            'SETTINGS_PERMISSIONS'   => [
-                'menu'      => 'SETTINGS', // Leave empty if none
-                'name'      => get_modules('SETTINGS_PERMISSIONS'),
-                'url'       => url_to('permission.home'),
-                'class'     => (url_is('settings/permissions') ? 'active' : ''),
-                'icon'      => 'fas fa-user-lock',
-            ],
-        ];
-
-        return $param ? $modules[$param] : $modules;
+        return date($format);
 	}
 }
 
-/**
- * Format the sidebar menus of the current user
- */
-if (! function_exists('get_sidebar_menus'))
+if (! function_exists('current_date'))
 {
-	function get_sidebar_menus()
+    /**
+     * Get current data - default format 'Y-m-d'
+     */
+	function current_date(string $format = 'Y-m-d'): string
 	{
-        $html           = '';
-        $items          = [];
-        $menus          = [];
-        $modules        = setup_modules();
-        $user_modules   = get_user_modules();
+        return date($format);
+	}
+}
 
-		if (! empty($modules)) {
-            ksort($modules);
-            foreach ($modules as $key => $module) {
-                if (in_array($key, $user_modules) && !empty($module)) {
+if (! function_exists('format_date'))
+{
+    /**
+     * Format date - default format 'M d, Y' (ex. Jan 1, 2023)
+     */
+	function format_date(string $date, string $format = 'M d, Y'): string
+	{
+        if (! is_date_valid($date)) return '';
+        return !empty($date) ? date($format, strtotime($date)) : '';
+	}
+}
 
-                    if (! empty($module['menu'])) {                        
-                        $_menu = $module['menu'];
-                        $_key = $_menu;
-
-                        // Check if module has nav menu
-                        if (!in_array($module['menu'], $menus)) {
-                            $head = get_nav_menus($module['menu']);
-                            $menu = $head['urls'] ? 'menu-open' : '';
-                            $active = $head['urls'] ? 'active' : '';
-
-                            // Create the nav menu item
-                            $menus[$module['menu']] = <<<EOF
-                                <li class="nav-item {$menu}" id="{$module['menu']}">
-                                    <a href="#" class="nav-link {$active}">
-                                        <i class="nav-icon {$head['icon']}"></i>
-                                        <p>
-                                            {$head['name']}
-                                            <i class="fas fa-angle-left right"></i>
-                                        </p>
-                                    </a>
-                            EOF;
-                        }
-                    } else $_key = $key;
-
-                    // Html for nav item
-                    $_item  = <<<EOF
-                        <li class="nav-item" id="{$key}">
-                            <a href="{$module['url']}" class="nav-link {$module['class']}">
-                                <i class="nav-icon {$module['icon']}"></i>
-                                <p>
-                                    {$module['name']}
-                                </p>
-                            </a>
-                        </li>
-                    EOF;
-
-                    // Concat to $html if $_key is false
-                    if (strpos($html, $_key) === false)  $html .= "[$_key]";
-                    
-                    // Append to $items
-                    if (isset($items[$_key])) {
-                        // Concat if $_key does exist
-                        $items[$_key] .= $_item;
-                    } else $items[$_key] = $_item;
-                }
-            }
-
-            if (! empty($menus)) {
-                // Check if the $menus has value
-                foreach ($menus as $key => $val) {
-                    if (isset($items[$key])) {
-                        $mod = <<<EOF
-                            {$val}
-                             <ul class="nav nav-treeview">
-                                 {$items[$key]}
-                             </ul>
-                         EOF;
-                        // If key is in the item replace it
-                        $html = str_replace("[$key]", $mod, $html);
-                    }
-                }
-            }
-
-            if (! empty($items)) {
-                // For nav item that has no nav header
-                foreach ($items as $key => $val) {
-                    if (strpos($html, $key)) {
-                        $html = str_replace("[$key]", $val, $html);
-                    }
-                        
-                }
-            }
-
+if (! function_exists('format_time'))
+{
+    /**
+     * Format time - default format 'h:i A' (ex. 12:00 PM)
+     */
+	function format_time(string $time, string $format = 'h:i A', bool $print = false): string
+	{
+        if (! is_date_valid($time)) return '';
+        if ($print) {
+            if (empty($time) || $time == '00:00:00') return ''; 
         }
 
-        return $html;
+        return !empty($time) ? date($format ? $format : 'h:i A', strtotime($time)) : '';
 	}
 }
 
-/**
- * Check if current logged user is administration
- */
-if (! function_exists('is_admin'))
+if (! function_exists('format_datetime'))
 {
-	function is_admin(): bool
+    /**
+     * Format datetime - default format 'M d, Y h:i A' (ex. Jan 1, 2023 12:00 PM)
+     */
+	function format_datetime(string $datetime, string $format = 'M d, Y h:i A'): string
 	{
-        return session('access_level') === AAL_ADMIN;
+        if (! is_date_valid($datetime)) return '';
+        return !empty($datetime) ? date($format, strtotime($datetime)) : '';
 	}
 }
 
-/**
- * Get role / access level list
- */
-if (! function_exists('get_roles'))
+if (! function_exists('is_date_valid'))
 {
-	function get_roles(string|null $param = null): string|array
+    /**
+     * Check date or datetime if valid
+     */
+	function is_date_valid(string $datetime): string
 	{
-		$roles = ROLES;
-        
-        if(! is_admin()) unset($roles['ADMIN']);
-
-		return $param ? $roles[strtoupper($param)] : $roles;
+        $check = strtotime($datetime);
+        return ($check > 0);
 	}
 }
 
-/**
- * Get the module list
- */
-if (! function_exists('get_modules'))
+if (! function_exists('has_empty_value'))
 {
-	function get_modules(string|null $param = null): string|array
+    /**
+     * Check if array has an empty value
+     */
+	function has_empty_value(array $array): bool
 	{
-		$modules = MODULES;
-
-        asort($modules);
-
-        // if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
-
-		return $param ? $modules[strtoupper($param)] : $modules;
+        foreach ($array as $value) {
+            if (empty($value)) return true; // Found an empty value
+        }
+        return false; // No empty values found
 	}
 }
 
-/**
- * Get the action list
- */
-if (! function_exists('get_actions'))
+if (! function_exists('is_array_multi_dimen'))
 {
-	function get_actions(string|null $param = null): string|array
+    /**
+     * Check if array is multi-dimensional
+     */
+	function is_array_multi_dimen(array $array): bool
 	{
-		$actions = ACTIONS;
-
-		return $param ? $actions[strtoupper($param)] : $actions;
+        foreach ($array as $element) {
+            if (is_array($element)) return true; // Found a nested array
+        }
+        return false; // No nested arrays found
 	}
 }
 
-/**
- * Check the permissions if user can add/edit/delete
- */
-if (! function_exists('check_permissions'))
+if (! function_exists('clean_input'))
 {
-	function check_permissions(array $permissions, string $needle): bool
+    /**
+     * Clean input using trim default function
+     */
+	function clean_input(string|array $input): string|array
 	{
-		return in_array($needle, $permissions) ? true : false;
+        if (is_array($input)) {
+            $arr = [];
+            foreach ($input as $key => $val) {
+                $arr[$key] = trim($val);
+            }
+
+            return $arr;
+        }
+
+        return trim($input);
 	}
 }
 
-/**
- * Access level
- */
-if (! function_exists('account_access_level'))
+if (! function_exists('has_empty_value'))
 {
-	function account_access_level($old = false, $params = null): mixed
+    /**
+     * Check if array has an empty value
+     */
+	function has_empty_value(array $array): bool
 	{
-		$access_levels = $old 
-			? [
-				'admin' 		=> 'Administrator',
-				'manager' 		=> 'Manager',
-				'sales' 		=> 'Sales',
-				'ofcadmin' 		=> 'Office Admin',
-				'hr' 			=> 'HR',
-				'user'  		=> 'User',
-			] 
-			: [
-				// 'super_admin' 	=> 'Super Admin',
-				'admin' 		=> 'Administrator',
-				'executive' 	=> 'Executive',
-				'manager' 		=> 'Manager',
-				'operation' 	=> 'Admin/Operation',
-				'supervisor'	=> 'Supervisory',
-				'user'  		=> 'General User',
-			];
-
-		if (! empty($params)) {
-			if (is_string($params)) {
-				return $access_levels[$params];
-			} 
-
-			if (is_array($params)) {
-				$arr = [];
-				foreach ($access_levels as $key => $val) {
-					if (in_array($key, $params)) {
-						$arr[$key] = $val;
-					}
-				}
-
-				return $arr;
-			}
-		}
-
-		return $access_levels;
+        foreach ($array as $value) {
+            if (empty($value)) return true; // Found an empty value
+        }
+        return false; // No empty values found
 	}
 }
 
-/**
- * Get the avatar of the current user
- */
-if (! function_exists('get_avatar'))
+if (! function_exists('is_array_multi_dimen'))
 {
-	function get_avatar(string|null $param = null): string|array
+    /**
+     * Check if array is multi-dimensional
+     */
+	function is_array_multi_dimen(array $array): bool
 	{
-		$avatars = [
-			'female' 	=> 'assets/dist/img/avatar3.png',
-			'male' 		=> 'assets/dist/img/avatar5.png',
-		];
-
-		return $param ? $avatars[strtolower($param)] : $avatars;
+        foreach ($array as $element) {
+            if (is_array($element)) return true; // Found a nested array
+        }
+        return false; // No nested arrays found
 	}
 }
 
-/**
- * Get the avatar of the current logged user
- */
-if (! function_exists('get_current_user_avatar'))
+if (! function_exists('clean_input'))
 {
-	function get_current_user_avatar(): string
+    /**
+     * Clean input using trim default function
+     */
+	function clean_input(string|array $input): string|array
 	{
-        $profile = new \App\Controllers\AccountProfile();
-        return $profile->getProfileImg(session('gender'));
+        if (is_array($input)) {
+            $arr = [];
+            foreach ($input as $key => $val) {
+                $arr[$key] = trim($val);
+            }
+
+            return $arr;
+        }
+
+        return trim($input);
+  }
+}
+
+if (! function_exists('has_html_tags'))
+{
+    /**
+     * Check string if has html tags
+     */
+	function has_html_tags(string $string): bool
+	{
+        return preg_match('/<[^>]+>/', $string) === 1;
 	}
 }

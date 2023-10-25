@@ -14,6 +14,7 @@
 <script src="<?=base_url('assets')?>/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
 <script src="<?=base_url('assets')?>/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="<?=base_url('assets')?>/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="<?=base_url('assets')?>/plugins/datatables-colreorder/js/colReorder.bootstrap4.min.js"></script>
 <?php endif;?>
 
 <?php if (isset($with_jszip) && $with_jszip): ?>
@@ -27,7 +28,7 @@
 
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
-<script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
+
 <?php endif;?>
 
 <?php if (isset($sweetalert2) && $sweetalert2): ?>
@@ -37,7 +38,35 @@
 
 <?php if (isset($select2) && $select2): ?>
 <!-- Select2 -->
-<script src="<?=base_url('assets')?>/plugins/select2/js/select2.min.js"></script>
+<script src="<?=base_url('assets')?>/plugins/select2/js/select2.full.min.js"></script>
+<?php endif;?>
+
+<?php if (isset($highcharts) && $highcharts): ?>
+<!-- HighCharts -->
+<script src="<?=base_url('assets')?>/plugins/highcharts/highcharts.js"></script>
+<script src="<?=base_url('assets')?>/plugins/highcharts/modules/exporting.js"></script>
+<script src="<?=base_url('assets')?>/plugins/highcharts/modules/export-data.js"></script>
+<script src="<?=base_url('assets')?>/plugins/highcharts/modules/accessibility.js"></script>
+<?php endif;?>
+
+<?php if (isset($moment) && $moment): ?>
+<!-- Date Range Picker -->
+<script src="<?=base_url('assets')?>/plugins/moment/moment.min.js"></script>
+<?php endif;?>
+
+<?php if (isset($date_range_picker) && $date_range_picker): ?>
+<!-- Date Range Picker -->
+<script src="<?=base_url('assets')?>/plugins/daterangepicker/daterangepicker.js"></script>
+<?php endif;?>
+
+<?php if (isset($full_calendar) && $full_calendar): ?>
+<!-- Date Range Picker -->
+<script src="<?=base_url('assets')?>/plugins/fullcalendar/main.min.js"></script>
+<?php endif;?>
+
+<?php if (isset($dropzone) && $dropzone): ?>
+<!-- Dropzone for uploading files -->
+<script src="<?=base_url('assets')?>/plugins/dropzone/min/dropzone.min.js"></script>
 <?php endif;?>
 
 <!-- AdminLTE App -->
@@ -45,6 +74,19 @@
 
 <!-- Load custom js -->
 <script src="<?=base_url('assets')?>/custom/js/functions.js"></script>
+<!-- Load routes options -->
+<?php if (isset($routes) && !empty($routes)): ?>
+		<script type="text/javascript">
+      var router = JSON.parse('<?= $routes ?>');
+    </script>
+<?php endif; ?>
+<!-- Load php to js options - data that need to pass from php to js -->
+<?php if (isset($php_to_js_options) && !empty($php_to_js_options)): ?>
+		<script type="text/javascript">
+      // php to js options
+      var $pjOptions = JSON.parse('<?= $php_to_js_options ?>');
+    </script>
+<?php endif; ?>
 <?php
 if (isset($custom_js) && !empty($custom_js)):
     $custom_js = is_string($custom_js) ? [$custom_js] : $custom_js;

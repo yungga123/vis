@@ -33,9 +33,11 @@
                             <h1 class="m-0"><?= $page_title ?? 'Dashboard'; ?></h1>
                         </div><!-- /.col -->
                         <div class="col-sm-6">
-                            <?php if (isset($can_add) && $can_add): ?>
-                            <button type="button" class="btn btn-primary float-right" id="btn_add_record"><?= $btn_add_lbl ?? 'Add New Record' ?></button>
-                            <?php endif; ?>
+                            <div class="d-flex justify-content-end">
+                                <?php if (isset($can_add) && $can_add): ?>
+                                <button type="button" class="btn btn-primary" id="btn_add_record"><?= $btn_add_lbl ?? 'Add New Record' ?></button>
+                                <?php endif; ?>
+                            </div>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->

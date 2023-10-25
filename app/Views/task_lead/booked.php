@@ -14,7 +14,7 @@
                     <tr>
                         <th># ID</th>
                         <th>Account Manager</th>
-                        <th>Customer</th>
+                        <th>Client</th>
                         <th>Project Progress</th>
                         <th>Details</th>
                         <th>Actions</th>

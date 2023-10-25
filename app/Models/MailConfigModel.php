@@ -25,6 +25,7 @@ class MailConfigModel extends Model
         'hostname',
         'access_type',
         'recepients',
+        'is_enable'
     ];
 
     // Dates
@@ -46,6 +47,7 @@ class MailConfigModel extends Model
         'hostname'              => 'required',
         'access_type'           => 'permit_empty|string',
         'recepients'            => 'permit_empty|valid_emails',
+        'is_enable'             => 'required',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
