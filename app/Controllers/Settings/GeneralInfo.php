@@ -42,7 +42,6 @@ class GeneralInfo extends BaseController
         $this->_module_code = MODULE_CODES['general_info']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
-        $this->_can_add     = false;
     }
 
     /**
