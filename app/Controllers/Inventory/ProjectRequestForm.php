@@ -6,12 +6,13 @@ use App\Controllers\BaseController;
 use App\Models\ProjectRequestFormModel;
 use App\Models\PRFItemModel;
 use App\Traits\InventoryTrait;
+use App\Traits\GeneralInfoTrait;
 use monken\TablesIgniter;
 
 class ProjectRequestForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait;
+    use InventoryTrait, GeneralInfoTrait;
 
     /**
      * Use to initialize corresponding model
@@ -335,9 +336,10 @@ class ProjectRequestForm extends BaseController
         $this->_model->joinView($builder);
         $this->_model->joinJobOrder($builder);
         
-        $data['prf']        = $builder->find($id);
-        $data['prf_items']  = $builder->traitFetchPrfItems($id, true, true);
-        $data['title']      = 'Print Project Request Form';
+        $data['prf']            = $builder->find($id);
+        $data['prf_items']      = $builder->traitFetchPrfItems($id, true, true);
+        $data['title']          = 'Print Project Request Form';
+        $data['company_logo']   = $this->getGeneralInfo('company_logo');
 
         return view('inventory/prf/print', $data);
     }
