@@ -25,18 +25,11 @@ if (! function_exists('get_nav_menus'))
 	{
         $is_sales       = (
             url_is('tasklead') || 
+            url_is('tasklead/booked') || 
             url_is('sales_manager') || 
             url_is('sales_manager_indv')
         );
-
         $is_inventory = (
-            url_is('inventory') || 
-            url_is('inventory/dropdowns') || 
-            url_is('inventory/logs') || 
-            url_is('project-request-forms')
-        );
-
-        $is_inventory   = (
             url_is('inventory') || 
             url_is('inventory/dropdowns') || 
             url_is('inventory/logs') || 
@@ -130,7 +123,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('TASK_LEAD'),
                 'url'       => url_to('tasklead.home'),
-                'class'     => (url_is('tasklead') ? 'active' : ''),
+                'class'     => (url_is('tasklead') || url_is('tasklead/booked') ? 'active' : ''),
                 'icon'      => 'fas fa-tasks',
             ],
             'MANAGER_OF_SALES'      => [

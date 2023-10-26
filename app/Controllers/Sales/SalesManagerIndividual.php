@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Sales;
 
 use App\Controllers\BaseController;
 use App\Models\TaskLeadModel;
@@ -31,6 +31,10 @@ class SalesManagerIndividual extends BaseController
      */
     private $_session;
 
+    /**
+     * Class constructor
+     * 
+     */
     public function __construct()
     {
         $this->_model       = new TaskLeadModel(); // Current model
@@ -39,22 +43,31 @@ class SalesManagerIndividual extends BaseController
         $this->_session     = session('employee_id');
     }
 
-    
-
+    /**
+     * Display the view
+     *
+     * @return view
+     */
     public function index()
     {
-        
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
         $data['title']          = 'Manager of Sales';
         $data['page_title']     = 'Manager of Sales';
-        $data['custom_js']      = 'sales_manager_indv/index.js';
-        $data['custom_css']     = 'sales_manager_indv/index.css';
+        $data['custom_js']      = 'sales/sales_manager_indv/index.js';
+        $data['custom_css']     = 'sales/sales_manager_indv/index.css';
         $data['highcharts']     = true;
+        $data['routes']         = json_encode([
+            'sales_manager_indv' => [
+                'taskleads'             => url_to('sales_manager_indv.taskleads'),
+                'taskleads_stats'       => url_to('sales_manager_indv.taskleads_stats'),
+                'taskleads_quarterly'   => url_to('sales_manager_indv.taskleads_quarterly'),
+                'indv_sales_target'     => url_to('sales_target.indv_sales_target'),
+            ],
+        ]);
 
-
-        return view('manager_of_sales_indv/index', $data);
+        return view('sales/manager_of_sales_indv/index', $data);
     }
 
     // Data for PIE CHARTS

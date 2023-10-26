@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Sales;
 
 use App\Controllers\BaseController;
 use App\Models\CustomerBranchModel;
@@ -40,21 +40,21 @@ class Tasklead extends BaseController
     private $_can_add;
 
     /**
-     * Class constructor
+     * 
+     * @var
      */
-
      private $_time;
 
     /**
-     * Class constructor
+     * 
+     * @var
      */
-
     private $_taskleadHistoryModel;
+
     /**
      * Class constructor
+     * 
      */
-
-    
     public function __construct()
     {
         $this->_time        = new Time();
@@ -65,11 +65,16 @@ class Tasklead extends BaseController
         $this->_taskleadHistoryModel = new TaskleadHistoryModel();
     }
 
+    /**
+     * Display the view
+     *
+     * @return view
+     */
     public function index()
     {
         $data['title']          = 'Task Lead';
         $data['page_title']     = 'Task Lead | List';
-        $data['custom_js']      = 'tasklead/list.js';
+        $data['custom_js']      = 'sales/tasklead/index.js';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
@@ -78,18 +83,28 @@ class Tasklead extends BaseController
         $data['can_add']        = $this->_can_add;
         $data['quarter']        = $this->_time->getQuarter();
         $data['btn_add_lbl']    = 'Add New Tasklead';
+        $data['routes']         = json_encode([
+            'tasklead' => [
+                'list'      => url_to('tasklead.list'),
+                'edit'      => url_to('tasklead.edit'),
+                'delete'    => url_to('tasklead.delete'),
+                'customer_commercial'   => url_to('tasklead.getcustomervt'),
+                'customer_branch'       => url_to('tasklead.getcustomervtbranch'),
+                'customer_residential'  => url_to('tasklead.getcustomerresidential'),
+            ],
+        ]);
 
         // get initials for the name (used for quotation)
-        $words = explode(' ',session('name'));
+        $words = explode(' ', session('name'));
         $inits = '';
         foreach($words as $word){
-            $inits.=strtoupper(substr($word,0,1));
+            $inits .= strtoupper(substr($word,0,1));
         }
         
         $quotation_num = $inits . date('ym');
         $data['quotation_num'] = $quotation_num;
 
-        return view('task_lead/index', $data);
+        return view('sales/task_lead/index', $data);
     }
 
     public function list()
@@ -324,9 +339,8 @@ class Tasklead extends BaseController
         return $this->response->setJSON($data);
     }
 
-
-
-    public function getVtCustomer() {
+    public function getVtCustomer() 
+    {
         $model = new CustomerModel();
         $forecast = $this->request->getVar('forecast');
         $data['data'] = $model->where('forecast', $forecast)->where('type','COMMERCIAL')->find();
@@ -335,16 +349,8 @@ class Tasklead extends BaseController
         return $this->response->setJSON($data);
     }
 
-    // public function getForecastCustomer() {
-    //     $model = new CustomersModel();
-    //     $forecast = $this->request->getVar('forecast');
-    //     $data['data'] = $forecast ? $model->where('forecast', $forecast)->find() : $model->find();
-    //     $data['success'] = true;
-
-    //     return $this->response->setJSON($data);
-    // }
-
-    public function getResidentialCustomers() {
+    public function getResidentialCustomers() 
+    {
         $model = new CustomerModel();
         $forecast = $this->request->getVar('forecast');
         $data['data'] = $model->where('forecast', $forecast)->where('type','RESIDENTIAL')->find();
@@ -353,7 +359,8 @@ class Tasklead extends BaseController
         return $this->response->setJSON($data);
     }
 
-    public function getCustomerVtBranch() {
+    public function getCustomerVtBranch() 
+    {
         $model = new CustomerBranchModel();
         $id = $this->request->getVar('id');
         $data['data'] = $model->where('customer_id',$id)->find();
@@ -361,6 +368,4 @@ class Tasklead extends BaseController
 
         return $this->response->setJSON($data);
     }
-
-    
 }

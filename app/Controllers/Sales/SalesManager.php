@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Sales;
 
 use App\Controllers\BaseController;
 use App\Models\TaskLeadModel;
@@ -23,9 +23,12 @@ class SalesManager extends BaseController
      * Use to get current permissions
      * @var string
      */
-
     private $_permissions;
 
+    /**
+     * Class constructor
+     * 
+     */
     public function __construct()
     {
         $this->_model       = new TaskLeadModel(); // Current model
@@ -33,26 +36,38 @@ class SalesManager extends BaseController
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
     }
 
-    
-
+    /**
+     * Display the view
+     *
+     * @return view
+     */
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
-        
-
         $data['title']          = 'Manager of Sales';
         $data['page_title']     = 'Manager of Sales';
-        $data['custom_js']      = 'sales_manager/index.js';
-        $data['custom_css']     = 'sales_manager/index.css';
+        $data['custom_js']      = 'sales/sales_manager/index.js';
+        $data['custom_css']     = 'sales/sales_manager/index.css';
         $data['highcharts']     = true;
         $data['sweetalert2']    = true;
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
+        $data['routes']         = json_encode([
+            'sales_manager' => [
+                'taskleads'             => url_to('sales_manager.taskleads'),
+                'taskleads_stats'       => url_to('sales_manager.taskleads_stats'),
+                'taskleads_quarterly'   => url_to('sales_manager.taskleads_quarterly'),
+                'target_list'           => url_to('sales_target.list'),
+                'target_employees'      => url_to('sales_target.employees'),
+                'target_employee'       => url_to('sales_target.employee'),
+                'target_sales'          => url_to('sales_target.target_sales'),
+                'target_delete'         => url_to('sales_target.delete'),
+            ],
+        ]);
 
-
-        return view('manager_of_sales/index', $data);
+        return view('sales/manager_of_sales/index', $data);
     }
 
     // Data for PIE CHARTS

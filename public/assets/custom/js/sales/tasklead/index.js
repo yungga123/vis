@@ -1,10 +1,9 @@
-var table, modal, form, editRoute, removeRoute, elems;
+var table, modal, form, elems;
+
 $(document).ready(function () {
 	table = "tasklead_table";
 	modal = "modal_tasklead";
 	form = "form_tasklead";
-	editRoute = $("#edit_url").val();
-	removeRoute = $("#remove_url").val();
 	elems = [
 		"employee_id",
 		"quarter",
@@ -61,14 +60,13 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	const route = $("#" + table).data("url");
 	$("#filterby").on("change", function () {
 		const options = {
 			params: { filter: $(this).val() },
 		};
-		loadDataTable(table, route, METHOD.POST, options, true);
+		loadDataTable(table, router.tasklead.list, METHOD.POST, options, true);
 	});
-	loadDataTable(table, route, METHOD.POST);
+	loadDataTable(table, router.tasklead.list, METHOD.POST);
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -94,13 +92,13 @@ $(document).ready(function () {
 		$("#branch_id").attr("disabled", true);
 
 		if (existing_customer == 1 && customer_type == "Commercial") {
-			appendCustomer("get_customervt_url", 0);
+			appendCustomer("commercial", 0);
 		} else if (existing_customer == 0 && customer_type == "Commercial") {
-			appendCustomer("get_customervt_url", 1);
+			appendCustomer("commercial", 1);
 		} else if (existing_customer == 1 && customer_type == "Residential") {
-			appendCustomer("get_customerresidential", 0);
+			appendCustomer("residential", 0);
 		} else if (existing_customer == 0 && customer_type == "Residential") {
-			appendCustomer("get_customerresidential", 1);
+			appendCustomer("residential", 1);
 		}
 	});
 
@@ -206,7 +204,7 @@ function edit(id) {
 	clearAlertInForm(elems);
 	showLoading();
 
-	$.post(editRoute, { id: id })
+	$.post(router.tasklead.edit, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -417,7 +415,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(removeRoute, { id: id })
+			$.post(router.tasklead.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
@@ -433,11 +431,13 @@ function remove(id) {
 }
 
 function appendCustomer(id, forecast) {
-	let route = $("#" + id).val() + "?forecast=" + forecast;
-	//let keys = '';
+	const route =
+		id === "residential"
+			? router.tasklead.customer_residential
+			: router.tasklead.customer_commercial;
 
 	$.ajax({
-		url: route,
+		url: route + "?forecast=" + forecast,
 		dataType: "json",
 		type: "get",
 		success: function (response) {
@@ -450,10 +450,6 @@ function appendCustomer(id, forecast) {
 				})
 			);
 			$.each(response.data, (key, value) => {
-				// keys = Object.keys(value);
-				// console.log(keys);
-				// console.log(value['customer_name']);
-
 				$("#customer_id").append(
 					$("<option>", {
 						value: value["id"],
@@ -469,11 +465,8 @@ function appendCustomer(id, forecast) {
 }
 
 function appendBranch(url, id) {
-	let route = $("#" + url).val() + "?id=" + id;
-	//let keys = '';
-
 	$.ajax({
-		url: route,
+		url: router.tasklead.customer_branch + "?id=" + id,
 		dataType: "json",
 		type: "get",
 		success: function (response) {
@@ -486,10 +479,6 @@ function appendBranch(url, id) {
 				})
 			);
 			$.each(response.data, (key, value) => {
-				// keys = Object.keys(value);
-				// console.log(keys);
-				// console.log(value['customer_name']);
-
 				$("#branch_id").append(
 					$("<option>", {
 						value: value["id"],

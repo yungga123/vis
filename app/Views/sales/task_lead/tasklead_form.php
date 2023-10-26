@@ -85,7 +85,6 @@
                                         <option value="<?= $val ?>"><?= $text ?></option>
                                     <?php endforeach; ?>
                                 </select>
-
                                 <select class="form-control mt-2" id="quotation_color">
                                     <option value="">--Select Quotation Color---</option>
                                     <?php foreach (get_quotation_color() as $val => $text): ?>
