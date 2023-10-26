@@ -195,8 +195,8 @@ class GeneralInfo extends BaseController
                 'label' => 'Image file',
                 'rules' => [
                     "uploaded[{$fileName}]",
-                    "ext_in[{$fileName},jpg,jpeg,png,gif]",
-                    "mime_in[{$fileName},image/jpg,image/jpeg,image/gif,image/png]",
+                    "ext_in[{$fileName},jpg,jpeg,png]",
+                    "mime_in[{$fileName},image/jpg,image/jpeg,image/png]",
                     "max_size[{$fileName},5120]",
                 ],
                 'errors' => [
