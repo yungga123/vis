@@ -4,8 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Traits\AdminTrait;
-use App\Models\Accounts as AccountModel;
-use App\Models\EmployeesModel;
+use App\Models\AccountModel;
+use App\Models\EmployeeModel;
 use App\Models\CustomerModel;
 use App\Models\DispatchModel;
 use App\Models\JobOrderModel;
@@ -175,7 +175,7 @@ class Dashboard extends BaseController
     {
         // Models initialization
         $accountModel       = new AccountModel();
-        $employeeModel      = new EmployeesModel();
+        $employeeModel      = new EmployeeModel();
         $customerModel      = new CustomerModel();
         $dispatchModel      = new DispatchModel();
         $jobOrderModel      = new JobOrderModel();

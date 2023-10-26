@@ -89,7 +89,6 @@
                                 <div class="form-group row">
                                     <label for="current_password" class="col-sm-2 col-form-label">Current Password</label>
                                     <div class="col-sm-10">
-                                        <!-- <input type="password" class="form-control" name="current_password" id="current_password" placeholder="Current Password" required> -->
                                         <div class="input-group">
                                             <input type="password" class="form-control" name="current_password" id="current_password" placeholder="Current Password" required>
                                             <div class="input-group-append">

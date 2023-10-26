@@ -1,11 +1,9 @@
-var table, modal, form, editRoute, removeRoute, elems;
+var table, modal, form, elems;
 
 $(document).ready(function () {
 	table = "employee_table";
 	modal = "employee_modal";
 	form = "employee_form";
-	editRoute = $("#edit_url").val();
-	removeRoute = $("#remove_url").val();
 	elems = [
 		"employee_id",
 		"firstname",
@@ -54,8 +52,7 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	const route = $("#" + table).data("url");
-	loadDataTable(table, route, METHOD.POST, { order: [1, "asc"] });
+	loadDataTable(table, router.employee.list, METHOD.POST);
 
 	/* Form for saving employee */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -89,7 +86,7 @@ function edit(id) {
 	clearAlertInForm(elems);
 	showLoading();
 
-	$.post(editRoute, { id: id })
+	$.post(router.employee.fetch, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -99,7 +96,6 @@ function edit(id) {
 						$(`input[name="${key}"]`).val(value);
 					});
 
-					// $("#employee_id").attr("readonly", true);
 					$("#prev_employee_id").val(res.data.employee_id);
 					setOptionValue("#gender", res.data.gender);
 					setOptionValue("#civil_status", res.data.civil_status);
@@ -122,7 +118,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(removeRoute, { id: id })
+			$.post(router.employee.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 

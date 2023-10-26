@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\EmployeesModel;
+use App\Models\EmployeeModel;
 use App\Models\SalesTargetModel;
 use Exception;
 use monken\TablesIgniter;
@@ -97,7 +97,7 @@ class SalesTarget extends BaseController
 
     // To be used for employee selection
     public function employees() {
-        $employeesModel = new EmployeesModel();
+        $employeesModel = new EmployeeModel();
 
         $data['employees'] = $employeesModel->find();
 
@@ -106,7 +106,7 @@ class SalesTarget extends BaseController
 
     // To be used for employee selection
     public function employee() {
-        //$employeesModel = new EmployeesModel();
+        //$employeesModel = new EmployeeModel();
 
         $id = $this->request->getVar('id');
         $data['employee'] = $this->_model->where('sales_id',$id)->find();

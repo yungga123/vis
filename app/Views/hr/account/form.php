@@ -1,28 +1,3 @@
-<?=$this->extend('templates/default');?>
-<?=$this->section('content');?>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">            
-            <div class="card">
-                <div class="card-body">
-                    <input type="hidden" id="edit_url" value="<?= url_to('account.edit'); ?>" disabled>
-                    <input type="hidden" id="remove_url" value="<?= url_to('account.delete'); ?>" disabled>
-                    <table id="account_table" class="table table-striped table-hover nowrap" data-url="<?= url_to('account.list'); ?>">
-                        <thead class="nowrap">
-                            <tr>
-                                <th>Employee ID</th>
-                                <th>Employee Name</th>
-                                <th>Username</th>
-                                <th>Role</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <!-- Modal -->
 <div class="modal fade" id="account_modal" aria-hidden="true">
     <div class="modal-dialog modal-md">
@@ -39,27 +14,28 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="required"  for="access_level">Role/Access Level</label>
-                        <select name="access_level" id="access_level" class="form-control" data-value="<?= $account_data['access_level'] ?? ''; ?>">
-                            <option value="">Choose an Option</option>
+                        <select name="access_level" id="access_level" class="form-control">
+                            <option value="">Choose an option</option>
                             <?= get_roles_options(); ?>
                         </select>
                         <small id="alert_access_level" class="text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label class="required" for="employee_id">Employee Name</label>
-                        <select class="select2" name="employee_id" id="employee_id" data-placeholder="Select Employee" style="width: 100%;" required>
-                            <option value="">---Please Select---</option>
-                            <?php foreach ($employees as $item) : ?>
-                                <option value="<?= $item['employee_id']; ?>"><?= $item['employee_id'] . ' - ' . $item['firstname'] . ' ' . $item['lastname'] ?></option>
-                            <?php endforeach ?>
+                        <select class="select2" name="employee_id" id="employee_id" data-placeholder="Select an employee" style="width: 100%;" required>
+                            <?php if (! empty(get_employees())): ?>
+                            <?php foreach (get_employees() as $val): ?>
+                                <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
+                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </select>
                         <input type="hidden" id="employee_id1" name="employee_id1" readonly>
                         <small id="alert_employee_id" class="text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label class="required"  for="username">Username</label>
-                        <input type="text" name="username" id="username" class="form-control" placeholder="Enter here..." value="<?= $account_data['username'] ?? ''; ?>">
-                        <input type="hidden" name="prev_username" id="prev_username" class="form-control" value="<?= $account_data['username'] ?? ''; ?>" readonly>
+                        <input type="text" name="username" id="username" class="form-control" placeholder="Enter here...">
+                        <input type="hidden" name="prev_username" id="prev_username" class="form-control" readonly>
                         <small id="alert_username" class="text-danger"></small>
                     </div>
                     <div class="form-group">
@@ -82,5 +58,3 @@
         </div>
     </div>
 </div>
-<?= $this->include('templates/loading'); ?>
-<?=$this->endSection();?>

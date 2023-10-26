@@ -240,7 +240,7 @@ if (! function_exists('get_current_user_avatar'))
 	 */
 	function get_current_user_avatar(): string
 	{
-        $profile = new \App\Controllers\AccountProfile();
+        $profile = new \App\Controllers\HR\AccountProfile();
         return $profile->getProfileImg(session('gender'));
 	}
 }
@@ -251,14 +251,16 @@ if (! function_exists('get_employees'))
 	 * Get employees - default columns (id, name) only
 	 * @param int|null $id [optional]
 	 * @param string|array $columns [optional]
+	 * 
+	 * @return array
 	 */
 	function get_employees(int $id = null, string|array $columns = []): array 
 	{
 		$columns 	= !empty($columns) ? $columns : "employee_id, CONCAT(firstname,' ',lastname) AS employee_name";
-		$model 		= new \App\Models\EmployeesModel();
+		$model 		= new \App\Models\EmployeeModel();
         $builder 	= $model->select($columns);
 
-		$builder->where('employee_id !=', 'SOFTWAREDEV');
+		$builder->where('employee_id !=', DEVELOPER_ACCOUNT);
 		$builder->orderBy('employee_name ASC');
 		
 		return $id ? $builder->find() : $builder->findAll();

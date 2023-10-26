@@ -1,11 +1,9 @@
-var table, modal, form, editRoute, removeRoute, elems;
+var table, modal, form, elems;
 
 $(document).ready(function () {
 	table = "account_table";
 	modal = "account_modal";
 	form = "account_form";
-	editRoute = $("#edit_url").val();
-	removeRoute = $("#remove_url").val();
 	elems = ["employee_id", "username", "password", "access_level"];
 
 	select2Init("#employee_id");
@@ -28,14 +26,13 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	const route = $("#" + table).data("url");
 	const options = {
 		columnDefs: {
 			targets: -1,
 			orderable: false,
 		},
 	};
-	loadDataTable(table, route, METHOD.POST, options);
+	loadDataTable(table, router.account.list, METHOD.POST, options);
 
 	/* Form for saving account */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -66,7 +63,7 @@ function edit(id) {
 	clearAlertInForm(elems);
 	showLoading();
 
-	$.post(editRoute, { id: id })
+	$.post(router.account.fetch, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -82,6 +79,7 @@ function edit(id) {
 						.attr("name", "employee_id");
 					$(".lbl_password").removeClass("required");
 					$("#small_password").css("display", "block");
+					$(`#${modal}`).modal("show");
 				}
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -96,7 +94,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(removeRoute, { id: id })
+			$.post(router.account.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 

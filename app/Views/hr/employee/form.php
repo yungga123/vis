@@ -1,42 +1,5 @@
-<?= $this->extend('templates/default') ;?>
-<?= $this->section('content') ;?>
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-12">
-			<div class="card">
-				<div class="card-body">
-					<input type="hidden" id="edit_url" value="<?= url_to('employee.edit'); ?>" disabled>
-					<input type="hidden" id="remove_url" value="<?= url_to('employee.delete'); ?>" disabled>
-					<table id="employee_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('employee.list'); ?>">
-						<thead class="nowrap">
-							<tr>
-								<th>Action</th>
-								<th>Employee ID</th>
-								<th>Employee Name</th>
-								<th>Address</th>
-								<th>Gender</th>
-								<th>Civil Status</th>
-								<th>Birthdate</th>
-								<th>Birthplace</th>
-								<th>Position</th>
-								<th>Employment Status</th>
-								<th>Date Hired</th>
-								<th>Contact Number</th>
-								<th>Email Address</th>
-								<th>SSS Number</th>
-								<th>TIN Number</th>
-								<th>PhilHealth Number</th>
-								<th>PAGIBIG Number</th>
-								<th>Educational Attainment</th>
-								<th>Course</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+
+<!-- modal -->
 <div class="modal fade" id="employee_modal">
 	<div class="modal-dialog modal-xl">
 		<div class="modal-content">
@@ -288,5 +251,3 @@
   <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-<?= $this->include('templates/loading'); ?>
-<?= $this->endSection() ;?>

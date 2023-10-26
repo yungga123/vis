@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\Accounts as AccountsModel;
-use App\Models\EmployeesModel;
+use App\Models\AccountModel;
+use App\Models\EmployeeModel;
 
 class LoginPage extends BaseController
 {
@@ -27,7 +27,7 @@ class LoginPage extends BaseController
             ];
             
             if ($this->validate($rules)) {
-                $accountsModel  = new AccountsModel();
+                $accountsModel  = new AccountModel();
                 $username       = $this->request->getVar('username');
                 $password       = $this->request->getVar('password');
 
@@ -35,7 +35,7 @@ class LoginPage extends BaseController
                 $data['message']        = 'Wrong username or password. Please try again!';
 
                 if ($user = $accountsModel->authenticate($username, $password)) {
-                    $employeesModel = new EmployeesModel();
+                    $employeesModel = new EmployeeModel();
                     $employee = $employeesModel->where('employee_id', $user['employee_id'])->first();
 
                     $session = session();

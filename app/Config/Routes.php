@@ -61,26 +61,26 @@ $routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 /***************** PHASE 1 *****************/
 /* HUMAN RESOURCE */
 //ACCOUNTS
-$routes->get('accounts','Accounts::index', ['filter' => 'checkauth', 'as' => 'account.home']);
-$routes->group('account', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->post('list', 'Accounts::list', ['as' => 'account.list']);
-    $routes->post('save', 'Accounts::save', ['as' => 'account.save']);
-    $routes->post('edit', 'Accounts::edit', ['as' => 'account.edit']);
-    $routes->post('delete', 'Accounts::delete', ['as' => 'account.delete']);
+$routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'HR\Account::index', ['as' => 'account.home']);
+    $routes->post('list', 'HR\Account::list', ['as' => 'account.list']);
+    $routes->post('save', 'HR\Account::save', ['as' => 'account.save']);
+    $routes->post('fetch', 'HR\Account::fetch', ['as' => 'account.fetch']);
+    $routes->post('delete', 'HR\Account::delete', ['as' => 'account.delete']);
 
     // Account Profile
-    $routes->get('profile','AccountProfile::index', ['as' => 'account.profile']);
-    $routes->post('change-password','AccountProfile::changePassword', ['as' => 'account.change_pass']);
-    $routes->post('change-profile-image','AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
+    $routes->get('profile','HR\AccountProfile::index', ['as' => 'account.profile']);
+    $routes->post('change-password','HR\AccountProfile::changePassword', ['as' => 'account.change_pass']);
+    $routes->post('change-profile-image','HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
 });
 
 //EMPLOYEES
-$routes->get('employees','Employees::index', ['filter' => 'checkauth', 'as' => 'employee.home']);
-$routes->group('employee', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->post('list', 'Employees::list', ['as' => 'employee.list']);
-    $routes->post('save', 'Employees::save', ['as' => 'employee.save']);
-    $routes->post('edit', 'Employees::edit', ['as' => 'employee.edit']);
-    $routes->post('delete', 'Employees::delete', ['as' => 'employee.delete']);
+$routes->group('employees', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'HR\Employee::index', ['as' => 'employee.home']);
+    $routes->post('list', 'HR\Employee::list', ['as' => 'employee.list']);
+    $routes->post('save', 'HR\Employee::save', ['as' => 'employee.save']);
+    $routes->post('fetch', 'HR\Employee::fetch', ['as' => 'employee.fetch']);
+    $routes->post('delete', 'HR\Employee::delete', ['as' => 'employee.delete']);
 });
 /* HUMAN RESOURCE */
 
