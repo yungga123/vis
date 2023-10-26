@@ -134,10 +134,11 @@ class CustomerModel extends Model
         ";
 
         if ($dtTable) {
-            $addressConcat = $this->customerAddressQueryConcat();
-            $columns .= ",
+            $datetimeFormat = dt_sql_datetime_format();
+            $addressConcat  = dt_sql_concat_client_address();
+            $columns        .= ",
                 {$addressConcat},
-                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y') AS created_at,
+                DATE_FORMAT({$this->table}.created_at, '{$datetimeFormat}') AS created_at,
                 {$this->accountsView}.employee_name AS created_by
             ";
         }
@@ -205,18 +206,5 @@ class CustomerModel extends Model
         };
         
         return $closureFun;
-    }
-
-    // Query concat of customer address
-    public function customerAddressQueryConcat()
-    {
-        return "
-            CONCAT(
-                IF(province = '' || province IS NULL, '', CONCAT(province, ', ')),
-                IF(city = '' || city IS NULL, '', CONCAT(city, ', ')),
-                IF(barangay = '' || barangay IS NULL, '', CONCAT(barangay, ', ')),
-                IF(subdivision = '', '', subdivision)
-            ) AS address
-        ";
     }
 }

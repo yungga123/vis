@@ -157,6 +157,35 @@ if (! function_exists('dt_sql_date_format'))
      */
 	function dt_sql_date_format(): string
     {
+        return '%b %e, %Y';
+    }
+}
+
+if (! function_exists('dt_sql_datetime_format'))
+{
+    /**
+     * DataTable SQL datetime format
+     */
+	function dt_sql_datetime_format(): string
+    {
         return '%b %e, %Y at %h:%i %p';
+    }
+}
+
+if (! function_exists('dt_sql_concat_client_address'))
+{
+    /**
+     * DataTable SQL client address concatination
+     */
+	function dt_sql_concat_client_address(): string
+    {
+        return "
+            CONCAT(
+                IF(province = '' || province IS NULL, '', CONCAT(province, ', ')),
+                IF(city = '' || city IS NULL, '', CONCAT(city, ', ')),
+                IF(barangay = '' || barangay IS NULL, '', CONCAT(barangay, ', ')),
+                IF(subdivision = '', '', subdivision)
+            ) AS address
+        ";
     }
 }
