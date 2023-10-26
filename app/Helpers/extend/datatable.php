@@ -24,20 +24,26 @@ if (! function_exists('dt_button_actions'))
     /**
      * DataTable default (edit & delete) buttons actions format
      */
-	function dt_button_actions(array $row, string $id, array $permissions, bool $dropdown = false): string
+	function dt_button_actions(
+        array $row, 
+        string $id, 
+        array $permissions, 
+        bool $dropdown = false,
+        array $options = [],
+    ): string
 	{
         $options    = [
             'edit' => [
                 'text'      => '',
                 'button'    => 'btn-warning',
                 'icon'      => 'fas fa-edit',
-                'condition' => 'title="Cannot edit" disabled',
+                'condition' => 'title="User has no permission to edit record." disabled',
             ],
             'delete' => [
                 'text'      => '',
                 'button'    => 'btn-danger',
                 'icon'      => 'fas fa-trash',
-                'condition' => 'title="Cannot delete" disabled',
+                'condition' => 'title="User has no permission to delete record." disabled',
             ],
         ];
             

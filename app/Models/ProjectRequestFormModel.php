@@ -72,6 +72,10 @@ class ProjectRequestFormModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Custom variables
+    // Restrict edit/delete action for this statuses
+    protected $restrictedStatuses = ['rejected', 'item_out', 'filed'];
+
     // Set the value for created_by before inserting
     protected function setCreatedBy(array $data)
     {
@@ -287,11 +291,8 @@ class ProjectRequestFormModel extends Model
                     <a href="$print_url" class="btn btn-info btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }
-
-            $buttons = ($row['status'] === 'rejected' && !is_admin()) 
-                ? ($buttonView ?? '~~N/A~~') : dt_buttons_dropdown($buttons);
                 
-            return $buttons;
+            return dt_buttons_dropdown($buttons);
         };
         
         return $closureFun;
