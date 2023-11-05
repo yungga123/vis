@@ -430,7 +430,7 @@ class JobOrderModel extends Model
     // For status at format
     private function _dtStatusAtFormat($columnName, $comma = false)
     {
-        $atFormat   = dt_sql_date_format();
+        $atFormat   = dt_sql_datetime_format();
         $alias      = $columnName .'_formatted';
         $comma      = $comma ? ',' : '';
         $statement  = "

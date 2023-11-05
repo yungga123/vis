@@ -160,8 +160,7 @@ class DispatchModel extends Model
         }
 
         if ($withClientDetials) {
-            $customerModel = new CustomerModel();
-            $addressConcat = $customerModel->customerAddressQueryConcat();
+            $addressConcat = dt_sql_concat_client_address();
             $columns .= ",
                 {$this->customersTable}.name as customer_name,
                 {$this->customersTable}.type as customer_type,

@@ -7,12 +7,13 @@ use App\Models\RequestPurchaseFormModel;
 use App\Models\RPFItemModel;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
+use App\Traits\CommonTrait;
 use monken\TablesIgniter;
 
 class RequestPurchaseForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait, GeneralInfoTrait;
+    use InventoryTrait, GeneralInfoTrait, CommonTrait;
 
     /**
      * Use to initialize corresponding model
@@ -172,6 +173,9 @@ class RequestPurchaseForm extends BaseController
                     'quantity_in'   => !has_empty_value($q_in) ? $q_in : null,
                 ];
 
+                // Check restriction
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
+
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = STATUS_ERROR;
@@ -241,7 +245,12 @@ class RequestPurchaseForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                if (! $this->_model->delete($this->request->getVar('id'))) {
+                $id = $this->request->getVar('id');
+
+                // Check restriction
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
+
+                if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = STATUS_ERROR;
                     $data['message']    = "Validation error!";

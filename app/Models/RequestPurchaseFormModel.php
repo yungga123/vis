@@ -74,6 +74,10 @@ class RequestPurchaseFormModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Custom variables
+    // Restrict edit/delete action for this statuses
+    protected $restrictedStatuses = ['rejected', 'reviewed', 'received'];
+
     // Set the value for created_by before inserting
     protected function setCreatedBy(array $data)
     {
@@ -264,16 +268,13 @@ class RequestPurchaseFormModel extends Model
 
             if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed', 'received'])) {
                 // Print PRF
-                $print_url = site_url('rpf/print/') . $row[$id];
-                $buttons .= <<<EOF
+                $print_url  = site_url('rpf/print/') . $row[$id];
+                $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }
 
-            $buttons = (in_array($row['status'], ['rejected', 'reviewed', 'received']) && !is_admin()) 
-                ? ($buttonView ?? '~~N/A~~') : dt_buttons_dropdown($buttons);
-                
-            return $buttons;
+            return dt_buttons_dropdown($buttons);
         };
         
         return $closureFun;

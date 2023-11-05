@@ -116,14 +116,11 @@ class CustomerBranchModel extends Model
         ";
 
         if ($dtTable) {
-            $columns .= ",
-                CONCAT(
-                    IF(province = '' || province IS NULL, '', CONCAT(province, ', ')),
-                    IF(city = '' || city IS NULL, '', CONCAT(city, ', ')),
-                    IF(barangay = '' || barangay IS NULL, '', CONCAT(barangay, ', ')),
-                    IF(subdivision = '', '', subdivision)
-                ) AS address,
-                DATE_FORMAT(created_at, '%b %e, %Y') AS created_at,
+            $datetimeFormat = dt_sql_datetime_format();
+            $addressConcat  = dt_sql_concat_client_address();
+            $columns        .= ",
+                {$addressConcat},
+                DATE_FORMAT(created_at, '{$datetimeFormat}') AS created_at,
                 {$this->accountsView}.employee_name AS created_by
             ";
         }

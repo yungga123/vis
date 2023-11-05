@@ -7,12 +7,13 @@ use App\Models\ProjectRequestFormModel;
 use App\Models\PRFItemModel;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
+use App\Traits\CommonTrait;
 use monken\TablesIgniter;
 
 class ProjectRequestForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait, GeneralInfoTrait;
+    use InventoryTrait, GeneralInfoTrait, CommonTrait;
 
     /**
      * Use to initialize corresponding model
@@ -176,6 +177,9 @@ class ProjectRequestForm extends BaseController
                     $q_out
                 );
 
+                // Check restriction
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
+
                 if ($bool) {
                     throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
                 } else {
@@ -262,7 +266,12 @@ class ProjectRequestForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                if (! $this->_model->delete($this->request->getVar('id'))) {
+                $id = $this->request->getVar('id');
+
+                // Check restriction
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
+
+                if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = STATUS_ERROR;
                     $data['message']    = "Validation error!";

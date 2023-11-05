@@ -24,20 +24,26 @@ if (! function_exists('dt_button_actions'))
     /**
      * DataTable default (edit & delete) buttons actions format
      */
-	function dt_button_actions(array $row, string $id, array $permissions, bool $dropdown = false): string
+	function dt_button_actions(
+        array $row, 
+        string $id, 
+        array $permissions, 
+        bool $dropdown = false,
+        array $options = [],
+    ): string
 	{
         $options    = [
             'edit' => [
                 'text'      => '',
                 'button'    => 'btn-warning',
                 'icon'      => 'fas fa-edit',
-                'condition' => 'title="Cannot edit" disabled',
+                'condition' => 'title="User has no permission to edit record." disabled',
             ],
             'delete' => [
                 'text'      => '',
                 'button'    => 'btn-danger',
                 'icon'      => 'fas fa-trash',
-                'condition' => 'title="Cannot delete" disabled',
+                'condition' => 'title="User has no permission to delete record." disabled',
             ],
         ];
             
@@ -151,6 +157,35 @@ if (! function_exists('dt_sql_date_format'))
      */
 	function dt_sql_date_format(): string
     {
+        return '%b %e, %Y';
+    }
+}
+
+if (! function_exists('dt_sql_datetime_format'))
+{
+    /**
+     * DataTable SQL datetime format
+     */
+	function dt_sql_datetime_format(): string
+    {
         return '%b %e, %Y at %h:%i %p';
+    }
+}
+
+if (! function_exists('dt_sql_concat_client_address'))
+{
+    /**
+     * DataTable SQL client address concatination
+     */
+	function dt_sql_concat_client_address(): string
+    {
+        return "
+            CONCAT(
+                IF(province = '' || province IS NULL, '', CONCAT(province, ', ')),
+                IF(city = '' || city IS NULL, '', CONCAT(city, ', ')),
+                IF(barangay = '' || barangay IS NULL, '', CONCAT(barangay, ', ')),
+                IF(subdivision = '', '', subdivision)
+            ) AS address
+        ";
     }
 }

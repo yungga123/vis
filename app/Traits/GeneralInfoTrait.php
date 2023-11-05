@@ -10,7 +10,7 @@ trait GeneralInfoTrait
      * Fetching/searching job order by quotation number
      *
      * @param string|array|null $param   The param to search
-     * @return array                The results of the search
+     * @return array|null                The results of the search
      */
     public function getGeneralInfo($param = [])
     {
