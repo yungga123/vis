@@ -212,14 +212,19 @@ class RequestPurchaseForm extends BaseController
             function($data) {
                 $id             = $this->request->getVar('id');
                 $rpfItemModel   = new RPFItemModel(); 
-                $items          = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+                $items          = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
                 if ($this->request->getVar('rpf_items')) {
                     $data['data']       = $items;
                     $data['message']    = 'RPF items has been retrieved!';
                 } else {
-                    $table          = $this->_model->table;
-                    $columns        = "{$table}.id, {$table}.date_needed";                    
-                    $record         = $this->_model->getRequestPurchaseForms($id, false, $columns);
+                    $table      = $this->_model->table;
+                    $view       = $this->_model->view;  
+                    $columns    = "
+                        {$table}.id, {$table}.date_needed,
+                        DATE_FORMAT({$table}.date_needed, '".dt_sql_date_format()."') AS date_needed_formatted,
+                        DATE_FORMAT({$table}.created_at, '".dt_sql_datetime_format()."') AS created_at_formatted
+                    ";                 
+                    $record     = $this->_model->getRequestPurchaseForms($id, true, $columns);
                     $data['data']               = $record;
                     $data['data']['items']      = $items;
                 }
@@ -314,7 +319,7 @@ class RequestPurchaseForm extends BaseController
         $this->_model->joinView($builder);
 
         $rpfItemModel           = new RPFItemModel(); 
-        $items                  = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+        $items                  = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
         $data['rpf']            = $builder->find($id);
         $data['rpf_items']      = $items;
         $data['title']          = 'Print Requisition Form';

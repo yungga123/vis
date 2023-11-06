@@ -276,6 +276,7 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
 $routes->group('purchasing', ['filter' => 'checkauth'], static function ($routes) {
     // Common
     $routes->post('suppliers', 'Purchasing\Common::searchSuppliers', ['as' => 'purchasing.common.suppliers']);
+    $routes->post('rpf', 'Purchasing\Common::searchRpf', ['as' => 'purchasing.common.rpf']);
 });
 
 //SUPPLIERS
@@ -304,11 +305,15 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print', ['as' => 'rpf.print/$1']);
 });
 
-// GENERATE PO
-$routes->group('', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('generate-po', 'Purchasing\POGenerate::index', ['as' => 'generate-po.home']);
-    //$routes->post('generate-po/list', 'Purchasing\POGenerate::list', ['as' => 'generate-po.list']);
-    //$routes->post('generate-po/save', 'Purchasing\POGenerate::save', ['as' => 'generate-po.save']);
+// PURCHASE ORDER / GENERATE PO
+$routes->group('purchase-orders', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Purchasing\PurchaseOrder::index', ['as' => 'purchase_order.home']);
+    $routes->post('list', 'Purchasing\PurchaseOrder::list', ['as' => 'purchase_order.list']);
+    $routes->post('save', 'Purchasing\PurchaseOrder::save', ['as' => 'purchase_order.save']);
+    $routes->post('fetch', 'Purchasing\PurchaseOrder::fetch', ['as' => 'purchase_order.fetch']);
+    $routes->post('delete', 'Purchasing\PurchaseOrder::delete', ['as' => 'purchase_order.delete']);
+    $routes->post('change', 'Purchasing\PurchaseOrder::change', ['as' => 'purchase_order.change']);
+    $routes->get('print/(:num)', 'Purchasing\PurchaseOrder::print', ['as' => 'purchase_order.print/$1']);
 });
 
 /* PURCHASING */

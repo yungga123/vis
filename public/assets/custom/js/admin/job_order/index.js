@@ -175,7 +175,7 @@ function loadQDetails(data) {
 						<td>${data.client}</td>
 						<td>${data.manager}</td>
 						<td>${data.project}</td>
-						<td>${data.project_amount}</td>
+						<td>${numberFormat(data.project_amount)}</td>
 						<td>${data.project_start_date || "N/A"}</td>
 						<td>${data.project_finish_date || "N/A"}</td>
 					</tr>

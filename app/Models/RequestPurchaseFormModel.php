@@ -118,8 +118,7 @@ class RequestPurchaseFormModel extends Model
                     {$rpfItemModel->table}.received_date,
                     inventory.stocks
                 ";
-                log_message('error', 'data => '. json_encode($data));
-                $record         = $rpfItemModel->getRpfItemsByPrfId($data['id'], true, false, $columns);
+                $record         = $rpfItemModel->getRpfItemsByRpfId($data['id'], true, false, $columns);
                 $action         = 'ITEM_IN';
 
                 if (! empty($record)) {
@@ -155,13 +154,14 @@ class RequestPurchaseFormModel extends Model
         ";
 
         if ($date_format) {
+            $datetime_format = dt_sql_datetime_format();
             $columns .= ",
                 DATE_FORMAT({$this->table}.date_needed, '%b %e, %Y') AS date_needed_formatted,
-                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted,
-                DATE_FORMAT({$this->table}.accepted_at, '%b %e, %Y at %h:%i %p') AS accepted_at_formatted,
-                DATE_FORMAT({$this->table}.rejected_at, '%b %e, %Y at %h:%i %p') AS rejected_at_formatted,
-                DATE_FORMAT({$this->table}.reviewed_at, '%b %e, %Y at %h:%i %p') AS reviewed_at_formatted,
-                DATE_FORMAT({$this->table}.received_at, '%b %e, %Y at %h:%i %p') AS received_at_formatted
+                DATE_FORMAT({$this->table}.created_at, '{$datetime_format}') AS created_at_formatted,
+                DATE_FORMAT({$this->table}.accepted_at, '{$datetime_format}') AS accepted_at_formatted,
+                DATE_FORMAT({$this->table}.rejected_at, '{$datetime_format}') AS rejected_at_formatted,
+                DATE_FORMAT({$this->table}.reviewed_at, '{$datetime_format}') AS reviewed_at_formatted,
+                DATE_FORMAT({$this->table}.received_at, '{$datetime_format}') AS received_at_formatted
             ";
         }
 
@@ -182,6 +182,7 @@ class RequestPurchaseFormModel extends Model
     public function joinView($builder)
     {
         $builder->join($this->view, "{$this->table}.id = {$this->view}.rpf_id");
+        return $this;
     }
 
     // Get project request forms

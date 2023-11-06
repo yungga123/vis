@@ -166,8 +166,8 @@ function view(id, status) {
 									${quantity_in}
 								</td>
 								<td>${val.unit || "N/A"}</td>
-								<td>${val.item_sdp}</td>
-								<td>${totalCost}</td>
+								<td>${numberFormat(val.item_sdp)}</td>
+								<td>${numberFormat(totalCost)}</td>
 								<td>${status === "receive" ? received_q : val.received_q || "0.00"}</td>
 								<td>${
 									status === "receive"
@@ -177,8 +177,8 @@ function view(id, status) {
 							</tr>
 						`;
 					});
-					$(`#total_amount`).text(totalAmount);
-					$(`#total_amount_received`).text(totalAmountReceived);
+					$(`#total_amount`).text(numberFormat(totalAmount));
+					$(`#total_amount_received`).text(numberFormat(totalAmountReceived));
 				} else {
 					html =
 						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';

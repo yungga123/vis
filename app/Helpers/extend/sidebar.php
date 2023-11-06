@@ -38,7 +38,7 @@ if (! function_exists('get_nav_menus'))
         $is_purchasing  = (
             url_is('suppliers') || 
             url_is('request-purchase-forms') ||
-            url_is('generate-po')
+            url_is('purchase-orders')
         );
         $is_settings    = (
             url_is('settings/mail') || 
@@ -210,12 +210,12 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('request-purchase-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-bag',
             ],
-            'GENERATE_PO'           => [
+            'PURCHASING_PURCHASE_ORDER'           => [
                 'menu'      => 'PURCHASING', // Leave empty if none
-                'name'      => get_modules('GENERATE_PO'),
-                'url'       => url_to('generate-po.home'),
-                'class'     => (url_is('generate-po') ? 'active' : ''),
-                'icon'      => 'fas fa-list',
+                'name'      => get_modules('PURCHASING_PURCHASE_ORDER'),
+                'url'       => url_to('purchase_order.home'),
+                'class'     => (url_is('purchase-orders') ? 'active' : ''),
+                'icon'      => 'fas fa-shopping-basket',
             ],
             'SETTINGS_GENERAL_INFO'  => [
                 'menu'      => 'SETTINGS', // Leave empty if none

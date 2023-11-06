@@ -194,40 +194,6 @@ if (! function_exists('has_empty_value'))
 	}
 }
 
-if (! function_exists('is_array_multi_dimen'))
-{
-    /**
-     * Check if array is multi-dimensional
-     */
-	function is_array_multi_dimen(array $array): bool
-	{
-        foreach ($array as $element) {
-            if (is_array($element)) return true; // Found a nested array
-        }
-        return false; // No nested arrays found
-	}
-}
-
-if (! function_exists('clean_input'))
-{
-    /**
-     * Clean input using trim default function
-     */
-	function clean_input(string|array $input): string|array
-	{
-        if (is_array($input)) {
-            $arr = [];
-            foreach ($input as $key => $val) {
-                $arr[$key] = trim($val);
-            }
-
-            return $arr;
-        }
-
-        return trim($input);
-  }
-}
-
 if (! function_exists('has_html_tags'))
 {
     /**

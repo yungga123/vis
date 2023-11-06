@@ -207,7 +207,7 @@ define('MODULES', [
     'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
     'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
     'INVENTORY_PRF'         => 'Project Request Forms',
-    'GENERATE_PO'           => 'Generate Purchase Order',
+    'PURCHASING_PURCHASE_ORDER' => 'Purchase Orders',
     'SETTINGS_GENERAL_INFO' => 'General Info',
 ]);
 
@@ -233,7 +233,7 @@ define('MODULE_CODES', [
     'dispatch'              => 'ADMIN_DISPATCH',
     'inventory_prf'         => 'INVENTORY_PRF',
     'purchasing_rpf'        => 'PURCHASING_RPF',
-    'generate_PO'           => 'GENERATE_PO',
+    'purchase_order'        => 'PURCHASING_PURCHASE_ORDER',
     'general_info'          => 'SETTINGS_GENERAL_INFO',
 ]);
 

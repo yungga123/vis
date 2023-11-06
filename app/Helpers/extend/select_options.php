@@ -369,3 +369,56 @@ if (! function_exists('get_client_sources'))
         return $param ? $options[strtoupper($param)] : $options;
 	}
 }
+
+if (! function_exists('get_po_status'))
+{
+    /**
+     * Get status of Purchase Order (PO)
+     */
+	function get_po_status(string $param = '', bool $pass_tense = false): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'receive'   => 'receive',
+            'file'      => 'file',
+        ];
+
+        $options_pt = [
+            'pending'   => 'pending',
+            'received'  => 'received',
+            'filed'     => 'filed',
+        ];
+
+        $arr = $pass_tense ? $options_pt : $options;
+
+        return $param ? $arr[$param] : $arr;
+	}
+}
+
+if (! function_exists('set_po_status'))
+{
+    /**
+     * Setting status of Purchase Order (PO) to its past tense
+     */
+	function set_po_status(string|array $param): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'receive'   => 'received',
+            'received'  => 'received',
+            'file'      => 'fileed',
+            'fileed'    => 'fileed',
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_prf_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $options[$param];
+	}
+}
