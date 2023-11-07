@@ -112,6 +112,7 @@ if (! function_exists('dt_status_color'))
                 $color = 'warning';                   
                 break;
             case 'accepted':
+            case 'approved':
             case 'add':
                 $color = 'primary';
                 break;

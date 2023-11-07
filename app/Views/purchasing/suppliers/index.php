@@ -16,6 +16,7 @@
                         <th>Supplier ID</th>
                         <th>Supplier Name</th>
                         <th>Supplier Type</th>
+                        <th>Address</th>
                         <th>Contact Person</th>
                         <th>Contact Number</th>
                         <th>Viber</th>

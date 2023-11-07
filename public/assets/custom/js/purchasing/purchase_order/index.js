@@ -75,9 +75,11 @@ function view(id, status) {
 	$(`#${poItemModal} .modal-footer #btn_mark`).remove();
 	if (inArray(["pending", "received"], status)) {
 		// Append button
-		const markAs = status === "pending" ? "Received" : "Filed";
+		const markAs = status === "pending" ? "approved" : "filed";
 		$(`#${poItemModal} .modal-footer`).append(`
-			<button type="submit" class="btn btn-success" id="btn_mark">Mark as ${markAs}</button>	
+			<button type="submit" class="btn btn-success" id="btn_mark" onclick="change(${id}, '${markAs}', '${status}')">
+				Mark as ${strCapitalize(markAs)}
+			</button>	
 		`);
 	}
 
@@ -99,6 +101,37 @@ function view(id, status) {
 			}
 		})
 		.catch((err) => catchErrMsg(err));
+}
+
+/* Change status record */
+function change(id, changeTo, status) {
+	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
+	const swalMsg = `
+		<div>PO #: <strong>${id}</strong></div>
+		<div>Are you sure you want to <strong>${strUpper(
+			changeTo
+		)}</strong> this PO?</div>
+	`;
+	const data = { id: id, status: changeTo };
+
+	swalNotifConfirm(
+		function () {
+			$.post(router.purchase_order.change, data)
+				.then((res) => {
+					const message = res.errors ?? res.message;
+
+					notifMsgSwal(res.status, message, res.status);
+					if (res.status !== STATUS.ERROR) {
+						refreshDataTable($("#" + table));
+						$(`#${poItemModal}`).modal("hide");
+					}
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		title,
+		swalMsg,
+		STATUS.WARNING
+	);
 }
 
 /* Get record details */

@@ -68,11 +68,6 @@
                             </table>
                         </div>
                     </div>
-                    <div class="form-group d-none" id="attention_to_wrapper">
-                        <label for="attention_to">Attention To</label>
-                        <input type="text" name="attention_to" id="attention_to" class="form-control" placeholder="Enter a name">
-                        <small id="alert_attention_to" class="text-danger"></small>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

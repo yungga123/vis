@@ -23,6 +23,7 @@ class SuppliersView extends Seeder
                 supplier_type,
                 others_supplier_type,
                 contact_person,
+                address,
                 contact_number,
                 viber,
                 payment_terms,

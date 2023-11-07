@@ -55,7 +55,6 @@ class RPFItemModel extends Model
     public function columns()
     {
         $columns = "
-            {$this->table}.supplier_id,
             {$this->table}.inventory_id,
             {$this->table}.quantity_in,
             {$this->table}.received_q,
@@ -80,10 +79,10 @@ class RPFItemModel extends Model
 
         if ($withView) {
             $columns .= ",
-                {$inventoryModel->view}.category_name,
-                {$inventoryModel->view}.subcategory_name,
-                {$inventoryModel->view}.brand,
-                {$inventoryModel->view}.unit,
+                TRIM({$inventoryModel->view}.category_name) AS category_name,
+                TRIM({$inventoryModel->view}.subcategory_name) AS subcategory_name,
+                TRIM({$inventoryModel->view}.brand) AS brand,
+                TRIM({$inventoryModel->view}.unit) AS unit,
                 {$inventoryModel->view}.supplier_name,
                 {$inventoryModel->view}.created_by_name
             ";

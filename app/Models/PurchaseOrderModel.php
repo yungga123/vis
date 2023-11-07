@@ -54,7 +54,7 @@ class PurchaseOrderModel extends Model
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses = ['received', 'filed'];
+    protected $restrictedStatuses = ['approved', 'filed'];
 
     // Set the value for created_by before inserting
     protected function setCreatedBy(array $data)
@@ -88,14 +88,44 @@ class PurchaseOrderModel extends Model
     // Get purchase orders
     public function getPurchaseOrders($id = null, $columns = '')
     {
-        $columns = $columns ? $columns : ['id'] + $this->allowedFields;
+        $columns = $columns ? $columns : [$this->primaryKey] + $this->allowedFields;
         $builder = $this->select($columns);
         $builder->where('deleted_at IS NULL');
 
         if ($id && is_array($id))
-            return $builder->whereIn('id', $id)->findAll();
+            return $builder->whereIn($this->primaryKey, $id)->findAll();
 
-        return $id ? $builder->find($id) : $builder->findAll();        
+        return $id ? $builder->find($id) : $builder->findAll();
+    }
+
+    // Get purchase order items with joined tables
+    public function getPOItems($id, $additionalColumns = '')
+    {
+        $poItemModel    = new POItemModel();
+        $rpfItemModel   = new RPFItemModel();
+        $inventoryModel = new InventoryModel();
+        $supplierModel  = new SuppliersModel();
+        $columns        = "
+            {$this->table}.rpf_id,
+            {$poItemModel->table}.inventory_id,
+            {$rpfItemModel->table}.quantity_in,
+        " . $rpfItemModel->inventoryColumns(true);
+        $columns        = $additionalColumns ? $columns .', '. $additionalColumns : $columns;
+        $builder        = $this->select($columns);
+
+        // Joining tables
+        $this->joinSupplier($builder, $supplierModel);
+        $this->joinPOItem($builder, $poItemModel);
+        $this->joinRpfItem($builder, $rpfItemModel);
+        $poItemModel->joinInventory($builder, $inventoryModel);
+        $poItemModel->joinInventory($builder, $inventoryModel, true);
+
+        // Where
+        $builder->where("{$this->table}.id", $id);
+        $builder->where("{$poItemModel->table}.po_id", $id);
+
+        return $builder->findAll();
+    
     }
 
     // Join suppliers
@@ -103,6 +133,7 @@ class PurchaseOrderModel extends Model
     {      
         $model ?? $model = new SuppliersModel();
         $builder->join($model->table, "{$this->table}.supplier_id = {$model->table}.id", $type);
+        return $this;
     }
 
     // Join request_purchase_forms / rpf_view
@@ -116,6 +147,7 @@ class PurchaseOrderModel extends Model
             $id     = 'rpf_id';
         }
         $builder->join($joinTo, "{$this->table}.rpf_id = {$joinTo}.{$id}", $type);
+        return $this;
     }
 
     // Join rpf_items
@@ -129,6 +161,7 @@ class PurchaseOrderModel extends Model
                 {$poItemModel->table}.inventory_id = {$model->table}.inventory_id
             )
         ", $type);
+        return $this;
     }
 
     // Join purchase_order_items
@@ -136,6 +169,7 @@ class PurchaseOrderModel extends Model
     {   
         $model ?? $model = new POItemModel();
         $builder->join($model->table, "{$this->table}.id = {$model->table}.po_id", $type);
+        return $this;
     }
     
     // For DataTables
@@ -155,10 +189,10 @@ class PurchaseOrderModel extends Model
             {$rpfModel->view}.created_by_name AS requested_by,
             DATE_FORMAT({$rpfModel->table}.created_at, '{$datetime_format}') AS requested_at_formatted,
             DATE_FORMAT({$this->table}.created_at, '{$datetime_format}') AS created_at_formatted,
-            DATE_FORMAT({$this->table}.received_at, '{$datetime_format}') AS received_at_formatted,
+            DATE_FORMAT({$this->table}.approved_at, '{$datetime_format}') AS approved_at_formatted,
             DATE_FORMAT({$this->table}.filed_at, '{$datetime_format}') AS filed_at_formatted,
             cb.employee_name AS created_by_name,
-            rb.employee_name AS received_by_name,
+            ab.employee_name AS approved_by_name,
             fb.employee_name AS filed_by_name
         ";
 
@@ -167,7 +201,7 @@ class PurchaseOrderModel extends Model
         $this->joinRpf($builder, $rpfModel);
         $this->joinRpf($builder, $rpfModel, true);
         $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
-        $this->joinAccountView($builder, "{$this->table}.received_by", 'rb');
+        $this->joinAccountView($builder, "{$this->table}.approved_by", 'ab');
         $this->joinAccountView($builder, "{$this->table}.filed_by", 'fb');
 
         $builder->where("{$this->table}.deleted_at", null);
@@ -186,9 +220,9 @@ class PurchaseOrderModel extends Model
             $buttons = dt_button_actions($row, $id, $permissions, $dropdown, ['exclude_edit']);
 
             if ($row['status'] === 'pending') {
-                if (check_permissions($permissions, 'RECEIVE')) {
-                    // Receive PO
-                    $changeTo = 'receive';
+                if (check_permissions($permissions, 'APPROVE')) {
+                    // Approve PO
+                    $changeTo = 'approve';
                     $buttons .= dt_button_html([
                         'text'      => $dropdown ? ucfirst($changeTo) : '',
                         'button'    => 'btn-primary',
@@ -198,9 +232,9 @@ class PurchaseOrderModel extends Model
                 }
             }
 
-            if (check_permissions($permissions, 'RECIEVE') && $row['status'] === 'filed') {
+            if (check_permissions($permissions, 'APPROVED') && $row['status'] === 'approved') {
                 // File PO
-                $changeTo = 'receive';
+                $changeTo = 'file';
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
                     'button'    => 'btn-success',
@@ -209,9 +243,10 @@ class PurchaseOrderModel extends Model
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed', 'received'])) {
+            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['approved', 'filed'])) {
                 // Print PO
-                $print_url  = site_url('rpf/print/') . $row[$id];
+                // $print_url  = site_url('purchase-orders/print/') . $row[$id];
+                $print_url  = url_to('purchase_order.print', $row[$id]);
                 $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
@@ -241,7 +276,7 @@ class PurchaseOrderModel extends Model
    {
        $closureFun = function($row) {
            $text    = ucwords(set_po_status($row['status']));
-           $color   = dt_status_color($row['status']);
+           $color   = $row['status'] === 'filed' ? 'success' : dt_status_color($row['status']);
            return text_badge($color, $text);
        };
        

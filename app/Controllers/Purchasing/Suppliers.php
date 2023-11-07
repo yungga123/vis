@@ -24,7 +24,6 @@ class Suppliers extends BaseController
      * Use to get current permissions
      * @var string
      */
-
     private $_permissions;
 
     /**
@@ -36,8 +35,6 @@ class Suppliers extends BaseController
     /**
      * Class constructor
      */
-
-    
     public function __construct()
     {
         $this->_model       = new SuppliersModel(); // Current model
@@ -75,10 +72,10 @@ class Suppliers extends BaseController
                 "id",
                 "supplier_name",
                 "supplier_type",
+                "address",
                 "contact_person",
                 "contact_number",
                 "viber",
-                "payment_terms",
                 "payment_mode",
                 "product",
                 "email_address",
@@ -93,6 +90,7 @@ class Suppliers extends BaseController
                 "id",
                 "supplier_name",
                 "supplier_type",
+                "address",
                 "contact_person",
                 "contact_number",
                 "viber",
@@ -110,6 +108,7 @@ class Suppliers extends BaseController
                 "id",
                 "supplier_name",
                 $this->_model->supplierType(),
+                "address",
                 "contact_person",
                 "contact_number",
                 "viber",

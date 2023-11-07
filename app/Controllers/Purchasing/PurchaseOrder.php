@@ -11,12 +11,13 @@ use App\Models\InventoryModel;
 use App\Models\SuppliersModel;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class PurchaseOrder extends BaseController
 {
     /* Declare trait here to use */
-    use GeneralInfoTrait, CommonTrait;
+    use GeneralInfoTrait, CommonTrait, HRTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -77,6 +78,7 @@ class PurchaseOrder extends BaseController
             'purchase_order' => [
                 'list'      => url_to('purchase_order.list'),
                 'fetch'     => url_to('purchase_order.fetch'),
+                'change'    => url_to('purchase_order.change'),
                 'delete'    => url_to('purchase_order.delete'),
             ],
             'purchasing'    => [
@@ -120,8 +122,8 @@ class PurchaseOrder extends BaseController
                 'requested_at_formatted',
                 'created_by_name',
                 'created_at_formatted',
-                'received_by_name',
-                'received_at_formatted',
+                'approved_by_name',
+                'approved_at_formatted',
                 'filed_by_name',
                 'filed_at_formatted',
             ])
@@ -136,8 +138,8 @@ class PurchaseOrder extends BaseController
                 'requested_at_formatted',
                 'created_by_name',
                 'created_at_formatted',
-                'received_by_name',
-                'received_at_formatted',
+                'approved_by_name',
+                'approved_at_formatted',
                 'filed_by_name',
                 'filed_at_formatted',
             ]);
@@ -159,13 +161,26 @@ class PurchaseOrder extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                if (! $this->validate($this->_validationRules())) {
+                $print_po_id = $this->request->getVar('po_id');
+
+                if (! $this->validate($this->_validationRules($print_po_id))) {
                     $data['status']     = STATUS_ERROR;
                     $data ['errors']    = $this->validator->getErrors();
                     $data ['message']   = 'Validation error!';
 
                     return $data;
                 } 
+
+                if ($print_po_id) {
+                    // Update Process
+                    $set_arr = [
+                        'attention_to'  => $this->request->getVar('attention_to'),
+                        'with_vat'      => $this->request->getVar('with_vat') ? true : false,
+                    ];
+                    $this->_model->update($print_po_id, $set_arr);
+
+                    return $data;
+                }
 
                 $id     = $this->request->getVar('id');
                 $rpf_id = $this->request->getVar('rpf_id');
@@ -223,9 +238,6 @@ class PurchaseOrder extends BaseController
                     }
                 }
 
-                if ($id) {
-                    $data['message']    = 'Purchase Order has been updated successfully!';
-                }
                 return $data;
             }
         );
@@ -247,30 +259,8 @@ class PurchaseOrder extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id             = $this->request->getVar('id');
-                $poItemModel    = new POItemModel();
-                $rpfItemModel   = new RPFItemModel();
-                $inventoryModel = new InventoryModel();
-                $supplierModel  = new SuppliersModel();
-                $columns        = "
-                    {$this->_model->table}.rpf_id,
-                    {$poItemModel->table}.inventory_id,
-                    {$rpfItemModel->table}.quantity_in,
-                " . $rpfItemModel->inventoryColumns(true);
-                $builder        = $this->_model->select($columns);
-
-                // Joining tables
-                $this->_model->joinSupplier($builder, $supplierModel);
-                $this->_model->joinPOItem($builder, $poItemModel);
-                $this->_model->joinRpfItem($builder, $rpfItemModel);
-                $poItemModel->joinInventory($builder, $inventoryModel);
-                $poItemModel->joinInventory($builder, $inventoryModel, true);
-
-                // Where
-                $builder->where("{$this->_model->table}.id", $id);
-                $builder->where("{$poItemModel->table}.po_id", $id);
-
-                $results = $builder->findAll();
+                $id         = $this->request->getVar('id');
+                $results    = $this->_model->getPOItems($id);
 
                 if ($this->request->getVar('po_items')) {
                     $data['data']       = $results;
@@ -328,7 +318,7 @@ class PurchaseOrder extends BaseController
     }
 
     /**
-     * Changing status of prf
+     * Changing status of the record
      *
      * @return json
      */
@@ -362,25 +352,49 @@ class PurchaseOrder extends BaseController
      *
      * @return view
      */
-    public function print() 
+    public function print($id) 
     {
         // Check role & action if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, 'PRINT');
         
-        $id                 = $this->request->getUri()->getSegment(3);
-        $columns            = $this->_model->columns(true, true);
-        $builder            = $this->_model->select($columns);
-        
-        $this->_model->joinView($builder);
+        $rpfModel               = new RequestPurchaseFormModel();
+        $supplierModel          = new SuppliersModel();
+        $inventoryModel         = new InventoryModel();
+        $columns                = "
+            {$this->_model->table}.id,
+            {$this->_model->table}.rpf_id, 
+            {$this->_model->table}.supplier_id, 
+            {$this->_model->table}.attention_to, 
+            {$this->_model->table}.with_vat,
+            cb.employee_name AS prepared_by_name,
+            ab.employee_name AS approved_by_name
+        ";
+        $builder                = $this->_model->select($columns);
+        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+        $this->joinAccountView($builder, "{$this->_model->table}.approved_by", 'ab');
 
-        $rpfItemModel           = new RPFItemModel(); 
-        $items                  = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
-        $data['rpf']            = $builder->find($id);
-        $data['rpf_items']      = $items;
-        $data['title']          = 'Print Requisition Form';
-        $data['company_logo']   = $this->getGeneralInfo('company_logo');
+        $purchase_order         = $builder->where("{$this->_model->table}.id", $id)->find()[0];
+        $items                  = $this->_model->getPOItems($id, "{$inventoryModel->view}.size");
+        $supplier               = $supplierModel->getSuppliers(
+            $purchase_order['supplier_id'], 
+            'supplier_name, address, payment_terms, payment_mode, others_payment_mode'
+        );
+        $rpfColumns             = "
+            DATE_FORMAT(date_needed, '".dt_sql_date_format()."') AS date_needed,
+            DATE_FORMAT(created_at, '".dt_sql_datetime_format()."') AS requested_at,
+            {$rpfModel->view}.created_by_name  AS requested_by
+        ";
+        $general_info           = $this->getGeneralInfo(['company_logo', 'company_name', 'company_address'], true);
+        $data['purchase_order'] = $purchase_order;
+        $data['supplier']       = $supplier;
+        $data['items']          = $items;
+        $data['rpf']            = $rpfModel->joinView($rpfModel)->getRequestPurchaseForms($id, false, $rpfColumns);
+        $data['general_info']   = $general_info;
+        $data['title']          = 'Generate Purchase Order';
+        $data['disable_auto_print'] = true;
+        $data['custom_js']      = ['functions.js', 'purchasing/purchase_order/print.js'];
 
-        return view('purchasing/rpf/print', $data);
+        return view('purchasing/purchase_order/print', $data);
     }
     
     /**
@@ -388,17 +402,22 @@ class PurchaseOrder extends BaseController
      * 
      * @return array
      */
-    private function _validationRules()
+    private function _validationRules($print = false)
     {
+        if ($print) {
+            return [
+                'attention_to' => [
+                    'rules' => 'required|min_length[5]|max_length[255]',
+                    'label' => 'attention to'
+                ],
+            ];
+        }
+
         return [
             'rpf_id' => [
                 'rules' => 'required',
                 'label' => 'request purchase forms'
             ],
-            // 'attention_to' => [
-            //     'rules' => 'required|min_length[5]|max_length[255]',
-            //     'label' => 'attention to'
-            // ],
         ];
     }
 }

@@ -275,8 +275,8 @@ function catchErrMsg(err, swal = false) {
 
 /**
  * Show alert message in form or small elem
- * @param {string} elems    - list of name of the inputs
- * @param {string} errors   - error message pass from validation error
+ * @param {array} elems    - list of name of the inputs
+ * @param {string|object} errors   - error message pass from validation error
  * @param {string} status   - status of alert - refer to 'STATUS' global variable
  * @param {string} prefix   - prefix for small elements container for error messages
  * @param {bool} swal       - set true if using swal
@@ -436,7 +436,6 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
 		processing: true,
-		// scrollX: true,
 		autoWidth: false,
 		columnDefs: columnDefs,
 		order: order,

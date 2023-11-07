@@ -21,6 +21,7 @@ $(document).ready(function () {
 		"supplier_name",
 		"supplier_type",
 		"others_supplier_type",
+		"address",
 		"contact_person",
 		"contact_number",
 		"viber",
@@ -29,9 +30,9 @@ $(document).ready(function () {
 		"others_payment_mode",
 		"product",
 		"email_address",
-        "bank_name",
+		"bank_name",
 		"bank_account_name",
-        "bank_number",
+		"bank_number",
 		"remarks",
 	];
 

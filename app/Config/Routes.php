@@ -226,7 +226,7 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('prf/fetch', 'Inventory\ProjectRequestForm::fetch', ['as' => 'prf.fetch']);
     $routes->post('prf/delete', 'Inventory\ProjectRequestForm::delete', ['as' => 'prf.delete']);
     $routes->post('prf/change', 'Inventory\ProjectRequestForm::change', ['as' => 'prf.change']);
-    $routes->get('prf/print/(:num)', 'Inventory\ProjectRequestForm::print', ['as' => 'prf.print/$1']);
+    $routes->get('prf/print/(:num)', 'Inventory\ProjectRequestForm::print/$1', ['as' => 'prf.print']);
 });
 /* INVENTORY */
 
@@ -266,7 +266,7 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
     $routes->post('save', 'Admin\Dispatch::save', ['as' => 'dispatch.save']);
     $routes->post('fetch', 'Admin\Dispatch::fetch', ['as' => 'dispatch.fetch']);
     $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'dispatch.delete']);
-    $routes->get('print/(:num)', 'Admin\Dispatch::print', ['as' => 'dispatch.print/$1']);
+    $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'dispatch.print']);
 });
 /* ADMIN */
 
@@ -302,7 +302,7 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('rpf/fetch', 'Purchasing\RequestPurchaseForm::fetch', ['as' => 'rpf.fetch']);
     $routes->post('rpf/delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'rpf.delete']);
     $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
-    $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print', ['as' => 'rpf.print/$1']);
+    $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print/$1', ['as' => 'rpf.print']);
 });
 
 // PURCHASE ORDER / GENERATE PO
@@ -313,7 +313,7 @@ $routes->group('purchase-orders', ['filter' => 'checkauth'], static function ($r
     $routes->post('fetch', 'Purchasing\PurchaseOrder::fetch', ['as' => 'purchase_order.fetch']);
     $routes->post('delete', 'Purchasing\PurchaseOrder::delete', ['as' => 'purchase_order.delete']);
     $routes->post('change', 'Purchasing\PurchaseOrder::change', ['as' => 'purchase_order.change']);
-    $routes->get('print/(:num)', 'Purchasing\PurchaseOrder::print', ['as' => 'purchase_order.print/$1']);
+    $routes->get('print/(:num)', 'Purchasing\PurchaseOrder::print/$1', ['as' => 'purchase_order.print']);
 });
 
 /* PURCHASING */

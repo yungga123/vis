@@ -158,7 +158,12 @@ define('ACTIONS', [
         'PURCHASING_RPF'    => [
             'ACCEPT'        => 'Accept',
             'REJECT'        => 'Reject',
-            'RECEIVE'       => 'Receive', // Item In
+            'RECEIVE'       => 'Receive',
+            'PRINT'         => 'Print',
+        ],
+        'PURCHASING_PURCHASE_ORDER'    => [
+            'APPROVE'       => 'Approve',
+            'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],
     ],

@@ -19,6 +19,7 @@ class SuppliersModel extends Model
         "supplier_name",
         "supplier_type",
         "others_supplier_type",
+        "address",
         "contact_person",
         "contact_number",
         "viber",
@@ -48,6 +49,10 @@ class SuppliersModel extends Model
         ],
         'supplier_type'      => [
             'label' => 'Type of Supplier',
+            'rules' => 'required'
+        ],
+        'address'      => [
+            'label' => 'Address',
             'rules' => 'required'
         ],
         'contact_person'      => [
@@ -90,6 +95,19 @@ class SuppliersModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Get suppliers
+    public function getSuppliers($id = null, $columns = '')
+    {
+        $columns = $columns ? $columns : [$this->primaryKey] + $this->allowedFields;
+        $builder = $this->select($columns);
+        $builder->where('deleted_at IS NULL');
+
+        if ($id && is_array($id))
+            return $builder->whereIn($this->primaryKey, $id)->findAll();
+
+        return $id ? $builder->find($id) : $builder->findAll();        
+    }
+
     public function noticeTable()
     {
         $builder    = $this->db->table($this->view);
@@ -122,7 +140,8 @@ class SuppliersModel extends Model
         return $closureFun;
     }
 
-    public function supplierType() {
+    public function supplierType() 
+    {
         $closureFun = function($row) {
 
             if ($row['supplier_type'] == 'Others') {
@@ -134,19 +153,16 @@ class SuppliersModel extends Model
         return $closureFun;
     }
 
-    public function paymentTerms() {
+    public function paymentTerms() 
+    {
         $closureFun = function($row) {
-
-            if ($row['payment_terms'] == '0') {
-                return 'No';
-            } else {
-                return $row['payment_terms'].' day/s';
-            }
+            return payment_terms($row['payment_terms']);
         };
         return $closureFun;
     }
 
-    public function paymentMode() {
+    public function paymentMode() 
+    {
         $closureFun = function($row) {
 
             if ($row['payment_mode'] == 'Others') {

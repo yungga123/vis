@@ -379,13 +379,13 @@ if (! function_exists('get_po_status'))
 	{
         $options = [
             'pending'   => 'pending',
-            'receive'   => 'receive',
+            'approve'   => 'approve',
             'file'      => 'file',
         ];
 
         $options_pt = [
             'pending'   => 'pending',
-            'received'  => 'received',
+            'approved'  => 'approved',
             'filed'     => 'filed',
         ];
 
@@ -404,8 +404,8 @@ if (! function_exists('set_po_status'))
 	{
         $options = [
             'pending'   => 'pending',
-            'receive'   => 'received',
-            'received'  => 'received',
+            'approve'   => 'approved',
+            'approved'  => 'approved',
             'file'      => 'fileed',
             'fileed'    => 'fileed',
         ];
@@ -420,5 +420,40 @@ if (! function_exists('set_po_status'))
         }
 
         return $options[$param];
+	}
+}
+
+if (! function_exists('payment_terms'))
+{
+    /**
+     * Payment terms.
+     * Used in module(s): Supplier
+     */
+	function payment_terms(string $param = ''): string|array
+	{
+        $word   = ' DAYS';
+        $terms  = [
+            '0'   => 'N/A',
+            '7'   => '7'. $word,
+            '15'  => '15'. $word,
+            '21'  => '21'. $word,
+            '30'  => '30'. $word,
+            '45'  => '45'. $word,
+            '50'  => '50'. $word,
+            '60'  => '60'. $word,
+            '90'  => '90'. $word,
+            '120'  => '120'. $word,
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_prf_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $param ? $terms[$param] : $terms;
 	}
 }
