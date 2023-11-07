@@ -206,6 +206,11 @@ class RequestPurchaseFormModel extends Model
        $builder->select($columns);
        $this->joinView($builder);
 
+       if (isset($request['params'])) {
+           $params = $request['params'];
+           $builder->whereIn("{$this->table}.status", $params['status']);
+       }
+
        $builder->where("{$this->table}.deleted_at", null);
        $builder->orderBy('id', 'DESC');
 

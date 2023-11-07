@@ -204,6 +204,11 @@ class PurchaseOrderModel extends Model
         $this->joinAccountView($builder, "{$this->table}.approved_by", 'ab');
         $this->joinAccountView($builder, "{$this->table}.filed_by", 'fb');
 
+        if (isset($request['params'])) {
+            $params = $request['params'];
+            $builder->whereIn("{$this->table}.status", $params['status']);
+        }
+
         $builder->where("{$this->table}.deleted_at", null);
         $builder->orderBy('id', 'DESC');
 

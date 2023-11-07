@@ -3,18 +3,21 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <div class="input-group">
+            <div class="input-group" style="flex-wrap: nowrap; width: 100%;">
                 <div class="input-group-prepend">
-                    <label class="input-group-text" for="filterby">Filter by Percent</label>
+                    <label class="input-group-text">Filter by Percent (Except 100%)</label>
                 </div>
-                <select class="custom-select" name="filter" id="filterby">
-                    <option value="all" selected>All (Except 100%)</option>
+                <select class="custom-select select2" id="filter_status" data-placeholder="Select a percent" multiple>
                     <option value="10.00%">10%</option>
                     <option value="30.00%">30%</option>
                     <option value="50.00%">50%</option>
                     <option value="70.00%">70%</option>
                     <option value="90.00%">90%</option>
                 </select>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
+                    <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterData(true)" type="button" title="Reset filter">Reset</button>
+                </div>
             </div>
         </div>
         <div class="card-body">

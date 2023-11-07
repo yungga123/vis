@@ -109,13 +109,9 @@ class Tasklead extends BaseController
 
     public function list()
     {
-        $table = new TablesIgniter();
-        $params = $this->request->getVar('params');
-        $builder = $this->_model->noticeTable();
-
-        if ($params && $params['filter'] !== 'all') {
-            $builder->where('status', $params['filter']);
-        }
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
 
         $table->setTable($builder)
             ->setSearch([

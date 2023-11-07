@@ -131,14 +131,14 @@ if (! function_exists('setup_modules'))
                 'name'      => get_modules('MANAGER_OF_SALES'),
                 'url'       => url_to('sales_manager.home'),
                 'class'     => (url_is('sales_manager') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
+                'icon'      => 'fas fa-user-tie',
             ],
             'MANAGER_OF_SALES_INDV' => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('MANAGER_OF_SALES_INDV'),
                 'url'       => url_to('sales_manager_indv.home'),
                 'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
+                'icon'      => 'fas fa-user-tag',
             ],
             'INVENTORY'             => [
                 'menu'      => 'INVENTORY', // Leave empty if none

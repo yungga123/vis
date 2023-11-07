@@ -12,6 +12,9 @@ $(document).ready(function () {
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
 
+	/* Init filter */
+	select2Init("#filter_status");
+
 	/* Toggle modal */
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -87,6 +90,30 @@ $(document).ready(function () {
 		showAlertInForm(["remarks"], message, res.status);
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	let status = getSelect2Selection("#filter_status");
+
+	showLoading();
+	if (!isEmpty(status)) {
+		let options = {
+			params: { status: status },
+		};
+
+		if (reset) {
+			options.params = null;
+			clearSelect2Selection("#filter_status");
+		}
+
+		loadDataTable(table, router.prf.list, METHOD.POST, options, true);
+	} else {
+		closeLoading();
+		if (reset) return;
+		notifMsgSwal(TITLE.WARNING, "Please select a status first!", STATUS.INFO);
+	}
+	closeLoading();
+}
 
 /* Get prf items */
 function view(id, status) {

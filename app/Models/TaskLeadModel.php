@@ -103,7 +103,7 @@ class TaskLeadModel extends Model
         
     }
 
-    public function noticeTable()
+    public function noticeTable($request)
     {
         $booked     = '100.00%';
         $builder    = $this->db->table($this->view);
@@ -112,6 +112,11 @@ class TaskLeadModel extends Model
         if (is_admin() || is_executive() || is_manager()) {
         } else {
             $builder->where('employee_id', session('employee_id'));
+        }
+
+        if (isset($request['params']) && $request['params']) {
+            $params = $request['params'];
+            $builder->whereIn("status", $params['status']);
         }
 
         return $builder;

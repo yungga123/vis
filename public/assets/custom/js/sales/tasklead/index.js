@@ -60,13 +60,10 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	$("#filterby").on("change", function () {
-		const options = {
-			params: { filter: $(this).val() },
-		};
-		loadDataTable(table, router.tasklead.list, METHOD.POST, options, true);
-	});
 	loadDataTable(table, router.tasklead.list, METHOD.POST);
+
+	/* Init filter */
+	select2Init("#filter_status");
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -194,6 +191,30 @@ $(document).ready(function () {
 		dropdownParent: `#${modal}`,
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	let status = getSelect2Selection("#filter_status");
+
+	showLoading();
+	if (!isEmpty(status)) {
+		let options = {
+			params: { status: status },
+		};
+
+		if (reset) {
+			options.params = null;
+			clearSelect2Selection("#filter_status");
+		}
+
+		loadDataTable(table, router.tasklead.list, METHOD.POST, options, true);
+	} else {
+		closeLoading();
+		if (reset) return;
+		notifMsgSwal(TITLE.WARNING, "Please select a filter first!", STATUS.INFO);
+	}
+	closeLoading();
+}
 
 /* Get item details */
 function edit(id) {
