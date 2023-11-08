@@ -199,7 +199,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 					<li>
 						Terms of Payment: 
 						<span class="text-bold text-uppercase text-underline">
-							<?= payment_terms($supplier['payment_terms']) ?>
+							<?= get_payment_terms($supplier['payment_terms']) ?>
 						</span>
 					</li>
 				</ol>
