@@ -113,7 +113,7 @@ class CustomerModel extends Model
     }
 
     // Set the columns
-    protected function columns($dtTable = false)
+    public function columns($dtTable = false)
     {
         $columns = "
             {$this->table}.id,

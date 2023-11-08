@@ -92,6 +92,7 @@ $routes->group('clients', ['filter' => 'checkauth'], static function($routes) {
     $routes->post('save','Clients\Customers::save',['as' => 'customer.save']);
     $routes->post('fetch','Clients\Customers::fetch',['as' => 'customer.fetch']);
     $routes->post('delete','Clients\Customers::delete',['as' => 'customer.delete']);
+    $routes->get('export','Clients\Customers::export',['as' => 'customer.export']);
     
     // BRANCH
     $routes->post('branches','Clients\CustomerBranch::list',['as' => 'customer.branch.list']);

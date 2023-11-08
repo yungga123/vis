@@ -4,10 +4,14 @@ namespace App\Controllers\Clients;
 
 use App\Controllers\BaseController;
 use App\Models\CustomerModel;
+use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class Customers extends BaseController
 {
+    /* Declare trait here to use */
+    use ExportTrait;
+
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -217,5 +221,58 @@ class Customers extends BaseController
         );
 
         return $response;
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        log_message('error', 'Export to csv');
+        try {
+            $datetimeFormat = dt_sql_datetime_format();
+            $address    = dt_sql_concat_client_address();
+            $columns    = "
+                {$this->_model->table}.id,
+                IF({$this->_model->table}.forecast = 0, 'NO', 'YES') AS new_client,
+                {$this->_model->table}.name,
+                {$this->_model->table}.type,
+                {$this->_model->table}.contact_person,
+                {$this->_model->table}.contact_number,
+                {$this->_model->table}.email_address,
+                {$address},
+                {$this->_model->table}.source, 
+                {$this->_model->table}.notes,
+                {$this->_model->table}.referred_by,
+                DATE_FORMAT({$this->_model->table}.created_at, '{$datetimeFormat}') AS created_at,
+                {$this->_model->accountsView}.employee_name AS created_by
+            ";
+            $builder    = $this->_model->select($columns);
+            $builder->join($this->_model->accountsView, "{$this->_model->table}.created_by = {$this->_model->accountsView}.username", 'left');
+            $builder->where("deleted_at IS NULL")->orderBy('id', 'DESC');
+
+            $data       = $builder->findAll();
+            $header     = [
+                'Client ID',
+                'New Client?',
+                'Client Name',
+                'Client Type',
+                'Contact Person',
+                'Contact Number',
+                'Email Address',
+                'Address',
+                'Source',
+                'Notes',
+                'Referred By',
+                'Created By',
+                'Created At',
+            ];
+            $filename   = 'Clients Masterlist';
+            $this->exportToCsv($data, $header, $filename);
+        } catch (\Exception $e) {
+            log_message('error', '[EXPORT ERROR] {exception}', ['exception' => $e]);
+        }
     }
 }
