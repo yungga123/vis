@@ -140,18 +140,23 @@ if (! function_exists('clean_input'))
     /**
      * Clean input using trim default function
      */
-	function clean_input(string|array $input): string|array
+	function clean_input(string|array $input, $func_name = ''): string|array
 	{
         if (is_array($input)) {
             $arr = [];
             foreach ($input as $key => $val) {
-                $arr[$key] = trim($val);
+                $val = trim($val);
+                if ($func_name) $val = $func_name($val);
+                $arr[$key] = $val;
             }
 
             return $arr;
         }
 
-        return trim($input);
+        $input = trim($input);
+        if ($func_name) $input = $func_name($input);
+
+        return $input;
 	}
 }
 

@@ -62,7 +62,7 @@ class JobOrder extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['admin/job_order/index.js', 'admin/common.js'];
+        $data['custom_js']      = ['admin/job_order/index.js', 'admin/common.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'job_order' => [
                 'list'      => url_to('job_order.list'),
@@ -246,13 +246,13 @@ class JobOrder extends BaseController
                 $id = $this->request->getVar('id');
 
                 if ($this->request->getVar('status')) {
-                    $columns    = '
-                        job_orders.remarks,
-                        job_orders.date_committed,
-                        job_orders.is_manual,
-                        IF(job_orders.is_manual = 0, task_lead_booked.tasklead_type, job_orders.manual_quotation_type) AS type,
-                        task_lead_booked.employee_id,
-                    ';                
+                    $columns    = "
+                        {$this->_model->table}.remarks,
+                        {$this->_model->table}.date_committed,
+                        {$this->_model->table}.is_manual,
+                        IF({$this->_model->table}.is_manual = 0, {$this->_model->tableJoined}.tasklead_type, {$this->_model->table}.manual_quotation_type) AS type,
+                        {$this->_model->tableJoined}.employee_id,
+                    ";                
                     $record     = $this->_model->getJobOrders($id, $columns);
                 } else {
                     $record     = $this->_model->getJobOrders($id);

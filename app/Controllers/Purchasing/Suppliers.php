@@ -50,22 +50,39 @@ class Suppliers extends BaseController
 
         $data['title']          = 'Suppliers';
         $data['page_title']     = 'Suppliers | List';
-        $data['custom_js']      = ['purchasing/suppliers/index.js', 'purchasing/suppliers_brand/index.js'];
+        $data['btn_add_lbl']    = 'Add New Supplier';
+        $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
-        //$data['select2']        = true;
-        $data['can_add']        = $this->_can_add;
-        $data['btn_add_lbl']    = 'Add New Supplier';
+        $data['select2']        = true;
+        $data['custom_js']      = [
+            'purchasing/suppliers/index.js', 
+            'purchasing/suppliers_brand/index.js',
+            'dt_filter.js'
+        ];
+        $data['routes']         = json_encode([
+            'supplier' => [
+                'list'      => url_to('suppliers.list'),
+                'edit'      => url_to('suppliers.edit'),
+                'delete'    => url_to('suppliers.delete'),
+                'brand'     => [
+                    'list'      => url_to('suppliers.brand.list'),
+                    'edit'      => url_to('suppliers.brand.edit'),
+                    'delete'    => url_to('suppliers.brand.delete'),
+                ],
+            ],
+        ]);
 
         return view('purchasing/suppliers/index', $data);
     }
 
     public function list()
     {
-        $table = new TablesIgniter();
-        $builder = $this->_model->noticeTable();
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
 
         $table->setTable($builder)
             ->setSearch([

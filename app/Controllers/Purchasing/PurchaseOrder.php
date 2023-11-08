@@ -73,7 +73,7 @@ class PurchaseOrder extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'purchasing/purchase_order/index.js';
+        $data['custom_js']      = ['purchasing/purchase_order/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'purchase_order' => [
                 'list'      => url_to('purchase_order.list'),

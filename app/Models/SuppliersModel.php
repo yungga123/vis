@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\FilterParamTrait;
 
 class SuppliersModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'suppliers';
     protected $view             = 'suppliers_view';
@@ -108,11 +112,16 @@ class SuppliersModel extends Model
         return $id ? $builder->find($id) : $builder->findAll();        
     }
 
-    public function noticeTable()
+    public function noticeTable($request)
     {
         $builder    = $this->db->table($this->view);
         $builder->select('*');
 
+        $this->filterParam($request, $builder, 'supplier_type', 'supplier_type');
+        $this->filterParam($request, $builder, 'payment_terms', 'payment_terms');
+        $this->filterParam($request, $builder, 'payment_mode', 'payment_mode');
+
+        $builder->where('deleted_at IS NULL');
         return $builder;
     }
 
@@ -156,7 +165,7 @@ class SuppliersModel extends Model
     public function paymentTerms() 
     {
         $closureFun = function($row) {
-            return payment_terms($row['payment_terms']);
+            return get_payment_terms($row['payment_terms']);
         };
         return $closureFun;
     }

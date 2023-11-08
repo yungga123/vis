@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use CodeIgniter\Database\RawSql;
+use App\Traits\HRTrait;
+use App\Traits\FilterParamTrait;
 
 class JobOrderModel extends Model
 {
+    /* Declare trait here to use */
+    use HRTrait, FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'job_orders';
     protected $tableJoined      = 'task_lead_booked';
@@ -114,7 +118,7 @@ class JobOrderModel extends Model
             {$this->table}.employee_id,
             {$this->table}.status,
             IF({$this->table}.is_manual = 0, {$this->tableJoined}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
+            UPPER(IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, {$this->table}.manual_quotation_type)) AS tasklead_type,
             CONCAT({$this->tableEmployees}.firstname,' ',{$this->tableEmployees}.lastname) AS manager,
             {$this->tableEmployees}.firstname,
             {$this->tableEmployees}.lastname,
@@ -220,12 +224,11 @@ class JobOrderModel extends Model
         $builder->join($this->tableEmployees, "{$this->table}.employee_id = {$this->tableEmployees}.employee_id", 'left');
 
         if ($withStatusByAndAt) {
-            $accountView    = '`accounts_view`';
-            $builder->join("{$accountView} AS av1", "({$this->table}.created_by = av1.username AND {$this->table}.created_by IS NOT NULL)", 'left');
-            $builder->join("{$accountView} AS av2", "({$this->table}.accepted_by = av2.username AND {$this->table}.accepted_by IS NOT NULL)", 'left');
-            $builder->join("{$accountView} AS av3", "({$this->table}.filed_by = av3.username AND {$this->table}.filed_by IS NOT NULL)", 'left');
-            $builder->join("{$accountView} AS av4", "({$this->table}.discarded_by = av4.username AND {$this->table}.discarded_by IS NOT NULL)", 'left');
-            $builder->join("{$accountView} AS av5", "({$this->table}.reverted_by = av5.username AND {$this->table}.reverted_by IS NOT NULL)", 'left');
+            $this->joinAccountView($builder, "{$this->table}.created_by", 'av1');
+            $this->joinAccountView($builder, "{$this->table}.accepted_by", 'av2');
+            $this->joinAccountView($builder, "{$this->table}.filed_by", 'av3');
+            $this->joinAccountView($builder, "{$this->table}.discarded_by", 'av4');
+            $this->joinAccountView($builder, "{$this->table}.reverted_by", 'av5');
         }
 
         $builder->where("{$this->table}.deleted_at IS NULL");
@@ -291,18 +294,10 @@ class JobOrderModel extends Model
         $builder->select($columns);        
         $this->_join($builder, true);
 
-        if (isset($request['params'])) {
-            $params = $request['params'];
-
-            if (! empty($params['status']))
-                $builder->whereIn("{$this->table}.status", $params['status']);
-
-            if (! empty($params['type'])) 
-                $builder->whereIn("{$this->tableJoined}.tasklead_type", $params['type']);
-
-            if (! empty($params['work_type'])) 
-                $builder->whereIn("{$this->table}.work_type", $params['work_type']);
-        }
+        $this->filterParam($request, $builder, "{$this->table}.status");
+        $this->filterParam($request, $builder, "IF({$this->table}.is_manual = 0, {$this->tableJoined}.tasklead_type, {$this->table}.manual_quotation_type)", 'type');
+        $this->filterParam($request, $builder, "{$this->table}.is_manual", 'is_manual');
+        $this->filterParam($request, $builder, "{$this->table}.work_type", 'work_type');
 
         $builder->orderBy('id', 'DESC');
         return $builder;
@@ -383,21 +378,8 @@ class JobOrderModel extends Model
     public function dtJOStatusFormat()
     {
         $closureFun = function($row) {
-            $text   = ucfirst(set_jo_status($row['status']));
-            $color   = 'secondary';
- 
-            switch ($row['status']) {
-                case 'pending':
-                    $color = 'warning';                   
-                    break;
-                case 'accepted':
-                    $color = 'primary';
-                    break;
-                case 'filed':
-                    $color = 'success';
-                    break;
-            }
- 
+            $text    = ucwords(set_jo_status($row['status']));
+            $color   = dt_status_color($row['status']);
             return text_badge($color, $text);
         };
         

@@ -62,8 +62,10 @@ $(document).ready(function () {
 	/* Load dataTable */
 	loadDataTable(table, router.tasklead.list, METHOD.POST);
 
-	/* Init filter */
+	/* Filters */
 	select2Init("#filter_status");
+	select2Init("#filter_client_type");
+	select2Init("#filter_quarter");
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -194,26 +196,29 @@ $(document).ready(function () {
 
 /* For filtering and reseting */
 function filterData(reset = false) {
-	let status = getSelect2Selection("#filter_status");
+	const status = getSelect2Selection("#filter_status");
+	const client_type = getSelect2Selection("#filter_client_type");
+	const quarter = getSelect2Selection("#filter_quarter");
+	const params = {
+		status: status,
+		client_type: client_type,
+		quarter: quarter,
+	};
+	const condition =
+		!isEmpty(status) || !isEmpty(client_type) || !isEmpty(quarter);
 
-	showLoading();
-	if (!isEmpty(status)) {
-		let options = {
-			params: { status: status },
-		};
-
-		if (reset) {
-			options.params = null;
+	filterParam(
+		router.tasklead.list,
+		table,
+		params,
+		condition,
+		() => {
 			clearSelect2Selection("#filter_status");
-		}
-
-		loadDataTable(table, router.tasklead.list, METHOD.POST, options, true);
-	} else {
-		closeLoading();
-		if (reset) return;
-		notifMsgSwal(TITLE.WARNING, "Please select a filter first!", STATUS.INFO);
-	}
-	closeLoading();
+			clearSelect2Selection("#filter_client_type");
+			clearSelect2Selection("#filter_quarter");
+		},
+		reset
+	);
 }
 
 /* Get item details */

@@ -74,15 +74,15 @@ class Tasklead extends BaseController
     {
         $data['title']          = 'Task Lead';
         $data['page_title']     = 'Task Lead | List';
-        $data['custom_js']      = 'sales/tasklead/index.js';
+        $data['btn_add_lbl']    = 'Add New Tasklead';
+        $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
-        $data['can_add']        = $this->_can_add;
         $data['quarter']        = $this->_time->getQuarter();
-        $data['btn_add_lbl']    = 'Add New Tasklead';
+        $data['custom_js']      = ['sales/tasklead/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'tasklead' => [
                 'list'      => url_to('tasklead.list'),

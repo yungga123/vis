@@ -63,7 +63,7 @@ class PurchaseOrders extends Migration
                 'constraint' => 50,
                 'comment' => 'Use username',
             ],
-            'approve_by' => [
+            'approved_by' => [
                 'type' => 'VARCHAR',
                 'constraint' => 50,
                 'comment' => 'Use username',
@@ -76,7 +76,7 @@ class PurchaseOrders extends Migration
                 'null' => true
             ],
             'created_at datetime default current_timestamp',
-            'approve_at datetime default null',
+            'approved_at datetime default null',
             'filed_at datetime default null',
             'updated_at datetime default null on update current_timestamp',
             'deleted_at datetime default null'

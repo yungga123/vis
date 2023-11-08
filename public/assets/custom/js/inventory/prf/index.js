@@ -35,7 +35,7 @@ $(document).ready(function () {
 	select2AjaxInit(
 		joSelector,
 		"Search & select a job order",
-		router.inventory.common.joborders,
+		router.admin.common.joborders,
 		"option_text",
 		_loadJobOrderDetails
 	);
@@ -95,24 +95,14 @@ $(document).ready(function () {
 function filterData(reset = false) {
 	let status = getSelect2Selection("#filter_status");
 
-	showLoading();
-	if (!isEmpty(status)) {
-		let options = {
-			params: { status: status },
-		};
-
-		if (reset) {
-			options.params = null;
-			clearSelect2Selection("#filter_status");
-		}
-
-		loadDataTable(table, router.prf.list, METHOD.POST, options, true);
-	} else {
-		closeLoading();
-		if (reset) return;
-		notifMsgSwal(TITLE.WARNING, "Please select a status first!", STATUS.INFO);
-	}
-	closeLoading();
+	filterParam(
+		router.prf.list,
+		table,
+		{ status: status },
+		!isEmpty(status),
+		() => clearSelect2Selection("#filter_status"),
+		reset
+	);
 }
 
 /* Get prf items */

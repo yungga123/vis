@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-
+use App\Traits\FilterParamTrait;
 
 class TaskLeadModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'tasklead';
     protected $view             = 'task_lead';
@@ -114,46 +117,46 @@ class TaskLeadModel extends Model
             $builder->where('employee_id', session('employee_id'));
         }
 
-        if (isset($request['params']) && $request['params']) {
-            $params = $request['params'];
-            $builder->whereIn("status", $params['status']);
-        }
+        $this->filterParam($request, $builder);
+        $this->filterParam($request, $builder, 'customer_type', 'client_type');
+        $this->filterParam($request, $builder, 'quarter', 'quarter');
 
+        $builder->where('deleted_at IS NULL');
         return $builder;
     }
 
-    public function noticeTableExistingCustomer(){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_existing_customer');
+    public function noticeTableExistingCustomer()
+    {
+        $builder = $this->db->table('task_lead_existing_customer');
         $builder->select('*');
         return $builder;
     }
 
 
-    public function noticeTableWhere($employee_id){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead')->where('employee_id',$employee_id);
-        $builder->select('*');
+    public function noticeTableWhere($employee_id)
+    {
+        $builder = $this->db->table('task_lead');
+        $builder->select('*')->where('employee_id',$employee_id);
         return $builder;
     }
 
-    public function noticeTableWhereExistingCustomer($employee_id){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_existing_customer')->where('employee_id',$employee_id);
-        $builder->select('*');
+    public function noticeTableWhereExistingCustomer($employee_id)
+    {
+        $builder = $this->db->table('task_lead_existing_customer');
+        $builder->select('*')->where('employee_id',$employee_id);
         return $builder;
     }
 
-    public function noticeTableBooked(){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_booked');
+    public function noticeTableBooked()
+    {
+        $builder = $this->db->table('task_lead_booked');
         $builder->select('*');
         return $builder;
     }
-    public function noticeTableBookedWhere($employee_id){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_booked')->where('employee_id',$employee_id);
-        $builder->select('*');
+    public function noticeTableBookedWhere($employee_id)
+    {
+        $builder = $this->db->table('task_lead_booked');
+        $builder->select('*')->where('employee_id',$employee_id);
         return $builder;
     }
 

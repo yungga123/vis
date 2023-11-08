@@ -4,11 +4,12 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\HRTrait;
+use App\Traits\FilterParamTrait;
 
 class PurchaseOrderModel extends Model
 {
-    // Declare traits
-    use HRTrait;
+    /* Declare trait here to use */
+    use HRTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'purchase_orders';
@@ -204,10 +205,7 @@ class PurchaseOrderModel extends Model
         $this->joinAccountView($builder, "{$this->table}.approved_by", 'ab');
         $this->joinAccountView($builder, "{$this->table}.filed_by", 'fb');
 
-        if (isset($request['params'])) {
-            $params = $request['params'];
-            $builder->whereIn("{$this->table}.status", $params['status']);
-        }
+        $this->filterParam($request, $builder, "{$this->table}.status");
 
         $builder->where("{$this->table}.deleted_at", null);
         $builder->orderBy('id', 'DESC');

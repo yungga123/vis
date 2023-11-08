@@ -26,12 +26,9 @@
                             <div class="form-group">
                                 <label class="required" for="supplier_type">Type of Supplier</label>
                                 <select type="select" name="supplier_type" id="supplier_type" class="form-control" onchange='selectedOthers(this.value)'>
-                                    <option value="">---Please Select---</option>
-                                    <option>Direct</option>
-                                    <option>Indirect</option>
-                                    <option>Tools Supplier</option>
-                                    <option>Office Assets</option>
-                                    <option>Others</option>
+                                    <?php foreach (get_supplier_type() as $val => $text): ?>
+                                        <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                                 <input type="hidden" name="others_supplier_type" id="others_supplier_type" class="form-control mt-2" placeholder="Please Specify here...">
                                 <small id="alert_supplier_type" class="text-danger"></small>
@@ -79,7 +76,7 @@
                             <div class="form-group">
                                 <label class="required" for="payment_terms">Payment Terms</label>
                                 <select type="text" name="payment_terms" id="payment_terms" class="form-control">
-                                    <?php foreach (payment_terms() as $key => $val): ?>
+                                    <?php foreach (get_payment_terms() as $key => $val): ?>
                                         <option value="<?= $key ?>"><?= $val ?></option>
                                     <?php endforeach; ?>
                                 </select>
@@ -89,12 +86,9 @@
                             <div class="form-group">
                                 <label class="required" for="payment_mode">Mode of Payment</label>
                                 <select name="payment_mode" id="payment_mode" class="form-control" onchange="selectedPaymentMode(this.value)">
-                                    <option value="">---Please Select---</option>
-                                    <option>Cash</option>
-                                    <option>Check</option>
-                                    <option>Online Payment</option>
-                                    <option>Dated Check</option>
-                                    <option>Others</option>
+                                    <?php foreach (get_supplier_mop() as $val => $text): ?>
+                                        <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                                 <input type="hidden" name="others_payment_mode" id="others_payment_mode" class="form-control mt-2" placeholder="Please Specify here...">
                                 <small id="alert_payment_mode" class="text-danger"></small>

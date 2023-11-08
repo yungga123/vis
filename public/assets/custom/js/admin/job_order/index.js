@@ -16,9 +16,10 @@ $(document).ready(function () {
 	];
 
 	/* Filters */
-	initSelect2Filters("filter_status", $pjOptions.status);
-	initSelect2Filters("filter_qtype", $pjOptions.qtype);
-	initSelect2Filters("filter_worktype", $pjOptions.worktype);
+	select2Init("#filter_status");
+	select2Init("#filter_qtype");
+	select2Init("#filter_is_manual");
+	select2Init("#filter_work_type");
 
 	/* Quotation via ajax data source */
 	select2AjaxInit(
@@ -118,32 +119,33 @@ $(document).ready(function () {
 function filterData(reset = false) {
 	const status = getSelect2Selection("#filter_status");
 	const qtype = getSelect2Selection("#filter_qtype");
-	const worktype = getSelect2Selection("#filter_worktype");
+	const is_manual = getSelect2Selection("#filter_is_manual");
+	const work_type = getSelect2Selection("#filter_work_type");
+	const params = {
+		status: status,
+		type: qtype,
+		work_type: work_type,
+		is_manual: is_manual,
+	};
+	const condition =
+		!isEmpty(status) ||
+		!isEmpty(qtype) ||
+		!isEmpty(is_manual) ||
+		!isEmpty(work_type);
 
-	showLoading();
-	if (!isEmpty(status) || !isEmpty(qtype) || !isEmpty(worktype)) {
-		let options = {
-			params: {
-				status: status,
-				type: qtype,
-				work_type: worktype,
-			},
-		};
-
-		if (reset) {
-			options.params = null;
+	filterParam(
+		router.job_order.list,
+		table,
+		params,
+		condition,
+		() => {
 			clearSelect2Selection("#filter_status");
 			clearSelect2Selection("#filter_qtype");
-			clearSelect2Selection("#filter_worktype");
-		}
-
-		loadDataTable(table, router.job_order.list, METHOD.POST, options, true);
-	} else {
-		closeLoading();
-		if (reset) return;
-		notifMsgSwal(TITLE.WARNING, "Please select at least first!", STATUS.INFO);
-	}
-	closeLoading();
+			clearSelect2Selection("#filter_is_manual");
+			clearSelect2Selection("#filter_work_type");
+		},
+		reset
+	);
 }
 
 /* Load selected tasklead/quotation details */
@@ -356,15 +358,6 @@ function toggleStatusFields(changeTo, val) {
 
 	if (val === changeTo) fields.removeClass("d-none");
 	else $("#fields_" + val).addClass("d-none");
-}
-
-/* Initialize select2 filters */
-function initSelect2Filters(id, options) {
-	$("#" + id).select2({
-		data: formatOptionsForSelect2(options),
-		allowClear: true,
-		width: "100%",
-	});
 }
 
 /* Initialize select2 customer branches */

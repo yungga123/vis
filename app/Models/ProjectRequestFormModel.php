@@ -4,11 +4,12 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
+use App\Traits\FilterParamTrait;
 
 class ProjectRequestFormModel extends Model
 {
     /* Declare trait here to use */
-    use InventoryTrait;
+    use InventoryTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'project_request_forms';
@@ -223,10 +224,7 @@ class ProjectRequestFormModel extends Model
         $this->joinView($builder);
         $this->joinJobOrder($builder);
 
-        if (isset($request['params'])) {
-            $params = $request['params'];
-            $builder->whereIn("{$this->table}.status", $params['status']);
-        }
+        $this->filterParam($request, $builder, "{$this->table}.status");
 
         $builder->where("{$this->table}.deleted_at", null);
         $builder->orderBy('id', 'DESC');

@@ -423,17 +423,36 @@ if (! function_exists('set_po_status'))
 	}
 }
 
-if (! function_exists('payment_terms'))
+if (! function_exists('get_supplier_type'))
+{
+    /**
+     * Get supplier type of Supplier module
+     */
+	function get_supplier_type(string $param = ''): string|array
+	{
+        $options = [
+            'Direct'            => 'Direct',
+            'Indirect'          => 'Indirect',
+            'Tools Supplier'    => 'Tools Supplier',
+            'Office Assets'     => 'Office Assets',
+            'Others'            => 'Others',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
+
+if (! function_exists('get_payment_terms'))
 {
     /**
      * Payment terms.
      * Used in module(s): Supplier
      */
-	function payment_terms(string $param = ''): string|array
+	function get_payment_terms(string $param = '', bool $is_filter = false): string|array
 	{
         $word   = ' DAYS';
-        $terms  = [
-            '0'   => 'N/A',
+        $arr    = $is_filter ? ['zero' => 'N/A'] : ['0' => 'N/A'];
+        $terms  = $arr + [
             '7'   => '7'. $word,
             '15'  => '15'. $word,
             '21'  => '21'. $word,
@@ -455,5 +474,24 @@ if (! function_exists('payment_terms'))
         }
 
         return $param ? $terms[$param] : $terms;
+	}
+}
+
+if (! function_exists('get_supplier_mop'))
+{
+    /**
+     * Get supplier mode of payment of Supplier module
+     */
+	function get_supplier_mop(string $param = ''): string|array
+	{
+        $options = [
+            'Cash'              => 'Cash',
+            'Check'             => 'Check',
+            'Online Payment'    => 'Online Payment',
+            'Dated Check'       => 'Dated Check',
+            'Others'            => 'Others',
+        ];
+
+        return $param ? $options[$param] : $options;
 	}
 }

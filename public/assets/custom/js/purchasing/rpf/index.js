@@ -94,24 +94,14 @@ $(document).ready(function () {
 function filterData(reset = false) {
 	let status = getSelect2Selection("#filter_status");
 
-	showLoading();
-	if (!isEmpty(status)) {
-		let options = {
-			params: { status: status },
-		};
-
-		if (reset) {
-			options.params = null;
-			clearSelect2Selection("#filter_status");
-		}
-
-		loadDataTable(table, router.rpf.list, METHOD.POST, options, true);
-	} else {
-		closeLoading();
-		if (reset) return;
-		notifMsgSwal(TITLE.WARNING, "Please select a status first!", STATUS.INFO);
-	}
-	closeLoading();
+	filterParam(
+		router.rpf.list,
+		table,
+		{ status: status },
+		!isEmpty(status),
+		() => clearSelect2Selection("#filter_status"),
+		reset
+	);
 }
 
 /* Get rpf items */

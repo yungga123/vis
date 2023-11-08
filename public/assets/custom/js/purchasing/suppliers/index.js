@@ -1,22 +1,16 @@
 var table,
 	modal,
 	form,
-	editRoute,
-	removeRoute,
 	elems,
-	branch_table,
-	branch_modal,
-	branch_form,
-	branch_editRoute,
-	branch_removeRoute,
-	branch_elems;
+	brand_table,
+	brand_modal,
+	brand_form,
+	brand_elems;
 
 $(document).ready(function () {
 	table = "supplier_table";
 	modal = "modal_add_supplier";
 	form = "form_add_supplier";
-	editRoute = $("#edit_url").val();
-	removeRoute = $("#remove_url").val();
 	elems = [
 		"supplier_name",
 		"supplier_type",
@@ -39,8 +33,6 @@ $(document).ready(function () {
 	brand_table = "supplier_table_brand";
 	brand_modal = "modal_add_supplier_brand";
 	brand_form = "form_add_supplier_brand";
-	brand_editRoute = $("#edit_url_brand").val();
-	brand_removeRoute = $("#remove_url_brand").val();
 	brand_elems = [
 		"brand_name",
 		"brand_product",
@@ -66,8 +58,12 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	const route = $("#" + table).data("url");
-	loadDataTable(table, route, METHOD.POST);
+	loadDataTable(table, router.supplier.list, METHOD.POST);
+
+	/* Filters */
+	select2Init("#filter_supplier_type");
+	select2Init("#filter_payment_terms");
+	select2Init("#filter_payment_mode");
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -89,6 +85,35 @@ $(document).ready(function () {
 	brand_suppliers();
 });
 
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const supplier_type = getSelect2Selection("#filter_supplier_type");
+	const payment_terms = getSelect2Selection("#filter_payment_terms");
+	const payment_mode = getSelect2Selection("#filter_payment_mode");
+	const params = {
+		supplier_type: supplier_type,
+		payment_terms: payment_terms,
+		payment_mode: payment_mode,
+	};
+	const condition =
+		!isEmpty(supplier_type) ||
+		!isEmpty(payment_terms) ||
+		!isEmpty(payment_mode);
+
+	filterParam(
+		router.supplier.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_supplier_type");
+			clearSelect2Selection("#filter_payment_terms");
+			clearSelect2Selection("#filter_payment_mode");
+		},
+		reset
+	);
+}
+
 /* Get supplier details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
@@ -100,7 +125,7 @@ function edit(id) {
 
 	showLoading();
 
-	$.post(editRoute, { id: id })
+	$.post(router.supplier.edit, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -129,7 +154,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(removeRoute, { id: id })
+			$.post(router.supplier.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 

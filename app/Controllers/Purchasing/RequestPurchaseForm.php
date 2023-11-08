@@ -68,7 +68,7 @@ class RequestPurchaseForm extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'purchasing/rpf/index.js';
+        $data['custom_js']      = ['purchasing/rpf/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'rpf' => [
                 'list'      => url_to('rpf.list'),

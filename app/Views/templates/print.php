@@ -36,7 +36,7 @@
     <script src="<?= base_url('assets') ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.min.js"></script>
-    <?php if(! $disable_auto_print): ?>
+    <?php if(! isset($disable_auto_print)): ?>
         <script type="text/javascript">window.addEventListener("load", window.print());</script>
     <?php endif; ?>
     <?php
