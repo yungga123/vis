@@ -388,7 +388,7 @@ class PurchaseOrder extends BaseController
         $data['purchase_order'] = $purchase_order;
         $data['supplier']       = $supplier;
         $data['items']          = $items;
-        $data['rpf']            = $rpfModel->joinView($rpfModel)->getRequestPurchaseForms($id, false, $rpfColumns);
+        $data['rpf']            = $rpfModel->getRequestPurchaseForms($purchase_order['rpf_id'], true, $rpfColumns);
         $data['general_info']   = $general_info;
         $data['title']          = 'Generate Purchase Order';
         $data['disable_auto_print'] = true;

@@ -243,4 +243,14 @@ define('MODULE_CODES', [
 ]);
 
 // Developer Account
-define("DEVELOPER_ACCOUNT", "SOFTWAREDEV");
+define('DEVELOPER_ACCOUNT', 'SOFTWAREDEV');
+
+// Company Info 
+// - These following constants will be used as default data
+// - if there's no entered data in General Info module
+define('COMPANY_NAME', 'Vinculum Technologies Corporation');
+define('COMPANY_ADDRESS', '#70 National Road., Putatan, Muntinlupa City');
+define('COMPANY_CONTACT_NUMBER', '');
+define('COMPANY_EMAIL', '');
+// Purchase Order Form Code
+define('COMPANY_PO_FORM_CODE', 'F06');

@@ -1,8 +1,12 @@
 <?=$this->extend('templates/print');?>
 <?=$this->section('content');?>
 <?php
-$company_name 		= $general_info['company_name'] ?? 'Vinculum Technologies Corporation';
-$company_address 	= $general_info['company_address'] ? $general_info['company_address'] : '#70 NATIONAL ROAD., PUTATAN, MUNTINLUPA CITY';
+$company_name 		= isset($general_info['company_name']) && !empty($general_info['company_name'])
+	? $general_info['company_name'] : COMPANY_NAME;
+$company_address 	= isset($general_info['company_address']) && !empty($general_info['company_address'])
+	? $general_info['company_address'] : COMPANY_ADDRESS;
+$form_code 			= isset($general_info['purchase_order_form_code']) && !empty($general_info['purchase_order_form_code'])
+	? $general_info['purchase_order_form_code'] : COMPANY_PO_FORM_CODE;
 $total_amount		= 0;
 $net_of_vat_amount	= 0;
 $vat_amount			= 0;
@@ -23,7 +27,6 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                             <br>
 							<span class="text-danger">
 								<?php 
-									$form_code 		= $general_info['purchase_order_form_code'] ?? 'F06';
 									$code_format 	= "{$form_code}-{$purchase_order['supplier_id']}-". date('y') .'-'. date('md') .'-'. $purchase_order['id'];
 									echo $code_format;
 								?>
@@ -50,7 +53,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                     <tr class="text-center text-uppercase">
                         <th><?php echo $supplier['supplier_name'] ?></th>
                     </tr>
-                    <tr class="text-center">
+                    <tr class="text-center text-uppercase">
                         <td><?php echo $supplier['address'] ?></td>
                     </tr>
                 </tbody>
@@ -193,7 +196,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 						Mode of Payment: 
 						<span class="text-bold text-uppercase text-underline">
 							<?= $supplier['payment_mode'] === 'Others' 
-							? $supplier['other_payment_mode'] : $supplier['payment_mode'] ?>
+							? $supplier['others_payment_mode'] : $supplier['payment_mode'] ?>
 						</span>
 					</li>
 					<li>
