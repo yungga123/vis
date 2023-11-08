@@ -148,6 +148,7 @@ class Dashboard extends BaseController
             foreach ($arr as $key => $val) {
                 $box    = implode('', $val);
                 $title  = isset($modules[$key]) ? get_modules($key) : get_nav_menus($key)['name'];
+                $title  = $key === 'INVENTORY' ? 'Inventory' : $title;
                 $html   .= <<<EOF
                     <div class="col-4">
                         <div class="card">
