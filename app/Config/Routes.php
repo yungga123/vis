@@ -81,6 +81,7 @@ $routes->group('employees', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('save', 'HR\Employee::save', ['as' => 'employee.save']);
     $routes->post('fetch', 'HR\Employee::fetch', ['as' => 'employee.fetch']);
     $routes->post('delete', 'HR\Employee::delete', ['as' => 'employee.delete']);
+    $routes->get('export', 'HR\Employee::export', ['as' => 'employee.export']);
 });
 /* HUMAN RESOURCE */
 
