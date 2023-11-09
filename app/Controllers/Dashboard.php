@@ -16,6 +16,7 @@ use App\Models\TaskLeadModel;
 use App\Models\TaskLeadView;
 use App\Models\SuppliersModel;
 use App\Models\RequestPurchaseFormModel;
+use App\Models\PurchaseOrderModel;
 use App\Models\RolesModel;
 use App\Models\PermissionModel;
 
@@ -148,6 +149,7 @@ class Dashboard extends BaseController
             foreach ($arr as $key => $val) {
                 $box    = implode('', $val);
                 $title  = isset($modules[$key]) ? get_modules($key) : get_nav_menus($key)['name'];
+                $title  = $key === 'INVENTORY' ? 'Inventory' : $title;
                 $html   .= <<<EOF
                     <div class="col-4">
                         <div class="card">
@@ -184,6 +186,7 @@ class Dashboard extends BaseController
         $prfModel           = new ProjectRequestFormModel();
         $supplierModel      = new SuppliersModel();
         $rpfModel           = new RequestPurchaseFormModel();
+        $poModel            = new PurchaseOrderModel();
         $taskLeadModel      = new TaskLeadModel();
         $taskLeadView       = new TaskLeadView();
         $rolesModel         = new RolesModel();
@@ -317,6 +320,26 @@ class Dashboard extends BaseController
                         'icon'  => 'fas fa-times-circle',
                         'count' => $rpfModel->countRecords('rejected'),
                         'bg'    => 'secondary',
+                    ],
+                ]
+            ],
+            'PURCHASING_PO'         => [
+                'count'     => $poModel->countRecords(),
+                'more_info' => [
+                    'pending'   => [
+                        'icon'  => 'far fa-clock',
+                        'count' => $poModel->countRecords('pending'),
+                        'bg'    => 'warning',
+                    ],
+                    'approved'  => [
+                        'icon'  => 'fas fa-check-circle',
+                        'count' => $poModel->countRecords('approved'),
+                        'bg'    => 'primary',
+                    ],
+                    'filed'     => [
+                        'icon'  => 'fas fa-file-import',
+                        'count' => $poModel->countRecords('received'),
+                        'bg'    => 'success',
                     ],
                 ]
             ],

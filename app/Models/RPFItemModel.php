@@ -55,7 +55,6 @@ class RPFItemModel extends Model
     public function columns()
     {
         $columns = "
-            {$this->table}.supplier_id,
             {$this->table}.inventory_id,
             {$this->table}.quantity_in,
             {$this->table}.received_q,
@@ -71,6 +70,7 @@ class RPFItemModel extends Model
     {
         $inventoryModel = new InventoryModel();  
         $columns = "
+            {$inventoryModel->table}.supplier_id,
             {$inventoryModel->table}.item_model,
             {$inventoryModel->table}.item_description,
             {$inventoryModel->table}.stocks,
@@ -79,10 +79,10 @@ class RPFItemModel extends Model
 
         if ($withView) {
             $columns .= ",
-                {$inventoryModel->view}.category_name,
-                {$inventoryModel->view}.subcategory_name,
-                {$inventoryModel->view}.brand,
-                {$inventoryModel->view}.unit,
+                TRIM({$inventoryModel->view}.category_name) AS category_name,
+                TRIM({$inventoryModel->view}.subcategory_name) AS subcategory_name,
+                TRIM({$inventoryModel->view}.brand) AS brand,
+                TRIM({$inventoryModel->view}.unit) AS unit,
                 {$inventoryModel->view}.supplier_name,
                 {$inventoryModel->view}.created_by_name
             ";
@@ -90,15 +90,23 @@ class RPFItemModel extends Model
             $columns .= ",
                 {$inventoryModel->table}.category,
                 {$inventoryModel->table}.sub_category,
-                {$inventoryModel->table}.item_brand,
+                {$inventoryModel->table}.item_brand
             ";
         }
 
         return $columns;
     }
 
+    // Join with inventory table
+    public function joinInventoryOnly($type = 'left') 
+    {
+        $inventoryModel = new InventoryModel();  
+        $this->join($inventoryModel->table, "{$inventoryModel->table}.id = {$this->table}.inventory_id", $type);
+        return $this;
+    }
+
     // Get rpf items using rpf_id
-    public function getRpfItemsByPrfId($rpf_id, $joinInventory = false, $withView = false, $columns = '') 
+    public function getRpfItemsByRpfId($rpf_id, $joinInventory = false, $withView = false, $columns = '') 
     {
         $columns = $columns ? $columns : $this->columns();
         $columns = $joinInventory ? $columns .',' . $this->inventoryColumns($withView) : $columns;
@@ -137,7 +145,6 @@ class RPFItemModel extends Model
                 ];
             }
 
-            log_message('error', 'arr => '. json_encode($arr));
             if (! empty($arr)) $this->db->table($this->table)->insertBatch($arr);
         }
     }

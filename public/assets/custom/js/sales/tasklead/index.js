@@ -60,13 +60,12 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	$("#filterby").on("change", function () {
-		const options = {
-			params: { filter: $(this).val() },
-		};
-		loadDataTable(table, router.tasklead.list, METHOD.POST, options, true);
-	});
 	loadDataTable(table, router.tasklead.list, METHOD.POST);
+
+	/* Filters */
+	select2Init("#filter_status");
+	select2Init("#filter_client_type");
+	select2Init("#filter_quarter");
 
 	/* Form for saving item */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -194,6 +193,33 @@ $(document).ready(function () {
 		dropdownParent: `#${modal}`,
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const status = getSelect2Selection("#filter_status");
+	const client_type = getSelect2Selection("#filter_client_type");
+	const quarter = getSelect2Selection("#filter_quarter");
+	const params = {
+		status: status,
+		client_type: client_type,
+		quarter: quarter,
+	};
+	const condition =
+		!isEmpty(status) || !isEmpty(client_type) || !isEmpty(quarter);
+
+	filterParam(
+		router.tasklead.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_status");
+			clearSelect2Selection("#filter_client_type");
+			clearSelect2Selection("#filter_quarter");
+		},
+		reset
+	);
+}
 
 /* Get item details */
 function edit(id) {

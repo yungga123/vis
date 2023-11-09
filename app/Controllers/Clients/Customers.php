@@ -24,7 +24,6 @@ class Customers extends BaseController
      * Use to get current permissions
      * @var string
      */
-
     private $_permissions;
 
     /**

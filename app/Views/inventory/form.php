@@ -99,8 +99,7 @@
                                 <small id="alert_location" class="text-danger"></small>
                             </div>
                             <div class="form-group">
-                                <label for="supplier_id">Supplier</label>
-                                <small>Enter the supplier name to search.</small>
+                                <label class="required" for="supplier_id">Supplier</label>
                                 <select class="custom-select supplier_id" name="supplier_id" id="supplier_id" style="width: 100%;">
                                 </select>
                                 <small id="alert_supplier_id" class="text-danger"></small>

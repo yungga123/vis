@@ -23,8 +23,9 @@
                     <div class="form-group">
                         <label class="required" for="employee_id">Employee Name</label>
                         <select class="select2" name="employee_id" id="employee_id" data-placeholder="Select an employee" style="width: 100%;" required>
-                            <?php if (! empty(get_employees())): ?>
-                            <?php foreach (get_employees() as $val): ?>
+                            <?php $employees = get_employees(); 
+                                if (! empty($employees)): ?>
+                            <?php foreach ($employees as $val): ?>
                                 <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
                             <?php endforeach; ?>
                             <?php endif; ?>

@@ -3,18 +3,39 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <div class="input-group">
+            <label>Filters by [Client Type, Percent (Except 100%) or Quarter]:</label>
+            <div class="input-group" style="flex-wrap: nowrap; width: 100%;">
                 <div class="input-group-prepend">
-                    <label class="input-group-text" for="filterby">Filter by Percent</label>
+                    <span class="input-group-text">Client Type</span>
                 </div>
-                <select class="custom-select" name="filter" id="filterby">
-                    <option value="all" selected>All (Except 100%)</option>
+                <select class="custom-select select2" id="filter_client_type" data-placeholder="Select a client type">
+                    <option value="">All</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Residential">Residential</option>
+                </select>  
+                <div class="input-group-prepend ml-1">
+                    <span class="input-group-text">Percent</span>
+                </div>
+                <select class="custom-select select2" id="filter_status" data-placeholder="Select a percent" multiple>
                     <option value="10.00%">10%</option>
                     <option value="30.00%">30%</option>
                     <option value="50.00%">50%</option>
                     <option value="70.00%">70%</option>
                     <option value="90.00%">90%</option>
                 </select>
+                <div class="input-group-prepend ml-1">
+                    <span class="input-group-text">Quarter</span>
+                </div>
+                <select class="custom-select select2" id="filter_quarter" data-placeholder="Select a quarter" multiple>
+                    <option value="1">1st Quarter</option>
+                    <option value="2">2nd Quarter</option>
+                    <option value="3">3rd Quarter</option>
+                    <option value="4">4th Quarter</option>
+                </select>  
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
+                    <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterData(true)" type="button" title="Reset filter">Reset</button>
+                </div>
             </div>
         </div>
         <div class="card-body">

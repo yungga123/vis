@@ -32,7 +32,7 @@ if (! function_exists('dt_button_actions'))
         array $options = [],
     ): string
 	{
-        $options    = [
+        $arr    = [
             'edit' => [
                 'text'      => '',
                 'button'    => 'btn-warning',
@@ -48,17 +48,21 @@ if (! function_exists('dt_button_actions'))
         ];
             
         if (check_permissions($permissions, 'EDIT')) {
-            $options['edit']['text']        = $dropdown ? 'Edit' : '';
-            $options['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
+            $arr['edit']['text']        = $dropdown ? 'Edit' : '';
+            $arr['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
         }
             
         if (check_permissions($permissions, 'DELETE')) {
-            $options['delete']['text']        = $dropdown ? 'Delete' : '';
-            $options['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
+            $arr['delete']['text']        = $dropdown ? 'Delete' : '';
+            $arr['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
         }
+        
+        $html = '';
+        if (! (in_array('exclude_edit', $options) || isset($options['exclude_edit']))) 
+            $html .= dt_button_html($arr['edit'], $dropdown);
 
-        $html = dt_button_html($options['edit'], $dropdown);
-        $html .= dt_button_html($options['delete'], $dropdown);
+        if (! (in_array('exclude_delete', $options) || isset($arr['exclude_delete'], $options))) 
+            $html .= dt_button_html($arr['delete'], $dropdown);
 
         return $html;
 	}
@@ -108,6 +112,7 @@ if (! function_exists('dt_status_color'))
                 $color = 'warning';                   
                 break;
             case 'accepted':
+            case 'approved':
             case 'add':
                 $color = 'primary';
                 break;

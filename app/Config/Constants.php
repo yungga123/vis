@@ -158,7 +158,12 @@ define('ACTIONS', [
         'PURCHASING_RPF'    => [
             'ACCEPT'        => 'Accept',
             'REJECT'        => 'Reject',
-            'RECEIVE'       => 'Receive', // Item In
+            'RECEIVE'       => 'Receive',
+            'PRINT'         => 'Print',
+        ],
+        'PURCHASING_PO'     => [
+            'APPROVE'       => 'Approve',
+            'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],
     ],
@@ -195,8 +200,8 @@ define('MODULES', [
     'CUSTOMERS'             => 'Clients',
     'TASK_LEAD'             => 'Task/Lead Monitoring',
     'MANAGER_OF_SALES'      => 'Manager of Sales',
-    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
-    'INVENTORY'             => 'Masterlist',
+    'MANAGER_OF_SALES_INDV' => 'Manager of Sales (Individual)',
+    'INVENTORY'             => 'Items Masterlist',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
     'SETTINGS_ROLES'        => 'Roles',
@@ -207,7 +212,7 @@ define('MODULES', [
     'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
     'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
     'INVENTORY_PRF'         => 'Project Request Forms',
-    'GENERATE_PO'           => 'Generate Purchase Order',
+    'PURCHASING_PO'         => 'Purchase Orders',
     'SETTINGS_GENERAL_INFO' => 'General Info',
 ]);
 
@@ -233,9 +238,19 @@ define('MODULE_CODES', [
     'dispatch'              => 'ADMIN_DISPATCH',
     'inventory_prf'         => 'INVENTORY_PRF',
     'purchasing_rpf'        => 'PURCHASING_RPF',
-    'generate_PO'           => 'GENERATE_PO',
+    'purchase_order'        => 'PURCHASING_PO',
     'general_info'          => 'SETTINGS_GENERAL_INFO',
 ]);
 
 // Developer Account
-define("DEVELOPER_ACCOUNT", "SOFTWAREDEV");
+define('DEVELOPER_ACCOUNT', 'SOFTWAREDEV');
+
+// Company Info 
+// - These following constants will be used as default data
+// - if there's no entered data in General Info module
+define('COMPANY_NAME', 'Vinculum Technologies Corporation');
+define('COMPANY_ADDRESS', '#70 National Road., Putatan, Muntinlupa City');
+define('COMPANY_CONTACT_NUMBER', '');
+define('COMPANY_EMAIL', '');
+// Purchase Order Form Code
+define('COMPANY_PO_FORM_CODE', 'F06');
