@@ -59,6 +59,19 @@ class InventoryDropdownModel extends Model
     // Custom variables
     protected $otherCategoryTypes = ['BRAND', 'SIZE', 'UNIT'];
 
+    // Default columns
+    public function defaultColumns()
+    {
+        return [
+            'dropdown_id',
+            'parent_id',
+            'dropdown',
+            dt_sql_trim('dropdown', 'dropdown'),
+            dt_sql_trim('dropdown_type', 'dropdown_type'),
+            dt_sql_trim('other_category_type', 'other_category_type'),
+        ];
+    }
+
     // Set the value for created_by before inserting
     protected function beforeInsert(array $data)
     {
@@ -105,7 +118,7 @@ class InventoryDropdownModel extends Model
         $id         = 0;
         $other_type = strtoupper($inputs['other_category_type']);
         $record     = $this->select('dropdown_id, dropdown')
-                        ->where('other_category_type', trim($other_type))
+                        ->where('TRIM(other_category_type)', trim($other_type))
                         ->where('parent_id', 0)->first();
 
         if (empty($record)) {
@@ -147,7 +160,7 @@ class InventoryDropdownModel extends Model
     {
         $param          = remove_string($param, 'other__');
         $is_category    = ($param === 'CATEGORY' || $param == 0);
-        $columns        = $columns ?? 'dropdown_id, dropdown';
+        $columns        = $columns ?? 'dropdown_id, '.dt_sql_trim('dropdown', 'dropdown').'';
         $field          = is_numeric($param) ? 'parent_id' : 'dropdown_type';
         $builder        = $this->select($columns);
         
@@ -164,23 +177,22 @@ class InventoryDropdownModel extends Model
    // Get unique dropdown types
     public function getDropdownTypes($param = null) 
     {
-        $columns = 'dropdown_type, parent_id';
+        $columns = ''.dt_sql_trim('dropdown_type', 'dropdown_type').', parent_id';
         if ($param) {
-            $field = is_numeric($param) ? 'parent_id' : 'dropdown_type';
-            $builder = $this->select($columns)->where($field, $param)
-                        ->orderBy('parent_id')->distinct()->findAll();
-        } else {
-            $builder = $this->select($columns)->orderBy('parent_id')
-                        ->distinct()->findAll();
-        }
+            $field      = is_numeric($param) ? 'parent_id' : 'dropdown_type';
+            $builder    = $this->select($columns)->where($field, $param);
+        } else
+            $builder    = $this->select($columns);
+        
             
-        return $builder;
+        $builder->orderBy('parent_id')->distinct();
+        return $builder->findAll();
     }
     
     // Get the other category type dropdown base on type or all
     public function getOtherCategoryTypes($param = null, $columns = null) 
     {
-        $columns = $columns ?? 'dropdown_id, dropdown, dropdown_type, parent_id';
+        $columns = $columns ?? $this->defaultColumns();
         $builder = $this->select($columns);
         
         if($param) {
@@ -195,18 +207,18 @@ class InventoryDropdownModel extends Model
     // Get specific dropdown base on type
     public function categoryHasDropdowns($param, $columns = null) 
     {
-        $columns = $columns ?? ['dropdown_id'] + $this->allowedFields;
-        $field = is_numeric($param) ? 'parent_id' : 'dropdown_type';
-        $builder = $this->select($columns)->where($field, $param)->findAll();
+        $columns    = $columns ?? $this->defaultColumns();
+        $field      = is_numeric($param) ? 'parent_id' : 'dropdown_type';
+        $builder    = $this->select($columns)->where($field, $param);
             
-        return $builder;
+        return $builder->findAll();
    }
     
     // For DataTables
     public function noticeTable($filter) 
     {
         $builder = $this->db->table($this->table);
-        $builder->select('dropdown_id, dropdown, dropdown_type');
+        $builder->select($this->defaultColumns());
             
         if ($filter) {
             $builder->whereIn('parent_id', $filter);

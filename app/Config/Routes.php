@@ -205,6 +205,7 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('save', 'Inventory\Home::save', ['as' => 'inventory.save']);
     $routes->post('edit', 'Inventory\Home::edit', ['as' => 'inventory.edit']);
     $routes->post('delete', 'Inventory\Home::delete', ['as' => 'inventory.delete']);
+    $routes->get('export', 'Inventory\Home::export', ['as' => 'inventory.export']);
 
     // Dropdowns
     $routes->get('dropdowns', 'Inventory\\Dropdown::index', ['as' => 'inventory.dropdown.home']);

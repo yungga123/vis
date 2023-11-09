@@ -10,7 +10,7 @@ trait ExportTrait
      * @param array $data       The query results to export
      * @param array $header     The title header for the csv
      * @param array $filename   The file name of the csv
-     * @param callable $callback   An optional loop callback function to use 
+     * @param callable|null $callback   An optional loop callback function to use 
      * when you have to change/process data before putting to csv output
      * 
      * @return \Exception|void
@@ -43,7 +43,7 @@ trait ExportTrait
                 while (isset($data[$i])) {
                     $row = $data[$i];
                     fputcsv($output, $row);
-    
+                    
                     $i++;
                 }
             }

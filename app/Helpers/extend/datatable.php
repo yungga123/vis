@@ -160,9 +160,13 @@ if (! function_exists('dt_sql_date_format'))
     /**
      * DataTable SQL date format
      */
-	function dt_sql_date_format(): string
+	function dt_sql_date_format(?string $column = null, $format = '%b %e, %Y'): string
     {
-        return '%b %e, %Y';
+        if (! empty($column)) {
+            return "DATE_FORMAT({$column}, '{$format}')";
+        }
+
+        return $format;
     }
 }
 
@@ -171,9 +175,9 @@ if (! function_exists('dt_sql_datetime_format'))
     /**
      * DataTable SQL datetime format
      */
-	function dt_sql_datetime_format(): string
+	function dt_sql_datetime_format(?string $column = null, $format = '%b %e, %Y at %h:%i %p'): string
     {
-        return '%b %e, %Y at %h:%i %p';
+        return dt_sql_date_format($column, $format);
     }
 }
 
@@ -182,15 +186,39 @@ if (! function_exists('dt_sql_concat_client_address'))
     /**
      * DataTable SQL client address concatination
      */
-	function dt_sql_concat_client_address(): string
+	function dt_sql_concat_client_address($alias = ''): string
     {
+        $alias = empty($alias) ? '' : $alias .'.';
         return "
             CONCAT(
-                IF(province = '' || province IS NULL, '', CONCAT(province, ', ')),
-                IF(city = '' || city IS NULL, '', CONCAT(city, ', ')),
-                IF(barangay = '' || barangay IS NULL, '', CONCAT(barangay, ', ')),
-                IF(subdivision = '', '', subdivision)
+                IF({$alias}province = '' || {$alias}province IS NULL, '', CONCAT(province, ', ')),
+                IF({$alias}city = '' || {$alias}city IS NULL, '', CONCAT({$alias}city, ', ')),
+                IF({$alias}barangay = '' || {$alias}barangay IS NULL, '', CONCAT({$alias}barangay, ', ')),
+                IF({$alias}subdivision = '', '', {$alias}subdivision)
             ) AS address
         ";
+    }
+}
+
+if (! function_exists('dt_sql_number_format'))
+{
+    /**
+     * DataTable SQL amount format by round & decimal with comma for thousands
+     */
+	function dt_sql_number_format(string $column, int $round = 2, int $decimal = 2): string
+    {
+        return "FORMAT(ROUND(({$column}), {$round}), {$decimal})";
+    }
+}
+
+if (! function_exists('dt_sql_trim'))
+{
+    /**
+     * DataTable SQL trim column
+     */
+	function dt_sql_trim(string $column, $alias = ''): string
+    {
+        $alias = empty($alias) ? '' : ' AS '. $alias;
+        return "TRIM({$column}){$alias}";
     }
 }
