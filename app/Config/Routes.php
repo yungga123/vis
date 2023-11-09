@@ -67,6 +67,7 @@ $routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) 
     $routes->post('save', 'HR\Account::save', ['as' => 'account.save']);
     $routes->post('fetch', 'HR\Account::fetch', ['as' => 'account.fetch']);
     $routes->post('delete', 'HR\Account::delete', ['as' => 'account.delete']);
+    $routes->get('export', 'HR\Account::export', ['as' => 'account.export']);
 
     // Account Profile
     $routes->get('profile','HR\AccountProfile::index', ['as' => 'account.profile']);

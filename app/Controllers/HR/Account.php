@@ -5,12 +5,14 @@ namespace App\Controllers\HR;
 use App\Controllers\BaseController;
 use App\Models\AccountModel;
 use App\Traits\AccountMailTrait;
+use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class Account extends BaseController
 {
-    use AccountMailTrait;
-    
+    /* Declare trait here to use */
+    use AccountMailTrait, ExportTrait;
+
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -232,6 +234,51 @@ class Account extends BaseController
         );
 
         return $response;
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $columns    = "
+            {$this->_model->table}.employee_id,
+            {$this->_model->view}.employee_name,
+            {$this->_model->table}.username,
+            UPPER({$this->_model->table}.access_level) AS role_code,
+            {$this->_model->view}.created_by_name,
+            DATE_FORMAT({$this->_model->table}.created_at, '".dt_sql_datetime_format()."') AS created_at_formatted
+        ";
+        $builder    = $this->_model->select($columns);
+        $builder->join($this->_model->view, "{$this->_model->table}.account_id = {$this->_model->view}.id", 'left');
+        $builder->orderBy("{$this->_model->view}.employee_name", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Employee ID',
+            'Employee Name',
+            'Username',
+            'Role',
+            'Created By',
+            'Created At',
+        ];
+        $filename   = 'Accounts Masterlist';
+
+        $this->exportToCsv($data, $header, $filename, function($data, $output) {
+            $i      = 0;
+            $roles  = get_roles();
+            while (isset($data[$i])) {
+                $row = $data[$i];
+                
+                if (isset($row['role_code']))
+                    $row['role_code'] = $roles[$row['role_code']];
+
+                fputcsv($output, $row);
+                $i++;
+            }
+        });
     }
 
     /**

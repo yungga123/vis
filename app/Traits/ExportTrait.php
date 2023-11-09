@@ -10,10 +10,12 @@ trait ExportTrait
      * @param array $data       The query results to export
      * @param array $header     The title header for the csv
      * @param array $filename   The file name of the csv
+     * @param callable $callback   An optional loop callback function to use 
+     * when you have to change/process data before putting to csv output
      * 
      * @return \Exception|void
      */
-    public function exportToCsv($data, $header, $filename)
+    public function exportToCsv($data, $header, $filename, $callback = null)
     {
         try {
             // Start the output buffer.
@@ -26,18 +28,24 @@ trait ExportTrait
             fputcsv($output, $header);
 
             // Loop through the prepared data to output it to CSV file
-            // Using foreach for readability
-            // foreach($data as $row){
-            //     fputcsv($output, $row);
-            // }
+            if ($callback) {
+                // A callback function to use when you have to change/process
+                // data before putting to csv output
+                $callback($data, $output);
+            } else {
+                // Using foreach for readability
+                // foreach($data as $row){
+                //     fputcsv($output, $row);
+                // }
 
-            // Using while for memory efficient - good for processing large data set
-            $i = 0;
-            while (isset($data[$i])) {
-                $row = $data[$i];
-                fputcsv($output, $row);
-
-                $i++;
+                // Using while for memory efficient - good for processing large data set
+                $i = 0;
+                while (isset($data[$i])) {
+                    $row = $data[$i];
+                    fputcsv($output, $row);
+    
+                    $i++;
+                }
             }
 
             // Close the file pointer with PHP with the updated output

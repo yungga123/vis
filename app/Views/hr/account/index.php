@@ -17,6 +17,9 @@
                         </thead>
                     </table>
                 </div>
+				<div class="card-footer">
+					<a type="button" href="<?= url_to('account.export') ?>" class="btn btn-success">Export All Accounts</a>
+				</div>
             </div>
         </div>
     </div>
