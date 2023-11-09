@@ -13,21 +13,20 @@
                 <div class="modal-body">                    
                     <div class="alert alert-info" role="alert">
                         <strong>Note:</strong> 
-                        If not empty, initial dropdowns of <strong>Inventory Masterlist & Supplier</strong> are by 10. Type the ITEM MODEL & DESCRIPTION and SUPPLIER NAME to search if not in the options and then, click to select.
+                        If not empty, initial dropdowns of <strong>Inventory Masterlist</strong> are by 10. Type the ITEM MODEL & DESCRIPTION to search if not in the options and then, click to select.
                     </div>
                     <div class="form-group">
                         <label class="required text-center">Masterlist Items</label>
                         <div>Format: Item # | Model | Description</div>
                         <input type="hidden" name="id" id="rpf_id" class="form-control" readonly>
                     </div>
-                    <div>
+                    <div class="table-responsive">
                         <table class="table" id="item_field_table" width="100%">
                             <thead>
                                 <tr>
                                     <th>Item Details</th>
                                     <th>Available</th>
                                     <th>Quantity In</th>
-                                    <!-- <th width="30%">Supplier</th> -->
                                     <th>Purpose <i>(Optional)</i></th>
                                     <th></th>
                                 </tr>
@@ -43,9 +42,6 @@
                                     <td>
                                         <input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
                                     </td>
-                                    <!-- <td>
-                                        <select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
-                                    </td> -->
                                     <td>
                                         <input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
                                     </td>
@@ -65,9 +61,6 @@
                                     <td>
                                         <small id="alert_quantity_in" class="text-danger"></small>
                                     </td>
-                                    <!-- <td>
-                                        <small id="alert_supplier_id" class="text-danger"></small>
-                                    </td> -->
                                     <td></td>
                                     <td></td>
                                 </tr>

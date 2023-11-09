@@ -369,3 +369,129 @@ if (! function_exists('get_client_sources'))
         return $param ? $options[strtoupper($param)] : $options;
 	}
 }
+
+if (! function_exists('get_po_status'))
+{
+    /**
+     * Get status of Purchase Order (PO)
+     */
+	function get_po_status(string $param = '', bool $pass_tense = false): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'approve'   => 'approve',
+            'file'      => 'file',
+        ];
+
+        $options_pt = [
+            'pending'   => 'pending',
+            'approved'  => 'approved',
+            'filed'     => 'filed',
+        ];
+
+        $arr = $pass_tense ? $options_pt : $options;
+
+        return $param ? $arr[$param] : $arr;
+	}
+}
+
+if (! function_exists('set_po_status'))
+{
+    /**
+     * Setting status of Purchase Order (PO) to its past tense
+     */
+	function set_po_status(string|array $param): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'approve'   => 'approved',
+            'approved'  => 'approved',
+            'file'      => 'fileed',
+            'fileed'    => 'fileed',
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_prf_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $options[$param];
+	}
+}
+
+if (! function_exists('get_supplier_type'))
+{
+    /**
+     * Get supplier type of Supplier module
+     */
+	function get_supplier_type(string $param = ''): string|array
+	{
+        $options = [
+            'Direct'            => 'Direct',
+            'Indirect'          => 'Indirect',
+            'Tools Supplier'    => 'Tools Supplier',
+            'Office Assets'     => 'Office Assets',
+            'Others'            => 'Others',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
+
+if (! function_exists('get_payment_terms'))
+{
+    /**
+     * Payment terms.
+     * Used in module(s): Supplier
+     */
+	function get_payment_terms(string $param = '', bool $is_filter = false): string|array
+	{
+        $word   = ' DAYS';
+        $arr    = $is_filter ? ['zero' => 'N/A'] : ['0' => 'N/A'];
+        $terms  = $arr + [
+            '7'   => '7'. $word,
+            '15'  => '15'. $word,
+            '21'  => '21'. $word,
+            '30'  => '30'. $word,
+            '45'  => '45'. $word,
+            '50'  => '50'. $word,
+            '60'  => '60'. $word,
+            '90'  => '90'. $word,
+            '120'  => '120'. $word,
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_prf_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $param ? $terms[$param] : $terms;
+	}
+}
+
+if (! function_exists('get_supplier_mop'))
+{
+    /**
+     * Get supplier mode of payment of Supplier module
+     */
+	function get_supplier_mop(string $param = ''): string|array
+	{
+        $options = [
+            'Cash'              => 'Cash',
+            'Check'             => 'Check',
+            'Online Payment'    => 'Online Payment',
+            'Dated Check'       => 'Dated Check',
+            'Others'            => 'Others',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}

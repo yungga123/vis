@@ -12,6 +12,9 @@ $(document).ready(function () {
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
 
+	/* Init filter */
+	select2Init("#filter_status");
+
 	/* Toggle modal */
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -32,7 +35,7 @@ $(document).ready(function () {
 	select2AjaxInit(
 		joSelector,
 		"Search & select a job order",
-		router.inventory.common.joborders,
+		router.admin.common.joborders,
 		"option_text",
 		_loadJobOrderDetails
 	);
@@ -87,6 +90,20 @@ $(document).ready(function () {
 		showAlertInForm(["remarks"], message, res.status);
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	let status = getSelect2Selection("#filter_status");
+
+	filterParam(
+		router.prf.list,
+		table,
+		{ status: status },
+		!isEmpty(status),
+		() => clearSelect2Selection("#filter_status"),
+		reset
+	);
+}
 
 /* Get prf items */
 function view(id, status) {

@@ -68,7 +68,7 @@ class ProjectRequestForm extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'inventory/prf/index.js';
+        $data['custom_js']      = ['inventory/prf/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'prf' => [
                 'list'      => url_to('prf.list'),
@@ -80,6 +80,11 @@ class ProjectRequestForm extends BaseController
             'inventory' => [
                 'common' => [
                     'masterlist'    => url_to('inventory.common.masterlist'),
+                    'joborders'     => url_to('inventory.common.joborders'),
+                ]
+            ],
+            'admin' => [
+                'common' => [
                     'joborders'     => url_to('inventory.common.joborders'),
                 ]
             ]

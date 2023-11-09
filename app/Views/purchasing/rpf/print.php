@@ -55,7 +55,7 @@
 								<td><?= $item['item_description'] ?></td>
 								<td><?= $item['item_model'] ?></td>
 								<td><?= number_format($item['quantity_in'], 2) ?></td>
-								<td><?= number_format($item['received_q'], 2) ?></td>
+								<td><?= $item['received_q'] ?></td>
 								<td><?= $item['unit'] ?></td>
 								<td><?= number_format($item['item_sdp'], 2) ?></td>
 								<td><?= number_format(floatval($item['item_sdp'] * $item['quantity_in']), 2) ?></td>

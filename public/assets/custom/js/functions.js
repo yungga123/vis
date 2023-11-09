@@ -275,8 +275,8 @@ function catchErrMsg(err, swal = false) {
 
 /**
  * Show alert message in form or small elem
- * @param {string} elems    - list of name of the inputs
- * @param {string} errors   - error message pass from validation error
+ * @param {array} elems    - list of name of the inputs
+ * @param {string|object} errors   - error message pass from validation error
  * @param {string} status   - status of alert - refer to 'STATUS' global variable
  * @param {string} prefix   - prefix for small elements container for error messages
  * @param {bool} swal       - set true if using swal
@@ -436,7 +436,6 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
 		processing: true,
-		// scrollX: true,
 		autoWidth: false,
 		columnDefs: columnDefs,
 		order: order,
@@ -848,6 +847,14 @@ function inObject(obj, key) {
 	// return obj.hasOwnProperty(key); // Same as above
 }
 
+/* Check if Array key exist */
+function inArray(arr, key) {
+	return isArray(arr) ? arr.includes(key) : false;
+
+	/* Another methods */
+	// return isArray(arr) ? (arr.indexOf(key) !== -1) : false;
+}
+
 /* Check if array or object? is associative from chatgpt */
 function isArrayOrObjectAssoc(obj) {
 	if (!isObject(obj) || !isArray(obj)) return false;
@@ -1020,4 +1027,18 @@ function removeQueryStringInUrl(params) {
 
 	// Optionally, you can also update the address bar directly
 	// window.location.search = newQueryString;
+}
+
+/**
+ * Format number - eg. 1000 to 1,000
+ *
+ * @param {integer} number 	the number to format
+ * @param {integer} decimal	identifier on how many decimals - default 2
+ * @returns {integer}
+ */
+function numberFormat(number, decimal) {
+	return parseFloat(number).toLocaleString("en-US", {
+		minimumFractionDigits: decimal || 2,
+		maximumFractionDigits: decimal || 2,
+	});
 }

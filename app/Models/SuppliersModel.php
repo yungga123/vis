@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\FilterParamTrait;
 
 class SuppliersModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'suppliers';
     protected $view             = 'suppliers_view';
@@ -19,6 +23,7 @@ class SuppliersModel extends Model
         "supplier_name",
         "supplier_type",
         "others_supplier_type",
+        "address",
         "contact_person",
         "contact_number",
         "viber",
@@ -48,6 +53,10 @@ class SuppliersModel extends Model
         ],
         'supplier_type'      => [
             'label' => 'Type of Supplier',
+            'rules' => 'required'
+        ],
+        'address'      => [
+            'label' => 'Address',
             'rules' => 'required'
         ],
         'contact_person'      => [
@@ -90,11 +99,29 @@ class SuppliersModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable()
+    // Get suppliers
+    public function getSuppliers($id = null, $columns = '')
+    {
+        $columns = $columns ? $columns : [$this->primaryKey] + $this->allowedFields;
+        $builder = $this->select($columns);
+        $builder->where('deleted_at IS NULL');
+
+        if ($id && is_array($id))
+            return $builder->whereIn($this->primaryKey, $id)->findAll();
+
+        return $id ? $builder->find($id) : $builder->findAll();        
+    }
+
+    public function noticeTable($request)
     {
         $builder    = $this->db->table($this->view);
         $builder->select('*');
 
+        $this->filterParam($request, $builder, 'supplier_type', 'supplier_type');
+        $this->filterParam($request, $builder, 'payment_terms', 'payment_terms');
+        $this->filterParam($request, $builder, 'payment_mode', 'payment_mode');
+
+        $builder->where('deleted_at IS NULL');
         return $builder;
     }
 
@@ -122,7 +149,8 @@ class SuppliersModel extends Model
         return $closureFun;
     }
 
-    public function supplierType() {
+    public function supplierType() 
+    {
         $closureFun = function($row) {
 
             if ($row['supplier_type'] == 'Others') {
@@ -134,19 +162,16 @@ class SuppliersModel extends Model
         return $closureFun;
     }
 
-    public function paymentTerms() {
+    public function paymentTerms() 
+    {
         $closureFun = function($row) {
-
-            if ($row['payment_terms'] == '0') {
-                return 'No';
-            } else {
-                return $row['payment_terms'].' day/s';
-            }
+            return get_payment_terms($row['payment_terms']);
         };
         return $closureFun;
     }
 
-    public function paymentMode() {
+    public function paymentMode() 
+    {
         $closureFun = function($row) {
 
             if ($row['payment_mode'] == 'Others') {

@@ -14,10 +14,10 @@
                         <h5 class="card-title"></h5>
                     </div>
                     <div class="card-body">
-                        <table id="supplier_table_brand" class="table table-hover table-striped nowrap" data-url="<?= url_to('suppliers.brand.list'); ?>">
+                        <table id="supplier_table_brand" class="table table-hover table-striped nowrap">
                             <thead>
                                 <tr>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                     <th>Brand</th>
                                     <th>Product</th>
                                     <th>Warranty</th>

@@ -106,8 +106,9 @@
                                 <label class="required" for="checked_by">Check By</label>
                                 <select class="form-control" id="checked_by" name="checked_by" style="width: 100%;" required>
                                     <option value="">Select an employee</option>
-                                    <?php if (! empty(get_employees())): ?>
-                                    <?php foreach (get_employees() as $val): ?>
+                                    <?php $employees = get_employees(); 
+                                        if (! empty($employees)): ?>
+                                    <?php foreach ($employees as $val): ?>
                                         <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
                                     <?php endforeach; ?>
                                     <?php endif; ?>

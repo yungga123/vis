@@ -7,18 +7,42 @@ use App\Models\GeneralInfoModel;
 trait GeneralInfoTrait
 {
     /**
-     * Fetching/searching job order by quotation number
+     * Fetching the general info
      *
-     * @param string|array|null $param   The param to search
-     * @return array|null                The results of the search
+     * @param string|array|null $param  The param to search
+     * @param bool $format              Whether to format the result
+     * @return array|null               The results of the search
      */
-    public function getGeneralInfo($param = [])
+    public function getGeneralInfo($param = [], $format = false)
     {
         $model = new GeneralInfoModel();
 
-        if(is_array($param)) return $model->fetchAll($param);
+        if(is_array($param)) {            
+            return $format ? 
+                $this->formatResult($model->fetchAll($param)) 
+                : $model->fetchAll($param);
+        }
         
         $result = $model->fetch($param);
         return $result ? $result[0]['value'] : null;
+    }
+
+    /**
+     * Formatting the result into one assoc array
+     *
+     * @param array $result     The array/result to format
+     * @return array            The formatted array
+     */
+    public function formatResult($result) 
+    {
+        $arr = [];
+
+        if (! empty($result)) {
+            foreach ($result as $key => $value) {
+                $arr[$value['key']] = $value['value'];
+            }
+        }
+
+        return $arr;
     }
 }
