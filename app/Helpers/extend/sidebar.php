@@ -210,9 +210,9 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('request-purchase-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-bag',
             ],
-            'PURCHASING_PURCHASE_ORDER'           => [
+            'PURCHASING_PO'           => [
                 'menu'      => 'PURCHASING', // Leave empty if none
-                'name'      => get_modules('PURCHASING_PURCHASE_ORDER'),
+                'name'      => get_modules('PURCHASING_PO'),
                 'url'       => url_to('purchase_order.home'),
                 'class'     => (url_is('purchase-orders') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-basket',

@@ -161,7 +161,7 @@ define('ACTIONS', [
             'RECEIVE'       => 'Receive',
             'PRINT'         => 'Print',
         ],
-        'PURCHASING_PURCHASE_ORDER'    => [
+        'PURCHASING_PO'     => [
             'APPROVE'       => 'Approve',
             'FILE'          => 'File',
             'PRINT'         => 'Print',
@@ -212,7 +212,7 @@ define('MODULES', [
     'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
     'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
     'INVENTORY_PRF'         => 'Project Request Forms',
-    'PURCHASING_PURCHASE_ORDER' => 'Purchase Orders',
+    'PURCHASING_PO'         => 'Purchase Orders',
     'SETTINGS_GENERAL_INFO' => 'General Info',
 ]);
 
@@ -238,7 +238,7 @@ define('MODULE_CODES', [
     'dispatch'              => 'ADMIN_DISPATCH',
     'inventory_prf'         => 'INVENTORY_PRF',
     'purchasing_rpf'        => 'PURCHASING_RPF',
-    'purchase_order'        => 'PURCHASING_PURCHASE_ORDER',
+    'purchase_order'        => 'PURCHASING_PO',
     'general_info'          => 'SETTINGS_GENERAL_INFO',
 ]);
 
