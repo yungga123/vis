@@ -10,7 +10,7 @@
                             <select class="custom-select mr-1" name="new_client" id="filter_new_client">
                                 <option value="">All</option>
                                 <option value="1">Yes</option>
-                                <option value="0">No</option>
+                                <option value="zero">No</option>
                             </select>
                             <select class="custom-select mr-1" name="filter_type" id="filter_type">
                                 <option value="">All</option>
@@ -33,10 +33,10 @@
                             <thead class="nowrap">
                                 <tr>
                                     <th>Actions</th>
-                                    <th>New Client?</th>
-                                    <th>Client Type</th>
                                     <th>Client ID</th>
+                                    <th>New Client?</th>
                                     <th>Client Name</th>
+                                    <th>Client Type</th>
                                     <th>Contact Person</th>
                                     <th>Contact Number</th>
                                     <th>Email Address</th>
@@ -51,7 +51,8 @@
                         </table>
                     </div>
                     <div class="card-footer">
-                        <a type="button" href="<?= url_to('customer.export') ?>" class="btn btn-success">Export All Records to CSV</a>
+                        <a type="button" href="<?= url_to('customer.export') ?>" class="btn btn-success">Export All Clients</a>
+                        <a type="button" href="<?= url_to('customer.branch.export') ?>" class="btn btn-success">Export All Client Branches</a>
                     </div>
                 </div>
             </div>

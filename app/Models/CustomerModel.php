@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\FilterParamTrait;
+use App\Traits\HRTrait;
 
 class CustomerModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait, HRTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'customers';
     protected $accountsView     = 'accounts_view';
@@ -160,24 +165,12 @@ class CustomerModel extends Model
     {
         $builder = $this->db->table($this->table);
         $builder->select($this->columns(true));
-        $builder->join($this->accountsView, "{$this->table}.created_by = {$this->accountsView}.username", 'left');
+        $this->joinAccountView($builder, "{$this->table}.created_by");
         $builder->where("deleted_at IS NULL");
 
-        if (isset($request['params'])) {
-            $params = $request['params'];
-
-            if (isset($params['new_client']) && $params['new_client'] != '') {
-                $builder->where('forecast', $params['new_client']);
-            }
-
-            if (isset($params['type']) && !empty($params['type'])) {
-                $builder->where('type', $params['type']);
-            }
-
-            if (isset($params['source']) && !empty($params['source'])) {
-                $builder->whereIn('source', $params['source']);
-            }
-        }
+        $this->filterParam($request, $builder, "{$this->table}.forecast", 'new_client');
+        $this->filterParam($request, $builder, "{$this->table}.type", 'type');
+        $this->filterParam($request, $builder, "{$this->table}.source", 'source');
 
         $builder->orderBy('id', 'DESC');        
         return $builder;

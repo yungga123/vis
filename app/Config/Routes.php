@@ -85,20 +85,24 @@ $routes->group('employees', ['filter' => 'checkauth'], static function ($routes)
 /* HUMAN RESOURCE */
 
 /* SALES */
-// CUSTOMERS
+// CUSTOMERS / CLIENTS
 $routes->group('clients', ['filter' => 'checkauth'], static function($routes) {
-    $routes->get('/','Clients\Customers::index', ['as' => 'customer.home']);
-    $routes->post('list','Clients\Customers::list',['as' => 'customer.list']);
-    $routes->post('save','Clients\Customers::save',['as' => 'customer.save']);
-    $routes->post('fetch','Clients\Customers::fetch',['as' => 'customer.fetch']);
-    $routes->post('delete','Clients\Customers::delete',['as' => 'customer.delete']);
-    $routes->get('export','Clients\Customers::export',['as' => 'customer.export']);
+    $routes->get('/','Clients\Customer::index', ['as' => 'customer.home']);
+    $routes->post('list','Clients\Customer::list',['as' => 'customer.list']);
+    $routes->post('save','Clients\Customer::save',['as' => 'customer.save']);
+    $routes->post('fetch','Clients\Customer::fetch',['as' => 'customer.fetch']);
+    $routes->post('delete','Clients\Customer::delete',['as' => 'customer.delete']);
+    $routes->get('export','Clients\Customer::export',['as' => 'customer.export']);
     
     // BRANCH
-    $routes->post('branches','Clients\CustomerBranch::list',['as' => 'customer.branch.list']);
-    $routes->post('branches/save','Clients\CustomerBranch::save',['as' => 'customer.branch.save']);
-    $routes->post('branches/fetch','Clients\CustomerBranch::fetch',['as' => 'customer.branch.fetch']);
-    $routes->post('branches/delete','Clients\CustomerBranch::delete',['as' => 'customer.branch.delete']);
+    $routes->group('branches', static function ($routes) {
+        $routes->post('','Clients\CustomerBranch::list',['as' => 'customer.branch.list']);
+        $routes->post('save','Clients\CustomerBranch::save',['as' => 'customer.branch.save']);
+        $routes->post('fetch','Clients\CustomerBranch::fetch',['as' => 'customer.branch.fetch']);
+        $routes->post('delete','Clients\CustomerBranch::delete',['as' => 'customer.branch.delete']);
+        $routes->get('export','Clients\CustomerBranch::export',['as' => 'customer.branch.export']);
+    });
+
 });
 
 //Task Lead
