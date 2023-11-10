@@ -314,6 +314,8 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('rpf/delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'rpf.delete']);
     $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
     $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print/$1', ['as' => 'rpf.print']);
+    $routes->get('rpf/export', 'Purchasing\RequestPurchaseForm::export', ['as' => 'rpf.export']);
+    $routes->get('rpf/export-items', 'Purchasing\RequestPurchaseForm::exportItems', ['as' => 'rpf.export_items']);
 });
 
 // PURCHASE ORDER / GENERATE PO

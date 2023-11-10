@@ -468,7 +468,7 @@ class ProjectRequestForm extends BaseController
             'Item Description',
             'Current Stocks',
             'Quantity Out',
-            'Quatity Returned',
+            'Quantity Returned',
             'Consumed Qty',
             'Date Returned',
             'Status',
