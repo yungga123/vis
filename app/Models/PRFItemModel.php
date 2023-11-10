@@ -50,6 +50,18 @@ class PRFItemModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
     
+    // Consumed sql query
+    public function queryConsumed()
+    {
+        return "
+            CASE 
+                WHEN {$this->table}.returned_q IS NOT NULL
+                THEN ({$this->table}.quantity_out - {$this->table}.returned_q) 
+                ELSE 0 
+            END AS consumed
+        ";
+    }
+    
     // Set columns
     public function columns($concat = false)
     {
@@ -58,12 +70,8 @@ class PRFItemModel extends Model
             {$this->table}.quantity_out,
             {$this->table}.returned_q,
             {$this->table}.returned_date,
-            DATE_FORMAT({$this->table}.returned_date, '%b %e, %Y') AS returned_date_formatted,
-            CASE 
-                WHEN {$this->table}.returned_q IS NOT NULL
-                THEN ({$this->table}.quantity_out - {$this->table}.returned_q) 
-                ELSE 0 
-            END AS consumed
+            ".dt_sql_date_format("{$this->table}.returned_date")." AS returned_date_formatted,
+            {$this->queryConsumed()}
         ";
 
         if ($concat) {

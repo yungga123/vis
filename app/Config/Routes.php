@@ -235,6 +235,8 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('prf/delete', 'Inventory\ProjectRequestForm::delete', ['as' => 'prf.delete']);
     $routes->post('prf/change', 'Inventory\ProjectRequestForm::change', ['as' => 'prf.change']);
     $routes->get('prf/print/(:num)', 'Inventory\ProjectRequestForm::print/$1', ['as' => 'prf.print']);
+    $routes->get('prf/export', 'Inventory\ProjectRequestForm::export', ['as' => 'prf.export']);
+    $routes->get('prf/export-items', 'Inventory\ProjectRequestForm::exportItems', ['as' => 'prf.export_items']);
 });
 /* INVENTORY */
 

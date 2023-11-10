@@ -242,12 +242,7 @@ class Dropdown extends BaseController
             $data,
             function($data) {
                 $id     = $this->request->getVar('id');
-                $fields = '
-                    dropdown_id, 
-                    parent_id,
-                    '.dt_sql_trim('dropdown', 'dropdown').', 
-                    '.dt_sql_trim('dropdown_type', 'dropdown_type').'
-                ';
+                $fields = $this->_model->defaultColumns();
                 $result = $this->_model->select($fields)->find($id);
 
                 $data['data'] = $result;

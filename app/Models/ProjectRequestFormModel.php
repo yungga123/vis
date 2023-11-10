@@ -181,13 +181,18 @@ class ProjectRequestFormModel extends Model
     {
         $joModel = new JobOrderModel();
         // Get the selected columns
-        return $joModel->selectedColumns($with_text, $with_date);
+        $columns = $joModel->selectedColumns($with_text, $with_date) .",
+            ".dt_sql_date_format("{$joModel->table}.date_requested")." AS date_requested_formatted,
+            ".dt_sql_date_format("{$joModel->table}.date_committed")." AS date_committed_formatted
+        ";
+        return $columns;
     }
 
     // Join with prf_view
     public function joinView($builder)
     {
         $builder->join($this->view, "{$this->table}.id = {$this->view}.prf_id");
+        return $this;
     }
 
     // Join with job_orders
@@ -198,6 +203,7 @@ class ProjectRequestFormModel extends Model
         $builder->join($joModel->table, "{$this->table}.job_order_id = {$joModel->table}.id", 'left');
         // Then join job_orders with task_lead_booked view and employees table
         $joModel->_join($builder);
+        return $this;
     }
 
     // Get project request forms
