@@ -12,12 +12,13 @@ use App\Models\SuppliersModel;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
 use App\Traits\HRTrait;
+use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class PurchaseOrder extends BaseController
 {
     /* Declare trait here to use */
-    use GeneralInfoTrait, CommonTrait, HRTrait;
+    use GeneralInfoTrait, CommonTrait, HRTrait, ExportTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -105,44 +106,41 @@ class PurchaseOrder extends BaseController
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
         $supplierModel  = new SuppliersModel();
+        $fields     = [
+            'id',
+            'supplier_name',
+            'attention_to',
+            'requested_by',
+            'requested_at_formatted',
+            'created_by_name',
+            'created_at_formatted',
+            'approved_by_name',
+            'approved_at_formatted',
+            'filed_by_name',
+            'filed_at_formatted',
+        ];
 
         $table->setTable($builder)
             ->setSearch([
                 "{$this->_model->table}.id",
                 "{$supplierModel->table}.supplier_name",
             ])
-            ->setOrder([
-                null,
-                null,
-                null,
-                'id',
-                'supplier_name',
-                'attention_to',
-                'requested_by',
-                'requested_at_formatted',
-                'created_by_name',
-                'created_at_formatted',
-                'approved_by_name',
-                'approved_at_formatted',
-                'filed_by_name',
-                'filed_at_formatted',
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                $this->_model->dtViewPOItems(),
-                $this->_model->dtPOStatusFormat(),
-                'id',
-                'supplier_name',
-                'attention_to',
-                'requested_by',
-                'requested_at_formatted',
-                'created_by_name',
-                'created_at_formatted',
-                'approved_by_name',
-                'approved_at_formatted',
-                'filed_by_name',
-                'filed_at_formatted',
-            ]);
+            ->setOrder(
+                array_merge(
+                    [null, null, null], 
+                    $fields
+                )
+            )
+            ->setOutput(
+                array_merge(
+                    [
+                        $this->_model->buttons($this->_permissions),
+                        $this->_model->dtViewPOItems(),
+                        $this->_model->dtPOStatusFormat(),
+                    ], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -395,6 +393,126 @@ class PurchaseOrder extends BaseController
         $data['custom_js']      = ['functions.js', 'purchasing/purchase_order/print.js'];
 
         return view('purchasing/purchase_order/print', $data);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $supplierModel  = new SuppliersModel();
+        $rpfModel       = new RequestPurchaseFormModel();
+        $columns        = "
+            UPPER({$this->_model->table}.status) AS status,
+            {$this->_model->table}.id,
+            {$supplierModel->table}.supplier_name,
+            {$this->_model->table}.attention_to,
+            IF({$this->_model->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
+            {$rpfModel->view}.created_by_name AS requested_by,
+            ".dt_sql_datetime_format("{$rpfModel->table}.created_at")." AS requested_at,
+            cb.employee_name AS generated_by,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS generated_at,
+            ab.employee_name AS approved_by,
+            ".dt_sql_datetime_format("{$this->_model->table}.approved_at")." AS approved_at,
+            fb.employee_name AS filed_by,
+            ".dt_sql_datetime_format("{$this->_model->table}.filed_at")." AS filed_at
+        ";
+        $builder    = $this->_model->select($columns);
+
+        $this->_model->joinSupplier($builder, $supplierModel);
+        $this->_model->joinRpf($builder, $rpfModel);
+        $this->_model->joinRpf($builder, $rpfModel, true);
+        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+        $this->joinAccountView($builder, "{$this->_model->table}.approved_by", 'ab');
+        $this->joinAccountView($builder, "{$this->_model->table}.filed_by", 'fb');
+
+        $builder->where("{$this->_model->table}.deleted_at", null);
+        $builder->orderBy("{$this->_model->table}.id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Status',
+            'PO #',
+            'Supplier',
+            'Attention To',
+            'With Vat',
+            'Requested By',
+            'Requested At',
+            'Generated By',
+            'Generated At',
+            'Approved By',
+            'Approved At',
+            'Filed By',
+            'Filed At',
+        ];
+        $filename   = 'Purchase Orders';
+
+        $this->exportToCsv($data, $header, $filename);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function exportItems() 
+    {
+        $poItemModel    = new POItemModel();
+        $rpfItemModel   = new RPFItemModel();
+        $inventoryModel = new InventoryModel();
+        $columns        = "
+            {$poItemModel->table}.po_id,
+            {$rpfItemModel->table}.rpf_id,
+            {$rpfItemModel->table}.inventory_id,
+            {$inventoryModel->view}.supplier_name,
+            {$inventoryModel->view}.brand,
+            {$inventoryModel->table}.item_model,
+            {$inventoryModel->table}.item_description,
+            {$inventoryModel->table}.stocks,
+            {$inventoryModel->view}.size,
+            {$inventoryModel->view}.unit,
+            {$rpfItemModel->table}.quantity_in,
+            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
+            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_price,
+            UPPER({$this->_model->table}.status) AS status,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
+        ";
+        $builder        = $this->_model->select($columns);
+
+        $this->_model->joinPOItem($builder, $poItemModel);
+        $this->_model->joinRpfItem($builder, $rpfItemModel);
+        $poItemModel->joinInventory($builder, $inventoryModel);
+        $poItemModel->joinInventory($builder, $inventoryModel, true);
+        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+
+        $builder->where("{$this->_model->table}.deleted_at", null);
+        $builder->orderBy("{$poItemModel->table}.po_id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'PO #',
+            'RPF #',
+            'Item #',
+            'Supplier',
+            'Item Brand',
+            'Item Model',
+            'Item Description',
+            'Item Size',
+            'Item Unit',
+            'Current Stocks',
+            'Quantity In',
+            'Item Price',
+            'Total Price',
+            'Status',
+            'Created By',
+            'Created At',
+        ];
+        $filename   = 'RPF Items';
+
+        $this->exportToCsv($data, $header, $filename);
     }
     
     /**

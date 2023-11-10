@@ -327,6 +327,8 @@ $routes->group('purchase-orders', ['filter' => 'checkauth'], static function ($r
     $routes->post('delete', 'Purchasing\PurchaseOrder::delete', ['as' => 'purchase_order.delete']);
     $routes->post('change', 'Purchasing\PurchaseOrder::change', ['as' => 'purchase_order.change']);
     $routes->get('print/(:num)', 'Purchasing\PurchaseOrder::print/$1', ['as' => 'purchase_order.print']);
+    $routes->get('export', 'Purchasing\PurchaseOrder::export', ['as' => 'purchase_order.export']);
+    $routes->get('export-items', 'Purchasing\PurchaseOrder::exportItems', ['as' => 'purchase_order.export_items']);
 });
 
 /* PURCHASING */

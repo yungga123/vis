@@ -176,7 +176,6 @@ class PurchaseOrderModel extends Model
     // For DataTables
    public function noticeTable($request) 
    {
-        $datetime_format = dt_sql_datetime_format();
         $supplierModel  = new SuppliersModel();
         $rpfModel       = new RequestPurchaseFormModel();
         $builder        = $this->db->table($this->table);
@@ -188,10 +187,10 @@ class PurchaseOrderModel extends Model
             {$this->table}.status,
             {$supplierModel->table}.supplier_name,
             {$rpfModel->view}.created_by_name AS requested_by,
-            DATE_FORMAT({$rpfModel->table}.created_at, '{$datetime_format}') AS requested_at_formatted,
-            DATE_FORMAT({$this->table}.created_at, '{$datetime_format}') AS created_at_formatted,
-            DATE_FORMAT({$this->table}.approved_at, '{$datetime_format}') AS approved_at_formatted,
-            DATE_FORMAT({$this->table}.filed_at, '{$datetime_format}') AS filed_at_formatted,
+            ".dt_sql_datetime_format("{$rpfModel->table}.created_at")." AS requested_at_formatted,
+            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at_formatted,
+            ".dt_sql_datetime_format("{$this->table}.approved_at")." AS approved_at_formatted,
+            ".dt_sql_datetime_format("{$this->table}.filed_at")." AS filed_at_formatted,
             cb.employee_name AS created_by_name,
             ab.employee_name AS approved_by_name,
             fb.employee_name AS filed_by_name

@@ -377,17 +377,19 @@ class RequestPurchaseForm extends BaseController
     {
         $rpfItemModel   = new RPFItemModel();
         $inventoryModel = new InventoryModel();
-        $supplierModel  = new SuppliersModel();
         $columns        = "
             {$rpfItemModel->table}.rpf_id,
             {$rpfItemModel->table}.inventory_id,
-            {$supplierModel->table}.supplier_name,
+            {$inventoryModel->view}.supplier_name,
+            {$inventoryModel->view}.brand,
             {$inventoryModel->table}.item_model,
             {$inventoryModel->table}.item_description,
+            {$inventoryModel->view}.size,
+            {$inventoryModel->view}.unit,
             {$inventoryModel->table}.stocks,
             {$rpfItemModel->table}.quantity_in,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_cost,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_cost,
+            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
+            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_price,
             {$rpfItemModel->table}.received_q,
             ".dt_sql_date_format("{$rpfItemModel->table}.received_date")." AS received_date,
             UPPER({$this->_model->table}.status) AS status,
@@ -400,7 +402,8 @@ class RequestPurchaseForm extends BaseController
         $rpfItemModel->join($this->_model->table, "{$this->_model->table}.id = {$rpfItemModel->table}.rpf_id", 'left');
         $rpfItemModel->join($this->_model->view, "{$this->_model->view}.rpf_id = {$rpfItemModel->table}.rpf_id", 'left');
         $rpfItemModel->join($inventoryModel->table, "{$inventoryModel->table}.id = {$rpfItemModel->table}.inventory_id", 'left');
-        $rpfItemModel->join($supplierModel->table, "{$supplierModel->table}.id = {$inventoryModel->table}.supplier_id", 'left');
+        $rpfItemModel->join($inventoryModel->view, "{$inventoryModel->table}.id = {$inventoryModel->view}.inventory_id", 'left');
+
         $builder->where("{$this->_model->table}.deleted_at", null);
         $builder->orderBy("{$rpfItemModel->table}.rpf_id", 'ASC');
 
@@ -409,12 +412,15 @@ class RequestPurchaseForm extends BaseController
             'RPF #',
             'Item #',
             'Supplier',
+            'Item Brand',
             'Item Model',
             'Item Description',
+            'Item Size',
+            'Item Unit',
             'Current Stocks',
             'Quantity In',
-            'Item Cost',
-            'Total Cost',
+            'Item Price',
+            'Total Price',
             'Received Qty',
             'Received Date',
             'Status',
