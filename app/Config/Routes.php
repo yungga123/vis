@@ -109,22 +109,23 @@ $routes->group('clients', ['filter' => 'checkauth'], static function($routes) {
 
 //Task Lead
 $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
-    $routes->get('/','Sales\TaskLead::index', ['as' => 'tasklead.home']);
-    $routes->post('list','Sales\TaskLead::list',['as' => 'tasklead.list']);
-    $routes->post('save','Sales\TaskLead::save',['as' => 'tasklead.save']);
-    $routes->post('edit','Sales\TaskLead::edit',['as' => 'tasklead.edit']);
-    $routes->post('delete','Sales\TaskLead::delete',['as' => 'tasklead.delete']);
-    $routes->get('fetchcustomervt','Sales\TaskLead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
-    $routes->get('fetchcustomerresidential','Sales\TaskLead::getResidentialCustomers',['as' => 'tasklead.getcustomerresidential']);
-    $routes->get('fetchcustomervtbranch','Sales\TaskLead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
-    $routes->get('booked','Sales\TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
-    $routes->post('booked/list','Sales\TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
-    $routes->post('booked/project_details','Sales\TaskLeadBooked::get_booked_details',['as' => 'tasklead.booked.details']);
-    $routes->post('booked/history_details','Sales\TaskLeadBooked::get_tasklead_history',['as' => 'tasklead.booked.history']);
-    $routes->post('booked/upload','Sales\TaskLeadBooked::upload',['as' => 'tasklead.booked.upload']);
-    $routes->post('booked/tasklead_files','Sales\TaskLeadBooked::getTaskleadFiles',['as' => 'tasklead.booked.files']);
-    $routes->get('booked/download','Sales\TaskLeadBooked::downloadFile',['as' => 'tasklead.booked.download']);
-    $routes->get('booked/show/(:num)','Sales\TaskLeadBooked::show', ['as' => 'tasklead.booked.show/$1']);
+    $routes->get('/', 'Sales\TaskLead::index', ['as' => 'tasklead.home']);
+    $routes->post('list', 'Sales\TaskLead::list',['as' => 'tasklead.list']);
+    $routes->post('save', 'Sales\TaskLead::save',['as' => 'tasklead.save']);
+    $routes->post('edit', 'Sales\TaskLead::edit',['as' => 'tasklead.edit']);
+    $routes->post('delete', 'Sales\TaskLead::delete',['as' => 'tasklead.delete']);
+    $routes->get('export', 'Sales\TaskLead::export',['as' => 'tasklead.export']);
+    $routes->get('fetchcustomervt', 'Sales\TaskLead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
+    $routes->get('fetchcustomerresidential', 'Sales\TaskLead::getResidentialCustomers',['as' => 'tasklead.getcustomerresidential']);
+    $routes->get('fetchcustomervtbranch', 'Sales\TaskLead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
+    $routes->get('booked', 'Sales\TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
+    $routes->post('booked/list', 'Sales\TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
+    $routes->post('booked/project_details', 'Sales\TaskLeadBooked::get_booked_details',['as' => 'tasklead.booked.details']);
+    $routes->post('booked/history_details', 'Sales\TaskLeadBooked::get_tasklead_history',['as' => 'tasklead.booked.history']);
+    $routes->post('booked/upload', 'Sales\TaskLeadBooked::upload',['as' => 'tasklead.booked.upload']);
+    $routes->post('booked/tasklead_files', 'Sales\TaskLeadBooked::getTaskleadFiles',['as' => 'tasklead.booked.files']);
+    $routes->get('booked/download', 'Sales\TaskLeadBooked::downloadFile',['as' => 'tasklead.booked.download']);
+    $routes->get('booked/show/(:num)', 'Sales\TaskLeadBooked::show/$1', ['as' => 'tasklead.booked.show']);
 });
 
 // Sales Manager
