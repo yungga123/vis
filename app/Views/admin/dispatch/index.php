@@ -13,6 +13,7 @@
                                 <th>Schedule ID</th>
                                 <th>Schedule Title</th>
                                 <th>Client</th>
+                                <th>Client Type</th>
                                 <th>Dispatch Date</th>
                                 <th>Dispatch Out</th>
                                 <th>Time In</th>
@@ -23,11 +24,15 @@
                                 <th>With Permit</th>
                                 <th>Comments</th>
                                 <th>Remarks</th>
-                                <th>Dispatched By</th>
                                 <th>Checked By</th>
+                                <th>Dispatched By</th>
+                                <th>Dispatched At</th>
                             </tr>
                         </thead>
                     </table>
+                </div>
+                <div class="card-footer">
+                    <a href="<?= url_to('dispatch.export'); ?>" class="btn btn-success">Export All Dispatch</a>
                 </div>
             </div>
         </div>

@@ -280,6 +280,7 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
     $routes->post('fetch', 'Admin\Dispatch::fetch', ['as' => 'dispatch.fetch']);
     $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'dispatch.delete']);
     $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'dispatch.print']);
+    $routes->get('export', 'Admin\Dispatch::export', ['as' => 'dispatch.export']);
 });
 /* ADMIN */
 

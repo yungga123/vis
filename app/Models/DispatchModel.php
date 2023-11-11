@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-// use App\Models\DispatchedTechniciansModel;
 
 class DispatchModel extends Model
 {
@@ -115,7 +114,9 @@ class DispatchModel extends Model
     // Common columns
     private function _columns($dateTimeformmated = false, $joinSchedule = false, $withClientDetials = false)
     {
-        $columns = "
+        $scheduleModel  = new ScheduleModel();
+        $customerModel  = new CustomerModel();
+        $columns        = "
             {$this->table}.id,
             {$this->table}.schedule_id,
             {$this->table}.customer_id,            
@@ -124,10 +125,10 @@ class DispatchModel extends Model
             {$this->table}.dispatch_out,
             {$this->table}.time_in,
             {$this->table}.time_out,
-            {$this->table}.remarks,
-            {$this->table}.comments,
             {$this->table}.service_type,
             {$this->table}.with_permit,
+            {$this->table}.comments,
+            {$this->table}.remarks,
             {$this->table}.created_by,
             {$this->table}.checked_by,
             {$this->view}.technicians,
@@ -141,52 +142,62 @@ class DispatchModel extends Model
 
         if ($dateTimeformmated) {
             $columns.= ",
-                DATE_FORMAT({$this->table}.dispatch_date, '%b %e, %Y') AS dispatch_date,
-                TIME_FORMAT({$this->table}.dispatch_out, '%h:%i %p') AS dispatch_out,
-                TIME_FORMAT({$this->table}.time_in, '%h:%i %p') AS time_in,
-                TIME_FORMAT({$this->table}.time_out, '%h:%i %p') AS time_out
+                ".dt_sql_date_format("{$this->table}.dispatch_date")." AS dispatch_date,
+                ".dt_sql_time_format("{$this->table}.dispatch_out")." AS dispatch_out,
+                ".dt_sql_time_format("{$this->table}.time_in")." AS time_in,
+                ".dt_sql_time_format("{$this->table}.time_out")." AS time_out,
+                ".dt_sql_datetime_format("{$this->table}.created_at")." AS dispatched_at
             ";
         }
 
         if ($joinSchedule) {
             $columns .= ",
-                {$this->tableSchedules}.title AS schedule,
-                {$this->tableSchedules}.title,
-                {$this->tableSchedules}.description,
-                {$this->tableSchedules}.start,
-                {$this->tableSchedules}.end,
-                {$this->tableSchedules}.type,
+                {$scheduleModel->table}.title AS schedule,
+                {$scheduleModel->table}.title,
+                {$scheduleModel->table}.description,
+                {$scheduleModel->table}.start,
+                {$scheduleModel->table}.end,
+                {$scheduleModel->table}.type,
             ";
         }
 
         if ($withClientDetials) {
-            $addressConcat = dt_sql_concat_client_address();
+            $addressConcat = dt_sql_concat_client_address($customerModel->table);
             $columns .= ",
-                {$this->customersTable}.name as customer_name,
-                {$this->customersTable}.type as customer_type,
-                {$this->customersTable}.contact_person,
-                {$this->customersTable}.contact_number,
-                {$this->customersTable}.email_address,
+                {$customerModel->table}.name as customer_name,
+                {$customerModel->table}.type as customer_type,
+                {$customerModel->table}.contact_person,
+                {$customerModel->table}.contact_number,
+                {$customerModel->table}.email_address,
                 {$addressConcat}
             ";
         }
 
         return $columns;
     }
-    
-    // Join with schedules table 
-    private function _join($builder, $joinSchedule = false)
-    {
-        if ($joinSchedule) 
-            $builder->join($this->tableSchedules, "{$this->table}.schedule_id = {$this->tableSchedules}.id");
 
-        $builder->join($this->view, "{$this->table}.id = {$this->view}.dispatch_id");
+    // Join dispatch_view
+    public function joinView($builder = null, $type = 'left')
+    {      
+        $builder ?? $builder = $this;
+        $builder->join($this->view, "{$this->table}.id = {$this->view}.dispatch_id", $type);
+        return $this;
+    }
+
+    // Join schedules
+    public function joinSchedule($builder, $model = null, $type = 'left')
+    {      
+        $model ?? $model = new ScheduleModel();
+        $builder->join($model->table, "{$this->table}.schedule_id = {$model->table}.id", $type);
+        return $this;
     }
     
     // Join with customers table 
-    public function joinCustomers($builder)
+    public function joinCustomer($builder, $model = null, $type = 'left')
     {
-        $builder->join($this->customersTable, "{$this->table}.customer_id = {$this->customersTable}.id");
+        $model ?? $model = new CustomerModel();
+        $builder->join($model->table, "{$this->table}.customer_id = {$model->table}.id", $type);
+        return $this;
     }
     
     // Get dispatch data - either by id or all
@@ -194,8 +205,10 @@ class DispatchModel extends Model
     {
         $builder = $this->select($this->_columns($dateTimeformmated, $joinSchedule, $withClientDetials));
         
-        $this->_join($builder, $joinSchedule);
-        if ($withClientDetials) $this->joinCustomers($builder);
+        $this->joinView($builder);
+
+        if ($joinSchedule) $this->joinSchedule($builder);
+        if ($withClientDetials) $this->joinCustomer($builder);
         
         $builder->where("{$this->table}.deleted_at IS NULL");
 
@@ -208,12 +221,13 @@ class DispatchModel extends Model
         $builder = $this->db->table($this->table);
         $builder->select($this->_columns(true, true, true));
 
-        // Join with schedules table
-        $this->_join($builder, true);
-        $this->joinCustomers($builder);
+        // Join with other tables
+        $this->joinView($builder);
+        $this->joinSchedule($builder);
+        $this->joinCustomer($builder);
 
         $builder->where("{$this->table}.deleted_at IS NULL");
-        $builder->orderBy('id', 'DESC');
+        $builder->orderBy("{$this->table}.id", 'DESC');
 
         return $builder;
     }

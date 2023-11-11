@@ -181,6 +181,17 @@ if (! function_exists('dt_sql_datetime_format'))
     }
 }
 
+if (! function_exists('dt_sql_time_format'))
+{
+    /**
+     * DataTable SQL time format
+     */
+	function dt_sql_time_format(?string $column = null, $format = '%h:%i %p'): string
+    {
+        return dt_sql_date_format($column, $format);
+    }
+}
+
 if (! function_exists('dt_sql_concat_client_address'))
 {
     /**

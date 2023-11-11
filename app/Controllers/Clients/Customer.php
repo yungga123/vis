@@ -221,7 +221,7 @@ class Customer extends BaseController
      */
     public function export() 
     {
-        $address    = dt_sql_concat_client_address();
+        $address    = dt_sql_concat_client_address($this->_model->table);
         $columns    = "
             {$this->_model->table}.id,
             IF({$this->_model->table}.forecast = 0, 'NO', 'YES') AS new_client,
