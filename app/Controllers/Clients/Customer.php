@@ -94,6 +94,21 @@ class Customer extends BaseController
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
+        $fields     = [            
+            'id',
+            'new_client',
+            'name',
+            'type',
+            'contact_person',
+            'contact_number',
+            'email_address',
+            'address',
+            'source',
+            'notes',
+            'referred_by',
+            'created_by',
+            'created_at'
+        ];
 
         $table->setTable($builder)
             ->setSearch([
@@ -105,38 +120,13 @@ class Customer extends BaseController
                 "{$this->_model->table}.subdivision",
             ])
             ->setDefaultOrder("id",'desc')
-            ->setOrder([
-                null,
-                'id',
-                'new_client',
-                'name',
-                'type',
-                'contact_person',
-                'contact_number',
-                'email_address',
-                'address',
-                'source',
-                'notes',
-                'referred_by',
-                'created_by',
-                'created_at'
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                'id',
-                'new_client',
-                'name',
-                'type',
-                'contact_person',
-                'contact_number',
-                'email_address',
-                'address',
-                'source',
-                'notes',
-                'referred_by',
-                'created_by',
-                'created_at'
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(
+                array_merge(
+                    [$this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
         
         return $table->getDatatable();
 
@@ -231,7 +221,6 @@ class Customer extends BaseController
      */
     public function export() 
     {
-        $datetimeFormat = dt_sql_datetime_format();
         $address    = dt_sql_concat_client_address();
         $columns    = "
             {$this->_model->table}.id,
@@ -245,8 +234,8 @@ class Customer extends BaseController
             {$this->_model->table}.source, 
             {$this->_model->table}.notes,
             {$this->_model->table}.referred_by,
-            DATE_FORMAT({$this->_model->table}.created_at, '{$datetimeFormat}') AS created_at,
-            cb.employee_name AS created_by
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
         ";
         $builder    = $this->_model->select($columns);
 

@@ -4,10 +4,16 @@ namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
 use App\Models\SupplierBrandsModel;
+use App\Models\SuppliersModel;
+use App\Traits\ExportTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class SupplierBrands extends BaseController
 {
+    /* Declare trait here to use */
+    use ExportTrait, HRTrait;
+
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -36,8 +42,6 @@ class SupplierBrands extends BaseController
     /**
      * Class constructor
      */
-
-    
     public function __construct()
     {
         $this->_model       = new SupplierBrandsModel(); // Current model
@@ -46,48 +50,39 @@ class SupplierBrands extends BaseController
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
-
+    /**
+     * Get list of records
+     *
+     * @return array|dataTable
+     */
     public function list()
     {
-        $table = new TablesIgniter();
-
-        $supplier_id = $this->request->getVar('supplier_id');
-        $builder = $this->_model->noticeTable($supplier_id);
+        $table          = new TablesIgniter();
+        $supplier_id    = $this->request->getVar('supplier_id');
+        $builder        = $this->_model->noticeTable($supplier_id);
+        $fields         = [
+            'brand_name',
+            'product',
+            'warranty',
+            'sales_person',
+            'sales_contact_number',
+            'technical_support',
+            'technical_contact_number',
+            'remarks',
+            'created_by',
+            'created_at',
+        ];
 
         $table->setTable($builder)
-            ->setSearch([
-                "brand_name",
-                "product",
-                "warranty",
-                "sales_person",
-                "sales_contact_number",
-                "technical_support",
-                "technical_contact_number",
-                "supplier_brands_remark"
-            ])
+            ->setSearch($fields)
             ->setDefaultOrder('id','desc')
-            ->setOrder([
-                null,
-                "brand_name",
-                "product",
-                "warranty",
-                "sales_person",
-                "sales_contact_number",
-                "technical_support",
-                "technical_contact_number",
-                "supplier_brands_remark"
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                "brand_name",
-                "product",
-                "warranty",
-                "sales_person",
-                "sales_contact_number",
-                "technical_support",
-                "technical_contact_number",
-                "supplier_brands_remark"
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(
+                array_merge(
+                    [$this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -149,7 +144,6 @@ class SupplierBrands extends BaseController
         try {
             $model  = $this->_model;
             $id     = $this->request->getVar('id');
-            // $item   = $model->select($model->allowedFields)->find($id);
 
             $data['data'] = $model->select($model->allowedFields)->find($id);;
         } catch (\Exception$e) {
@@ -197,5 +191,47 @@ class SupplierBrands extends BaseController
         }
 
         return $this->response->setJSON($data);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $supplierModel  = new SuppliersModel();
+        $columns        = "
+            {$supplierModel->table}.id,
+            {$supplierModel->table}.supplier_name,
+            {$this->_model->table}.id AS brand_id,
+        ". $this->_model->dtColumns();
+        $builder        = $this->_model->select($columns);
+
+        $this->_model->joinSupplier(null, $supplierModel);
+        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+
+        $builder->where("{$this->_model->table}.deleted_at IS NULL");
+        $builder->orderBy("{$this->_model->table}.id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Supplier ID',
+            'Supplier Name',
+            'Brand ID',
+            'Brand Name',
+            'Brand Product',
+            'Warranty',
+            'Sales Person',
+            'Sales Contact Number',
+            'Tech Support',
+            'Tech Contact Number',
+            'Remarks',
+            'Created By',
+            'Created At'
+        ];
+        $filename   = 'Supplier Brands Masterlist';
+
+        $this->exportToCsv($data, $header, $filename);
     }
 }

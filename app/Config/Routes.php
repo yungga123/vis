@@ -297,11 +297,15 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('save', 'Purchasing\Suppliers::save', ['as' => 'suppliers.save']);
     $routes->post('edit', 'Purchasing\Suppliers::edit', ['as' => 'suppliers.edit']);
     $routes->post('delete', 'Purchasing\Suppliers::delete', ['as' => 'suppliers.delete']);
+    $routes->get('export', 'Purchasing\Suppliers::export', ['as' => 'suppliers.export']);
 
-    $routes->get('brands/list','Purchasing\SupplierBrands::list',['as' => 'suppliers.brand.list']);
-    $routes->post('brands/save','Purchasing\SupplierBrands::save',['as' => 'suppliers.brand.save']);
-    $routes->post('brands/edit','Purchasing\SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
-    $routes->post('brands/delete','Purchasing\SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
+    $routes->group('brands', ['filter' => 'checkauth'], static function ($routes) {
+        $routes->get('list','Purchasing\SupplierBrands::list',['as' => 'suppliers.brand.list']);
+        $routes->post('save','Purchasing\SupplierBrands::save',['as' => 'suppliers.brand.save']);
+        $routes->post('edit','Purchasing\SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
+        $routes->post('delete','Purchasing\SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
+        $routes->get('export','Purchasing\SupplierBrands::export',['as' => 'suppliers.brand.export']);
+    });
 
 });
 
