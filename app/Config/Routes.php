@@ -269,6 +269,7 @@ $routes->group('schedules', ['filter' => 'checkauth'], static function ($routes)
     $routes->get('list', 'Admin\Schedule::list', ['as' => 'schedule.list']);
     $routes->post('save', 'Admin\Schedule::save', ['as' => 'schedule.save']);
     $routes->post('delete', 'Admin\Schedule::delete', ['as' => 'schedule.delete']);
+    $routes->get('export', 'Admin\Schedule::export', ['as' => 'schedule.export']);
 });
 
 // DISPATCH
