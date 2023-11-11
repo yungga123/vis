@@ -4,7 +4,6 @@
         <div class="modal-content">
             <form id="job_order_form" class="with-label-indicator" action="<?= url_to('job_order.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
-                <input type="hidden" id="job_order_id" name="id" readonly>
                 <div class="modal-header">
                     <h5 class="modal-title">Add Job Order</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">

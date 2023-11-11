@@ -209,18 +209,18 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->get('export', 'Inventory\Home::export', ['as' => 'inventory.export']);
 
     // Dropdowns
-    $routes->get('dropdowns', 'Inventory\\Dropdown::index', ['as' => 'inventory.dropdown.home']);
-    $routes->get('dropdown/types', 'Inventory\\Dropdown::types', ['as' => 'inventory.dropdown.types']);
-    $routes->post('dropdown/show', 'Inventory\\Dropdown::show', ['as' => 'inventory.dropdown.show']);
-    $routes->post('dropdown/list', 'Inventory\\Dropdown::list', ['as' => 'inventory.dropdown.list']);
-    $routes->post('dropdown/save', 'Inventory\\Dropdown::save', ['as' => 'inventory.dropdown.save']);
-    $routes->post('dropdown/edit', 'Inventory\\Dropdown::edit', ['as' => 'inventory.dropdown.edit']);
-    $routes->post('dropdown/delete', 'Inventory\\Dropdown::delete', ['as' => 'inventory.dropdown.delete']);
+    $routes->get('dropdowns', 'Inventory\Dropdown::index', ['as' => 'inventory.dropdown.home']);
+    $routes->get('dropdown/types', 'Inventory\Dropdown::types', ['as' => 'inventory.dropdown.types']);
+    $routes->post('dropdown/show', 'Inventory\Dropdown::show', ['as' => 'inventory.dropdown.show']);
+    $routes->post('dropdown/list', 'Inventory\Dropdown::list', ['as' => 'inventory.dropdown.list']);
+    $routes->post('dropdown/save', 'Inventory\Dropdown::save', ['as' => 'inventory.dropdown.save']);
+    $routes->post('dropdown/edit', 'Inventory\Dropdown::edit', ['as' => 'inventory.dropdown.edit']);
+    $routes->post('dropdown/delete', 'Inventory\Dropdown::delete', ['as' => 'inventory.dropdown.delete']);
 
     // Logs (Item In and Out)
-    $routes->get('logs', 'InventoryLogs::index', ['as' => 'inventory.logs.home']);
-    $routes->post('logs/save', 'InventoryLogs::save', ['as' => 'inventory.logs.save']);
-    $routes->post('logs/list', 'InventoryLogs::list', ['as' => 'inventory.logs.list']);
+    $routes->get('logs', 'Inventory\Logs::index', ['as' => 'inventory.logs.home']);
+    $routes->post('logs/save', 'Inventory\Logs::save', ['as' => 'inventory.logs.save']);
+    $routes->post('logs/list', 'Inventory\Logs::list', ['as' => 'inventory.logs.list']);
 
     // Common
     $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
@@ -260,6 +260,7 @@ $routes->group('job-orders', ['filter' => 'checkauth'], static function ($routes
     $routes->post('fetch', 'Admin\JobOrder::fetch', ['as' => 'job_order.fetch']);
     $routes->post('delete', 'Admin\JobOrder::delete', ['as' => 'job_order.delete']);
     $routes->post('status', 'Admin\JobOrder::change', ['as' => 'job_order.status']);
+    $routes->get('export', 'Admin\JobOrder::export', ['as' => 'job_order.export']);
 });
 
 // SCHEDULES

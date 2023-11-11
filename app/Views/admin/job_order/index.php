@@ -58,8 +58,9 @@
                                 <th>Status</th>
                                 <th>JO #</th>
                                 <th>Task Lead #</th>
+                                <th>Manual Quotation?</th>
                                 <th>Quotation</th>
-                                <th>Q Type</th>
+                                <th>Quotation Type</th>
                                 <th>Client</th>
                                 <th>Client Branch</th>
                                 <th>Manager</th>
@@ -83,6 +84,9 @@
                             </tr>
                         </thead>
                     </table>
+                </div>
+                <div class="card-footer">
+                    <a href="<?= url_to('job_order.export'); ?>" class="btn btn-success">Export All Job Orders</a>
                 </div>
             </div>
         </div>

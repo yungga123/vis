@@ -202,7 +202,7 @@ class ProjectRequestFormModel extends Model
         // Join with job_orders table
         $builder->join($joModel->table, "{$this->table}.job_order_id = {$joModel->table}.id", 'left');
         // Then join job_orders with task_lead_booked view and employees table
-        $joModel->_join($builder);
+        $joModel->joinWithOtherTables($builder);
         return $this;
     }
 

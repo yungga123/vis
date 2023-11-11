@@ -42,7 +42,9 @@ $(document).ready(function () {
 		$("#job_order_id").val("");
 		$("#orig_qn").addClass("d-none");
 
+		clearSelect2Selection("#select2Quotation");
 		clearSelect2Selection("#customer_id");
+		clearSelect2Selection("#customer_branch_id");
 		toggleQuotationFields(is_manual);
 		clearAlertInForm(elems);
 	});
