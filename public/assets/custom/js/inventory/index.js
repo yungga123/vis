@@ -29,9 +29,6 @@ $(document).ready(function () {
 	];
 	supplierSelector = "#supplier_id";
 
-	console.log(router.purchasing.common.suppliers);
-
-	// select2Init();
 	$("#filter_category").on("select2:select", function (e) {
 		let selector = "#filter_sub_category";
 		dropdownInit(selector, $(this).val());
@@ -156,23 +153,6 @@ function dropdownInit(select, type, val = "") {
 		.catch((err) => catchErrMsg(err));
 }
 
-function openDropdownModal(title, val, selector) {
-	$("#modal_dropdown").modal("show");
-	$("#modal_dropdown .modal-title").text("Add " + title);
-	$("#other_category_type").val(val);
-	otherCategoryType = val;
-	otherCategoryTypeSelector = selector;
-}
-
-function clearSelectionSelect2() {
-	clearSelect2Selection("#category");
-	clearSelect2Selection("#sub_category");
-	clearSelect2Selection("#item_brand");
-	clearSelect2Selection("#item_size");
-	clearSelect2Selection("#stock_unit");
-	clearSelect2Selection(supplierSelector);
-}
-
 /* Get item details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
@@ -235,4 +215,21 @@ function _initSuppliers() {
 		router.purchasing.common.suppliers,
 		"text"
 	);
+}
+
+function openDropdownModal(title, val, selector) {
+	$("#modal_dropdown").modal("show");
+	$("#modal_dropdown .modal-title").text("Add " + title);
+	$("#other_category_type").val(val);
+	otherCategoryType = val;
+	otherCategoryTypeSelector = selector;
+}
+
+function clearSelectionSelect2() {
+	clearSelect2Selection("#category");
+	clearSelect2Selection("#sub_category");
+	clearSelect2Selection("#item_brand");
+	clearSelect2Selection("#item_size");
+	clearSelect2Selection("#stock_unit");
+	clearSelect2Selection(supplierSelector);
 }

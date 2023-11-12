@@ -156,10 +156,10 @@ class InventoryModel extends Model
             {$this->table}.id,
             {$this->table}.item_model,
             {$this->table}.item_description,
-            {$this->table}.item_sdp,
-            {$this->table}.item_srp,
-            {$this->table}.project_price,
-            {$this->table}.total,
+            ".dt_sql_number_format("{$this->table}.item_sdp")." AS item_sdp,
+            ".dt_sql_number_format("{$this->table}.item_srp")." AS item_srp,
+            ".dt_sql_number_format("{$this->table}.project_price")." AS project_price,
+            ".dt_sql_number_format("({$this->table}.stocks * {$this->table}.item_sdp)")." AS total_price,
             {$this->table}.stocks,
             {$this->table}.date_of_purchase,
             {$this->table}.location,
@@ -185,8 +185,8 @@ class InventoryModel extends Model
 
         if ($date_format) {
             $columns .= ",
-                DATE_FORMAT({$this->table}.date_of_purchase, '%b %e, %Y') AS date_purchase,
-                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted
+                ".dt_sql_date_format("{$this->table}.date_of_purchase")." AS date_purchase,
+                ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at_formatted
             ";
         }
 
@@ -218,7 +218,7 @@ class InventoryModel extends Model
     // Get inventory categories - all or distinct
     public function getInvCategories($id = null, $is_distinct = false)
     {
-        $columns = "inventory.category, dd.dropdown";
+        $columns = "TRIM(inventory.category) AS category, TRIM(dd.dropdown) AS dropdown";
         $builder = $this->select($columns);
         $builder->join('inventory_dropdowns as dd', 'inventory.category = dd.dropdown_id', 'left');
 
@@ -229,7 +229,7 @@ class InventoryModel extends Model
     // Get inventory sub-categories - all or distinct
     public function getInvSubCategories($id = null, $is_distinct = false)
     {
-        $columns = "inventory.category, dd.dropdown";
+        $columns = "TRIM(inventory.category) AS category, TRIM(dd.dropdown) AS dropdown";
         $builder = $this->select($columns);
         $builder->join('inventory_dropdowns as dd', 'inventory.category = dd.dropdown_id', 'left');
 
@@ -241,7 +241,7 @@ class InventoryModel extends Model
     public function noticeTable($request) 
     {
         $builder = $this->db->table($this->table);
-        $builder->select($this->columns(true, true, true));
+        $builder->select($this->columns(true, false, true));
         $this->joinView($builder);
 
         if (isset($request['params'])) {

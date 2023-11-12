@@ -7,13 +7,16 @@ use App\Models\CustomerBranchModel;
 use App\Models\CustomerModel;
 use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
-use CodeIgniter\Files\File;
+use App\Traits\ExportTrait;
 use CodeIgniter\I18n\Time;
 use Exception;
 use monken\TablesIgniter;
 
 class Tasklead extends BaseController
 {
+    /* Declare trait here to use */
+    use ExportTrait;
+
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -107,91 +110,43 @@ class Tasklead extends BaseController
         return view('sales/task_lead/index', $data);
     }
 
+    /**
+     * Get list of records
+     *
+     * @return array|dataTable
+     */
     public function list()
     {
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
+        $fields     = $this->_model->dtColumns;
 
         $table->setTable($builder)
             ->setSearch([
-                "id",
-                "employee_name",
-                "quarter",
-                "status",
-                "status_percent",
-                "customer_type",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status1",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_duration"
+                'id',
+                'employee_name',
+                'customer_name',
+                'project',
+                'project_amount',
+                'quotation_num',
+                'status1',
+                'remark_next_step',
             ])
             ->setDefaultOrder('id','desc')
-            ->setOrder([
-                null,
-                "id",
-                "employee_name",
-                "quarter",
-                "status",
-                "status_percent",
-                "customer_type",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status1",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_duration"
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                "id",
-                "employee_name",
-                "quarter",
-                "status",
-                "status_percent",
-                "customer_type",
-                "customer_name",
-                "branch_name",
-                "contact_number",
-                "project",
-                "project_amount",
-                "quotation_num",
-                "forecast_close_date",
-                "min_forecast_date",
-                "max_forecast_date",
-                "status1",
-                "remark_next_step",
-                "close_deal_date",
-                "project_start_date",
-                "project_finish_date",
-                "project_duration"
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(
+                array_merge(
+                    [$this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
 
      /**
-     * Saving process of employees (inserting and updating employees)
+     * Saving process of record (inserting and updating record)
      *
      * @return json
      */
@@ -274,7 +229,7 @@ class Tasklead extends BaseController
     }
 
     /**
-     * For getting the employee data using the id
+     * For getting the data using the id
      *
      * @return json
      */
@@ -300,7 +255,7 @@ class Tasklead extends BaseController
     }
 
     /**
-     * Deletion of employee
+     * Deletion of record
      *
      * @return json
      */
@@ -333,6 +288,51 @@ class Tasklead extends BaseController
         }
 
         return $this->response->setJSON($data);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $booked     = $this->request->getVar('booked') !== null;
+        $builder    = $this->_model->dtGetTaskLeads($booked);
+        
+        if (! $booked) $builder->where('status !=', $this->_model->booked);
+
+        $query      = $builder->orderBy('id', 'ASC')->get();
+        $data       = $query->getResultArray();
+        $header     = [
+            'Tasklead ID',
+            'Employee Name',
+            'Quarter',
+            'Percent',
+            'Status',
+            'Client Type',
+            'Client Name',
+            'Branch Name',
+            'Contact Number',
+            'Project',
+            'Amount',
+            'Quotation Number',
+            'Quotation Type',
+            'Forecast Close Date',
+            'Min. Forecast',
+            'Max Forecast',
+            'Hit?',
+            'Remark Next Step',
+            'Close Deal Date',
+            'Start Date',
+            'End Date',
+            'Duration',
+            'Created By',
+            'Created At'
+        ];
+        $filename   = $booked ? 'Booked Task Leads' : 'Task Leads';
+
+        $this->exportToCsv($data, $header, $filename);
     }
 
     public function getVtCustomer() 

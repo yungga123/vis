@@ -5,15 +5,20 @@ namespace App\Controllers\Inventory;
 use App\Controllers\BaseController;
 use App\Models\ProjectRequestFormModel;
 use App\Models\PRFItemModel;
+use App\Models\JobOrderModel;
+use App\Models\CustomerModel;
+use App\Models\TaskLeadView;
+use App\Models\InventoryModel;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
+use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class ProjectRequestForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait, GeneralInfoTrait, CommonTrait;
+    use InventoryTrait, GeneralInfoTrait, CommonTrait, ExportTrait;
 
     /**
      * Use to initialize corresponding model
@@ -100,62 +105,59 @@ class ProjectRequestForm extends BaseController
      */
     public function list()
     {
-        $table      = new TablesIgniter();
-        $request    = $this->request->getVar();
-        $builder    = $this->_model->noticeTable($request);
+        $joModel        = new JobOrderModel();
+        $customerModel  = new CustomerModel();
+        $tlBookedModel  = new TaskLeadView();
+        $table          = new TablesIgniter();
+        $request        = $this->request->getVar();
+        $builder        = $this->_model->noticeTable($request);
+        $fields         = [
+            'id',
+            'job_order_id',
+            'quotation',
+            'tasklead_type',
+            'client',
+            'work_type',
+            'date_requested_formatted',
+            'date_committed_formatted',
+            'process_date_formatted',
+            'remarks',
+            'created_by_name',
+            'created_at_formatted',
+            'accepted_by_name',
+            'accepted_at_formatted',
+            'rejected_by_name',
+            'rejected_at_formatted',
+            'item_out_by_name',
+            'item_out_at_formatted',
+            'filed_by_name',
+            'filed_at_formatted',
+        ];
 
         $table->setTable($builder)
             ->setSearch([
-                'job_orders.work_type',
-                'job_orders.manual_quotation',
-                'task_lead_booked.quotation_num',
-                'task_lead_booked.customer_name',
-                'customers.name',
+                "{$joModel->table}.work_type",
+                "{$joModel->table}.manual_quotation",
+                "{$tlBookedModel->table}.quotation_num",
+                "{$tlBookedModel->table}.customer_name",
+                "{$customerModel->table}.name",
             ])
-            ->setOrder([
-                null,
-                null,
-                null,
-                'id',
-                'job_order_id',
-                'quotation',
-                'client',
-                'work_type',
-                'process_date_formatted',
-                'remarks',
-                'created_by_name',
-                'created_at_formatted',
-                'accepted_by_name',
-                'accepted_at_formatted',
-                'rejected_by_name',
-                'rejected_at_formatted',
-                'item_out_by_name',
-                'item_out_at_formatted',
-                'filed_by_name',
-                'filed_at_formatted',
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                $this->_model->dtViewPrfItems(),
-                $this->_model->dtPRFStatusFormat(),
-                'id',
-                'job_order_id',
-                'quotation',
-                'client',
-                'work_type',
-                'process_date_formatted',
-                'remarks',
-                'created_by_name',
-                'created_at_formatted',
-                'accepted_by_name',
-                'accepted_at_formatted',
-                'rejected_by_name',
-                'rejected_at_formatted',
-                'item_out_by_name',
-                'item_out_at_formatted',
-                'filed_by_name',
-                'filed_at_formatted',
-            ]);
+            ->setOrder(
+                array_merge(
+                    [null, null, null], 
+                    $fields
+                )
+            )
+            ->setOutput(
+                array_merge(
+                    [
+                        $this->_model->buttons($this->_permissions),
+                        $this->_model->dtViewPrfItems(),
+                        $this->_model->dtPRFStatusFormat(),
+                    ], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -337,15 +339,14 @@ class ProjectRequestForm extends BaseController
      *
      * @return view
      */
-    public function print() 
+    public function print($id) 
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, 'PRINT');
         
-        $id             = $this->request->getUri()->getSegment(3);
-        $columns        = $this->_model->columns(true, true);
-        $columns       .= ','. $this->_model->jobOrderColumns(false, true);
-        $builder        = $this->_model->select($columns);
+        $columns = $this->_model->columns(true, true);
+        $columns .= ','. $this->_model->jobOrderColumns(false, true);
+        $builder = $this->_model->select($columns);
         
         $this->_model->joinView($builder);
         $this->_model->joinJobOrder($builder);
@@ -356,5 +357,126 @@ class ProjectRequestForm extends BaseController
         $data['company_logo']   = $this->getGeneralInfo('company_logo');
 
         return view('inventory/prf/print', $data);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $joModel        = new JobOrderModel();
+        $customerModel  = new CustomerModel();
+        $tlBookedModel  = new TaskLeadView();
+        $columns    = "
+            UPPER({$this->_model->table}.status) AS status,
+            {$this->_model->table}.id,
+            {$this->_model->table}.job_order_id,
+            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.quotation_num, {$joModel->table}.manual_quotation) AS quotation,
+            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.tasklead_type, {$joModel->table}.manual_quotation_type) AS quotation_type,
+            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.customer_name, {$customerModel->table}.name) AS client,
+            {$joModel->table}.work_type,
+            ".dt_sql_date_format("{$joModel->table}.date_requested")." AS date_requested,
+            ".dt_sql_date_format("{$joModel->table}.date_committed")." AS date_committed,
+            ".dt_sql_date_format("{$this->_model->table}.process_date")." AS process_date,
+            {$this->_model->table}.remarks,
+            {$this->_model->view}.created_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at,
+            {$this->_model->view}.accepted_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.accepted_at")." AS accepted_at,
+            {$this->_model->view}.rejected_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.rejected_at")." AS rejected_at,
+            {$this->_model->view}.item_out_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.item_out_at")." AS item_out_at,
+            {$this->_model->view}.filed_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.filed_at")." AS filed_at
+        ";
+        $builder    = $this->_model->select($columns);
+
+        $this->_model->joinView($builder)->joinJobOrder($builder);
+        $builder->where("{$this->_model->table}.deleted_at", null);
+        $builder->orderBy("{$this->_model->table}.id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Status',
+            'PRF #',
+            'Job Order #',
+            'Quotation',
+            'Quotation Type',
+            'Client',
+            'Work Type',
+            'Date Requested',
+            'Date Committed',
+            'Process Date',
+            'Remarks',
+            'Created By',
+            'Created At',
+            'Accepted By',
+            'Accepted At',
+            'Rejected By',
+            'Rejected At',
+            'Item Out By',
+            'Item Out At',
+            'Filed By',
+            'Filed At'
+        ];
+        $filename   = 'Project Request Forms';
+
+        $this->exportToCsv($data, $header, $filename);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function exportItems() 
+    {
+        $prfItemModel   = new PRFItemModel();
+        $inventoryModel = new InventoryModel();
+        $columns        = "
+            {$prfItemModel->table}.prf_id,
+            {$this->_model->table}.job_order_id,
+            {$prfItemModel->table}.inventory_id,
+            {$inventoryModel->table}.item_model,
+            {$inventoryModel->table}.item_description,
+            {$inventoryModel->table}.stocks,
+            {$prfItemModel->table}.quantity_out,
+            {$prfItemModel->table}.returned_q,
+            {$prfItemModel->queryConsumed()},
+            ".dt_sql_date_format("{$prfItemModel->table}.returned_date")." AS returned_date,
+            UPPER({$this->_model->table}.status) AS status,
+            {$this->_model->view}.created_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
+        ";
+        $builder        = $prfItemModel->select($columns);
+
+        $prfItemModel->join($this->_model->table, "{$this->_model->table}.id = {$prfItemModel->table}.prf_id", 'left');
+        $prfItemModel->join($this->_model->view, "{$this->_model->view}.prf_id = {$prfItemModel->table}.prf_id", 'left');
+        $prfItemModel->join($inventoryModel->table, "{$inventoryModel->table}.id = {$prfItemModel->table}.inventory_id", 'left');
+        $builder->where("{$this->_model->table}.deleted_at", null);
+        $builder->orderBy("{$prfItemModel->table}.prf_id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'PRF #',
+            'Job Order #',
+            'Item #',
+            'Item Model',
+            'Item Description',
+            'Current Stocks',
+            'Quantity Out',
+            'Quantity Returned',
+            'Consumed Qty',
+            'Date Returned',
+            'Status',
+            'Created By',
+            'Created At',
+        ];
+        $filename   = 'PRF Items';
+
+        $this->exportToCsv($data, $header, $filename);
     }
 }

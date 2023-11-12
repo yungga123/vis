@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\HRTrait;
 
 class CustomerBranchModel extends Model
 {
+    /* Declare trait here to use */
+    use HRTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'customer_branches';
     protected $accountsView     = 'accounts_view';
@@ -133,7 +137,7 @@ class CustomerBranchModel extends Model
     {
         $builder = $this->db->table($this->table);
         $builder->select($this->columns(true));
-        $builder->join($this->accountsView, "{$this->table}.created_by = {$this->accountsView}.username", 'left');
+        $this->joinAccountView($builder, "{$this->table}.created_by");
         $builder->where('customer_id', $customer_id);
         $builder->where("deleted_at IS NULL");
         $builder->orderBy('id', 'DESC');

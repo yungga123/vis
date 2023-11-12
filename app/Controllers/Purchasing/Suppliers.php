@@ -4,10 +4,15 @@ namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
 use App\Models\SuppliersModel;
+use App\Traits\ExportTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class Suppliers extends BaseController
 {
+    /* Declare trait here to use */
+    use ExportTrait, HRTrait;
+
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -43,6 +48,11 @@ class Suppliers extends BaseController
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
+    /**
+     * Display the view
+     *
+     * @return view
+     */
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
@@ -78,66 +88,60 @@ class Suppliers extends BaseController
         return view('purchasing/suppliers/index', $data);
     }
 
+    /**
+     * Get list of records
+     *
+     * @return array|dataTable
+     */
     public function list()
     {
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
+        $fields     = [
+            'id',
+            'supplier_name',
+            'supplier_type',
+            'address',
+            'contact_person',
+            'contact_number',
+            'viber',
+            'payment_terms',
+            'payment_mode',
+            'product',
+            'email_address',
+            'bank_name',
+            'bank_account_name',
+            'bank_number',
+            'remarks',
+            'created_by',
+            'created_at',
+        ];
 
         $table->setTable($builder)
             ->setSearch([
-                "id",
-                "supplier_name",
-                "supplier_type",
-                "address",
-                "contact_person",
-                "contact_number",
-                "viber",
-                "payment_mode",
-                "product",
-                "email_address",
-                "bank_name",
-                "bank_account_name",
-                "bank_number",
-                "remarks",
+                'supplier_name',
+                'supplier_type',
+                'address',
+                'contact_person',
+                'contact_number',
+                'viber',
+                'payment_mode',
+                'product',
+                'email_address',
+                'bank_name',
+                'bank_account_name',
+                'bank_number',
+                'remarks',
             ])
             ->setDefaultOrder('id','desc')
-            ->setOrder([
-                null,
-                "id",
-                "supplier_name",
-                "supplier_type",
-                "address",
-                "contact_person",
-                "contact_number",
-                "viber",
-                "payment_terms",
-                "payment_mode",
-                "product",
-                "email_address",
-                "bank_name",
-                "bank_account_name",
-                "bank_number",
-                "remarks",
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                "id",
-                "supplier_name",
-                $this->_model->supplierType(),
-                "address",
-                "contact_person",
-                "contact_number",
-                "viber",
-                $this->_model->paymentTerms(),
-                $this->_model->paymentMode(),
-                "product",
-                "email_address",
-                "bank_name",
-                "bank_account_name",
-                "bank_number",
-                "remarks",
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(
+                array_merge(
+                    [$this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -249,4 +253,40 @@ class Suppliers extends BaseController
         return $this->response->setJSON($data);
     }
 
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $builder    = $this->_model->select($this->_model->dtColumns());
+
+        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+        $builder->where("deleted_at IS NULL")->orderBy('id', 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Supplier ID',
+            'Supplier Name',
+            'Supplier Type',
+            'Address',
+            'Contact Person',
+            'Contact Number',
+            'Viber',
+            'Email Address',
+            'Payment Terms',
+            'Mode of Payment',
+            'Product',
+            'Bank Name',
+            'Bank Account Name',
+            'Bank Number',
+            'Remarks',
+            'Created By',
+            'Created At'
+        ];
+        $filename   = 'Suppliers Masterlist';
+
+        $this->exportToCsv($data, $header, $filename);
+    }
 }

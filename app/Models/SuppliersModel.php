@@ -4,11 +4,12 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\FilterParamTrait;
+use App\Traits\HRTrait;
 
 class SuppliersModel extends Model
 {
     /* Declare trait here to use */
-    use FilterParamTrait;
+    use FilterParamTrait, HRTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'suppliers';
@@ -20,22 +21,22 @@ class SuppliersModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        "supplier_name",
-        "supplier_type",
-        "others_supplier_type",
-        "address",
-        "contact_person",
-        "contact_number",
-        "viber",
-        "payment_terms",
-        "payment_mode",
-        "others_payment_mode",
-        "product",
-        "email_address",
-        "bank_name",
-        "bank_account_name",
-        "bank_number",
-        "remarks",
+        'supplier_name',
+        'supplier_type',
+        'others_supplier_type',
+        'address',
+        'contact_person',
+        'contact_number',
+        'viber',
+        'payment_terms',
+        'payment_mode',
+        'others_payment_mode',
+        'product',
+        'email_address',
+        'bank_name',
+        'bank_account_name',
+        'bank_number',
+        'remarks',
     ];
 
     // Dates
@@ -99,6 +100,30 @@ class SuppliersModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // DataTable default columns 
+    public function dtColumns()
+    {
+        return "
+            {$this->table}.id,
+            {$this->table}.supplier_name,
+            IF(UPPER({$this->table}.supplier_type) = 'OTHERS', CONCAT('Others - ', {$this->table}.supplier_type), {$this->table}.supplier_type) AS supplier_type,
+            {$this->table}.address,
+            {$this->table}.contact_person,
+            {$this->table}.contact_number,
+            {$this->table}.viber,
+            {$this->table}.email_address,
+            IF({$this->table}.payment_terms = 0, 'N/A', CONCAT({$this->table}.payment_terms, ' DAYS')) AS payment_terms,
+            IF(UPPER({$this->table}.others_payment_mode) = 'OTHERS', CONCAT('Others - ', {$this->table}.payment_mode), {$this->table}.payment_mode) AS payment_mode,
+            {$this->table}.product,
+            {$this->table}.bank_name,
+            {$this->table}.bank_account_name,
+            {$this->table}.bank_number,
+            {$this->table}.remarks,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
+        ";
+    }
+
     // Get suppliers
     public function getSuppliers($id = null, $columns = '')
     {
@@ -112,11 +137,21 @@ class SuppliersModel extends Model
         return $id ? $builder->find($id) : $builder->findAll();        
     }
 
+    // Join with supplier_brands
+    public function joinSupplierBrand($builder = null, $model = null, $type = 'left')
+    {
+        $builder    = $builder ?? $this;
+        $model      = $model ?? new SupplierBrandsModel();
+        $builder->join($model->table, "{$model->table}.id = {$this->table}.supplier_id", $type);
+        return $this;
+    }
+
     public function noticeTable($request)
     {
-        $builder    = $this->db->table($this->view);
-        $builder->select('*');
+        $builder    = $this->db->table($this->table);
+        $builder->select($this->dtColumns());
 
+        $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
         $this->filterParam($request, $builder, 'supplier_type', 'supplier_type');
         $this->filterParam($request, $builder, 'payment_terms', 'payment_terms');
         $this->filterParam($request, $builder, 'payment_mode', 'payment_mode');
@@ -145,40 +180,6 @@ class SuppliersModel extends Model
             EOF;
 
             return dt_buttons_dropdown($buttons);
-        };
-        return $closureFun;
-    }
-
-    public function supplierType() 
-    {
-        $closureFun = function($row) {
-
-            if ($row['supplier_type'] == 'Others') {
-                return $row['supplier_type'].' - '.$row['others_supplier_type'];
-            } else {
-                return $row['supplier_type'];
-            }
-        };
-        return $closureFun;
-    }
-
-    public function paymentTerms() 
-    {
-        $closureFun = function($row) {
-            return get_payment_terms($row['payment_terms']);
-        };
-        return $closureFun;
-    }
-
-    public function paymentMode() 
-    {
-        $closureFun = function($row) {
-
-            if ($row['payment_mode'] == 'Others') {
-                return $row['payment_mode'].' - '.$row['others_payment_mode'];
-            } else {
-                return $row['payment_mode'];
-            }
         };
         return $closureFun;
     }

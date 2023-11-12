@@ -155,14 +155,13 @@ class RequestPurchaseFormModel extends Model
         ";
 
         if ($date_format) {
-            $datetime_format = dt_sql_datetime_format();
             $columns .= ",
-                DATE_FORMAT({$this->table}.date_needed, '%b %e, %Y') AS date_needed_formatted,
-                DATE_FORMAT({$this->table}.created_at, '{$datetime_format}') AS created_at_formatted,
-                DATE_FORMAT({$this->table}.accepted_at, '{$datetime_format}') AS accepted_at_formatted,
-                DATE_FORMAT({$this->table}.rejected_at, '{$datetime_format}') AS rejected_at_formatted,
-                DATE_FORMAT({$this->table}.reviewed_at, '{$datetime_format}') AS reviewed_at_formatted,
-                DATE_FORMAT({$this->table}.received_at, '{$datetime_format}') AS received_at_formatted
+                ".dt_sql_date_format("{$this->table}.date_needed") ." AS date_needed_formatted,
+                ".dt_sql_datetime_format("{$this->table}.created_at") ." AS created_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.accepted_at") ." AS accepted_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.rejected_at") ." AS rejected_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.reviewed_at") ." AS reviewed_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.received_at") ." AS received_at_formatted
             ";
         }
 
@@ -180,8 +179,9 @@ class RequestPurchaseFormModel extends Model
     }
 
     // Join with rpf_view
-    public function joinView($builder)
+    public function joinView($builder = null)
     {
+        $builder = $builder ? $builder : $this;
         $builder->join($this->view, "{$this->table}.id = {$this->view}.rpf_id");
         return $this;
     }

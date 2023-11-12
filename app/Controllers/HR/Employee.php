@@ -5,11 +5,15 @@ namespace App\Controllers\HR;
 use App\Controllers\BaseController;
 use App\Models\EmployeeModel;
 use App\Models\AccountModel;
-use Exception;
+use App\Traits\ExportTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class Employee extends BaseController
 {
+    /* Declare trait here to use */
+    use ExportTrait, HRTrait;
+
     /**
      * Use to initialize model class
      * @var object
@@ -104,62 +108,11 @@ class Employee extends BaseController
                 'course',
             ])
             ->setDefaultOrder('employee_name', 'asc')
-            ->setOrder([
-                null,
-                'employee_id',
-                'employee_name', 
-                'address', 
-                'gender', 
-                'civil_status', 
-                'date_of_birth', 
-                'place_of_birth', 
-                'position', 
-                'employment_status', 
-                'date_hired', 
-                'contact_number', 
-                'email_address', 
-                'sss_no', 
-                'tin_no', 
-                'philhealth_no', 
-                'pag_ibig_no', 
-                'educational_attainment', 
-                'course', 
-                'emergency_name', 
-                'emergency_contact_no', 
-                'emergency_address', 
-                'name_of_spouse', 
-                'spouse_contact_no', 
-                'no_of_children', 
-                'spouse_address'
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                'employee_id',
-                'employee_name', 
-                'address', 
-                'gender', 
-                'civil_status', 
-                'date_of_birth', 
-                'place_of_birth', 
-                'position', 
-                'employment_status', 
-                'date_hired', 
-                'contact_number', 
-                'email_address', 
-                'sss_no', 
-                'tin_no', 
-                'philhealth_no', 
-                'pag_ibig_no', 
-                'educational_attainment', 
-                'course', 
-                'emergency_name', 
-                'emergency_contact_no', 
-                'emergency_address', 
-                'name_of_spouse', 
-                'spouse_contact_no', 
-                'no_of_children', 
-                'spouse_address'
-            ]);
+            ->setOrder(array_merge([null], $this->_model->dtColumns))
+            ->setOutput(array_merge(
+                [$this->_model->buttons($this->_permissions)], 
+                $this->_model->dtColumns
+            ));
 
         return $table->getDatatable();
     }
@@ -263,5 +216,51 @@ class Employee extends BaseController
         );
 
         return $response;
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $builder    = $this->_model->db->table($this->_model->view);
+        $builder->select($this->_model->dtColumns);
+        $builder->orderBy('employee_name', 'ASC');
+
+        $data       = $builder->get()->getResultArray();
+        $header     = [
+            'Employee ID',
+            'Employee Name',
+            'Address',
+            'Gender',
+            'Civil Status',
+            'Birthdate',
+            'Birthplace',
+            'Position',
+            'Employment Status',
+            'Date Hired',
+            'Date Resigned',
+            'Contact Number',
+            'Email Address',
+            'SSS Number',
+            'TIN Number',
+            'PhilHealth Number',
+            'PAGIBIG Number',
+            'Educational Attainment',
+            'Course',
+            'Emergency Name',
+            'Emergency Contact Number',
+            'Emergency Address',
+            'Spouse Name',
+            'Spouse Contact Number',
+            'No. of Children',
+            'Spouse Address',
+            'Created At',
+        ];
+        $filename   = 'Employees Masterlist';
+
+        $this->exportToCsv($data, $header, $filename);
     }
 }

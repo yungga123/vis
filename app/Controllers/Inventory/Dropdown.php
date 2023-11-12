@@ -45,7 +45,7 @@ class Dropdown extends BaseController
     }
 
     /**
-     * Display the employee view
+     * Display the view
      *
      * @return view
      */
@@ -155,7 +155,12 @@ class Dropdown extends BaseController
                     $result = $this->_model->getOtherCategoryTypes($type);
                 } else {
                     $is_all = $type == 'CATEGORY' ? true : false;
-                    $columns = 'dropdown_id, dropdown, dropdown_type, other_category_type';
+                    $columns = '
+                        dropdown_id, 
+                        '.dt_sql_trim('dropdown', 'dropdown').', 
+                        '.dt_sql_trim('dropdown_type', 'dropdown_type').', 
+                        '.dt_sql_trim('other_category_type', 'other_category_type').'
+                    ';
                     $result = $this->_model->getDropdowns($type, $columns, $is_all);
                 }
 
@@ -237,7 +242,7 @@ class Dropdown extends BaseController
             $data,
             function($data) {
                 $id     = $this->request->getVar('id');
-                $fields = 'dropdown_id, dropdown, dropdown_type, parent_id';
+                $fields = $this->_model->defaultColumns();
                 $result = $this->_model->select($fields)->find($id);
 
                 $data['data'] = $result;

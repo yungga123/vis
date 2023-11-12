@@ -55,7 +55,8 @@
                         <th>Contact Number</th>
                         <th>Project</th>
                         <th>Amount</th>
-                        <th>Qtn Number</th>
+                        <th>Quotation Number</th>
+                        <th>Quotation Type</th>
                         <th>Forecast Close Date</th>
                         <th>Min. Forecast</th>
                         <th>Max Forecast</th>
@@ -65,13 +66,19 @@
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Duration</th>
+                        <th>Created By</th>
+                        <th>Created At</th>
                     </tr>
                 </thead>
             </table>
         </div>
         <div class="card-footer">
-            <div class="float-right">
-                <a class="btn btn-success" href="<?= url_to('tasklead.booked.home') ?>">View Booked Taskleads</a>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <a href="<?= url_to('tasklead.export'); ?>" class="btn btn-success">Export All Task Leads Except Booked</a>
+                    <a href="<?= url_to('tasklead.export') . '?booked=true'; ?>" class="btn btn-success">Export All Booked Task Leads</a>
+                </div>
+                <a href="<?= url_to('tasklead.booked.home') ?>" class="btn btn-success">View Booked Task Leads</a>
             </div>
         </div>
     </div>

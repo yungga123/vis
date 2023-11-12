@@ -4,10 +4,15 @@ namespace App\Controllers\Clients;
 
 use App\Controllers\BaseController;
 use App\Models\CustomerModel;
+use App\Traits\ExportTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
-class Customers extends BaseController
+class Customer extends BaseController
 {
+    /* Declare trait here to use */
+    use ExportTrait, HRTrait;
+
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -61,7 +66,7 @@ class Customers extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['customer/index.js', 'customer/branch.js'];
+        $data['custom_js']      = ['customer/index.js', 'customer/branch.js', 'dt_filter.js'];
         $data['btn_add_lbl']    = 'Add New Client';
         $data['routes']         = json_encode([
             'customer' => [
@@ -86,9 +91,24 @@ class Customers extends BaseController
      */
     public function list()
     {
-        $table  = new TablesIgniter();
+        $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
+        $fields     = [            
+            'id',
+            'new_client',
+            'name',
+            'type',
+            'contact_person',
+            'contact_number',
+            'email_address',
+            'address',
+            'source',
+            'notes',
+            'referred_by',
+            'created_by',
+            'created_at'
+        ];
 
         $table->setTable($builder)
             ->setSearch([
@@ -100,38 +120,13 @@ class Customers extends BaseController
                 "{$this->_model->table}.subdivision",
             ])
             ->setDefaultOrder("id",'desc')
-            ->setOrder([
-                null,
-                'new_client',
-                'type',
-                'id',
-                'name',
-                'contact_person',
-                'contact_number',
-                'email_address',
-                'address',
-                'source',
-                'notes',
-                'referred_by',
-                'created_by',
-                'created_at'
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                'new_client',
-                'type',
-                'id',
-                'name',
-                'contact_person',
-                'contact_number',
-                'email_address',
-                'address',
-                'source',
-                'notes',
-                'referred_by',
-                'created_by',
-                'created_at'
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(
+                array_merge(
+                    [$this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
         
         return $table->getDatatable();
 
@@ -185,7 +180,8 @@ class Customers extends BaseController
                 $id             = $this->request->getVar('id');
                 $data['data']   = $this->_model->select($this->_model->allowedFields)->find($id);;
                 return $data;
-            }
+            },
+            false
         );
 
         return $response;
@@ -216,5 +212,54 @@ class Customers extends BaseController
         );
 
         return $response;
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $address    = dt_sql_concat_client_address($this->_model->table);
+        $columns    = "
+            {$this->_model->table}.id,
+            IF({$this->_model->table}.forecast = 0, 'NO', 'YES') AS new_client,
+            {$this->_model->table}.name,
+            {$this->_model->table}.type,
+            {$this->_model->table}.contact_person,
+            {$this->_model->table}.contact_number,
+            {$this->_model->table}.email_address,
+            {$address},
+            {$this->_model->table}.source, 
+            {$this->_model->table}.notes,
+            {$this->_model->table}.referred_by,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
+        ";
+        $builder    = $this->_model->select($columns);
+
+        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+        $builder->where("deleted_at IS NULL")->orderBy('id', 'DESC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Client ID',
+            'New Client?',
+            'Client Name',
+            'Client Type',
+            'Contact Person',
+            'Contact Number',
+            'Email Address',
+            'Address',
+            'Source',
+            'Notes',
+            'Referred By',
+            'Created By',
+            'Created At',
+        ];
+        $filename   = 'Clients Masterlist';
+
+        $this->exportToCsv($data, $header, $filename);
     }
 }

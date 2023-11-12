@@ -5,15 +5,18 @@ namespace App\Controllers\Purchasing;
 use App\Controllers\BaseController;
 use App\Models\RequestPurchaseFormModel;
 use App\Models\RPFItemModel;
+use App\Models\InventoryModel;
+use App\Models\SuppliersModel;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
+use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class RequestPurchaseForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait, GeneralInfoTrait, CommonTrait;
+    use InventoryTrait, GeneralInfoTrait, CommonTrait, ExportTrait;
 
     /**
      * Use to initialize corresponding model
@@ -102,45 +105,39 @@ class RequestPurchaseForm extends BaseController
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
+        $fields     = [
+            'id',
+            'date_needed_formatted',
+            'created_by_name',
+            'created_at_formatted',
+            'accepted_by_name',
+            'accepted_at_formatted',
+            'reviewed_by_name',
+            'reviewed_at_formatted',
+            'received_by_name',
+            'received_at_formatted',
+            'rejected_by_name',
+            'rejected_at_formatted',
+        ];
 
         $table->setTable($builder)
-            ->setSearch([
-                'status',
-            ])
-            ->setOrder([
-                null,
-                null,
-                null,
-                'id',
-                'date_needed_formatted',
-                'created_by_name',
-                'created_at_formatted',
-                'accepted_by_name',
-                'accepted_at_formatted',
-                'reviewed_by_name',
-                'reviewed_at_formatted',
-                'received_by_name',
-                'received_at_formatted',
-                'rejected_by_name',
-                'rejected_at_formatted',
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                $this->_model->dtViewRpfItems(),
-                $this->_model->dtRpfStatusFormat(),
-                'id',
-                'date_needed_formatted',
-                'created_by_name',
-                'created_at_formatted',
-                'accepted_by_name',
-                'accepted_at_formatted',
-                'reviewed_by_name',
-                'reviewed_at_formatted',
-                'received_by_name',
-                'received_at_formatted',
-                'rejected_by_name',
-                'rejected_at_formatted',
-            ]);
+            ->setSearch(['status'])
+            ->setOrder(
+                array_merge(
+                    [null, null, null], 
+                    $fields
+                )
+            )
+            ->setOutput(
+                array_merge(
+                    [
+                        $this->_model->buttons($this->_permissions),
+                        $this->_model->dtViewRpfItems(),
+                        $this->_model->dtRpfStatusFormat(),
+                    ], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -326,5 +323,113 @@ class RequestPurchaseForm extends BaseController
         $data['company_logo']   = $this->getGeneralInfo('company_logo');
 
         return view('purchasing/rpf/print', $data);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $columns    = "
+            UPPER({$this->_model->table}.status) AS status,
+            {$this->_model->table}.id,
+            ".dt_sql_date_format("{$this->_model->table}.date_needed")." AS date_needed,
+            {$this->_model->view}.created_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at,
+            {$this->_model->view}.accepted_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.accepted_at")." AS accepted_at,
+            {$this->_model->view}.rejected_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.rejected_at")." AS rejected_at,
+            {$this->_model->view}.reviewed_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.reviewed_at")." AS reviewed_at,
+            {$this->_model->view}.received_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.received_at")." AS received_at
+        ";
+        $data       = $this->_model->getRequestPurchaseForms(null, true, $columns);
+        $header     = [
+            'Status',
+            'RPF #',
+            'Date Needed',
+            'Requested By',
+            'Requested At',
+            'Accepted By',
+            'Accepted At',
+            'Reviewed By',
+            'Reviewed At',
+            'Received By',
+            'Received At',
+            'Rejected By',
+            'Rejected At'
+        ];
+        $filename   = 'Request to Purchase Forms';
+
+        $this->exportToCsv($data, $header, $filename);
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function exportItems() 
+    {
+        $rpfItemModel   = new RPFItemModel();
+        $inventoryModel = new InventoryModel();
+        $columns        = "
+            {$rpfItemModel->table}.rpf_id,
+            {$rpfItemModel->table}.inventory_id,
+            {$inventoryModel->view}.supplier_name,
+            {$inventoryModel->view}.brand,
+            {$inventoryModel->table}.item_model,
+            {$inventoryModel->table}.item_description,
+            {$inventoryModel->view}.size,
+            {$inventoryModel->view}.unit,
+            {$inventoryModel->table}.stocks,
+            {$rpfItemModel->table}.quantity_in,
+            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
+            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_price,
+            {$rpfItemModel->table}.received_q,
+            ".dt_sql_date_format("{$rpfItemModel->table}.received_date")." AS received_date,
+            UPPER({$this->_model->table}.status) AS status,
+            {$rpfItemModel->table}.purpose,
+            {$this->_model->view}.created_by_name,
+            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
+        ";
+        $builder        = $rpfItemModel->select($columns);
+
+        $rpfItemModel->join($this->_model->table, "{$this->_model->table}.id = {$rpfItemModel->table}.rpf_id", 'left');
+        $rpfItemModel->join($this->_model->view, "{$this->_model->view}.rpf_id = {$rpfItemModel->table}.rpf_id", 'left');
+        $rpfItemModel->join($inventoryModel->table, "{$inventoryModel->table}.id = {$rpfItemModel->table}.inventory_id", 'left');
+        $rpfItemModel->join($inventoryModel->view, "{$inventoryModel->table}.id = {$inventoryModel->view}.inventory_id", 'left');
+
+        $builder->where("{$this->_model->table}.deleted_at", null);
+        $builder->orderBy("{$rpfItemModel->table}.rpf_id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'RPF #',
+            'Item #',
+            'Supplier',
+            'Item Brand',
+            'Item Model',
+            'Item Description',
+            'Item Size',
+            'Item Unit',
+            'Current Stocks',
+            'Quantity In',
+            'Item Price',
+            'Total Price',
+            'Received Qty',
+            'Received Date',
+            'Status',
+            'Purpose',
+            'Created By',
+            'Created At',
+        ];
+        $filename   = 'RPF Items';
+
+        $this->exportToCsv($data, $header, $filename);
     }
 }

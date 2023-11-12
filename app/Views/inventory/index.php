@@ -10,13 +10,13 @@
                             <label class="input-group-text">Filter by</label>
                             <span class="input-group-text">Category</span>
                         </div>
-                        <select class="custom-select select2" id="filter_category" data-placeholder="Select a Category" multiple>
+                        <select class="custom-select select2" id="filter_category" data-placeholder="Select a category" multiple>
                             <?= $categories ?>
                         </select>
                         <div class="input-group-prepend ml-1">
                             <span class="input-group-text">Dropdowns</span>
                         </div>
-                        <select class="custom-select select2" id="filter_sub_category" data-placeholder="Select a Sub-Dropdowns" multiple>
+                        <select class="custom-select select2" id="filter_sub_category" data-placeholder="Select a sub-dropdowns" multiple>
                         </select>
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
@@ -28,7 +28,7 @@
                     <table id="inventory_table" class="table table-hover table-striped nowrap" width="100%">
                         <thead class="nowrap">
                             <tr> 
-                                <th>Action</th>
+                                <th>Actions</th>
                                 <th>Item #</th>
                                 <th>Supplier</th>
                                 <th>Category</th>
@@ -36,11 +36,15 @@
                                 <th>Item Brand</th>
                                 <th>Item Model</th>
                                 <th>Item Description</th>
-                                <th>Stocks</th>
-                                <th>Total</th>
                                 <th>Item Size</th>
-                                <th>Unit</th>
+                                <th>Item Unit</th>
+                                <th>Quantity</th>
+                                <th>Dealer's Price</th>
+                                <th>Total Price</th>
+                                <th>Retail Price</th>
+                                <th>Project Price</th>
                                 <th>Date Purchase</th>
+                                <th>Location</th>
                                 <th>Encoder</th>
                                 <th>Encoded At</th>
                             </tr>
@@ -48,8 +52,15 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <a href="<?= url_to('inventory.dropdown.home'); ?>" class="btn btn-success">Inventory Dropdowns</a>
-                    <a href="<?= url_to('inventory.logs.home'); ?>" class="btn btn-success">Inventory Logs</a>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a href="<?= url_to('inventory.dropdown.home'); ?>" class="btn btn-success">Inventory Dropdowns</a>
+                            <a href="<?= url_to('inventory.logs.home'); ?>" class="btn btn-success">Inventory Logs</a>
+                        </div>
+                        <div>
+                            <a href="<?= url_to('inventory.export'); ?>" class="btn btn-success">Export All Inventory Items</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -225,8 +225,47 @@ class EmployeeModel extends Model
     protected $beforeDelete   = ['checkRecordIfOneself'];
     protected $afterDelete    = [];
 
+    /* Custom variables */
+    // For DataTable columns
+    protected $dtColumns      = [
+        'employee_id',
+        'employee_name', 
+        'address', 
+        'gender', 
+        'civil_status', 
+        'date_of_birth', 
+        'place_of_birth', 
+        'position', 
+        'employment_status', 
+        'date_hired', 
+        'date_resigned', 
+        'contact_number', 
+        'email_address', 
+        'sss_no', 
+        'tin_no', 
+        'philhealth_no', 
+        'pag_ibig_no', 
+        'educational_attainment', 
+        'course', 
+        'emergency_name', 
+        'emergency_contact_no', 
+        'emergency_address', 
+        'name_of_spouse', 
+        'spouse_contact_no', 
+        'no_of_children', 
+        'spouse_address',
+        'created_at'
+    ];
+
+    // Filter for not including resigned employees
+    public function withOutResigned($builder) 
+    {
+        $builder->where("date_resigned = '' OR IS NULL");
+        return $this;
+    }
+
     // Check user trying to delete own record
-    protected function checkRecordIfOneself($data) 
+    public function checkRecordIfOneself($data) 
     {
         $id     = $data['id'];
         $result = $this->getEmployees($id, session('employee_id'), 'employee_id');
@@ -263,7 +302,6 @@ class EmployeeModel extends Model
     public function noticeTable() 
     {
         $builder = $this->db->table($this->view);
-        $builder->select('*');
 
         if (! is_admin()) {
             $builder->where('employee_id !=', DEVELOPER_ACCOUNT);

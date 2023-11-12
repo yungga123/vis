@@ -19,6 +19,7 @@
 								<th>Position</th>
 								<th>Employment Status</th>
 								<th>Date Hired</th>
+								<th>Date Resigned</th>
 								<th>Contact Number</th>
 								<th>Email Address</th>
 								<th>SSS Number</th>
@@ -27,9 +28,20 @@
 								<th>PAGIBIG Number</th>
 								<th>Educational Attainment</th>
 								<th>Course</th>
+								<th>Emergency Name</th>
+								<th>Emergency Contact Number</th>
+								<th>Emergency Address</th>
+								<th>Spouse Name</th>
+								<th>Spouse Contact Number</th>
+								<th>No. of Children</th>
+								<th>Spouse Address</th>
+								<th>Created At</th>
 							</tr>
 						</thead>
 					</table>
+				</div>
+				<div class="card-footer">
+					<a type="button" href="<?= url_to('employee.export') ?>" class="btn btn-success">Export All Employees</a>
 				</div>
 			</div>
 		</div>

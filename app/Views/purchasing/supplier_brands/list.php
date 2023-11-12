@@ -26,6 +26,8 @@
                                     <th>Tech Support</th>
                                     <th>Tech Contact Number</th>
                                     <th>Remarks</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
                                 </tr>
                             </thead>
                         </table>

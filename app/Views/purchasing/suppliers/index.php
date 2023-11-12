@@ -53,17 +53,23 @@
                                 <th>Contact Person</th>
                                 <th>Contact Number</th>
                                 <th>Viber</th>
+                                <th>Email Address</th>
                                 <th>Payment Terms</th>
                                 <th>Mode of Payment</th>
                                 <th>Product</th>
-                                <th>Email Address</th>
                                 <th>Bank Name</th>
                                 <th>Bank Account Name</th>
                                 <th>Bank Number</th>
                                 <th>Remarks</th>
+                                <th>Created By</th>
+                                <th>Created At</th>
                             </tr>
                         </thead>
                     </table>
+                </div>
+                <div class="card-footer">
+                    <a href="<?= url_to('suppliers.export'); ?>" class="btn btn-success">Export All Suppliers</a>
+                    <a href="<?= url_to('suppliers.brand.export'); ?>" class="btn btn-success">Export All Supplier Brands</a>
                 </div>
             </div>
         </div>

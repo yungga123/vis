@@ -25,13 +25,6 @@ $(document).ready(function () {
 	/* Load dataTable */
 	loadDataTable(table, router.customer.list, METHOD.POST);
 
-	$("#filterby").on("change", function () {
-		const options = {
-			params: { filter: $(this).val() },
-		};
-		loadDataTable(table, route, METHOD.POST, options, true);
-	});
-
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
@@ -109,26 +102,26 @@ function remove(id) {
 
 /* For filtering and reseting */
 function filterData(reset = false) {
-	let new_client = $("#filter_new_client").val();
-	let type = $("#filter_type").val();
-	let source = getSelect2Selection("#filter_source");
-
-	showLoading();
-	let options = {
-		params: {
-			new_client: new_client,
-			type: type,
-			source: source,
-		},
+	const new_client = $("#filter_new_client").val();
+	const type = $("#filter_type").val();
+	const source = getSelect2Selection("#filter_source");
+	const params = {
+		new_client: new_client,
+		type: type,
+		source: source,
 	};
+	const condition = !isEmpty(new_client) || !isEmpty(type) || !isEmpty(source);
 
-	if (reset) {
-		options.params = null;
-		setOptionValue("#filter_new_client");
-		setOptionValue("#filter_type");
-		clearSelect2Selection("#filter_source");
-	}
-
-	loadDataTable(table, router.customer.list, METHOD.POST, options, true);
-	closeLoading();
+	filterParam(
+		router.customer.list,
+		table,
+		params,
+		condition,
+		() => {
+			setOptionValue("#filter_new_client");
+			setOptionValue("#filter_type");
+			clearSelect2Selection("#filter_source");
+		},
+		reset
+	);
 }

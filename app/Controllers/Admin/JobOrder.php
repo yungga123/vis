@@ -4,10 +4,19 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\JobOrderModel;
+use App\Models\EmployeeModel;
+use App\Models\TaskLeadView;
+use App\Models\CustomerModel;
+use App\Models\CustomerBranchModel;
+use App\Traits\ExportTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class JobOrder extends BaseController
 {
+    /* Declare trait here to use */
+    use ExportTrait, HRTrait;
+
     /**
      * Use to initialize JobOrderModel class
      * @var object
@@ -95,77 +104,62 @@ class JobOrder extends BaseController
      */
     public function list()
     {
-        $table      = new TablesIgniter();
-        $request    = $this->request->getVar();
-        $builder    = $this->_model->noticeTable($request);
+        $tlViewModel            = new TaskLeadView();
+        $customerModel          = new CustomerModel();
+        $employeeModel          = new EmployeeModel();
+        $customerBranchModel    = new CustomerBranchModel();
+        $table                  = new TablesIgniter();
+        $request                = $this->request->getVar();
+        $builder                = $this->_model->noticeTable($request);
+        $fields                 = [
+            'id',
+            'tasklead_id',
+            'is_manual',
+            'quotation',
+            'tasklead_type',
+            'client',
+            'customer_branch_name',
+            'manager',
+            'work_type',
+            'date_requested',
+            'date_committed',
+            'date_reported',
+            'warranty',
+            'comments',
+            'remarks',
+            'created_by',
+            'created_at',
+            'accepted_by',
+            'accepted_at',
+            'filed_by',
+            'filed_at',
+            'discarded_by',
+            'discarded_at',
+            'reverted_by',
+            'reverted_at',
+        ];
 
         $table->setTable($builder)
             ->setSearch([
-                "{$this->_model->tableEmployees}.firstname",
-                "{$this->_model->tableEmployees}.lastname",
-                "{$this->_model->tableJoined}.customer_name",
-                "{$this->_model->tableCustomers}.name",
-                "{$this->_model->tableJoined}.quotation_num",
+                "{$employeeModel->table}.firstname",
+                "{$employeeModel->table}.lastname",
+                "{$tlViewModel->table}.customer_name",
+                "{$customerModel->table}.name",
+                "{$tlViewModel->table}.quotation_num",
                 "{$this->_model->table}.manual_quotation",
-                "{$this->_model->tableCustomerBranches}.branch_name",
-                "{$this->_model->tableJoined}.branch_name",
+                "{$customerBranchModel->table}.branch_name",
+                "{$tlViewModel->table}.branch_name",
             ])
-            ->setOrder([
-                null,
-                null,
-                'id',
-                'tasklead_id',
-                'quotation',
-                'tasklead_type',
-                'client',
-                'customer_branch_name',
-                'manager',
-                'work_type',
-                'date_requested',
-                'date_committed',
-                'date_reported',
-                'warranty',
-                'comments',
-                'remarks',
-                'created_by_formatted',
-                'created_at_formatted',
-                'accepted_by_formatted',
-                'accepted_at_formatted',
-                'filed_by_formatted',
-                'filed_at_formatted',
-                'discarded_by_formatted',
-                'discarded_at_formatted',
-                'reverted_by_formatted',
-                'reverted_at_formatted',
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                $this->_model->dtJOStatusFormat(),
-                'id',
-                'tasklead_id',
-                'quotation',
-                'tasklead_type',
-                'client',
-                'customer_branch_name',
-                'manager',
-                'work_type',
-                'date_requested',
-                'date_committed',
-                'date_reported',
-                'warranty',
-                'comments',
-                'remarks',
-                'created_by_formatted',
-                'created_at_formatted',
-                'accepted_by_formatted',
-                'accepted_at_formatted',
-                'filed_by_formatted',
-                'filed_at_formatted',
-                'discarded_by_formatted',
-                'discarded_at_formatted',
-                'reverted_by_formatted',
-                'reverted_at_formatted',
-            ]);
+            ->setOrder(array_merge([null, null], $fields))
+            ->setOutput(
+                array_merge(
+                    [
+                        $this->_model->buttons($this->_permissions),
+                        $this->_model->dtJOStatusFormat(),
+                    ], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -246,12 +240,13 @@ class JobOrder extends BaseController
                 $id = $this->request->getVar('id');
 
                 if ($this->request->getVar('status')) {
-                    $columns    = "
+                    $tlViewModel    = new TaskLeadView();
+                    $columns        = "
                         {$this->_model->table}.remarks,
                         {$this->_model->table}.date_committed,
                         {$this->_model->table}.is_manual,
-                        IF({$this->_model->table}.is_manual = 0, {$this->_model->tableJoined}.tasklead_type, {$this->_model->table}.manual_quotation_type) AS type,
-                        {$this->_model->tableJoined}.employee_id,
+                        IF({$this->_model->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->_model->table}.manual_quotation_type) AS type,
+                        {$tlViewModel->table}.employee_id,
                     ";                
                     $record     = $this->_model->getJobOrders($id, $columns);
                 } else {
@@ -336,5 +331,52 @@ class JobOrder extends BaseController
         );
 
         return $response;
+    }
+
+    /**
+     * For exporting data to csv
+     *
+     * @return void
+     */
+    public function export() 
+    {
+        $builder        = $this->_model->select($this->_model->dtColumns());
+
+        $this->_model->joinWithOtherTables($builder, true);
+        $builder->orderBy("{$this->_model->table}.id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Status',
+            'JO #',
+            'Task Lead #',
+            'Is Manual Quotation',
+            'Quotation',
+            'Quotation Type',
+            'Client Type',
+            'Client',
+            'Client Branch',
+            'Manager',
+            'Work Type',
+            'Date Requested',
+            'Date Committed',
+            'Date Reported',
+            'Warranty',
+            'Comments',
+            'Remarks',
+            'Requested By',
+            'Requested At',
+            'Accepted By',
+            'Accepted At',
+            'Filed By',
+            'Filed At',
+            'Discarded By',
+            'Discarded At',
+            'Reverted By',
+            'Reverted At'
+        ];
+        $filename   = 'Job Orders Masterlist';
+
+        $this->exportToCsv($data, $header, $filename);
     }
 }

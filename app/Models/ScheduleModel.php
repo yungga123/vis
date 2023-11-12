@@ -66,7 +66,7 @@ class ScheduleModel extends Model
     protected $afterDelete    = [];
 
     // For fetching schedules
-    public function getSchedules($id = false, $columns = '*')
+    public function getSchedules($id = null, $columns = '*')
     {
         $builder = $this->select($columns);
         $builder->where("{$this->table}.deleted_at IS NULL");

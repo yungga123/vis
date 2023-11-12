@@ -42,6 +42,10 @@
                         </thead>
                     </table>
                 </div>
+                <div class="card-footer">
+                    <a href="<?= url_to('purchase_order.export'); ?>" class="btn btn-success">Export All POs</a>
+                    <a href="<?= url_to('purchase_order.export_items'); ?>" class="btn btn-success">Export All PO Items</a>
+                </div>
             </div>
         </div>
     </div>

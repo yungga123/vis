@@ -25,7 +25,7 @@ trait InventoryTrait
         $fields     = $fields ? $fields : $model->selectedColumns(true);
         $builder    = $model->select($fields);
 
-        $builder->_join($builder);
+        $builder->joinWithOtherTables($builder);
         $builder->whereIn("{$table}.status", ['accepted', 'filed']);
 
         if (! empty($q)) {

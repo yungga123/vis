@@ -75,7 +75,7 @@ if (! function_exists('get_jo_status'))
 
         $arr = $pass_tense ? $options_pt : $options;
 
-        return $param ? $arr[$param] : $arr;
+        return $param ? $arr[strtolower($param)] : $arr;
 	}
 }
 
@@ -105,7 +105,7 @@ if (! function_exists('set_jo_status'))
             return $arr;
         }
 
-        return $options[$param];
+        return $options[strtolower($param)];
 	}
 }
 
@@ -139,7 +139,7 @@ if (! function_exists('get_quotation_type'))
             'Q3' => 'Supplies',
         ];
 
-        return $param ? $options[$param] : $options;
+        return $param ? $options[strtoupper($param)] : $options;
 	}
 }
 
@@ -158,7 +158,7 @@ if (! function_exists('get_quotation_color'))
             'R' => 'Red',
         ];
 
-        return $param ? $options[$param] : $options;
+        return $param ? $options[strtoupper($param)] : $options;
 	}
 }
 
@@ -255,7 +255,7 @@ if (! function_exists('get_prf_status'))
 
         $arr = $pass_tense ? $options_pt : $options;
 
-        return $param ? $arr[$param] : $arr;
+        return $param ? $arr[strtolower($param)] : $arr;
 	}
 }
 
@@ -286,7 +286,7 @@ if (! function_exists('set_prf_status'))
             return $arr;
         }
 
-        return $options[$param];
+        return $options[strtolower($param)];
 	}
 }
 
@@ -315,7 +315,7 @@ if (! function_exists('get_rpf_status'))
 
         $arr = $pass_tense ? $options_pt : $options;
 
-        return $param ? $arr[$param] : $arr;
+        return $param ? $arr[strtolower($param)] : $arr;
 	}
 }
 
@@ -347,7 +347,7 @@ if (! function_exists('set_rpf_status'))
             return $arr;
         }
 
-        return $options[$param];
+        return $options[strtolower($param)];
 	}
 }
 
@@ -391,7 +391,7 @@ if (! function_exists('get_po_status'))
 
         $arr = $pass_tense ? $options_pt : $options;
 
-        return $param ? $arr[$param] : $arr;
+        return $param ? $arr[strtolower($param)] : $arr;
 	}
 }
 
@@ -406,8 +406,8 @@ if (! function_exists('set_po_status'))
             'pending'   => 'pending',
             'approve'   => 'approved',
             'approved'  => 'approved',
-            'file'      => 'fileed',
-            'fileed'    => 'fileed',
+            'file'      => 'filed',
+            'filed'     => 'filed',
         ];
 
         if (is_array($param)) {
@@ -419,7 +419,7 @@ if (! function_exists('set_po_status'))
             return $arr;
         }
 
-        return $options[$param];
+        return $options[strtolower($param)];
 	}
 }
 

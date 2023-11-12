@@ -88,7 +88,7 @@ class TaskLeadModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = [];
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
@@ -97,20 +97,64 @@ class TaskLeadModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Custom variable(s)
+    // DataTable default columns     
+    protected $dtColumns      = [
+        'id',
+        'employee_name',
+        'quarter',
+        'status',
+        'status_percent',
+        'customer_type',
+        'customer_name',
+        'branch_name',
+        'contact_number',
+        'project',
+        'project_amount',
+        'quotation_num',
+        'tasklead_type',
+        'forecast_close_date',
+        'min_forecast_date',
+        'max_forecast_date',
+        'status1',
+        'remark_next_step',
+        'close_deal_date',
+        'project_start_date',
+        'project_finish_date',
+        'project_duration',
+        'created_by',
+        'created_at',
+    ];
+    protected $booked         = '100.00%';
+
+    // Set the value for created_by before inserting
+    protected function setCreatedBy(array $data)
+    {
+        $data['data']['created_by'] = session('username');
+        return $data;
+    }
+
     public function countRecords($param = null)
     {
         $builder = $this->where('deleted_at IS NULL');
 
         if (! $param) return $builder->countAllResults();
         return $builder->where('status', strtolower($param))->countAllResults();
-        
+    }
+
+    public function dtGetTaskLeads($booked = false)
+    {
+        $builder    = $this->db->table($this->view);
+        $builder->select($this->dtColumns);
+
+        if ($booked) $builder->where('status', $this->booked);
+        return $builder;
     }
 
     public function noticeTable($request)
     {
-        $booked     = '100.00%';
-        $builder    = $this->db->table($this->view);
-        $builder->select('*')->where('status !=', $booked);
+        $builder    = $this->dtGetTaskLeads();
+        $builder->where('status !=', $this->booked);
 
         if (is_admin() || is_executive() || is_manager()) {
         } else {
@@ -121,14 +165,12 @@ class TaskLeadModel extends Model
         $this->filterParam($request, $builder, 'customer_type', 'client_type');
         $this->filterParam($request, $builder, 'quarter', 'quarter');
 
-        $builder->where('deleted_at IS NULL');
         return $builder;
     }
 
     public function noticeTableExistingCustomer()
     {
         $builder = $this->db->table('task_lead_existing_customer');
-        $builder->select('*');
         return $builder;
     }
 
@@ -136,27 +178,27 @@ class TaskLeadModel extends Model
     public function noticeTableWhere($employee_id)
     {
         $builder = $this->db->table('task_lead');
-        $builder->select('*')->where('employee_id',$employee_id);
+        $builder->where('employee_id', $employee_id);
         return $builder;
     }
 
     public function noticeTableWhereExistingCustomer($employee_id)
     {
         $builder = $this->db->table('task_lead_existing_customer');
-        $builder->select('*')->where('employee_id',$employee_id);
+        $builder->where('employee_id', $employee_id);
         return $builder;
     }
 
     public function noticeTableBooked()
     {
         $builder = $this->db->table('task_lead_booked');
-        $builder->select('*');
+        $builder;
         return $builder;
     }
     public function noticeTableBookedWhere($employee_id)
     {
         $builder = $this->db->table('task_lead_booked');
-        $builder->select('*')->where('employee_id',$employee_id);
+        $builder->where('employee_id', $employee_id);
         return $builder;
     }
 

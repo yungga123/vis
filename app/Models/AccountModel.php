@@ -59,7 +59,7 @@ class AccountModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['setCreatedByValue'];
     protected $afterInsert    = [];
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
@@ -67,6 +67,13 @@ class AccountModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = ['checkRecordIfOneself'];
     protected $afterDelete    = [];
+
+    // Set the value for created_by before inserting
+    protected function setCreatedByValue(array $data)
+    {
+        $data['data']['created_by'] = session('employee_id');
+        return $data;
+    }
 
     // Check user trying to delete own account
     protected function checkRecordIfOneself($data) 

@@ -905,16 +905,18 @@ function strCapitalize(str) {
 
 /* Transform string to upper case */
 function strUpper(str) {
-	return str.toUpperCase();
+	return isEmpty(str) ? "" : str.toUpperCase();
 }
 
 /* Transform string to lower case */
 function strLower(str) {
-	return str.toLowerCase();
+	return isEmpty(str) ? "" : str.toLowerCase();
 }
 
 /* Transform every words to upper case */
 function strUpperWords(str) {
+	if (isEmpty(str)) return "";
+
 	const arr = str.split(" ");
 
 	for (var i = 0; i < arr.length; i++) {
@@ -926,6 +928,8 @@ function strUpperWords(str) {
 
 /* Transform every words to lower case */
 function strUpperWords(str) {
+	if (isEmpty(str)) return "";
+
 	const arr = str.split(" ");
 
 	for (var i = 0; i < arr.length; i++) {
