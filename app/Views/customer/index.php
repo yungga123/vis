@@ -32,6 +32,7 @@
                         <table id="customer_table" class="table table-hover table-striped nowrap">
                             <thead class="nowrap">
                                 <tr>
+                                    <th></th>
                                     <th>Actions</th>
                                     <th>Client ID</th>
                                     <th>New Client?</th>

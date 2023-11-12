@@ -233,3 +233,15 @@ if (! function_exists('dt_sql_trim'))
         return "TRIM({$column}){$alias}";
     }
 }
+
+if (! function_exists('dt_empty_col'))
+{
+    /**
+     * DataTable empty first column - 
+     * will be used for responsive
+     */
+	function dt_empty_col(): callable
+    {
+        return function ($row) { return ''; };
+    }
+}

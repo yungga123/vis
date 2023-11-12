@@ -392,6 +392,40 @@ function formSubmit(
  * @param {object} options  - other options for the dataTable
  */
 function loadDataTable(table, route, type, options = {}, destroy = false) {
+	/* For responsive */
+	function dtResponsiveConfig() {
+		return {
+			details: {
+				renderer: function (api, rowIdx, columns) {
+					const data = dtFormatHiddenData(columns);
+					return data ? $("<div/>").append(data) : false;
+				},
+			},
+		};
+	}
+
+	function dtFormatHiddenData(columns) {
+		let row = "";
+		if (!isEmpty(columns)) {
+			$.each(columns, (i, col) => {
+				if (col.hidden) {
+					const data = isEmpty(col.data) ? "N/A" : col.data;
+					row += `
+						<tr data-dt-row="${col.rowIndex}" data-dt-column="${col.columnIndex}">
+							<td class="text-bold">${col.title}: </td>
+							<td>${data}</td>
+						</tr>
+					`;
+				}
+			});
+
+			row = `<table class="table table-sm">${row}</table>`;
+		}
+
+		return row;
+	}
+	/* -- end */
+
 	let columnDefs = [
 			inObject(options, "columnDefs")
 				? options.columnDefs
@@ -406,7 +440,7 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 				extend: "excel",
 				titleAttr: "Export to Excel",
 				exportOptions: {
-					columns: ":visible",
+					// columns: ":visible",
 				},
 				className: "mr-1 rounded btn-outline-success",
 				text: "<i class='fas fa-file-excel'></i> Excel",
@@ -416,7 +450,10 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 				className: "mr-1 rounded btn-outline-primary",
 				text: "<i class='fas fa-eye'></i> Column Visibility",
 			},
-		];
+		],
+		responsive = inObject(options, "responsive")
+			? options.responsive
+			: dtResponsiveConfig();
 
 	if (inObject(options, "buttons") && !isEmpty(options.buttons)) {
 		if (isArray(options.buttons)) {
@@ -426,7 +463,7 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 		} else buttons.push(options.buttons);
 	}
 
-	dtTable = $("#" + table).DataTable({
+	const dtTable = $("#" + table).DataTable({
 		dom: `
 			<'row px-3 pt-3'
 				<'col-sm-12 col-md-8'<'d-flex justify-content-start'lB>>
@@ -435,6 +472,7 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 			<'row'<'col-sm-12'tr>>
 			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
 		destroy: destroy,
+		responsive: responsive,
 		processing: true,
 		autoWidth: false,
 		columnDefs: columnDefs,
@@ -470,7 +508,11 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 		createdRow: function (row, data, dataIndex) {
 			if (data.length > 1) {
 				for (var i = 0; i < data.length; i++) {
-					if (isEmpty(data[i])) {
+					const condition = responsive
+						? i > 0 && isEmpty(data[i])
+						: isEmpty(data[i]);
+
+					if (condition) {
 						$(`td:eq(${i})`, row).text("N/A");
 					}
 				}

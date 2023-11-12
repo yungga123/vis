@@ -144,10 +144,10 @@ class Home extends BaseController
                 "{$this->_model->table}.item_description",
                 "{$this->_model->view}.supplier_name",
             ])
-            ->setOrder(array_merge([null], $fields))
+            ->setOrder(array_merge([null, null], $fields))
             ->setOutput(
                 array_merge(
-                    [$this->_model->buttons($this->_permissions)], 
+                    [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
                     $fields
                 )
             );

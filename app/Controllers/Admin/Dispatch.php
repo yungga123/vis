@@ -142,10 +142,10 @@ class Dispatch extends BaseController
                 "{$this->_model->view}.checked_by_name",
                 "{$customerModel->table}.name",
             ])
-            ->setOrder(array_merge([null], $fields, [null], $fields1))
+            ->setOrder(array_merge([null, null], $fields, [null], $fields1))
             ->setOutput(
                 array_merge(
-                    [$this->_model->buttons($this->_permissions)], 
+                    [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
                     $fields,
                     [$this->_model->serviceTypeFormat()], 
                     $fields1
