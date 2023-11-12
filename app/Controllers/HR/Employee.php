@@ -108,9 +108,9 @@ class Employee extends BaseController
                 'course',
             ])
             ->setDefaultOrder('employee_name', 'asc')
-            ->setOrder(array_merge([null], $this->_model->dtColumns))
+            ->setOrder(array_merge([null, null], $this->_model->dtColumns))
             ->setOutput(array_merge(
-                [$this->_model->buttons($this->_permissions)], 
+                [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
                 $this->_model->dtColumns
             ));
 

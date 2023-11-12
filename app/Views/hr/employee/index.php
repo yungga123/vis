@@ -8,6 +8,7 @@
 					<table id="employee_table" class="table table-hover table-striped nowrap" width="100%">
 						<thead class="nowrap">
 							<tr>
+								<th></th>
 								<th>Action</th>
 								<th>Employee ID</th>
 								<th>Employee Name</th>

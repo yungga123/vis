@@ -43,14 +43,15 @@
             <table id="tasklead_table" class="table table-hover table-striped nowrap">
                 <thead>
                     <tr>
+                        <th width="1%"></th>
                         <th>Action</th>
                         <th>Tasklead ID</th>
                         <th>Employee Name</th>
                         <th>Quarter</th>
                         <th>Percent</th>
                         <th>Status</th>
-                        <th>Client Type</th>
                         <th>Client Name</th>
+                        <th>Client Type</th>
                         <th>Branch Name</th>
                         <th>Contact Number</th>
                         <th>Project</th>
