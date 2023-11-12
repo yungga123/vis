@@ -28,6 +28,7 @@
                     <table id="inventory_table" class="table table-hover table-striped nowrap" width="100%">
                         <thead class="nowrap">
                             <tr> 
+                                <th></th>
                                 <th>Actions</th>
                                 <th>Item #</th>
                                 <th>Supplier</th>

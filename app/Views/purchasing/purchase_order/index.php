@@ -24,6 +24,7 @@
                     <table id="purchase_order_table" class="table table-hover table-striped nowrap" width="100%">
                         <thead class="nowrap">
                             <tr> 
+                                <th></th>
                                 <th>Actions</th>
                                 <th>Items</th>
                                 <th>Status</th>

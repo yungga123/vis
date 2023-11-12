@@ -8,6 +8,7 @@
                     <table id="dispatch_table" class="table table-hover table-striped nowrap">
                         <thead class="nowrap">
                             <tr>
+                                <th></th>
                                 <th>Actions</th>
                                 <th>Dispatch ID</th>
                                 <th>Schedule ID</th>

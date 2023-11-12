@@ -144,13 +144,14 @@ class ProjectRequestForm extends BaseController
             ])
             ->setOrder(
                 array_merge(
-                    [null, null, null], 
+                    [null, null, null, null], 
                     $fields
                 )
             )
             ->setOutput(
                 array_merge(
                     [
+                        dt_empty_col(),
                         $this->_model->buttons($this->_permissions),
                         $this->_model->dtViewPrfItems(),
                         $this->_model->dtPRFStatusFormat(),

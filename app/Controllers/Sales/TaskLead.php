@@ -134,10 +134,10 @@ class Tasklead extends BaseController
                 'remark_next_step',
             ])
             ->setDefaultOrder('id','desc')
-            ->setOrder(array_merge([null], $fields))
+            ->setOrder(array_merge([null, null], $fields))
             ->setOutput(
                 array_merge(
-                    [$this->_model->buttons($this->_permissions)], 
+                    [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
                     $fields
                 )
             );
@@ -310,8 +310,8 @@ class Tasklead extends BaseController
             'Quarter',
             'Percent',
             'Status',
-            'Client Type',
             'Client Name',
+            'Client Type',
             'Branch Name',
             'Contact Number',
             'Project',

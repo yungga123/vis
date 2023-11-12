@@ -45,6 +45,7 @@
                     <table id="supplier_table" class="table table-hover table-striped nowrap">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Actions</th>
                                 <th>Supplier ID</th>
                                 <th>Supplier Name</th>

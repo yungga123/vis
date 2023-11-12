@@ -54,6 +54,7 @@
                     <table id="job_order_table" class="table table-hover table-striped nowrap">
                         <thead class="nowrap">
                             <tr>
+                                <th></th>
                                 <th>Action</th>
                                 <th>Status</th>
                                 <th>JO #</th>
