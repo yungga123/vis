@@ -128,6 +128,32 @@ class Dispatch extends BaseController
             'dispatched_by',
             'dispatched_at',
         ];
+        $scheduleModel  = new ScheduleModel();
+        $customerModel  = new CustomerModel();
+        $table          = new TablesIgniter();
+        $request        = $this->request->getVar();
+        $builder        = $this->_model->noticeTable($request);
+        $fields         = [
+            'id',
+            'schedule_id',
+            'schedule',
+            'customer_name',
+            'customer_type',
+            'dispatch_date',
+            'dispatch_out',
+            'time_in',
+            'time_out',
+            'sr_number',
+            'technicians_formatted',
+        ];
+        $fields1        = [
+            'with_permit',
+            'comments',
+            'remarks',
+            'checked_by_name',
+            'dispatched_by',
+            'dispatched_at',
+        ];
 
         $table->setTable($builder)
             ->setSearch([
