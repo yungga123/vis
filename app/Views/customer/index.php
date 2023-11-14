@@ -62,5 +62,6 @@
 <?= $this->include('customer/form') ;?>
 <?= $this->include('customer/branch/index') ;?>
 <?= $this->include('customer/branch/form') ;?>
+<?= $this->include('customer/files') ;?>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>

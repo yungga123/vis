@@ -163,7 +163,7 @@ function getTaskleadFiles(id) {
 		$.each(response.map, function (key, value) {
 			$(".files").append(
 				"<li><a href='" +
-					$("#download_url").val() +
+					router.tasklead.booked_download +
 					"?id=" +
 					$("#upload_id").val() +
 					"&file=" +

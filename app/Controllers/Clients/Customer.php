@@ -66,7 +66,8 @@ class Customer extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['customer/index.js', 'customer/branch.js', 'dt_filter.js'];
+        $data['dropzone']       = true;
+        $data['custom_js']      = ['customer/index.js', 'customer/branch.js', 'dt_filter.js', 'customer/file-upload.js'];
         $data['btn_add_lbl']    = 'Add New Client';
         $data['routes']         = json_encode([
             'customer' => [

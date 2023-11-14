@@ -195,6 +195,11 @@ class CustomerModel extends Model
                 EOF;
             }
 
+            $buttons .= <<<EOF
+                    <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#customer_files_modal" title="Manage Files"><i class="fas fa-folder"></i> 
+                    </button>
+                EOF;
+
             return dt_buttons_dropdown($buttons);
         };
         
