@@ -168,11 +168,10 @@ class GeneralInfo extends BaseController
                 // Upload image and get formatted file info
                 $file           = $this->uploadFile($fileName, $img, $newName, $this->_fullFilePath, $downloadUrl);
 
-                // File path to display preview
-                $filepath   = $downloadUrl;
+                // The data to save or update
                 $inputs     = [
                     'key'   => $fileName,
-                    'value' => $filepath,
+                    'value' => $newName,
                     'updated_by' => session('username'),
                 ];
             
