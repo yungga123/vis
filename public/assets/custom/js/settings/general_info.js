@@ -1,6 +1,10 @@
+var _dropzone;
+
 $(document).ready(function () {
 	/* Load data */
 	initLoadData();
+
+	_dropzoneInit();
 
 	/* Form for saving data */
 	formSubmit($("#form_system_info"), "continue", function (res, self) {
@@ -66,16 +70,28 @@ function initLoadData() {
 		.then((res) => {
 			if (res.status === STATUS.SUCCESS) {
 				$.each(res.data, (key, value) => {
-					if (value["key"] === "company_logo") {
-						const imgPath = res.base_url + "/" + value["value"];
-						if (!isEmpty(value["value"]))
-							$("#preview_logo").attr("src", imgPath);
-					} else {
-						$(`input[name="${value["key"]}"]`).val(value["value"]);
-					}
+					$(`input[name="${value["key"]}"]`).val(value["value"]);
 				});
 			}
 			closeLoading();
 		})
 		.catch((err) => catchErrMsg(err));
+}
+
+/* Dropzone init */
+function _dropzoneInit() {
+	const form = "form_company_logo";
+	const button = "#btn_upload_logo";
+	const options = {
+		paramName: "company_logo",
+		acceptedFiles: ".jpg, .jpeg, .png",
+		maxFilesize: 5,
+		maxFiles: 2,
+		uploadMultiple: false,
+		addRemoveLinks: false,
+		parallelUploads: 2,
+	};
+
+	_dropzone = dropzoneInit(form, null, button, options);
+	dzGetFiles(_dropzone, router.general_info.fetch + "?q=" + options.paramName);
 }

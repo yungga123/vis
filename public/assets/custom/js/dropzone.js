@@ -14,21 +14,21 @@ function dropzoneInit(id, route, button, options) {
 	const _options = {
 		// The route or url to upload to
 		url: route,
-		paramName: inObjectReturn(options, "paramName") || "file",
-		// In MB
-		maxFilesize: inObjectReturn(options, "maxFilesize") || 15,
+		paramName: inObjectReturn(options, "paramName") ?? "file",
+		// Max file size in MB
+		maxFilesize: inObjectReturn(options, "maxFilesize") ?? 15,
 		// How many files allowed to be selected/uploaded
-		maxFiles: inObjectReturn(options, "maxFiles") || 5,
+		maxFiles: inObjectReturn(options, "maxFiles") ?? 5,
 		dictDefaultMessage:
-			inObjectReturn(options, "dictDefaultMessage") || _defaultMsg,
+			inObjectReturn(options, "dictDefaultMessage") ?? _defaultMsg,
 		acceptedFiles:
-			inObjectReturn(options, "acceptedFiles") || _defaultAcceptedFiles,
-		addRemoveLinks: inObjectReturn(options, "addRemoveLinks") || true,
+			inObjectReturn(options, "acceptedFiles") ?? _defaultAcceptedFiles,
+		addRemoveLinks: inObjectReturn(options, "addRemoveLinks") ?? true,
 		dictRemoveFileConfirmation: "Are you sure you want to remove this file?",
 		// Disable auto processing
-		autoProcessQueue: inObjectReturn(options, "autoProcessQueue") || false,
-		uploadMultiple: inObjectReturn(options, "uploadMultiple") || true,
-		parallelUploads: inObjectReturn(options, "parallelUploads") || 10,
+		autoProcessQueue: inObjectReturn(options, "autoProcessQueue") ?? false,
+		uploadMultiple: inObjectReturn(options, "uploadMultiple") ?? true,
+		parallelUploads: inObjectReturn(options, "parallelUploads") ?? 10,
 		// Added a custom option attribute/key
 		// An identifier whether to remove
 		// also the file in the backend
@@ -43,12 +43,20 @@ function dropzoneInit(id, route, button, options) {
 
 	const _dropzone = new Dropzone("#" + id, _options);
 
+	if (_options.uploadMultiple === false) {
+		// Added a custom option attribute/key
+		// For storing an uploaded file for single upload
+		_dropzone.uploadedFile = [];
+		_dropzone.element.classList.add("dz-single-upload");
+	}
+
 	if (button) {
 		dzOnUploadFile(_dropzone, button);
 		dzOnSuccessEvent(_dropzone, button);
 		dzOnSendingEvent(_dropzone, button);
 		dzOnCompleteEvent(_dropzone, button);
 		dzOnErrorEvent(_dropzone, button);
+		dzOnAddedFileEvent(_dropzone);
 	}
 
 	return _dropzone;
@@ -96,6 +104,34 @@ function dzOnUploadFile(_dropzone, button) {
 			"continue",
 			STATUS.QUESTION
 		);
+	});
+}
+
+/**
+ * Dropzone on added/selected/dropped file event
+ *
+ * @param {object} _dropzone 	the dropzone object
+ * @param {callable} callback 	the optional callback function
+ * @return {bool|void}
+ */
+function dzOnAddedFileEvent(_dropzone, callback) {
+	const isMultiple = dzIsMultipleUpload(_dropzone);
+
+	_dropzone.on("addedfile", function (file) {
+		if (!isMultiple && !inObject(file, "_id")) {
+			// Loop through all files
+			const length = _dropzone.files.length;
+
+			$.each(_dropzone.files, (key, file) => {
+				const condition =
+					inObject(file, "_id") ||
+					(!inObject(file, "_id") && length > 1 && key === 0);
+				// Remove the uploaded one
+				if (condition) _dropzone.removeFile(file);
+			});
+		}
+
+		if (isFunction(callback)) callback(files, xhr, formData);
 	});
 }
 
@@ -168,7 +204,7 @@ function dzOnSuccessEvent(_dropzone, button, callback) {
 					// Remove the initial selected files
 					_dropzone.removeFile(files);
 					// Populate the new uploaded files
-					dzPopulateFile(_dropzone, files);
+					dzPopulateFile(_dropzone, response.files);
 				}
 			}
 			if (button) $(button).attr("disabled", "true");
@@ -196,7 +232,8 @@ function dzOnErrorEvent(_dropzone, button, callback) {
 		closeLoading();
 		notifMsgSwal(
 			TITLE.ERROR,
-			"It seems there's an error encountered. Please refresh the page and try again! If persist, contact your system administrator.",
+			"It seems there's an error encountered. Please refresh the page and try again! If persist, contact your system administrator. <br/><br/> <strong>Error message:</strong> " +
+				response,
 			STATUS.ERROR
 		);
 
@@ -264,6 +301,10 @@ function dzPopulateFile(_dropzone, file) {
 
 		// Push file to dropzone files
 		_dropzone.files.push(file);
+
+		if (!dzIsMultipleUpload(_dropzone)) {
+			_dropzone.uploadedFile = file;
+		}
 
 		// Add data-dz-source in div.dz-details
 		dzAddDownloadFileEvent(_dropzone, file);

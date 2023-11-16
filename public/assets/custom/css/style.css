@@ -71,3 +71,8 @@ form.with-label-indicator .form-group label.required::after {
 	height: 120px;
 	object-fit: cover;
 }
+
+.dropzone.dz-single-upload .dz-preview {
+	display: flex;
+	justify-content: center;
+}

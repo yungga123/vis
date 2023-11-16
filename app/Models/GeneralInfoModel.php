@@ -90,7 +90,7 @@ class GeneralInfoModel extends Model
         $builder->where('deleted_at IS NULL');
         $builder->where('key', $key);
 
-        return $builder->find();
+        return $builder->first();
     }
 
     /**
