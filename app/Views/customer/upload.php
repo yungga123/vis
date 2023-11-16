@@ -21,6 +21,7 @@
                     </div>
                 </form>
                 <small id="alert_file" class="form-text text-danger"></small>
+                <p class="text-italic text-bold mt-3">Click the file to download.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
