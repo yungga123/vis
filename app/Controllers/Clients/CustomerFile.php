@@ -36,9 +36,7 @@ class CustomerFile extends Customer
         parent::__construct();
 
         $this->_model           = new CustomerFileModel(); // Current model
-        // Change it desired directory path
-        // Example F:\files
-        $this->_rootDirPath     = WRITEPATH;
+        $this->_rootDirPath     = $this->setRootFileUploadsDirPath();
         // Please don't change this
         $this->_initialFilePath = 'uploads/customers/';
     }
@@ -46,7 +44,7 @@ class CustomerFile extends Customer
     /**
      * Get the uploaded files
      * 
-     * @param int $id       The customer_id
+     * @param int $id   The customer_id
      *
      * @return string|array
      */
@@ -54,9 +52,9 @@ class CustomerFile extends Customer
     {
         $record         = $this->_model->getCustomerFiles($id);
         $filenames      = empty($record) ? [] : json_decode($record['file_names']);
-        $filepath       = $this->_getFullFilePath() .'/'. $id;
-        $downloadUrl    = site_url('clients/files/download/');
-        $files          = $this->getFiles($id, $filenames, $filepath, $downloadUrl);
+        $directory       = $this->_getFullFilePath() .'/'. $id;
+        $downloadUrl    = site_url('clients/files/download/') . $id;
+        $files          = $this->getFiles($id, $filenames, $directory, $downloadUrl);
 
         return $this->response->setJSON(['files' => $files]);
     }
@@ -93,7 +91,7 @@ class CustomerFile extends Customer
 
                 foreach ($files['file'] as $file) {
                     $filename       = time() .'-'. $file->getClientName();
-                    $downloadUrl    = site_url('clients/files/download/');
+                    $downloadUrl    = site_url('clients/files/download/') . $id .'/'. $filename;
                     $newFiles[]     = $this->uploadFile($id, $file, $filename, $filepath, $downloadUrl);
                     $filenames[]    = $filename;
                 }

@@ -257,3 +257,8 @@ define('COMPANY_CONTACT_NUMBER', '');
 define('COMPANY_EMAIL', '');
 // Purchase Order Form Code
 define('COMPANY_PO_FORM_CODE', 'F06');
+
+// Root path directory for all file uploads
+// Para isahan nlng ng directory
+// Don't foget to add '/' at the end
+define('ROOT_FILE_UPLOAD_DIR', '');
