@@ -184,3 +184,26 @@ if (! function_exists('has_html_tags'))
         return preg_match('/<[^>]+>/', $string) === 1;
 	}
 }
+
+if (! function_exists('kb_to_mb'))
+{
+    /**
+     * Convert kb to mb
+     */
+	function kb_to_mb(int $size_in_kb): int
+	{
+        return $size_in_kb / 1024;
+	}
+}
+
+if (! function_exists('mb_to_kb'))
+{
+    /**
+     * Convert mb to kb
+     */
+	function mb_to_kb(int $size_in_mb): int
+	{
+        return $size_in_mb * 1024;
+	}
+}
+

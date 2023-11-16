@@ -463,7 +463,7 @@ function loadDataTable(table, route, type, options = {}, destroy = false) {
 		} else buttons.push(options.buttons);
 	}
 
-	const dtTable = $("#" + table).DataTable({
+	dtTable = $("#" + table).DataTable({
 		dom: `
 			<'row px-3 pt-3'
 				<'col-sm-12 col-md-8'<'d-flex justify-content-start'lB>>
@@ -1087,4 +1087,15 @@ function numberFormat(number, decimal) {
 		minimumFractionDigits: decimal || 2,
 		maximumFractionDigits: decimal || 2,
 	});
+}
+
+/**
+ * Check key in object if exist then return
+ *
+ * @param {object} obj 	the object to search from
+ * @param {string} key	the key to search for
+ * @returns {string|null}
+ */
+function inObjectReturn(obj, key) {
+	return inObject(obj, key) ? obj[key] : null;
 }

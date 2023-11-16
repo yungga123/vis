@@ -1,4 +1,4 @@
-var table, modal, form, elems;
+var table, modal, form, elems, _dropzone;
 
 $(document).ready(function () {
 	table = "customer_table";
@@ -51,6 +51,9 @@ $(document).ready(function () {
 
 		showAlertInForm(elems, message, res.status);
 	});
+
+	/* Dropzone init */
+	_dropzoneInit();
 });
 
 /* Get record details */
@@ -81,6 +84,7 @@ function edit(id) {
 		.catch((err) => catchErrMsg(err));
 }
 
+/* Delete record */
 function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
@@ -98,6 +102,17 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+/* Uploading files */
+function upload(id, client) {
+	$("#upload_customer_id").val(id);
+	$("#upload_modal").modal("show");
+	$("#upload_modal .modal-title").html(
+		`Upload Files for <strong>${client}</strong>`
+	);
+
+	dzGetFiles(_dropzone, router.customer.files.fetch + "/" + id);
 }
 
 /* For filtering and reseting */
@@ -124,4 +139,13 @@ function filterData(reset = false) {
 		},
 		reset
 	);
+}
+
+/* Dropzone init */
+function _dropzoneInit() {
+	const form = "upload_form";
+	const button = "#upload_modal .btn-upload";
+
+	_dropzone = dropzoneInit(form, router.customer.files.upload, button);
+	dzOnRemoveFileEvent(_dropzone, router.customer.files.remove);
 }

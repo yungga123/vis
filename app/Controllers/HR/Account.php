@@ -282,7 +282,7 @@ class Account extends BaseController
     }
 
     /**
-     * Updaing of account
+     * Updating of account
      *
      * @return json
      */

@@ -172,7 +172,7 @@ class CustomerModel extends Model
         $this->filterParam($request, $builder, "{$this->table}.type", 'type');
         $this->filterParam($request, $builder, "{$this->table}.source", 'source');
 
-        $builder->orderBy('id', 'DESC');        
+        $builder->orderBy("{$this->table}.id", 'DESC');        
         return $builder;
     }
 
@@ -189,9 +189,15 @@ class CustomerModel extends Model
                         <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
                     EOF;
                 }
-    
+
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-info" onclick="branchList({$row["$id"]}, '{$row["name"]}')" title="View Branch"><i class="fas fa-eye"></i> </button>
+                EOF;
+            }
+
+            if (check_permissions($permissions, 'UPLOAD')) {
+                $buttons .= <<<EOF
+                    <button class="btn btn-sm btn-primary" onclick="upload({$row["$id"]}, '{$row["name"]}')" title="View or Attach Files"><i class="fas fa-paperclip"></i> </button> 
                 EOF;
             }
 
