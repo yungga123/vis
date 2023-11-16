@@ -7,26 +7,47 @@ trait FileUploadTrait
     public $imgExtensions = ['jpeg', 'jpg', 'png', 'gif'];
 
     /**
+     * Set root directory path for file uploads
+     *
+     * @return string
+     */
+    public function setRootFileUploadsDirPath()
+    {
+        // ROOT_FILE_UPLOAD_DIR was from Constants.php file
+        // This is the very root path for storing files
+        // Set the very root directory path in Constants.php file
+        // If empty, defualt directory path set to writable folder
+        return empty(ROOT_FILE_UPLOAD_DIR) 
+            ? WRITEPATH : ROOT_FILE_UPLOAD_DIR;
+    }
+
+    /**
      * Get/fetch the uploadeded files in the specified path/source
      * 
      * @param string|integer $id    The unique or primary key or something else
      * @param array $filenames      The array names of the files
-     * @param string $filepath      The path to store the file
+     * @param string $directory     The path/directory to store/get the file
      * @param string $downloadUrl   The download route of the file
      *
      * @return array
      */
-    public function getFiles($id, $filenames, $filepath, $downloadUrl)
+    public function getFiles($id, $filenames, $directory, $downloadUrl)
     {
         $files = [];
 
-        if (! empty($filenames)) {
-            // Get all files in the specified folder
-            foreach (new \DirectoryIterator($filepath) as $file) {
-                if ($file->isFile() && in_array($file->getFilename(), $filenames)) {
-                    $files[] = $this->setFileData($id, $file, '', $downloadUrl, true);
+        try {
+            if (! empty($filenames)) {
+                // Get all files in the specified folder
+                $iterator = new \DirectoryIterator ($directory);
+
+                foreach ($iterator as $file) {
+                    if ($file->isFile() && in_array($file->getFilename(), $filenames)) {
+                        $files[] = $this->setFileData($id, $file, '', $downloadUrl, true);
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            log_message('error', '[DirectoryIterator] {exception}', ['exception' => $e]);
         }
 
         return $files;
@@ -96,7 +117,7 @@ trait FileUploadTrait
             '_id'       => $id,
             'name'      => $filename,
             'size'      => $file->getSize(),
-            'url'       => $downloadUrl . $id .'/'. $filename,
+            'url'       => $isDirIterator ? $downloadUrl .'/'. $filename : $downloadUrl,
             'ext'       => $ext,
             'accepted'  => true,        
             'status'    => 'uploaded',
