@@ -60,6 +60,7 @@
         </div>
     </div>
 <?= $this->include('customer/form') ;?>
+<?= $this->include('customer/upload') ;?>
 <?= $this->include('customer/branch/index') ;?>
 <?= $this->include('customer/branch/form') ;?>
 <?= $this->include('templates/loading'); ?>

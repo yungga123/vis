@@ -166,6 +166,9 @@ define('ACTIONS', [
             'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],
+        'CUSTOMERS'         => [
+            'UPLOAD'        => 'Upload',
+        ],
     ],
 ]);
 

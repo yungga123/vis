@@ -14,7 +14,7 @@ class Customer extends BaseController
     use ExportTrait, HRTrait;
 
     /**
-     * Use to initialize PermissionModel class
+     * Use to initialize model class
      * @var object
      */
     private $_model;
@@ -42,10 +42,10 @@ class Customer extends BaseController
      */
     public function __construct()
     {
-        $this->_model       = new CustomerModel(); // Current model
-        $this->_module_code = MODULE_CODES['customers']; // Current module
-        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_model           = new CustomerModel(); // Current model
+        $this->_module_code     = MODULE_CODES['customers']; // Current module
+        $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add         = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -66,13 +66,25 @@ class Customer extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['customer/index.js', 'customer/branch.js', 'dt_filter.js'];
+        $data['dropzone']       = true;
+        $data['custom_js']      = [
+            'customer/index.js', 
+            'customer/branch.js', 
+            'dt_filter.js', 
+            'dropzone.js'
+        ];
         $data['btn_add_lbl']    = 'Add New Client';
         $data['routes']         = json_encode([
             'customer' => [
                 'list'      => url_to('customer.list'),
                 'fetch'     => url_to('customer.fetch'),
                 'delete'    => url_to('customer.delete'),
+                'files'     => [
+                    'fetch'     => site_url('clients/files'),
+                    'upload'    => url_to('customer.files.upload'),
+                    'download'  => site_url('clients/files/download'),
+                    'remove'    => url_to('customer.files.remove'),
+                ],
                 'branch' => [
                     'list'      => url_to('customer.branch.list'),
                     'fetch'     => url_to('customer.branch.fetch'),
