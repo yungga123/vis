@@ -293,7 +293,6 @@ class EmployeeModel extends Model
         $builder = $this->db->table($this->view);
         $builder->select($columns ?? $this->allowedFields);
         $builder->where('employee_id', $employee_id);
-        $builder->where('deleted_at IS NULL');
 
         return $builder->get()->getRowArray();
     }
