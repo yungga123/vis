@@ -107,6 +107,7 @@ class CustomerFile extends Customer
                     $inputs     = [
                         'customer_id'   => $id,
                         'file_names'    => json_encode(array_merge($fileNames, $filenames)),
+                        'created_by'    => session('username')
                     ];
 
                     // Insert or update if $id exists
@@ -169,6 +170,7 @@ class CustomerFile extends Customer
                     $inputs = [
                         'customer_id'   => $id,
                         'file_names'    => json_encode($newFilenames),
+                        'created_by'    => session('username')
                     ];
         
                     // Insert or update if $id exists
