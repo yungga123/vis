@@ -7,9 +7,13 @@
  * @return {object}         - the dropzone object
  */
 function dropzoneInit(id, route, button, options) {
-	const _defaultMsg = `<i class="fas fa-cloud-upload-alt fa-lg text-primary"></i> Drop files here or click to upload`;
+	const _defaultMsgIcon =
+		'<div class="text-xl"><i class="fas fa-cloud-upload-alt fa-lg text-primary"></i></div> ';
 	const _defaultAcceptedFiles =
 		".jpg, .jpeg, .png, .pdf, .doc, .docx, xls, .xlsx, .csv";
+	let _defaultMsg = `Drop files here or click to upload.`;
+
+	_defaultMsg = inObjectReturn(options, "dictDefaultMessage") ?? _defaultMsg;
 
 	const _options = {
 		// The route or url to upload to
@@ -19,8 +23,7 @@ function dropzoneInit(id, route, button, options) {
 		maxFilesize: inObjectReturn(options, "maxFilesize") ?? 15,
 		// How many files allowed to be selected/uploaded
 		maxFiles: inObjectReturn(options, "maxFiles") ?? 5,
-		dictDefaultMessage:
-			inObjectReturn(options, "dictDefaultMessage") ?? _defaultMsg,
+		dictDefaultMessage: _defaultMsgIcon + _defaultMsg,
 		acceptedFiles:
 			inObjectReturn(options, "acceptedFiles") ?? _defaultAcceptedFiles,
 		addRemoveLinks: inObjectReturn(options, "addRemoveLinks") ?? true,

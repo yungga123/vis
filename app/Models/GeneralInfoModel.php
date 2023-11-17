@@ -56,7 +56,7 @@ class GeneralInfoModel extends Model
             $builder->updateFields($additionalUpdateFields, true);
         }
 
-        $builder->upsert();
+        return $builder->upsert();
     }
 
     /**
@@ -75,7 +75,7 @@ class GeneralInfoModel extends Model
             $builder->updateFields($additionalUpdateFields, true);
         }
 
-        $builder->upsertBatch();
+        return $builder->upsertBatch();
     }
 
     /**

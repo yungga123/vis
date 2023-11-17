@@ -85,6 +85,7 @@ function _dropzoneInit() {
 	const options = {
 		paramName: "company_logo",
 		acceptedFiles: ".jpg, .jpeg, .png",
+		dictDefaultMessage: "Drop file or click to upload.",
 		maxFilesize: 5,
 		maxFiles: 2,
 		uploadMultiple: false,

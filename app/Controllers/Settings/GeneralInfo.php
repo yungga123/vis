@@ -163,7 +163,7 @@ class GeneralInfo extends BaseController
                 } 
                 
                 $img            = $this->request->getFile($fileName);
-                $newName        = $fileName .'.'. $img->getClientExtension();
+                $newName        = $img->getRandomName();
                 $downloadUrl    = base_url($this->_initialFilePath . $newName);
                 // Upload image and get formatted file info
                 $file           = $this->uploadFile($fileName, $img, $newName, $this->_fullFilePath, $downloadUrl);
@@ -174,9 +174,22 @@ class GeneralInfo extends BaseController
                     'value' => $newName,
                     'updated_by' => session('username'),
                 ];
+
+                // Get the current record/ filename
+                $curFilename = $this->getGeneralInfo($fileName);
             
                 // Save or update file path to database
-                $this->_model->singleSave($inputs);
+                if (! $this->_model->upsert($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = 'Validation error!';
+
+                    return $data;
+                }
+
+                // Remove the previous file
+                $filepath = $this->_fullFilePath . $curFilename;
+                $this->removeFile($filepath);
                 
                 $data['files'] = $file;
                 return $data;

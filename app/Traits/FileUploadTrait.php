@@ -16,7 +16,7 @@ trait FileUploadTrait
         // ROOT_FILE_UPLOAD_DIR was from Constants.php file
         // This is the very root path for storing files
         // Set the very root directory path in Constants.php file
-        // If empty, defualt directory path set to writable folder
+        // If empty, default directory path set to writable folder
         return empty(ROOT_FILE_UPLOAD_DIR) 
             ? WRITEPATH : ROOT_FILE_UPLOAD_DIR;
     }
@@ -54,7 +54,7 @@ trait FileUploadTrait
     }
 
     /**
-     * For uploading file
+     * For uploading file and returen the formatted file data
      *
      * @param string|int|null $id   The unique or primary key or something else
      * @param object $file          The file object from request
@@ -104,7 +104,7 @@ trait FileUploadTrait
      * @param string $downloadUrl   The download route of the file
      * @param bool $isDirIterator   Whether from \DirectoryIterator or not
      * 
-     * @return array                The files       
+     * @return array                The formatted file data      
      */
     public function setFileData($id, $file, $filename, $downloadUrl, $isDirIterator = false)
     {
