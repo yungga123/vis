@@ -2,7 +2,7 @@
 <?=$this->section('content');?>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-6">
+        <div class="col-sm-12 col-md-7">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">System Info</h3>
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-sm-12 col-md-5">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Company Logo for Printing</h3>
@@ -36,31 +36,21 @@
                     </div>
                 </div>         
                 <div class="card-body">
-                    <form id="form_company_logo" action="<?= url_to('general_info.upload') ?>" enctype="multipart/form-data">
+                    <p class="text-bold">Upload Logo</p>
+                    <form id="form_company_logo" class="dropzone rounded border border-primary" method="post" enctype="multipart/form-data" action="<?= url_to('general_info.upload') ?>"> 
                         <?= csrf_field(); ?>
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="border rounded" style="height: 150px;">
-                                    <img class="rounded" src="" alt="Preview company logo" style="height: inherit; width: 100%; object-fit: cover;" id="preview_logo">
-                                </div>
-                            </div>
-                            <div class="col-8">
-                                <div class="form-group">
-                                    <label class="required" for="company_logo">Upload</label>
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input" name="company_logo" id="company_logo" required>
-                                        <label class="custom-file-label" for="company_logo">Choose file...</label>
-                                        <div><small class="text-danger" id="alert_company_logo"></small></div>
-                                    </div>
-                                </div>
-                                <?= $this->include('settings/general_info/button-save'); ?>
-                            </div>
+                        <div class="fallback">
+                            <input name="file" type="file" />
                         </div>
                     </form>
+                    <small class="text-center">Drop file or click to upload.</small>
+                    <div class="d-flex justify-content-end mt-2">
+                        <button type="button" class="btn btn-success" id="btn_upload_logo">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-sm-12 col-md-12">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Company Info</h3>
@@ -74,7 +64,7 @@
                     <form id="form_company_info" action="<?= url_to('general_info.save') ?>">
                         <?= csrf_field(); ?>
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-sm-12 col-md-6">
                                 <div class="form-group">
                                     <label class="required" for="company_name">Name</label>
                                     <input type="text" name="company_name" id="company_name" class="form-control" placeholder="Name">
@@ -86,7 +76,7 @@
                                     <small id="alert_company_address" class="text-danger"></small>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-sm-12 col-md-6">
                                 <div class="form-group">
                                     <label class="required" for="company_contact_number">Contact Number</label>
                                     <input type="text" name="company_contact_number" id="company_contact_number" class="form-control" placeholder="Contact Number">

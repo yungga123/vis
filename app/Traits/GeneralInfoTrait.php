@@ -11,7 +11,7 @@ trait GeneralInfoTrait
      *
      * @param string|array|null $param  The param to search
      * @param bool $format              Whether to format the result
-     * @return array|null               The results of the search
+     * @return array|string|null        The results of the search
      */
     public function getGeneralInfo($param = [], $format = false)
     {
@@ -24,7 +24,7 @@ trait GeneralInfoTrait
         }
         
         $result = $model->fetch($param);
-        return $result ? $result[0]['value'] : null;
+        return $result ? $result['value'] : null;
     }
 
     /**

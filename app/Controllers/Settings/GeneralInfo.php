@@ -4,10 +4,14 @@ namespace App\Controllers\Settings;
 
 use App\Controllers\BaseController;
 use App\Models\GeneralInfoModel;
-use CodeIgniter\Database\RawSql;
+use App\Traits\GeneralInfoTrait;
+use App\Traits\FileUploadTrait;
 
 class GeneralInfo extends BaseController
 {
+    /* Declare trait here to use */
+    use GeneralInfoTrait, FileUploadTrait;
+
     /**
      * Use to initialize model class
      * @var object
@@ -34,6 +38,24 @@ class GeneralInfo extends BaseController
     private $_can_add;
 
     /**
+     * The root directory to save the uploaded files
+     * @var array
+     */
+    private $_rootDirPath;
+
+    /**
+     * The initial file path after the root path
+     * @var array
+     */
+    private $_initialFilePath;
+
+    /**
+     * The full file path
+     * @var array
+     */
+    private $_fullFilePath;
+
+    /**
      * Class constructor
      */
     public function __construct()
@@ -42,6 +64,13 @@ class GeneralInfo extends BaseController
         $this->_module_code = MODULE_CODES['general_info']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+
+        // Change it desired directory path
+        // Example F:\files
+        $this->_rootDirPath     = FCPATH; // The public folder
+        // Please don't change this
+        $this->_initialFilePath = 'uploads/logo/';
+        $this->_fullFilePath    = $this->_rootDirPath . $this->_initialFilePath;
     }
 
     /**
@@ -56,8 +85,9 @@ class GeneralInfo extends BaseController
         
         $data['title']          = 'Settings | General Info';
         $data['page_title']     = 'Settings | General Info';
-        $data['custom_js']      = 'settings/general_info.js';
         $data['sweetalert2']    = true;
+        $data['dropzone']       = true;
+        $data['custom_js']      = ['settings/general_info.js', 'dropzone.js'];
         $data['routes']         = json_encode([
             'general_info' => [
                 'fetch' => url_to('general_info.fetch'),
@@ -114,44 +144,54 @@ class GeneralInfo extends BaseController
     {
         $data       = [
             'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been uploaded successfully!'
+            'message'   => 'Image has been uploaded!'
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 $this->_canUserSave();
 
-                $fileName = 'company_logo';
-                $validate = $this->_validationRule($fileName);
+                $fileName   = 'company_logo';
+                $allowed    = implode(',', $this->imgExtensions);
+                $validate = $this->validationFileRules($fileName, $allowed);
 
                 if (! $this->validate($validate)) {
                     $data['status']     = STATUS_ERROR;
                     $data ['errors']    = $this->validator->getErrors();
                     $data ['message']   = 'Validation error!';
-
                     return $data;
                 } 
                 
-                $img = $this->request->getFile($fileName);
+                $img            = $this->request->getFile($fileName);
+                $newName        = $img->getRandomName();
+                $downloadUrl    = base_url($this->_initialFilePath . $newName);
+                // Upload image and get formatted file info
+                $file           = $this->uploadFile($fileName, $img, $newName, $this->_fullFilePath, $downloadUrl);
 
-                if ($img->isValid() && ! $img->hasMoved()) {
-                    $newName    = 'company-logo.' . $img->getClientExtension();
+                // The data to save or update
+                $inputs     = [
+                    'key'   => $fileName,
+                    'value' => $newName,
+                    'updated_by' => session('username'),
+                ];
 
-                    // Move uploaded files to public folder
-                    $img->move('../public/uploads/logo/', $newName, true);
+                // Get the current record/ filename
+                $curFilename = $this->getGeneralInfo($fileName);
+            
+                // Save or update file path to database
+                if (! $this->_model->upsert($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = 'Validation error!';
 
-                    // File path to display preview
-                    $filepath   = ('uploads/logo/'. $newName);
-                    $inputs     = [
-                        'key'   => $fileName,
-                        'value' => $filepath,
-                        'updated_by' => session('username'),
-                    ];
-                
-                    // Save file path to database
-                    $this->_model->singleSave($inputs);
+                    return $data;
                 }
 
+                // Remove the previous file
+                $filepath = $this->_fullFilePath . $curFilename;
+                $this->removeFile($filepath);
+                
+                $data['files'] = $file;
                 return $data;
             },
             true
@@ -174,40 +214,23 @@ class GeneralInfo extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $data['data']       = $this->_model->fetchAll();
-                $data['base_url']   = base_url();
+                if ($q = $this->request->getVar('q')) {
+                    $files              = [];
+                    $filename           = $this->getGeneralInfo($q);
+                    $nfilename          = strpos($filename, '/') ? explode('/', $filename) : $filename;
+                    $nfilename          = is_array($nfilename) ? array_pop($nfilename) : $nfilename;
+                    $downloadUrl        = base_url($this->_initialFilePath . $nfilename);
+                    $files              = $this->getFiles($q, [$nfilename], $this->_fullFilePath, $downloadUrl);
+                    $data['files']      = $files;
+                } else {
+                    $data['data']       = $this->_model->fetchAll();
+                    $data['base_url']   = base_url();
+                }
                 return $data;
             }
         );
 
         return $response;
-    }
-
-    /**
-     * For uploading files validation rule
-     *
-     * @return array
-     */
-    private function _validationRule($fileName)
-    {
-        $validate = [
-            "{$fileName}" => [
-                'label' => 'Image file',
-                'rules' => [
-                    "uploaded[{$fileName}]",
-                    "ext_in[{$fileName},jpg,jpeg,png]",
-                    "mime_in[{$fileName},image/jpg,image/jpeg,image/png]",
-                    "max_size[{$fileName},5120]",
-                ],
-                'errors' => [
-                    'ext_in' => 'File must be image only (jpg,jpeg,png).',
-                    'mime_in' => 'File must be image only (jpg,jpeg,png).',
-                    'max_size' => 'Image file size must be 5mb only.',
-                ]
-            ]
-        ];
-
-        return $validate;
     }
 
     /**

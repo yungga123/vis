@@ -195,7 +195,7 @@ $routes->group('settings/general-info', ['filter' => 'checkauth'], static functi
     $routes->get('/', 'Settings\GeneralInfo::index', ['as' => 'general_info.home']);
     $routes->post('save', 'Settings\GeneralInfo::save', ['as' => 'general_info.save']);
     $routes->post('upload', 'Settings\GeneralInfo::upload', ['as' => 'general_info.upload']);
-    $routes->get('fetch', 'Settings\GeneralInfo::fetch', ['as' => 'general_info.fetch']);
+    $routes->match(['get', 'post'], 'fetch', 'Settings\GeneralInfo::fetch', ['as' => 'general_info.fetch']);
 });
 
 /* Access denied */

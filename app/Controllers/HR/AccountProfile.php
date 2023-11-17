@@ -4,11 +4,14 @@ namespace App\Controllers\HR;
 
 use App\Controllers\BaseController;
 use App\Models\AccountModel;
+use App\Models\EmployeeModel;
 use App\Traits\AccountMailTrait;
+use App\Traits\FileUploadTrait;
 
 class AccountProfile extends BaseController
 {
-    use AccountMailTrait;
+    /* Declare trait here to use */
+    use AccountMailTrait, FileUploadTrait;
     
     /**
      * Use to initialize PermissionModel class
@@ -17,10 +20,22 @@ class AccountProfile extends BaseController
     private $_model;
 
     /**
-     * Default profile img path
-     * @var string
+     * The root directory to save the uploaded files
+     * @var array
      */
-    private $_profileImgPath;
+    private $_rootDirPath;
+
+    /**
+     * The initial file path after the root path
+     * @var array
+     */
+    private $_initialFilePath;
+
+    /**
+     * The full file path
+     * @var array
+     */
+    private $_fullFilePath;
 
     /**
      * Class constructor
@@ -28,7 +43,12 @@ class AccountProfile extends BaseController
     public function __construct()
     {
         $this->_model           = new AccountModel(); // Current model
-        $this->_profileImgPath  = '../public/uploads/profile';
+        // Change it desired directory path
+        // Example F:\files
+        $this->_rootDirPath     = FCPATH; // The public folder
+        // Please don't change this
+        $this->_initialFilePath = 'uploads/profile/';
+        $this->_fullFilePath    = $this->_rootDirPath . $this->_initialFilePath;
     }
 
     /**
@@ -40,12 +60,13 @@ class AccountProfile extends BaseController
     {
         $data['title']          = 'Account Profile';
         $data['page_title']     = 'Account Profile';
-        $data['custom_js']      = 'account/profile.js';
+        $data['custom_js']      = ['hr/account/profile.js', 'dropzone.js'];
         $data['sweetalert2']    = true;
+        $data['dropzone']       = true;
         $data['account']        = $this->_getAccountDetails();
         $data['profile_img']    = $this->getProfileImg(session('gender'));
 
-        return view('account/profile', $data);
+        return view('hr/account/profile', $data);
     }
 
     /**
@@ -124,42 +145,46 @@ class AccountProfile extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $rules = [
-                    'profile_img' => [
-                        'label' => 'Image file',
-                        'rules' => [
-                            'uploaded[profile_img]',
-                            'ext_in[profile_img,jpg,jpeg,png]',
-                            'max_size[profile_img,5120]',
-                        ],
-                        'errors' => [
-                            'ext_in' => 'File must be image only (jpg,jpeg,png).',
-                            'max_size' => 'Image file size must be 5mb only.',
-                        ]
-                    ]
-                ];
+                // Name of the file
+                $name       = 'profile_img';
+                $allowed    = implode(',', $this->imgExtensions);
+                $rules      = $this->validationFileRules($name, $allowed, 5, 'Profile Image');
             
                 if (! $this->validate($rules)) {
                     $data['status']     = STATUS_ERROR;
                     $data ['errors']    = $this->validator->getErrors();
                     $data ['message']   = 'Validation error!';
-                } else {
-                    $img        = $this->request->getFile('profile_img');
-                    $username   = session('username');
-    
-                    if ($img->isValid() && ! $img->hasMoved()) {
-                        $newName = $username . '.' . $img->getClientExtension();
-    
-                        // Move file to new location
-                        $img->move($this->_profileImgPath, $newName, true);
-            
-                        $model = new AccountModel();
-                        $model->where('username', $username)
-                            ->set(['profile_img' => $newName])
-                            ->update();
-                    }
+
+                    return $data;
+                }
+                
+                $img            = $this->request->getFile('profile_img');
+                $username       = session('username');
+                $newName        = $username . '_' . $img->getRandomName();
+                $downloadUrl    = base_url($this->_initialFilePath . $newName);
+                // Upload image and get formatted file info
+                $file           = $this->uploadFile($username, $img, $newName, $this->_fullFilePath, $downloadUrl);
+
+                // Get the current record/ filename
+                $curFilename = $this->_model->getProfileImg($username);
+                
+                // Save or update file path to database
+                $save = $this->_model->where('username', $username)
+                    ->set(['profile_img' => $newName])->update();
+
+                if (! $save) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = 'Validation error!';
+
+                    return $data;
                 }
 
+                // Remove the previous file
+                $filepath = $this->_fullFilePath . $curFilename;
+                $this->removeFile($filepath);
+                
+                $data['files'] = $file;
                 return $data;
             }
         );
@@ -174,14 +199,38 @@ class AccountProfile extends BaseController
      */
     public function getProfileImg($gender = null)
     {
-        $profile_img = $this->_model->getProfileImg(session('username'));
-        $profile_img_res = base_url('uploads/profile/' . $profile_img);
+        $profile_img        = $this->_model->getProfileImg(session('username'));
+        $profile_img_res    = base_url($this->_initialFilePath . $profile_img);
         
         if (empty($profile_img)) {
             $profile_img_res = base_url(get_avatar(strtolower($gender ?? 'male')));
         }
 
         return $profile_img_res;
+    }
+
+    /**
+     * Get account details
+     *
+     * @return array
+     */
+    private function _getAccountDetails()
+    {
+        $model          = new EmployeeModel();
+        $employee_id    = session('employee_id');
+        $fields         = '
+            employee_name,
+            position,
+            gender,
+            civil_status,
+            date_of_birth,
+            address,
+            contact_number,
+            email_address
+        ';
+        $record         = $model->getEmployeeDetails($employee_id, $fields); 
+
+        return $record;
     }
 
     /**
@@ -199,7 +248,6 @@ class AccountProfile extends BaseController
             'password' => [
                 'label' => 'new password',
                 'rules' => 'required|alpha_numeric|min_length[8]|max_length[20]|differs[current_password]'
-                // 'rules' => 'required|alpha_numeric_punct|min_length[8]|max_length[20]'
             ],
             'confirm_password' => [
                 'label' => 'confirm password',
@@ -208,34 +256,5 @@ class AccountProfile extends BaseController
         ];
 
         return $rules;
-    }
-
-    /**
-     * Get account details
-     *
-     * @return array
-     */
-    private function _getAccountDetails()
-    {
-        $table = 'employees_view';
-        $fields = '
-            employee_name,
-            position,
-            gender,
-            civil_status,
-            date_of_birth,
-            address,
-            contact_number,
-            email_address
-        ';
-
-        $db = $this->builder;
-        $query = $db->table($table)->select($fields)
-                    ->where('employee_id', session()->get('employee_id'))
-                    ->get();
-
-        $account = $query->getRowArray();    
-
-        return $account;
     }
 }

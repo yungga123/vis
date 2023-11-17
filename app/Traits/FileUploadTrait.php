@@ -16,7 +16,7 @@ trait FileUploadTrait
         // ROOT_FILE_UPLOAD_DIR was from Constants.php file
         // This is the very root path for storing files
         // Set the very root directory path in Constants.php file
-        // If empty, defualt directory path set to writable folder
+        // If empty, default directory path set to writable folder
         return empty(ROOT_FILE_UPLOAD_DIR) 
             ? WRITEPATH : ROOT_FILE_UPLOAD_DIR;
     }
@@ -24,7 +24,7 @@ trait FileUploadTrait
     /**
      * Get/fetch the uploadeded files in the specified path/source
      * 
-     * @param string|integer $id    The unique or primary key or something else
+     * @param string|int|null $id   The unique or primary key or something else
      * @param array $filenames      The array names of the files
      * @param string $directory     The path/directory to store/get the file
      * @param string $downloadUrl   The download route of the file
@@ -54,9 +54,9 @@ trait FileUploadTrait
     }
 
     /**
-     * For uploading file
+     * For uploading file and returen the formatted file data
      *
-     * @param string|integer $id    The unique or primary key or something else
+     * @param string|int|null $id   The unique or primary key or something else
      * @param object $file          The file object from request
      * @param string $filename      The name of the file
      * @param string $filepath      The path to store the file
@@ -98,26 +98,28 @@ trait FileUploadTrait
     /**
      * For setting file data
      *
-     * @param string|integer $id    The unique or primary key or something else
+     * @param string|int|null $id   The unique or primary key or something else
      * @param object $file          The file object from request
      * @param string $filename      The name of the file
      * @param string $downloadUrl   The download route of the file
      * @param bool $isDirIterator   Whether from \DirectoryIterator or not
      * 
-     * @return array                The files       
+     * @return array                The formatted file data      
      */
     public function setFileData($id, $file, $filename, $downloadUrl, $isDirIterator = false)
     {
-        $filename   = empty($filename) 
+        $filename       = empty($filename) 
             ? ($isDirIterator ? $file->getFilename() : $file->getClientName()) 
             : $filename;
-
-        $ext        = $isDirIterator ? $file->getExtension() : $file->guessExtension();
-        $arr        = [
+        $nfilename      = explode('/', $downloadUrl);
+        $nfilename      = array_pop($nfilename);
+        $downloadUrl    = $nfilename === $filename ? $downloadUrl : $downloadUrl . '/'. $filename;
+        $ext            = $isDirIterator ? $file->getExtension() : $file->guessExtension();
+        $arr            = [
             '_id'       => $id,
             'name'      => $filename,
             'size'      => $file->getSize(),
-            'url'       => $isDirIterator ? $downloadUrl .'/'. $filename : $downloadUrl,
+            'url'       => $downloadUrl,
             'ext'       => $ext,
             'accepted'  => true,        
             'status'    => 'uploaded',
@@ -136,14 +138,15 @@ trait FileUploadTrait
      * 
      * @return array                The rules       
      */
-    public function validationFileRules($filename, $allowed, $maxSize = 5)
+    public function validationFileRules($filename, $allowed, $maxSize = 5, $label = '')
     {
         $default    = 'jpg,jpeg,png,webp,pdf,doc,docx,xlx,xlsx,csv';
         $allowed    = empty($allowed) ? $default : $allowed;
         $sizeToKb   = mb_to_kb((int) $maxSize);
+        $label      = empty($label) ? $filename : $label;
         $rules      = [
             "{$filename}" => [
-                'label' => ucwords($filename),
+                'label' => ucwords($label),
                 'rules' => [
                     "uploaded[{$filename}]",
                     "ext_in[{$filename},{$allowed}]",
