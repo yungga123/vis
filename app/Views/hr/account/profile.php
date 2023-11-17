@@ -143,27 +143,25 @@
 <div class="modal fade" id="modal_profile_img" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="form_profile_img" action="<?= url_to('account.profile.image'); ?>" method="post" enctype="multipart/form-data">
-                <?= csrf_field(); ?>                
-                <div class="modal-header">
-                    <h5 class="modal-title">Change Profile Image</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <label for="profile_img">Image Upload</label>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="profile_img" id="profile_img" required>
-                        <label class="custom-file-label" for="profile_img">Choose file...</label>
-                        <div><small class="text-danger" id="alert_profile_img"></small></div>
+            <div class="modal-header">
+                <h5 class="modal-title">Change Profile Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-bold">Upload Profile Image</p>
+                <form id="form_profile_img" class="dropzone rounded border border-primary" method="post" enctype="multipart/form-data" action="<?= url_to('account.profile.image') ?>"> 
+                    <?= csrf_field(); ?>
+                    <div class="fallback">
+                        <input name="file" type="file" />
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Upload</button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success btn-upload">Upload</button>
+            </div>
         </div>
     </div>
 </div>

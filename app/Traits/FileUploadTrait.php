@@ -138,14 +138,15 @@ trait FileUploadTrait
      * 
      * @return array                The rules       
      */
-    public function validationFileRules($filename, $allowed, $maxSize = 5)
+    public function validationFileRules($filename, $allowed, $maxSize = 5, $label = '')
     {
         $default    = 'jpg,jpeg,png,webp,pdf,doc,docx,xlx,xlsx,csv';
         $allowed    = empty($allowed) ? $default : $allowed;
         $sizeToKb   = mb_to_kb((int) $maxSize);
+        $label      = empty($label) ? $filename : $label;
         $rules      = [
             "{$filename}" => [
-                'label' => ucwords($filename),
+                'label' => ucwords($label),
                 'rules' => [
                     "uploaded[{$filename}]",
                     "ext_in[{$filename},{$allowed}]",

@@ -1,3 +1,5 @@
+var _dropzone;
+
 $(document).ready(function () {
 	const form = $("#form_account");
 
@@ -19,22 +21,33 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 
-	formSubmit(
-		$("#form_profile_img"),
-		"continue",
-		function (res, self) {
-			let message = res.errors ?? res.message;
-			const elems = ["profile_img"];
-
-			if (res.status !== STATUS.ERROR) {
-				self[0].reset();
-				swalNotifRedirect(res.status, message, res.status, "reload");
-			}
-
-			closeLoading();
-			showAlertInForm(elems, message, res.status);
-		},
-		METHOD.AJAX,
-		true
-	);
+	// Image upload using this
+	_dropzoneInit();
 });
+
+/* Dropzone init */
+function _dropzoneInit() {
+	const form = "form_profile_img";
+	const button = "#modal_profile_img .btn-upload";
+	const options = {
+		paramName: "profile_img",
+		acceptedFiles: ".jpg, .jpeg, .png",
+		dictDefaultMessage: "Drop file or click to upload.",
+		maxFilesize: 5,
+		maxFiles: 1,
+		uploadMultiple: false,
+		addRemoveLinks: false,
+		parallelUploads: 2,
+	};
+
+	_dropzone = dropzoneInit(form, null, button, options);
+	dzOnSuccessEvent(_dropzone, button, _dzOnSuccessEvent);
+}
+
+// Dropzone on success event custom callback
+function _dzOnSuccessEvent(file, response) {
+	const message = response.errors ?? response.message;
+	if (response.status !== STATUS.ERROR)
+		swalNotifRedirect(response.status, message, response.status, "reload");
+	else notifMsgSwal(response.status, message, response.status);
+}

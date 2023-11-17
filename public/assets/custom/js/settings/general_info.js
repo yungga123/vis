@@ -87,7 +87,7 @@ function _dropzoneInit() {
 		acceptedFiles: ".jpg, .jpeg, .png",
 		dictDefaultMessage: "Drop file or click to upload.",
 		maxFilesize: 5,
-		maxFiles: 2,
+		maxFiles: 1,
 		uploadMultiple: false,
 		addRemoveLinks: false,
 		parallelUploads: 2,

@@ -70,7 +70,7 @@ function dropzoneInit(id, route, button, options) {
  *
  * @param {object} _dropzone 	the dropzone object
  * @param {string} button 	    the button used to trigger to upload files with selector (id [.] or class [.])
- * @return {bool|void}
+ * @return {void}
  */
 function dzOnUploadFile(_dropzone, button) {
 	$(button).on("click", function (e) {
@@ -115,7 +115,7 @@ function dzOnUploadFile(_dropzone, button) {
  *
  * @param {object} _dropzone 	the dropzone object
  * @param {callable} callback 	the optional callback function
- * @return {bool|void}
+ * @return {void}
  */
 function dzOnAddedFileEvent(_dropzone, callback) {
 	const isMultiple = dzIsMultipleUpload(_dropzone);
@@ -134,7 +134,7 @@ function dzOnAddedFileEvent(_dropzone, callback) {
 			});
 		}
 
-		if (isFunction(callback)) callback(files, xhr, formData);
+		if (isFunction(callback)) callback(file);
 	});
 }
 
@@ -144,7 +144,7 @@ function dzOnAddedFileEvent(_dropzone, callback) {
  * @param {object} _dropzone 	the dropzone object
  * @param {string} button 	    the button used to trigger to upload files with selector (id [.] or class [.])
  * @param {callable} callback 	the optional callback function
- * @return {bool|void}
+ * @return {void}
  */
 function dzOnSendingEvent(_dropzone, button, callback) {
 	const isMultiple = dzIsMultipleUpload(_dropzone);
@@ -164,7 +164,7 @@ function dzOnSendingEvent(_dropzone, button, callback) {
  * @param {object} _dropzone 	the dropzone object
  * @param {string} button 	    the button used to trigger to upload files with selector (id [.] or class [.])
  * @param {callable} callback 	the optional callback function
- * @return {bool|void}
+ * @return {void}
  */
 function dzOnCompleteEvent(_dropzone, button, callback) {
 	const isMultiple = dzIsMultipleUpload(_dropzone);
@@ -185,7 +185,7 @@ function dzOnCompleteEvent(_dropzone, button, callback) {
  * @param {string} button 	    the button used to trigger to upload files with selector (id [.] or class [.])
  * @param {callable} callback 	the optional callback function
  * to replace the logic/process below
- * @return {bool|void}
+ * @return {void}
  */
 function dzOnSuccessEvent(_dropzone, button, callback) {
 	const isMultiple = dzIsMultipleUpload(_dropzone);
@@ -210,12 +210,13 @@ function dzOnSuccessEvent(_dropzone, button, callback) {
 					dzPopulateFile(_dropzone, response.files);
 				}
 			}
-			if (button) $(button).attr("disabled", "true");
 
 			const message = response.errors ?? response.message;
 			notifMsgSwal(response.status, message, response.status);
-			closeLoading();
 		}
+
+		if (button) $(button).removeAttr("disabled");
+		closeLoading();
 	});
 }
 
@@ -309,7 +310,7 @@ function dzPopulateFile(_dropzone, file) {
 			_dropzone.uploadedFile = file;
 		}
 
-		// Add data-dz-source in div.dz-details
+		// Add download file event listener
 		dzAddDownloadFileEvent(_dropzone, file);
 	}
 }
