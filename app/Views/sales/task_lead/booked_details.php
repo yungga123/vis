@@ -12,7 +12,6 @@
                     <div class="card-header">
                         <h3 class="card-title">Projects Detail</h3>
                         <input type="hidden" id="upload_id">
-                        <input type="hidden" id="download_url" value="<?= url_to('tasklead.booked.download') ?>">
                     </div>
                     <div class="card-body">
                         <div class="row">
