@@ -1,66 +1,66 @@
 <?php
 
-namespace App\Controllers\Clients;
+namespace App\Controllers\Sales;
 
-use App\Models\CustomerFileModel;
+use App\Controllers\BaseController;
+use App\Models\TaskLeadFileModel;
 use App\Traits\FileUploadTrait;
 
-class CustomerFile extends Customer
+class TaskLeadBookedFile extends BaseController
 {
     /* Declare trait here to use */
     use FileUploadTrait;
 
     /**
-     * Use to initialize model class
+     * Use to initialize PermissionModel class
      * @var object
      */
     private $_model;
 
-    /**
-     * The root directory to save the uploaded files
-     * @var string
-     */
-    private $_rootDirPath;
-
-    /**
-     * The initial file path after the root path
-     * @var string
-     */
-    private $_initialFilePath;
+     /**
+      * The root directory to save the uploaded files
+      * @var string
+      */
+     private $_rootDirPath;
  
-    /**
-     * The full file path
-     * @var string
-     */
-    private $_fullFilePath;
+     /**
+      * The initial file path after the root path
+      * @var string
+      */
+     private $_initialFilePath;
+ 
+     /**
+      * The full file path
+      * @var string
+      */
+     private $_fullFilePath;
 
     /**
      * Class constructor
      */
     public function __construct()
     {
-        parent::__construct();
-
-        $this->_model           = new CustomerFileModel(); // Current model
+        $this->_model           = new TaskLeadFileModel(); // Current model
+        // File directory
         $this->_rootDirPath     = $this->setRootFileUploadsDirPath();
         // Please don't change this
-        $this->_initialFilePath = 'uploads/customers/';
+        $this->_initialFilePath = 'uploads/project-booked/';
         $this->_fullFilePath    = $this->_rootDirPath . $this->_initialFilePath;
     }
 
     /**
      * Get the uploaded files
      * 
-     * @param int $id   The customer_id
+     * @param int $id   The tasklead_id
      *
-     * @return string|array
+     * @return object|array
      */
     public function fetchFiles($id)
     {
-        $record         = $this->_model->getCustomerFiles($id);
-        $filenames      = empty($record) ? [] : json_decode($record['file_names']);
+        $record         = $this->_model->getTaskleadFiles($id);
+        $filenames      = empty($record) ? [] : json_decode($record['filenames']);
         $directory       = $this->_fullFilePath . $id;
-        $downloadUrl    = site_url('clients/files/download/') . $id;
+        $downloadUrl    = site_url('tasklead/booked/files/download/') . $id;
         $files          = $this->getFiles($id, $filenames, $directory, $downloadUrl);
 
         return $this->response->setJSON(['files' => $files]);
@@ -73,11 +73,11 @@ class CustomerFile extends Customer
      */
     public function upload()
     {
-        $data = [
+        $data           = [
             'status'    => STATUS_SUCCESS,
             'message'   => 'File(s) have successfully uploaded!'
         ];
-        $response   = $this->customTryCatch(
+        $response       = $this->customTryCatch(
             $data,
             function($data) {
                 $rules = $this->validationFileRules('file', null, 15);
@@ -98,20 +98,21 @@ class CustomerFile extends Customer
 
                 foreach ($files['file'] as $file) {
                     $filename       = time() .'-'. $file->getClientName();
-                    $downloadUrl    = site_url('clients/files/download/') . $id .'/'. $filename;
+                    $downloadUrl    = site_url('tasklead/booked/files/download/') . $id .'/'. $filename;
                     $newFiles[]     = $this->uploadFile($id, $file, $filename, $filepath, $downloadUrl);
                     $filenames[]    = $filename;
                 }
 
                 // Add the uploaded new files in the response
-                $data['files'] = $newFiles;
+                $data['files']      = $newFiles;
+                $data['id']         = $id;
 
                 if (! empty($filenames)) {
-                    $record     = $this->_model->getCustomerFiles($id);
-                    $fileNames  = ! empty($record) ? json_decode($record['file_names']) : [];
+                    $record     = $this->_model->getTaskleadFiles($id);
+                    $fileNames  = ! empty($record) ? json_decode($record['filenames']) : [];
                     $inputs     = [
-                        'customer_id'   => $id,
-                        'file_names'    => json_encode(array_merge($fileNames, $filenames)),
+                        'tasklead_id'   => $id,
+                        'filenames'    => json_encode(array_merge($fileNames, $filenames)),
                         'created_by'    => session('username')
                     ];
 
@@ -160,8 +161,8 @@ class CustomerFile extends Customer
                 $id             = $this->request->getVar('id');
                 $filename       = $this->request->getVar('filename');
         
-                $record         = $this->_model->getCustomerFiles($id);
-                $filenames      = empty($record) ? [] : json_decode($record['file_names']);
+                $record         = $this->_model->getTaskleadFiles($id);
+                $filenames      = empty($record) ? [] : json_decode($record['filenames']);
                 $newFilenames   = [];
                 
                 if (count($filenames) > 1) {                    
@@ -173,8 +174,8 @@ class CustomerFile extends Customer
 
                 if (! empty($newFilenames) || count($filenames) === 1) {
                     $inputs = [
-                        'customer_id'   => $id,
-                        'file_names'    => json_encode($newFilenames),
+                        'tasklead_id'   => $id,
+                        'filenames'    => json_encode($newFilenames),
                         'created_by'    => session('username')
                     ];
         
@@ -190,6 +191,7 @@ class CustomerFile extends Customer
                     $file = $this->_fullFilePath . $id .'/'. $filename;
                     $this->removeFile($file);
                 }
+                
                 return $data;
             },
             true

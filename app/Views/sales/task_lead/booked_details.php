@@ -85,11 +85,9 @@
                                     </p>
                                 </div>
                                 <h5 class="mt-5 text-muted">Project files</h5>
-                                <ul class="list-unstyled">
-                                    <div class="files"></div>
-                                </ul>
+                                <ul class="list-unstyled files"></ul>
                                 <div class="text-center mt-5 mb-3">
-                                    <a href="#" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-addfile">Add files</a>
+                                    <a href="#" class="btn btn-sm btn-primary btn-addfile" data-toggle="modal" data-target="#modal-addfile">Add files</a>
                                 </div>
                             </div>
                         </div>

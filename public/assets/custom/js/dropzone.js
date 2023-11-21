@@ -91,7 +91,7 @@ function dzOnUploadFile(_dropzone, button) {
 		// Get the queued files and then check it
 		// If there's none notify user thru swal notif
 		const queued = _dropzone.getQueuedFiles();
-		if (queued.length === 0 || _dropzone.files.length === 0) {
+		if (queued.length === 0 && _dropzone.files.length === 0) {
 			const message =
 				"There's nothing to upload. Please drop or select at least one file!";
 			notifMsgSwal(TITLE.ERROR, message, STATUS.WARNING);
@@ -215,6 +215,20 @@ function dzOnSuccessEvent(_dropzone, button, callback) {
 			notifMsgSwal(response.status, message, response.status);
 		}
 
+		// If error response status, reset the file to initial
+		if (inObjectReturn(response, "status") === "error") {
+			files.forEach((file, i) => {
+				// Revert file to initial just like first selected file
+				file.previewElement.classList.remove("dz-processing");
+				file.previewElement.classList.remove("dz-success");
+				file.previewElement.classList.remove("dz-complete");
+				file.previewElement.querySelector(
+					".dz-progress .dz-upload"
+				).style.width = 0;
+				file.status = "queue";
+			});
+		}
+
 		if (button) $(button).removeAttr("disabled");
 		closeLoading();
 	});
@@ -236,8 +250,7 @@ function dzOnErrorEvent(_dropzone, button, callback) {
 		closeLoading();
 		notifMsgSwal(
 			TITLE.ERROR,
-			"It seems there's an error encountered. Please refresh the page and try again! If persist, contact your system administrator. <br/><br/> <strong>Error message:</strong> " +
-				response,
+			"It seems there's an error encountered. Please refresh the page and try again! If persist, contact your system administrator.",
 			STATUS.ERROR
 		);
 

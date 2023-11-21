@@ -210,7 +210,7 @@ abstract class BaseController extends Controller
      * @param array $data           The $data variable from the parent method
      * @param function $callback    The callback function where logic is
      * @param bool $dbTrans         [Optional - default true] The identifier if will use db transactions
-     * @return array                The passed/response $data variable
+     * @return array|object         The passed/response $data variable
      */
     public function customTryCatch($data, $callback, $dbTrans = true)
 	{

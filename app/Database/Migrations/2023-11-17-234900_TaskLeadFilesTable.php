@@ -4,18 +4,18 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CustomerFilesTable extends Migration
+class TaskLeadFilesTable extends Migration
 {
-    private CONST TABLE = 'customer_files';
+    private CONST TABLE = 'tasklead_files';
 
     public function up()
     {
         $this->forge->addField([
-            'customer_id' => [
+            'tasklead_id' => [
                 'type' => 'INT',
-                'comment' => 'Connected to customers table using primary key'
+                'comment' => 'Connected to tasklead or task_lead_booked table using primary key'
             ],
-            'file_names' => [
+            'filenames' => [
                 'type' => 'TEXT',
                 'comment' => 'Json format'
             ],
@@ -28,8 +28,8 @@ class CustomerFilesTable extends Migration
             'updated_at datetime default current_timestamp on update current_timestamp',
         ]);
 
-        $this->forge->addForeignKey('customer_id', 'customers', 'id', '', 'CASCADE');
-        $this->forge->addKey('customer_id', false, true, 'customer_id_unique_key');
+        $this->forge->addForeignKey('tasklead_id', 'tasklead', 'id', '', 'CASCADE');
+        $this->forge->addKey('tasklead_id', false, true, 'tasklead_id_unique_key');
         $this->forge->createTable(self::TABLE);
     }
 

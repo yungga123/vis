@@ -39,19 +39,19 @@ class GeneralInfo extends BaseController
 
     /**
      * The root directory to save the uploaded files
-     * @var array
+     * @var string
      */
     private $_rootDirPath;
 
     /**
      * The initial file path after the root path
-     * @var array
+     * @var string
      */
     private $_initialFilePath;
 
     /**
      * The full file path
-     * @var array
+     * @var string
      */
     private $_fullFilePath;
 

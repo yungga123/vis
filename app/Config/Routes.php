@@ -133,6 +133,14 @@ $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
     $routes->post('booked/tasklead_files', 'Sales\TaskLeadBooked::getTaskleadFiles', ['as' => 'tasklead.booked.files']);
     $routes->get('booked/download', 'Sales\TaskLeadBooked::downloadFile', ['as' => 'tasklead.booked.download']);
     $routes->get('booked/show/(:num)', 'Sales\TaskLeadBooked::show/$1', ['as' => 'tasklead.booked.show']);
+
+    // FILES
+    $routes->match(['post', 'get'], 'booked/files/(:num)','Sales\TaskLeadBookedFile::fetchFiles/$1', ['as' => 'tasklead.booked.files.fetch']);
+    $routes->group('booked/files', static function ($routes) {
+        $routes->match(['post', 'put'], 'upload','Sales\TaskLeadBookedFile::upload', ['as' => 'tasklead.booked.files.upload']);
+        $routes->match(['post', 'get'], 'download/(:any)','Sales\TaskLeadBookedFile::download/$1', ['as' => 'tasklead.booked.files.download']);
+        $routes->match(['post', 'put'], 'remove','Sales\TaskLeadBookedFile::remove', ['as' => 'tasklead.booked.files.remove']);
+    });
 });
 
 // Sales Manager
@@ -309,7 +317,7 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('delete', 'Purchasing\Suppliers::delete', ['as' => 'suppliers.delete']);
     $routes->get('export', 'Purchasing\Suppliers::export', ['as' => 'suppliers.export']);
 
-    $routes->group('brands', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->group('brands', static function ($routes) {
         $routes->get('list','Purchasing\SupplierBrands::list', ['as' => 'suppliers.brand.list']);
         $routes->post('save','Purchasing\SupplierBrands::save', ['as' => 'suppliers.brand.save']);
         $routes->post('edit','Purchasing\SupplierBrands::edit', ['as' => 'suppliers.brand.edit']);

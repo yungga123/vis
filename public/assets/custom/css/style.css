@@ -65,6 +65,22 @@ form.with-label-indicator .form-group label.required::after {
 	text-transform: lowercase;
 }
 
+.hover .hover-show {
+	display: none;
+}
+
+.hover:hover .hover-show {
+	display: inherit;
+}
+
+.hover .hover-hide {
+	display: inherit;
+}
+
+.hover:hover .hover-hide {
+	display: none;
+}
+
 /* Additional styling for dropzone js */
 .dropzone .dz-preview.dz-uploaded .dz-image img {
 	width: 120px;

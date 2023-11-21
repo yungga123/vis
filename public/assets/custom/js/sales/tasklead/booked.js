@@ -1,4 +1,4 @@
-var table, form_upload;
+var table, form_upload, _dropzone;
 
 $(document).ready(function () {
 	table = "tasklead_booked_table";
@@ -13,38 +13,17 @@ $(document).ready(function () {
 
 	loadDataTable(table, router.tasklead.booked_list, METHOD.POST, options);
 
-	$("#" + form_upload).on("submit", function (e) {
-		e.preventDefault();
-		let id = $("#upload_id").val();
-		let self = $(this);
-		let url = self.attr("action");
-		$("#tasklead_id").val(id);
+	// Initialize dropzone
+	_dropzoneInit();
 
-		let formData = new FormData(this);
-
-		$.ajax({
-			url: url,
-			type: METHOD.POST,
-			data: formData,
-			dataType: "json",
-			contentType: false,
-			cache: false,
-			processData: false,
-			success: function (response) {
-				if (response.success == true) {
-					notifMsgSwal("Success!", response.message, STATUS.SUCCESS);
-					getTaskleadFiles(id);
-					self[0].reset();
-					$("#modal-addfile").modal("hide");
-				} else {
-					notifMsgSwal("Error!", response.errors, STATUS.ERROR);
-				}
-			},
-		});
+	$(".btn-addfile").on("click", () => {
+		// Clear files
+		_dropzone.removeAllFiles(true);
 	});
 });
 
 function getBookedDetails(id) {
+	$("#upload_tasklead_id").val(id);
 	$.post(
 		router.tasklead.booked_details + "?tasklead_id=" + id,
 		{ id: id },
@@ -64,7 +43,9 @@ function getBookedDetails(id) {
 				$(".max_forecast_date").html(value.max_forecast_date);
 				$(".status1").html(value.status1);
 				$(".employee_name").html(value.employee_name);
-				getTaskleadFiles(id);
+
+				// Fetch files by id
+				fetchFiles(id);
 			});
 		}
 	);
@@ -157,27 +138,73 @@ function getBookedDetails(id) {
 	);
 }
 
-function getTaskleadFiles(id) {
-	$.post(router.tasklead.booked_files, { id: id }, function (response) {
-		$(".files").empty();
-		$.each(response.map, function (key, value) {
-			$(".files").append(
-				"<li><a href='" +
-					$("#download_url").val() +
-					"?id=" +
-					$("#upload_id").val() +
-					"&file=" +
-					value +
-					"'class='btn-link text-secondary'><i class='far fa-fw fa-file-word'></i> " +
-					value +
-					"</a></li>"
-			);
-		});
-	});
+/* Get files */
+function fetchFiles(id) {
+	$.get(router.tasklead.booked.files + "/" + id)
+		.then((res) => {
+			let files = "";
+			$.each(res.files, function (i, file) {
+				files += `
+					<li class="hover" id="file_${file._id}_${i}">
+						<a href="${file.url}" class="btn-link text-secondary" target="_blank">
+							<i class="${file.icon}"></i> ${file.name}
+							<span>
+								<a href="javascript:void(0)" class="text-danger"
+									onclick="removeFiles(${file._id}, '${file.name}', ${i})"
+									title="Remove file"
+								>
+									<i class="fas fa-sm fa-trash hover-show"></i>
+								</a>
+							</span>
+						</a>
+					</li>
+				`;
+			});
+
+			$(".files").empty().html(files);
+		})
+		.catch((err) => catchErrMsg(err));
 }
 
-function downloadFile(id) {
-	$.post(router.tasklead.booked_download, { id: id }, function (response) {
-		notifMsgSwal("Success!", response.message, STATUS.SUCCESS);
-	});
+/* Remove files */
+function removeFiles(id, filename, i) {
+	const data = { id: id, filename: filename };
+
+	swalNotifConfirm(
+		() => {
+			$.post(router.tasklead.booked.files_remove, data)
+				.then((res) => {
+					const message = res.errors ?? res.message;
+					notifMsgSwal(res.status, message, res.status);
+
+					if (res.status === STATUS.SUCCESS)
+						$(`ul.files li#file_${id}_${i}`).remove();
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		TITLE.WARNING,
+		"Are you sure you want to remove this file? You will not be able to recover this data!",
+		STATUS.WARNING
+	);
+}
+
+/* Dropzone init */
+function _dropzoneInit() {
+	const form = "upload_form";
+	const button = "#modal-addfile .btn-upload";
+
+	_dropzone = dropzoneInit(form, null, button);
+	dzOnSuccessEvent(_dropzone, button, _dzOnSuccessEvent);
+}
+
+// Dropzone on success event custom callback
+function _dzOnSuccessEvent(files, response) {
+	const message = response.errors ?? response.message;
+
+	if (response.status !== STATUS.ERROR) {
+		$("#modal-addfile").modal("hide");
+		fetchFiles(response.id);
+	}
+
+	notifMsgSwal(response.status, message, response.status);
 }
