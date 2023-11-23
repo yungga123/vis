@@ -108,6 +108,7 @@ class PurchaseOrder extends BaseController
         $supplierModel  = new SuppliersModel();
         $fields     = [
             'id',
+            'rpf_id',
             'supplier_name',
             'attention_to',
             'requested_by',
@@ -123,6 +124,7 @@ class PurchaseOrder extends BaseController
         $table->setTable($builder)
             ->setSearch([
                 "{$this->_model->table}.id",
+                "{$this->_model->table}.rpf_id",
                 "{$supplierModel->table}.supplier_name",
             ])
             ->setOrder(
@@ -408,6 +410,7 @@ class PurchaseOrder extends BaseController
         $columns        = "
             UPPER({$this->_model->table}.status) AS status,
             {$this->_model->table}.id,
+            {$this->_model->table}.rpf_id,
             {$supplierModel->table}.supplier_name,
             {$this->_model->table}.attention_to,
             IF({$this->_model->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
@@ -436,6 +439,7 @@ class PurchaseOrder extends BaseController
         $header     = [
             'Status',
             'PO #',
+            'RPF #',
             'Supplier',
             'Attention To',
             'With Vat',
