@@ -63,11 +63,12 @@ class TaskLeadBooked extends BaseController
 
         $data['title']          = 'Task Lead | Booked';
         $data['page_title']     = 'Task Lead | Booked';
-        $data['custom_js']      = 'sales/tasklead/booked.js';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
+        $data['dropzone']       = true;
+        $data['custom_js']      = ['sales/tasklead/booked.js', 'dropzone.js'];
         $data['routes']         = json_encode([
             'tasklead' => [
                 'booked_list'       => url_to('tasklead.booked.list'),
@@ -75,6 +76,10 @@ class TaskLeadBooked extends BaseController
                 'booked_history'    => url_to('tasklead.booked.history'),
                 'booked_files'      => url_to('tasklead.booked.files'),
                 'booked_download'   => url_to('tasklead.booked.download'),
+                'booked' => [
+                    'files'         => site_url('tasklead/booked/files'),
+                    'files_remove'  => url_to('tasklead.booked.files.remove'),
+                ],
             ],
         ]);
 

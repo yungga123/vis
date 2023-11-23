@@ -28,7 +28,8 @@
                                 <th>Actions</th>
                                 <th>Items</th>
                                 <th>Status</th>
-                                <th>PO ID</th>
+                                <th>PO #</th>
+                                <th>RPF #</th>
                                 <th>Supplier</th>
                                 <th>Attention To</th>
                                 <th>Requested By</th>

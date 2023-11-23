@@ -207,3 +207,36 @@ if (! function_exists('mb_to_kb'))
 	}
 }
 
+if (! function_exists('get_file_icons'))
+{
+    /**
+     * Get fontawesome file icons
+     */
+	function get_file_icons(string $param): string
+	{
+        $icon = 'fas fa-file';
+        switch (strtolower($param)) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'webp':
+                $icon = 'fas fa-file-image';  
+                break;
+            case 'pdf':
+                $icon = 'fas fa-file-pdf';                   
+                break;
+                break;
+            case 'doc':
+            case 'docx':
+                $icon = 'fas fa-file-word';                   
+                break;
+            case 'xlx':
+            case 'xlsx':
+            case 'csv':
+                $icon = 'fas fa-file-excel';                   
+                break;
+        }
+
+        return $icon;
+	}
+}

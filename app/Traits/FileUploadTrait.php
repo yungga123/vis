@@ -13,10 +13,12 @@ trait FileUploadTrait
      */
     public function setRootFileUploadsDirPath()
     {
-        // ROOT_FILE_UPLOAD_DIR was from Constants.php file
-        // This is the very root path for storing files
-        // Set the very root directory path in Constants.php file
-        // If empty, default directory path set to writable folder
+        // ROOT_FILE_UPLOAD_DIR was from Constants.php file.
+        // This is the very root path for storing files.
+        // Set the very root directory path in Constants.php file.
+        // If empty, default directory path set to writable folder.
+        // Please be careful, if you change the directory -
+        // please move also the files and folder to the new directory.
         return empty(ROOT_FILE_UPLOAD_DIR) 
             ? WRITEPATH : ROOT_FILE_UPLOAD_DIR;
     }
@@ -33,7 +35,8 @@ trait FileUploadTrait
      */
     public function getFiles($id, $filenames, $directory, $downloadUrl)
     {
-        $files = [];
+        $files      = [];
+        $exclude    = 'index.html';
 
         try {
             if (! empty($filenames)) {
@@ -41,8 +44,18 @@ trait FileUploadTrait
                 $iterator = new \DirectoryIterator ($directory);
 
                 foreach ($iterator as $file) {
-                    if ($file->isFile() && in_array($file->getFilename(), $filenames)) {
-                        $files[] = $this->setFileData($id, $file, '', $downloadUrl, true);
+                    if ($file->isFile()) {
+                        $_filename = $file->getFilename();
+
+                        // Check if filename is in array of filenames from db
+                        if (in_array($_filename, $filenames)) {
+                            $files[] = $this->setFileData($id, $file, '', $downloadUrl, true);
+                        } else {
+                            // Remove the files not in the records (db) 
+                            // except the index.html
+                            if ($_filename !== $exclude)
+                                $this->removeFile($directory . $_filename);
+                        }
                     }
                 }
             }
@@ -121,6 +134,7 @@ trait FileUploadTrait
             'size'      => $file->getSize(),
             'url'       => $downloadUrl,
             'ext'       => $ext,
+            'icon'      => get_file_icons($ext),
             'accepted'  => true,        
             'status'    => 'uploaded',
             'is_img'    => in_array($ext, $this->imgExtensions),
@@ -140,7 +154,7 @@ trait FileUploadTrait
      */
     public function validationFileRules($filename, $allowed, $maxSize = 5, $label = '')
     {
-        $default    = 'jpg,jpeg,png,webp,pdf,doc,docx,xlx,xlsx,csv';
+        $default    = 'jpg,jpeg,png,webp,pdf,docx,doc,xls,xlsx,csv';
         $allowed    = empty($allowed) ? $default : $allowed;
         $sizeToKb   = mb_to_kb((int) $maxSize);
         $label      = empty($label) ? $filename : $label;
