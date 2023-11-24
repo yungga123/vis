@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-3 text-center mx-auto">
-			<img src="<?= base_url($company_logo ?? '') ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px; width: 200px">
+			<img src="<?= $company_logo ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px; width: 200px">
 		</div>
 	</div>
 	<div class="row">

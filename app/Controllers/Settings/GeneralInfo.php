@@ -38,24 +38,6 @@ class GeneralInfo extends BaseController
     private $_can_add;
 
     /**
-     * The root directory to save the uploaded files
-     * @var string
-     */
-    private $_rootDirPath;
-
-    /**
-     * The initial file path after the root path
-     * @var string
-     */
-    private $_initialFilePath;
-
-    /**
-     * The full file path
-     * @var string
-     */
-    private $_fullFilePath;
-
-    /**
      * Class constructor
      */
     public function __construct()
@@ -64,13 +46,6 @@ class GeneralInfo extends BaseController
         $this->_module_code = MODULE_CODES['general_info']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
-
-        // Change it desired directory path
-        // Example F:\files
-        $this->_rootDirPath     = FCPATH; // The public folder
-        // Please don't change this
-        $this->_initialFilePath = 'uploads/logo/';
-        $this->_fullFilePath    = $this->_rootDirPath . $this->_initialFilePath;
     }
 
     /**
@@ -164,9 +139,9 @@ class GeneralInfo extends BaseController
                 
                 $img            = $this->request->getFile($fileName);
                 $newName        = $img->getRandomName();
-                $downloadUrl    = base_url($this->_initialFilePath . $newName);
+                $downloadUrl    = base_url($this->initialFilePathLogo . $newName);
                 // Upload image and get formatted file info
-                $file           = $this->uploadFile($fileName, $img, $newName, $this->_fullFilePath, $downloadUrl);
+                $file           = $this->uploadFile($fileName, $img, $newName, $this->fullFilePath(), $downloadUrl);
 
                 // The data to save or update
                 $inputs     = [
@@ -188,7 +163,7 @@ class GeneralInfo extends BaseController
                 }
 
                 // Remove the previous file
-                $filepath = $this->_fullFilePath . $curFilename;
+                $filepath = $this->fullFilePath() . $curFilename;
                 $this->removeFile($filepath);
                 
                 $data['files'] = $file;
@@ -219,8 +194,8 @@ class GeneralInfo extends BaseController
                     $filename           = $this->getGeneralInfo($q);
                     $nfilename          = strpos($filename, '/') ? explode('/', $filename) : $filename;
                     $nfilename          = is_array($nfilename) ? array_pop($nfilename) : $nfilename;
-                    $downloadUrl        = base_url($this->_initialFilePath . $nfilename);
-                    $files              = $this->getFiles($q, [$nfilename], $this->_fullFilePath, $downloadUrl);
+                    $downloadUrl        = base_url($this->initialFilePathLogo . $nfilename);
+                    $files              = $this->getFiles($q, [$nfilename], $this->fullFilePath(), $downloadUrl);
                     $data['files']      = $files;
                 } else {
                     $data['data']       = $this->_model->fetchAll();

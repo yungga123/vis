@@ -355,7 +355,7 @@ class ProjectRequestForm extends BaseController
         $data['prf']            = $builder->find($id);
         $data['prf_items']      = $builder->traitFetchPrfItems($id, true, true);
         $data['title']          = 'Print Project Request Form';
-        $data['company_logo']   = $this->getGeneralInfo('company_logo');
+        $data['company_logo']   = $this->getCompanyLogo();
 
         return view('inventory/prf/print', $data);
     }

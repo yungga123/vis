@@ -7,6 +7,20 @@ use App\Models\GeneralInfoModel;
 trait GeneralInfoTrait
 {
     /**
+     * The root directory to save the uploaded files
+     * Change it desired directory path
+     * Example F:\files
+     * @var string
+     */
+    protected $rootDirPath = FCPATH;
+
+    /**
+     * The initial file path after the root path
+     * @var string
+     */
+    protected $initialFilePathLogo = 'uploads/logo/';
+
+    /**
      * Fetching the general info
      *
      * @param string|array|null $param  The param to search
@@ -28,6 +42,22 @@ trait GeneralInfoTrait
     }
 
     /**
+     * Get company logo
+     *
+     * @param string $filename  Optional filename
+     * @return string           The full path of the logo
+     */
+    public function getCompanyLogo($filename = '') 
+    {
+        if (empty($filename)) {
+            $filename = $this->getGeneralInfo('company_logo');
+        }
+
+        return empty($filename) 
+            ? '' : base_url($this->initialFilePathLogo . $filename);
+    }
+
+    /**
      * Formatting the result into one assoc array
      *
      * @param array $result     The array/result to format
@@ -44,5 +74,15 @@ trait GeneralInfoTrait
         }
 
         return $arr;
+    }
+
+    /**
+     * The full file path
+     *
+     * @return string
+     */
+    public function fullFilePath() 
+    {
+        return $this->rootDirPath . $this->initialFilePath;
     }
 }
