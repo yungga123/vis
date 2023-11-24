@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-3 text-center mx-auto">
-			<img src="<?= base_url($company_logo ?? '') ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px;width: 200px">
+			<img src="<?= $company_logo ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px;width: 200px">
 		</div>
 	</div>
 	<div class="row">
@@ -69,14 +69,14 @@
 			<table class="table table-bordered table-sm" style="font-size: 15px">
 				<thead>
 					<tr>
-						<th>Item #</th>
-						<th>Category</th>
-						<th>Description</th>
-						<th>Quantity</th>
-						<th>Available</th>
-						<th>Consumed</th>
-						<th>Returned</th>
-						<th>Returned Date</th>
+						<td class="text-bold">Item #</td>
+						<td class="text-bold">Category</td>
+						<td class="text-bold">Description</td>
+						<td class="text-bold">Quantity</td>
+						<td class="text-bold">Available</td>
+						<td class="text-bold">Consumed</td>
+						<td class="text-bold">Returned</td>
+						<td class="text-bold">Returned Date</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -127,7 +127,9 @@
 					<tr>
 						<td width="50%">
 							<div class="text-bold">Returned by:</div>
-							<div class="text-center"><?= $prf['filed_by_name'] ?></div>
+							<div class="text-center" <?= $prf['filed_by_name'] ? '' : 'style="padding: 0.7rem 0;"' ?>>
+								<?= $prf['filed_by_name'] ?>
+							</div>
 						</td>
 						<td width="50%">
 							<div class="text-bold">Approved By: (Engineer In-charge)</div>

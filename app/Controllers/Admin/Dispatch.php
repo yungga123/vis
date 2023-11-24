@@ -279,15 +279,14 @@ class Dispatch extends BaseController
      *
      * @return view
      */
-    public function print() 
+    public function print($id) 
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
         
-        $id                     = $this->request->getUri()->getSegment(3);
         $data['dispatch']       = $this->_model->getDispatch($id, false, false, true);
         $data['title']          = 'Print Dispatch';
-        $data['company_logo']   = $this->getGeneralInfo('company_logo');
+        $data['company_logo']   = $this->getCompanyLogo();
 
         return view('admin/dispatch/print', $data);
     }
