@@ -81,8 +81,8 @@ trait GeneralInfoTrait
      *
      * @return string
      */
-    public function fullFilePath() 
+    public function fullFilePathLogo() 
     {
-        return $this->rootDirPath . $this->initialFilePath;
+        return $this->rootDirPath . $this->initialFilePathLogo;
     }
 }

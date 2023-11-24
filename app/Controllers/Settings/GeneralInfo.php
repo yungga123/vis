@@ -141,7 +141,7 @@ class GeneralInfo extends BaseController
                 $newName        = $img->getRandomName();
                 $downloadUrl    = base_url($this->initialFilePathLogo . $newName);
                 // Upload image and get formatted file info
-                $file           = $this->uploadFile($fileName, $img, $newName, $this->fullFilePath(), $downloadUrl);
+                $file           = $this->uploadFile($fileName, $img, $newName, $this->fullFilePathLogo(), $downloadUrl);
 
                 // The data to save or update
                 $inputs     = [
@@ -163,7 +163,7 @@ class GeneralInfo extends BaseController
                 }
 
                 // Remove the previous file
-                $filepath = $this->fullFilePath() . $curFilename;
+                $filepath = $this->fullFilePathLogo() . $curFilename;
                 $this->removeFile($filepath);
                 
                 $data['files'] = $file;
@@ -195,7 +195,7 @@ class GeneralInfo extends BaseController
                     $nfilename          = strpos($filename, '/') ? explode('/', $filename) : $filename;
                     $nfilename          = is_array($nfilename) ? array_pop($nfilename) : $nfilename;
                     $downloadUrl        = base_url($this->initialFilePathLogo . $nfilename);
-                    $files              = $this->getFiles($q, [$nfilename], $this->fullFilePath(), $downloadUrl);
+                    $files              = $this->getFiles($q, [$nfilename], $this->fullFilePathLogo(), $downloadUrl);
                     $data['files']      = $files;
                 } else {
                     $data['data']       = $this->_model->fetchAll();
