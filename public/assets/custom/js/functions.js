@@ -1019,6 +1019,8 @@ function getQueryStringInUrl(param) {
 	// Get the query string from the current URL
 	const queryString = window.location.search;
 
+	if (!queryString) return {};
+
 	// Remove the leading '?' character if present
 	const queryStringWithoutQuestionMark = queryString.slice(1);
 
@@ -1047,6 +1049,8 @@ function getQueryStringInUrl(param) {
 function removeQueryStringInUrl(params) {
 	// Get the current query string from the URL
 	const queryString = window.location.search;
+
+	if (!queryString) return;
 
 	// Create a URLSearchParams object from the query string
 	const searchParams = new URLSearchParams(queryString);
@@ -1098,4 +1102,13 @@ function numberFormat(number, decimal) {
  */
 function inObjectReturn(obj, key) {
 	return inObject(obj, key) ? obj[key] : null;
+}
+
+/**
+ * Check if page is reloaded
+ *
+ * @returns {bool}
+ */
+function isPageReloaded() {
+	return performance.navigation.type === 1;
 }

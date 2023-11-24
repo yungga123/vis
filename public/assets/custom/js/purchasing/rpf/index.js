@@ -88,6 +88,8 @@ $(document).ready(function () {
 
 		showAlertInForm(["remarks"], message, res.status);
 	});
+
+	_fromMailNotif();
 });
 
 /* For filtering and reseting */
@@ -106,7 +108,7 @@ function filterData(reset = false) {
 
 /* Get rpf items */
 function view(id, status) {
-	$(`#rpf_items_modal .modal-title`).html("RPF Items Detials");
+	$(`#rpf_items_modal .modal-title`).html("RPF Item Details");
 	$("#received_remarks").addClass("d-none");
 	if (!status) {
 		$("#item_note").html("");
@@ -434,5 +436,17 @@ function _populateAvailableItemStocks(parentSiblingElem, stock, noChild) {
 			return;
 		}
 		$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
+	}
+}
+
+/* 
+	Check if there's a query paramaters
+	Intended if from mail notif
+*/
+function _fromMailNotif() {
+	const query = getQueryStringInUrl();
+
+	if (!isEmpty(query)) {
+		if (query.mail && !isPageReloaded()) view(query.id);
 	}
 }

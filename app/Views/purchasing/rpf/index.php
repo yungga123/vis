@@ -29,7 +29,7 @@
                                 <th>Items</th>
                                 <th>Status</th>
                                 <th>RPF #</th>
-                                <th>Date Needed</th>
+                                <th>Delivery Date</th>
                                 <th>Requested By</th>
                                 <th>Requested At</th>
                                 <th>Accepted By</th>
