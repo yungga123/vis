@@ -5,11 +5,13 @@ namespace App\Models;
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
 use App\Traits\FilterParamTrait;
+use App\Traits\HRTrait;
+use App\Services\Mail\InventoryMailService;
 
 class ProjectRequestFormModel extends Model
 {
     /* Declare trait here to use */
-    use InventoryTrait, FilterParamTrait;
+    use InventoryTrait, FilterParamTrait, HRTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'project_request_forms';
@@ -65,7 +67,7 @@ class ProjectRequestFormModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['setCreatedBy'];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = ['setStatusByAndAt'];
     protected $afterUpdate    = ['updateInventoryStock'];
     protected $beforeFind     = [];
@@ -75,7 +77,9 @@ class ProjectRequestFormModel extends Model
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses = ['rejected', 'item_out', 'filed'];
+    protected $restrictedStatuses   = ['rejected', 'item_out', 'filed'];
+    // Get inserted ID
+    protected $insertedID           = 0;
 
     // Set the value for created_by before inserting
     protected function setCreatedBy(array $data)
@@ -94,6 +98,44 @@ class ProjectRequestFormModel extends Model
         }
         
         return $data;
+    }
+
+    // Mail notif after record created
+    protected function mailNotif(array $data)
+    {
+        $id                 = $data['id'];
+        $this->insertedID   = $id;
+
+        if ($data['result']) {
+            $columns    = "
+                {$this->table}.id,
+                {$this->table}.job_order_id,
+                {$this->table}.status,
+                {$this->table}.process_date,
+                {$this->table}.created_at,
+                cb.employee_name AS created_by
+            ";
+            $builder    = $this->select($columns);
+            $builder->where("{$this->table}.id", $id);
+            $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+
+            $record     = $builder->first();
+
+            // Send mail notification
+            $service = new InventoryMailService();
+            $service->sendPrfMailNotif($record);
+        }
+        
+        return $data;
+    }
+
+    // Check if record exist
+    public function exists($id)
+    {
+        $builder = $this->select('id');
+        $builder->where('deleted_at', null);
+
+        return !empty($builder->find($id));
     }
 
     public function countRecords($param = null)

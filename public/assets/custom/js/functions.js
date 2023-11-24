@@ -1112,3 +1112,18 @@ function inObjectReturn(obj, key) {
 function isPageReloaded() {
 	return performance.navigation.type === 1;
 }
+
+/**
+ * Check if there's a query paramaters
+ * Intended if from mail notif
+ *
+ * @returns {bool}
+ */
+function showItemsIfRedirectedFromMail() {
+	const query = getQueryStringInUrl();
+
+	if (!isEmpty(query)) {
+		if (query.mail && !isPageReloaded())
+			if (isFunctionExist(view)) view(query.id);
+	}
+}

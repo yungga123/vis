@@ -89,7 +89,7 @@ $(document).ready(function () {
 		showAlertInForm(["remarks"], message, res.status);
 	});
 
-	_fromMailNotif();
+	showItemsIfRedirectedFromMail();
 });
 
 /* For filtering and reseting */
@@ -436,17 +436,5 @@ function _populateAvailableItemStocks(parentSiblingElem, stock, noChild) {
 			return;
 		}
 		$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
-	}
-}
-
-/* 
-	Check if there's a query paramaters
-	Intended if from mail notif
-*/
-function _fromMailNotif() {
-	const query = getQueryStringInUrl();
-
-	if (!isEmpty(query)) {
-		if (query.mail && !isPageReloaded()) view(query.id);
 	}
 }

@@ -89,6 +89,8 @@ $(document).ready(function () {
 
 		showAlertInForm(["remarks"], message, res.status);
 	});
+
+	showItemsIfRedirectedFromMail();
 });
 
 /* For filtering and reseting */
@@ -107,7 +109,7 @@ function filterData(reset = false) {
 
 /* Get prf items */
 function view(id, status) {
-	$(`#prf_items_modal .modal-title`).html("PRF Items Detials");
+	$(`#prf_items_modal .modal-title`).html("PRF Item Details");
 	$("#file_remarks").addClass("d-none");
 	if (!status) $("#note_item_out").html("");
 	$("#prf_items_modal .modal-footer #btn_item_out").remove();

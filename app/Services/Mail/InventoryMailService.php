@@ -4,32 +4,33 @@ namespace App\Services\Mail;
 
 use App\Traits\MailTrait;
 
-class PurchasingMailService
+class InventoryMailService
 {
     /* Declare trait here to use */
     use MailTrait;
 
     /**
-     * Send the RPF mail notification
+     * Send the PRF mail notification
      *
      * @param   string $data
      * @return  void
      */
-    public function sendRpfMailNotif($data)
+    public function sendPrfMailNotif($data)
     {
-        $module     = 'Request to Purchase Form';
+        $module     = 'Project Request Form';
         $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
-        $url        = url_to('rpf.home') . '?id='. $data['id'] .'&mail=true';
+        $url        = url_to('prf.home') . '?id='. $data['id'] .'&mail=true';
         $items      = '<a href="'.$url.'">Click here</a>';
         $info       = [
             'module'    => $module,
             'title'     => $title,
             'details'   => [
                 'RPF #'             => $data['id'],
+                'Job Order #'       => $data['job_order_id'],
                 'Status'            => ucwords(str_replace('_', ' ', $data['status'])),
-                'Delivery Date'     => format_date($data['date_needed']),
-                'Requested By'      => $data['created_by'],
-                'Requested At'      => format_datetime($data['created_at']),
+                'Process Date'      => format_date($data['process_date']),
+                'Created By'        => $data['created_by'],
+                'Created At'        => format_datetime($data['created_at']),
                 'Items'             => $items,
             ],
         ];

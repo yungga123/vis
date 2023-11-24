@@ -207,7 +207,7 @@ class ProjectRequestForm extends BaseController
                         $data['message']    = "Validation error!";
                     } else {
                         $prfItemModel   = new PRFItemModel();
-                        $prf_id         = $id ? $id : $this->_model->insertID();
+                        $prf_id         = $id ? $id : $this->_model->insertedID;
                         $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
                     }
 
@@ -237,6 +237,12 @@ class ProjectRequestForm extends BaseController
             $data,
             function($data) {
                 $id  = $this->request->getVar('id');
+                if (! $this->_model->exists($id)) {
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "<strong>PRF #: {$id}</strong> doesn't exists anymore!";
+                    return $data;
+                }
+
                 if ($this->request->getVar('prf_items')) {                
                     $data['data']       = $this->traitFetchPrfItems($id, true, true);
                     $data['message']    = 'PRF items has been retrieved!';
