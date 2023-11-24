@@ -36,7 +36,15 @@ class LoginPage extends BaseController
 
                 if ($user = $accountsModel->authenticate($username, $password)) {
                     $employeesModel = new EmployeeModel();
-                    $employee = $employeesModel->where('employee_id', $user['employee_id'])->first();
+                    $fields         = '
+                        employee_id,
+                        firstname,
+                        lastname,
+                        gender,
+                        email_address
+                    ';
+                    $employee       = $employeesModel->select($fields)
+                                        ->where('employee_id', $user['employee_id'])->first();
 
                     $session = session();
                     $session->set([
@@ -47,6 +55,7 @@ class LoginPage extends BaseController
                         'employee_id'   => $employee['employee_id'],
                         'name'          => $employee['firstname'].' '.$employee['lastname'],
                         'gender'        => $employee['gender'],
+                        'email_address' => $employee['email_address'],
                         'logged_at'     => date('Y-m-d H:i:s'),
                     ]);
 

@@ -45,7 +45,7 @@ $(document).ready(function () {
 		clearSelect2Selection("#select2Quotation");
 		clearSelect2Selection("#customer_id");
 		clearSelect2Selection("#customer_branch_id");
-		toggleQuotationFields(is_manual);
+		toggleQuotationFields(false);
 		clearAlertInForm(elems);
 	});
 
