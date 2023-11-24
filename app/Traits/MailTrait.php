@@ -89,9 +89,31 @@ trait MailTrait
         $view = empty($view) ? 'templates/mail' : $view;
         
         // Get and add company name
-        $info                   = $this->getGeneralInfo('company_name', true);
-        $data['company_name']   = $info['company_name'] ?? COMPANY_NAME;
+        $company_name           = $this->getGeneralInfo('company_name', true);
+        $data['company_name']   = $company_name ?? COMPANY_NAME;
         
         return view($view, $data);
+    }
+
+    /**
+     * Log the response and details
+     *
+     * @param   string $msg     Response message
+     * @param   string $title
+     * @param   array $details
+     * @return  void
+     */
+    public function logInfo($msg, $title, $details, $method = null)
+    {
+        log_message(
+            'error',
+            "Mail Info: \n Message: {msg} \n Title: {title} \n Details: {details} \n Class: {method}()",
+            [
+                'msg'       => $msg, 
+                'title'     => $title, 
+                'details'   => json_encode($details), 
+                'method'    => $method ?? '',
+            ]
+        );
     }
 }

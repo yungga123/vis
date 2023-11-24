@@ -5,12 +5,12 @@ namespace App\Models;
 use CodeIgniter\Model;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
-use App\Traits\MailTrait;
+use App\Services\Mail\AdminMailService;
 
 class JobOrderModel extends Model
 {
     /* Declare trait here to use */
-    use HRTrait, FilterParamTrait, MailTrait;
+    use HRTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'job_orders';
@@ -106,73 +106,6 @@ class JobOrderModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    // For mail notification
-    private function _sendMailNotif($data)
-    {
-        $module     = 'Job Order';
-        $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
-        $info       = [
-            'module'    => $module,
-            'title'     => $title,
-            'details'   => [
-                'Job Order #'       => $data['id'],
-                'Tasklead #'        => $data['tasklead_id'] ? $data['tasklead_id'] : 'N/A',
-                'Manual Quotation?' => $data['is_manual'],
-                'Quotation #'       => $data['quotation'],
-                'Quotation Type'    => empty($data['tasklead_type']) ? 'N/A' : ucwords($data['tasklead_type']),
-                'Client'            => $data['client'],
-                'Manager'           => empty($data['manager']) ? 'N/A' : $data['manager'],
-                'Status'            => ucwords(str_replace('_', ' ', $data['status'])),
-                'Date Requested'    => $data['date_requested'],
-                'Date Committed'    => empty($data['date_committed']) ? 'N/A' : $data['date_committed'],
-                'Requested By'      => $data['requested_by'],
-                'Created At'        => $data['created_at'],
-            ],
-        ];
-        $sendTo     = session('email_address');
-        $sendName   = session('name');
-        $subject    = 'User Notification - ' . $title;
-        $body       = $this->mailTemplate($info);
-
-        // Send the mail via SMTP
-        $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body);
-        log_message(
-            'error',
-            "Mail Info: \n Message: {msg} \n Title: {title} \n Details {details}",
-            ['msg' => $mail, 'title' => $title, 'details' => json_encode($info['details'])]
-        );
-    }
-
-    // Get JO details for callbacks
-    private function _getJODetails($id)
-    {
-        $tlViewModel    = new TaskLeadView();
-        $customerModel  = new CustomerModel();
-        $employeeModel  = new EmployeeModel();
-        $columns        = "
-            {$this->table}.id,
-            {$this->table}.tasklead_id,
-            {$this->table}.status,
-            IF({$this->table}.is_manual = 0, 'NO', 'YES') AS is_manual,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
-            CONCAT({$employeeModel->table}.firstname,' ',{$employeeModel->table}.lastname) AS manager,
-            {$this->table}.work_type,
-            {$this->table}.comments,
-            cb.employee_name AS requested_by,
-            ".dt_sql_date_format("{$this->table}.date_requested")." AS date_requested,
-            ".dt_sql_date_format("{$this->table}.date_committed")." AS date_committed,
-            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
-        ";
-        $builder        = $this->select($columns);  
-        $this->joinWithOtherTables($builder);
-        $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
-        
-        $builder->where("{$this->table}.id", $id);
-        return $builder->first();
-    }
-
     // Common columns
     private function _columns($withRequestBy = false, $isDateFormatted = false)
     {
@@ -229,6 +162,36 @@ class JobOrderModel extends Model
         return $columns;
     }
 
+    // Get JO details for mail notif
+    private function _getJODetails($id)
+    {
+        $tlViewModel    = new TaskLeadView();
+        $customerModel  = new CustomerModel();
+        $employeeModel  = new EmployeeModel();
+        $columns        = "
+            {$this->table}.id,
+            {$this->table}.tasklead_id,
+            {$this->table}.status,
+            IF({$this->table}.is_manual = 0, 'NO', 'YES') AS is_manual,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation) AS quotation,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
+            CONCAT({$employeeModel->table}.firstname,' ',{$employeeModel->table}.lastname) AS manager,
+            {$this->table}.work_type,
+            {$this->table}.comments,
+            cb.employee_name AS requested_by,
+            ".dt_sql_date_format("{$this->table}.date_requested")." AS date_requested,
+            ".dt_sql_date_format("{$this->table}.date_committed")." AS date_committed,
+            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
+        ";
+        $builder        = $this->select($columns);  
+        $this->joinWithOtherTables($builder);
+        $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+        
+        $builder->where("{$this->table}.id", $id);
+        return $builder->first();
+    }
+
     // Set the value for 'status_' by and at before updating status
     protected function setStatusByAndAt(array $data)
     {
@@ -250,7 +213,8 @@ class JobOrderModel extends Model
             $job_order  = $this->_getJODetails($id);
 
             // Send mail notification
-            $this->_sendMailNotif($job_order);
+            $service = new AdminMailService();
+            $service->sendJOMailNotif($job_order);
         }
         
         return $data;
@@ -275,7 +239,8 @@ class JobOrderModel extends Model
                 ]);
 
                 // Send mail notification
-                $this->_sendMailNotif($job_order);
+                $service = new AdminMailService();
+                $service->sendJOMailNotif($job_order);
             }
         }
 

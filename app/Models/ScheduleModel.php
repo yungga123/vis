@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\HRTrait;
+use App\Services\Mail\AdminMailService;
 
 class ScheduleModel extends Model
 {
+    /* Declare trait here to use */
+    use HRTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'schedules';
     protected $primaryKey       = 'id';
@@ -57,13 +62,43 @@ class ScheduleModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Mail notif after Schedule created
+    protected function mailNotif(array $data)
+    {
+        if ($data['result']) {
+            $id         = $data['id'];
+            $columns    = "
+                {$this->table}.id,
+                {$this->table}.job_order_id,
+                {$this->table}.title,
+                {$this->table}.description,
+                {$this->table}.type,
+                {$this->table}.start,
+                {$this->table}.end,
+                {$this->table}.created_at,
+                cb.employee_name AS created_by
+            ";
+            $builder    = $this->select($columns);
+            $builder->where("{$this->table}.id", $id);
+            $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+
+            $record     = $builder->first();
+
+            // Send mail notification
+            $service = new AdminMailService();
+            $service->sendScheduleMailNotif($record);
+        }
+        
+        return $data;
+    }
 
     // For fetching schedules
     public function getSchedules($id = null, $columns = '*')
