@@ -15,7 +15,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-6">
-			<img src="<?= base_url($general_info['company_logo'] ?? '') ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
+			<img src="<?= $general_info['company_logo'] ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
 		</div>
         <div class="col-3"></div>
         <div class="col-3">

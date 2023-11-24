@@ -321,7 +321,7 @@ class RequestPurchaseForm extends BaseController
         $data['rpf']            = $builder->find($id);
         $data['rpf_items']      = $items;
         $data['title']          = 'Print Requisition Form';
-        $data['company_logo']   = $this->getGeneralInfo('company_logo');
+        $data['company_logo']   = $this->getCompanyLogo();
 
         return view('purchasing/rpf/print', $data);
     }
