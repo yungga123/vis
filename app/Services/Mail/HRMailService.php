@@ -4,34 +4,36 @@ namespace App\Services\Mail;
 
 use App\Traits\MailTrait;
 
-class InventoryMailService
+class HRMailService
 {
     /* Declare trait here to use */
     use MailTrait;
 
     /**
-     * Send the PRF mail notification
+     * Send the Employee mail notification
      *
      * @param   string $data
      * @return  void
      */
-    public function sendPrfMailNotif($data)
+    public function sendEmployeeMailNotif($data)
     {
-        $module     = 'Project Request Form';
-        $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
-        $url        = url_to('prf.home') . '?id='. $data['id'] .'&mail=true';
-        $items      = '<a href="'.$url.'">Click here</a>';
+        $module     = 'Employee Record';
+        $title      = $module .' Created';
         $info       = [
             'module'    => $module,
             'title'     => $title,
             'details'   => [
-                'PRF #'             => $data['id'],
-                'Job Order #'       => $data['job_order_id'],
-                'Status'            => ucwords(str_replace('_', ' ', $data['status'])),
-                'Process Date'      => format_date($data['process_date']),
+                'Employee ID'       => $data['employee_id'],
+                'Employee Name'     => $data['employee_name'],
+                'Gender'            => $data['gender'],
+                'Civil Status'      => ucwords($data['civil_status']),
+                'Position'          => $data['position'],
+                'Date Hired'        => format_date($data['date_hired']),
+                'Employment Status' => $data['created_by'],
+                'Email Address'     => $data['email_address'],
+                'Contact Number'    => $data['contact_number'],
                 'Created By'        => $data['created_by'],
                 'Created At'        => format_datetime($data['created_at']),
-                'Items'             => $items,
             ],
         ];
         $sendTo     = session('email_address');

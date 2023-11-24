@@ -36,6 +36,7 @@
 								<th>Spouse Contact Number</th>
 								<th>No. of Children</th>
 								<th>Spouse Address</th>
+								<th>Created By</th>
 								<th>Created At</th>
 							</tr>
 						</thead>

@@ -257,6 +257,7 @@ class Employee extends BaseController
             'Spouse Contact Number',
             'No. of Children',
             'Spouse Address',
+            'Created By',
             'Created At',
         ];
         $filename   = 'Employees Masterlist';
