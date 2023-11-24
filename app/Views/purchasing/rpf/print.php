@@ -49,9 +49,11 @@
 				<tbody>
 					<?php 
 					if (! empty($rpf_items)): 
+						$count = 1;
 						foreach ($rpf_items as $item): ?>
 							<tr>
-								<td><?= $item['inventory_id'] ?></td>
+								<!-- <td><?= $item['inventory_id'] ?></td> -->
+								<td><?= $count ?></td>
 								<td><?= $item['item_description'] ?></td>
 								<td><?= $item['item_model'] ?></td>
 								<td><?= number_format($item['quantity_in'], 2) ?></td>
@@ -63,6 +65,7 @@
 								<td><?= number_format($item['stocks'], 2) ?></td>
 							</tr>
 					<?php
+							$count++;
 						endforeach;
 					endif; ?>
 				</tbody>
