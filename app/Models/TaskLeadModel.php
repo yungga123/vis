@@ -4,6 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\FilterParamTrait;
+use App\Services\Mail\SalesMailService;
 
 class TaskLeadModel extends Model
 {
@@ -91,7 +92,7 @@ class TaskLeadModel extends Model
     protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = [];
     protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
+    protected $afterUpdate    = ['mailNotif'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
@@ -131,6 +132,45 @@ class TaskLeadModel extends Model
     protected function setCreatedBy(array $data)
     {
         $data['data']['created_by'] = session('username');
+        return $data;
+    }
+
+    // Mail notif after record created
+    protected function mailNotif(array $data)
+    {
+        $id = $data['id'];
+
+        if ($data['result']) {
+            $tlViewModel    = new TaskLeadView();
+            $columns        = "
+                id,
+                status,
+                status1 AS hit_or_missed,
+                quotation_num,
+                tasklead_type,
+                employee_name AS manager,
+                customer_name AS client,
+                customer_type AS client_type,
+                branch_name AS client_branch,
+                quarter,
+                project,
+                project_amount,
+                close_deal_date,
+                project_start_date,
+                project_finish_date,
+                project_duration,
+                remark_next_step
+            ";
+            $builder    = $tlViewModel->select($columns);
+            $record     = $builder->where('id', $id)->first();
+
+            if (! empty($record)) {
+                // Send mail notification
+                $service = new SalesMailService();
+                $service->sendTaskleadMailNotif($record);
+            }
+        }
+        
         return $data;
     }
 
