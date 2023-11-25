@@ -134,9 +134,9 @@ if (! function_exists('get_quotation_type'))
 	function get_quotation_type(string $param = ''): string|array
 	{
         $options = [
-            'Q1' => 'Project',
+            'Q1' => 'Supplies',
             'Q2' => 'Service',
-            'Q3' => 'Supplies',
+            'Q3' => 'Project',
         ];
 
         return $param ? $options[strtoupper($param)] : $options;
