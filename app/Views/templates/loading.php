@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="row mt-2">
-                <strong>Please wait while process the data...</strong>
+                <strong>Please wait while processing the data...</strong>
             </div>
         </div>
   </div>

@@ -29,7 +29,7 @@ class HRMailService
                 'Civil Status'      => ucwords($data['civil_status']),
                 'Position'          => $data['position'],
                 'Date Hired'        => format_date($data['date_hired']),
-                'Employment Status' => $data['created_by'],
+                'Employment Status' => $data['employment_status'],
                 'Email Address'     => $data['email_address'],
                 'Contact Number'    => $data['contact_number'],
                 'Created By'        => $data['created_by'],
