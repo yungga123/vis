@@ -223,25 +223,60 @@ class JobOrderModel extends Model
     // After JO accepted, add corresponding new record to schedules table
     protected function addToScheduleAfterJOAccepted(array $data)
     {
-        if ($data['result']) {
-            if (isset($data['data']['status']) && $data['data']['status'] === 'accepted') {
-                $id             = $data['id'][0];
-                $job_order      = $this->_getJODetails($id);
-                $scheduleModel  = new ScheduleModel();
-                $scheduleModel->insert([
-                    'job_order_id'  => $id,
-                    'title'         => $job_order['client'],
-                    'description'   => $job_order['comments'],
-                    'type'          => !empty($job_order['tasklead_type']) ? strtolower($job_order['tasklead_type']) : 'project',
-                    'start'         => $data['data']['date_committed'],
-                    'end'           => $data['data']['date_committed'] .' 23:00', // set to 11pm
-                    'created_by'    => session('username'),
-                ]);
+        // Used try catch so that if there's an error
+        // mail will not be sent
+        try {
+            if ($data['result']) {
+                if (isset($data['data']['status']) && $data['data']['status'] === 'accepted') {
+                    $id             = $data['id'][0];
+                    $job_order      = $this->_getJODetails($id);
+                    
+                    // Create schedule
+                    $scheduleTitle  = $job_order['client'];
+                    $scheduleDesc   = $job_order['comments'];
+                    $scheduleStart  = $data['data']['date_committed'];
+                    $scheduleEnd    = $scheduleStart .' 23:00'; // set to 11pm
+                    $scheduleType   = empty($job_order['tasklead_type']) ? 'project' : strtolower($job_order['tasklead_type']);
+                    $scheduleModel  = new ScheduleModel();
+                    $schedBuilder   = $this->db->table($scheduleModel->table);
+                    $schedInsert    = $schedBuilder->insert([
+                            'job_order_id'  => $id,
+                            'title'         => $scheduleTitle,
+                            'description'   => $scheduleDesc,
+                            'type'          => $scheduleType,
+                            'start'         => $scheduleStart,
+                            'end'           => $scheduleEnd,
+                            'created_by'    => session('username'),
+                        ]);
+                    
+                    // Initialize service
+                    $service    = new AdminMailService();
 
-                // Send mail notification
-                $service = new AdminMailService();
-                $service->sendJOMailNotif($job_order);
+                    // If schedule successfully created, then send mail
+                    if ($schedInsert && $schedId = $scheduleModel->insertID()) {
+                        $created_at = current_datetime();
+                        $schedule   = [
+                            'id'            => $schedId,
+                            'job_order_id'  => $id,
+                            'title'         => $scheduleTitle,
+                            'description'   => $scheduleDesc,
+                            'type'          => $scheduleType,
+                            'start'         => $scheduleStart,
+                            'end'           => $scheduleEnd,
+                            'created_at'    => format_datetime($created_at),
+                            'created_by'    => session('name'),
+                        ];
+    
+                        // Send Schedule mail notification
+                        $service->sendScheduleMailNotif($schedule);
+                    }
+    
+                    // Send JO mail notification
+                    $service->sendJOMailNotif($job_order);
+                }
             }
+        } catch (\Exception $e) {
+            throw $e;
         }
 
         return $data;

@@ -74,23 +74,17 @@ class ScheduleModel extends Model
     protected function mailNotif(array $data)
     {
         if ($data['result']) {
-            $id         = $data['id'];
-            $columns    = "
-                {$this->table}.id,
-                {$this->table}.job_order_id,
-                {$this->table}.title,
-                {$this->table}.description,
-                {$this->table}.type,
-                {$this->table}.start,
-                {$this->table}.end,
-                {$this->table}.created_at,
-                cb.employee_name AS created_by
-            ";
-            $builder    = $this->select($columns);
-            $builder->where("{$this->table}.id", $id);
-            $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
-
-            $record     = $builder->first();
+            $record = [
+                'id'            => $data['id'],
+                'job_order_id'  => $data['data']['job_order_id'] ?? '',
+                'title'         => $data['data']['title'],
+                'description'   => $data['data']['description'],
+                'type'          => $data['data']['type'],
+                'start'         => $data['data']['start'],
+                'end'           => $data['data']['end'],
+                'created_at'    => $data['data']['created_at'],
+                'created_by'    => session('name'),
+            ];
 
             // Send mail notification
             $service = new AdminMailService();

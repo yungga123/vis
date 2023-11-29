@@ -2,17 +2,12 @@
 
 namespace App\Services\Mail;
 
-use App\Traits\MailTrait;
-
-class SalesMailService
+class SalesMailService extends BaseService
 {
-    /* Declare trait here to use */
-    use MailTrait;
-
     /**
      * Send the Tasklead mail notification
      *
-     * @param   string $data
+     * @param   array $data
      * @return  void
      */
     public function sendTaskleadMailNotif($data)
@@ -44,13 +39,8 @@ class SalesMailService
                 'Booked At'             => format_datetime(current_datetime()),
             ],
         ];
-        $sendTo     = session('email_address');
-        $sendName   = session('name');
-        $subject    = 'User Notification - ' . $title;
-        $body       = $this->mailTemplate($info);
 
-        // Send the mail via SMTP
-        $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body);
-        $this->logInfo($mail, $title, $info, __METHOD__);
+        // Send the mail
+        $this->sendMail($info, $title);
     }
 }

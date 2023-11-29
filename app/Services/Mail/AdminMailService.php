@@ -2,17 +2,12 @@
 
 namespace App\Services\Mail;
 
-use App\Traits\MailTrait;
-
-class AdminMailService
+class AdminMailService extends BaseService
 {
-    /* Declare trait here to use */
-    use MailTrait;
-
     /**
      * Send the JO mail notification
      *
-     * @param   string $data
+     * @param   array $data
      * @return  void
      */
     public function sendJOMailNotif($data)
@@ -27,7 +22,7 @@ class AdminMailService
                 'Tasklead #'        => $data['tasklead_id'] ? $data['tasklead_id'] : 'N/A',
                 'Manual Quotation?' => $data['is_manual'],
                 'Quotation #'       => $data['quotation'],
-                'Quotation Type'    => empty($data['tasklead_type']) ? 'N/A' : ucwords($data['tasklead_type']),
+                'Quotation Type'    => empty($data['tasklead_type']) ? 'Project' : ucwords($data['tasklead_type']),
                 'Client'            => $data['client'],
                 'Manager'           => empty($data['manager']) ? 'N/A' : $data['manager'],
                 'Status'            => ucwords(str_replace('_', ' ', $data['status'])),
@@ -37,20 +32,15 @@ class AdminMailService
                 'Created At'        => $data['created_at'],
             ],
         ];
-        $sendTo     = session('email_address');
-        $sendName   = session('name');
-        $subject    = 'User Notification - ' . $title;
-        $body       = $this->mailTemplate($info);
 
-        // Send the mail via SMTP
-        $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body);
-        $this->logInfo($mail, $title, $info, __METHOD__);
+        // Send the mail
+        $this->sendMail($info, $title);
     }
 
     /**
      * Send the Schedule mail notification
      *
-     * @param   string $data
+     * @param   array $data
      * @return  void
      */
     public function sendScheduleMailNotif($data)
@@ -73,13 +63,8 @@ class AdminMailService
                 'Created At'        => format_datetime($data['created_at']),
             ],
         ];
-        $sendTo     = session('email_address');
-        $sendName   = session('name');
-        $subject    = 'User Notification - ' . $title;
-        $body       = $this->mailTemplate($info);
 
-        // Send the mail via SMTP
-        $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body);
-        $this->logInfo($mail, $title, $info, __METHOD__);
+        // Send the mail
+        $this->sendMail($info, $title);
     }
 }

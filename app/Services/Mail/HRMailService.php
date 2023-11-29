@@ -2,17 +2,12 @@
 
 namespace App\Services\Mail;
 
-use App\Traits\MailTrait;
-
-class HRMailService
+class HRMailService extends BaseService
 {
-    /* Declare trait here to use */
-    use MailTrait;
-
     /**
      * Send the Employee mail notification
      *
-     * @param   string $data
+     * @param   array $data
      * @return  void
      */
     public function sendEmployeeMailNotif($data)
@@ -36,13 +31,8 @@ class HRMailService
                 'Created At'        => format_datetime($data['created_at']),
             ],
         ];
-        $sendTo     = session('email_address');
-        $sendName   = session('name');
-        $subject    = 'User Notification - ' . $title;
-        $body       = $this->mailTemplate($info);
 
-        // Send the mail via SMTP
-        $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body);
-        $this->logInfo($mail, $title, $info, __METHOD__);
+        // Send the mail
+        $this->sendMail($info, $title);
     }
 }
