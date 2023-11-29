@@ -236,21 +236,6 @@ class Dashboard extends BaseController
                         'count' => $jobOrderModel->countRecords('pending'),
                         'bg'    => 'warning',
                     ],
-                    'accepted' => [
-                        'icon'  => 'fas fa-check-circle',
-                        'count' => $jobOrderModel->countRecords('accepted'),
-                        'bg'    => 'primary',
-                    ],
-                    'filed' => [
-                        'icon'  => 'fas fa-file-import',
-                        'count' => $jobOrderModel->countRecords('filed'),
-                        'bg'    => 'success',
-                    ],
-                    'discarded' => [
-                        'icon'  => 'fas fa-times-circle',
-                        'count' => $jobOrderModel->countRecords('discarded'),
-                        'bg'    => 'secondary',
-                    ],
                 ]
             ],
             'ADMIN_SCHEDULES'       => [
