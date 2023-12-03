@@ -6,12 +6,11 @@ use App\Controllers\BaseController;
 use App\Models\ScheduleModel;
 use App\Traits\AdminTrait;
 use App\Traits\HRTrait;
-use App\Traits\ExportTrait;
 
 class Schedule extends BaseController
 {
     /* Declare trait here to use */
-    use AdminTrait, ExportTrait, HRTrait;
+    use AdminTrait, HRTrait;
 
     /**
      * Use to initialize ScheduleModel class
@@ -231,55 +230,5 @@ class Schedule extends BaseController
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $columns    = "
-            {$this->_model->table}.job_order_id,
-            {$this->_model->table}.title,
-            {$this->_model->table}.description,
-            {$this->_model->table}.type,
-            ".dt_sql_datetime_format("{$this->_model->table}.start")." AS start,
-            ".dt_sql_datetime_format("{$this->_model->table}.end")." AS end,
-            cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
-        ";
-        $builder    = $this->_model->select($columns);
-
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'JO #',
-            'Title',
-            'Description',
-            'Type',
-            'Start At',
-            'End At',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'Schedules Masterlist';
-
-        $this->exportToCsv($data, $header, $filename, function($data, $output) {
-            $i      = 0;
-            $types  = get_schedule_type();
-            while (isset($data[$i])) {
-                $row = $data[$i];
-                
-                if (isset($row['type']))
-                    $row['type'] = $types[$row['type']]['text'];
-
-                fputcsv($output, $row);
-                $i++;
-            }
-        });
     }
 }

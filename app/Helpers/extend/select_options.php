@@ -561,3 +561,21 @@ if (! function_exists('get_employment_status'))
         return $param ? $options[$param] : $options;
 	}
 }
+
+if (! function_exists('get_quarters'))
+{
+    /**
+     * Get quarters of Tasklead module
+     */
+	function get_quarters(string $param = ''): string|array
+	{
+        $options = [
+            1 => '1st Quarter',
+            2 => '2nd Quarter',
+            3 => '3rd Quarter',
+            4 => '4th Quarter',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}

@@ -7,7 +7,6 @@ use App\Models\CustomerBranchModel;
 use App\Models\CustomerModel;
 use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
-use App\Traits\ExportTrait;
 use CodeIgniter\I18n\Time;
 use Exception;
 use monken\TablesIgniter;
@@ -15,7 +14,6 @@ use monken\TablesIgniter;
 class Tasklead extends BaseController
 {
     /* Declare trait here to use */
-    use ExportTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -288,51 +286,6 @@ class Tasklead extends BaseController
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $booked     = $this->request->getVar('booked') !== null;
-        $builder    = $this->_model->dtGetTaskLeads($booked);
-        
-        if (! $booked) $builder->where('status !=', $this->_model->booked);
-
-        $query      = $builder->orderBy('id', 'ASC')->get();
-        $data       = $query->getResultArray();
-        $header     = [
-            'Tasklead ID',
-            'Employee Name',
-            'Quarter',
-            'Percent',
-            'Status',
-            'Client Name',
-            'Client Type',
-            'Branch Name',
-            'Contact Number',
-            'Project',
-            'Amount',
-            'Quotation Number',
-            'Quotation Type',
-            'Forecast Close Date',
-            'Min. Forecast',
-            'Max Forecast',
-            'Hit?',
-            'Remark Next Step',
-            'Close Deal Date',
-            'Start Date',
-            'End Date',
-            'Duration',
-            'Created By',
-            'Created At'
-        ];
-        $filename   = $booked ? 'Booked Task Leads' : 'Task Leads';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 
     public function getVtCustomer() 

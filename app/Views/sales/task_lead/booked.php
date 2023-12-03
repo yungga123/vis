@@ -16,9 +16,6 @@
                 </thead>
             </table>
         </div>
-        <div class="card-footer">
-            <a href="<?= url_to('tasklead.export') . '?booked=true'; ?>" class="btn btn-success">Export All Booked Task Leads</a>
-        </div>
     </div>
 </div>
 <?= $this->include('sales/task_lead/booked_details') ?>

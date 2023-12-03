@@ -190,47 +190,4 @@ class CustomerBranch extends BaseController
 
         return $response;
     }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $datetimeFormat = dt_sql_datetime_format();
-        $address    = dt_sql_concat_client_address();
-        $columns    = "
-            {$this->_model->table}.id,
-            {$this->_model->table}.customer_id,
-            {$this->_model->table}.branch_name,
-            {$this->_model->table}.contact_person,
-            {$this->_model->table}.contact_number,
-            {$this->_model->table}.email_address,
-            {$address},
-            {$this->_model->table}.notes,
-            DATE_FORMAT({$this->_model->table}.created_at, '{$datetimeFormat}') AS created_at,
-            cb.employee_name AS created_by
-        ";
-        $builder    = $this->_model->select($columns);
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-        $builder->where("deleted_at IS NULL")->orderBy('id', 'DESC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Branch ID',
-            'Client ID',
-            'Client Branch Name',
-            'Contact Person',
-            'Contact Number',
-            'Email Address',
-            'Address',
-            'Notes',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'Client Branches Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
-    }
 }

@@ -4,15 +4,11 @@ namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
 use App\Models\SupplierBrandsModel;
-use App\Models\SuppliersModel;
-use App\Traits\ExportTrait;
-use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class SupplierBrands extends BaseController
 {
     /* Declare trait here to use */
-    use ExportTrait, HRTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -191,47 +187,5 @@ class SupplierBrands extends BaseController
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $supplierModel  = new SuppliersModel();
-        $columns        = "
-            {$supplierModel->table}.id,
-            {$supplierModel->table}.supplier_name,
-            {$this->_model->table}.id AS brand_id,
-        ". $this->_model->dtColumns();
-        $builder        = $this->_model->select($columns);
-
-        $this->_model->joinSupplier(null, $supplierModel);
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-
-        $builder->where("{$this->_model->table}.deleted_at IS NULL");
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Supplier ID',
-            'Supplier Name',
-            'Brand ID',
-            'Brand Name',
-            'Brand Product',
-            'Warranty',
-            'Sales Person',
-            'Sales Contact Number',
-            'Tech Support',
-            'Tech Contact Number',
-            'Remarks',
-            'Created By',
-            'Created At'
-        ];
-        $filename   = 'Supplier Brands Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

@@ -246,7 +246,7 @@ abstract class BaseController extends Controller
 		log_message('error', '[ERROR] {exception}', ['exception' => $e]);
         $data['status']     = STATUS_ERROR;
         $data['message']    = $e->getCode() === 2 
-            ? $e->getMessage() : 'Error while processing data! Please contact your system administrator.';
+            ? $e->getMessage() : lang('Response.default.error');
 
         return $data;
 	}

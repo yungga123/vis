@@ -258,7 +258,11 @@ if (! function_exists('flatten_array'))
             foreach ($array as $key => $val) {
                 if (is_array($val)) {
                     $vals = array_values($val);
-                    $arr[$vals[0]] = $vals[1];
+
+                    if (count($vals) > 1)
+                        $arr[$vals[0]] = $vals[1];
+                    else 
+                        $arr[$vals[0]] = $vals[0];
                 } else
                     $arr[$key] = $val;  
             }

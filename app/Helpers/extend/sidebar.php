@@ -84,6 +84,12 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => $is_inventory,
                 'icon'      => 'fas fa-store-alt',
             ],
+            'REPORTS'         => [
+                'name'      => 'Reports',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => url_is('reports/export'),
+                'icon'      => 'fas fa-server',
+            ],
         ];
 
         return $menu[$param];
@@ -225,10 +231,10 @@ if (! function_exists('setup_modules'))
                 'icon'      => 'fas fa-info-circle',
             ],
             'EXPORT_DATA'  => [
-                'menu'      => '', // Leave empty if none
+                'menu'      => 'REPORTS', // Leave empty if none
                 'name'      => get_modules('EXPORT_DATA'),
                 'url'       => url_to('export.home'),
-                'class'     => (url_is('export') ? 'active' : ''),
+                'class'     => (url_is('reports/export') ? 'active' : ''),
                 'icon'      => 'fas fa-file-export',
             ],
         ];

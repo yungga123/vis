@@ -98,18 +98,22 @@ class Account extends BaseController
             ])
             ->setDefaultOrder('employee_name', 'asc')
             ->setOrder([
+                null,
                 'employee_id',
                 'employee_name',
                 'username',
                 'access_level',
-                null,
+                'created_by_name',
+                'created_at',
             ])
             ->setOutput([
+                $this->_model->buttons($this->_permissions),
                 'employee_id',
                 'employee_name',
                 'username',
                 $this->_model->dtAccessLevel(),
-                $this->_model->buttons($this->_permissions),
+                'created_by_name',
+                'created_at',
             ]);
 
         return $table->getDatatable();
@@ -234,51 +238,6 @@ class Account extends BaseController
         );
 
         return $response;
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $columns    = "
-            {$this->_model->table}.employee_id,
-            {$this->_model->view}.employee_name,
-            {$this->_model->table}.username,
-            UPPER({$this->_model->table}.access_level) AS role_code,
-            {$this->_model->view}.created_by_name,
-            DATE_FORMAT({$this->_model->table}.created_at, '".dt_sql_datetime_format()."') AS created_at_formatted
-        ";
-        $builder    = $this->_model->select($columns);
-        $builder->join($this->_model->view, "{$this->_model->table}.account_id = {$this->_model->view}.id", 'left');
-        $builder->orderBy("{$this->_model->view}.employee_name", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Employee ID',
-            'Employee Name',
-            'Username',
-            'Role',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'Accounts Masterlist';
-
-        $this->exportToCsv($data, $header, $filename, function($data, $output) {
-            $i      = 0;
-            $roles  = get_roles();
-            while (isset($data[$i])) {
-                $row = $data[$i];
-                
-                if (isset($row['role_code']))
-                    $row['role_code'] = $roles[$row['role_code']];
-
-                fputcsv($output, $row);
-                $i++;
-            }
-        });
     }
 
     /**

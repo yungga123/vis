@@ -4,14 +4,11 @@ namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
 use App\Models\SuppliersModel;
-use App\Traits\ExportTrait;
-use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class Suppliers extends BaseController
 {
     /* Declare trait here to use */
-    use ExportTrait, HRTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -251,42 +248,5 @@ class Suppliers extends BaseController
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $builder    = $this->_model->select($this->_model->dtColumns());
-
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-        $builder->where("deleted_at IS NULL")->orderBy('id', 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Supplier ID',
-            'Supplier Name',
-            'Supplier Type',
-            'Address',
-            'Contact Person',
-            'Contact Number',
-            'Viber',
-            'Email Address',
-            'Payment Terms',
-            'Mode of Payment',
-            'Product',
-            'Bank Name',
-            'Bank Account Name',
-            'Bank Number',
-            'Remarks',
-            'Created By',
-            'Created At'
-        ];
-        $filename   = 'Suppliers Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

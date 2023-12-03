@@ -58,9 +58,6 @@
                             <a href="<?= url_to('inventory.dropdown.home'); ?>" class="btn btn-success">Inventory Dropdowns</a>
                             <a href="<?= url_to('inventory.logs.home'); ?>" class="btn btn-success">Inventory Logs</a>
                         </div>
-                        <div>
-                            <a href="<?= url_to('inventory.export'); ?>" class="btn btn-success">Export All Inventory Items</a>
-                        </div>
                     </div>
                 </div>
             </div>

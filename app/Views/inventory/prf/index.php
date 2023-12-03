@@ -52,10 +52,6 @@
                         </thead>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <a href="<?= url_to('prf.export'); ?>" class="btn btn-success">Export All PRFs</a>
-                    <a href="<?= url_to('prf.export_items'); ?>" class="btn btn-success">Export All PRF Items</a>
-                </div>
             </div>
         </div>
     </div>

@@ -126,7 +126,7 @@ class AccountModel extends Model
     public function noticeTable() 
     {
         $builder = $this->db->table($this->view);
-        $builder->select('id, employee_id, employee_name, username, access_level');
+        $builder->select('id, employee_id, employee_name, username, access_level, created_by_name, created_at');
 
         if (session('access_level') !== AAL_ADMIN) {
             $builder->whereNotIn('UPPER(access_level)', [strtoupper(AAL_ADMIN)]);

@@ -85,10 +85,11 @@ trait ExportTrait
      * @param object $builder   The db object
      * @param array $filters    The request filters
      * @param string $optionFN  The option field name (eg. status, customer_type or etc..) 
+     * @param string $dateFN    The date field name for date filters
      * 
      * @return void
      */
-    public function processFilters($table, $builder, $filters, $optionFN = 'status')
+    public function processFilters($table, $builder, $filters, $optionFN = 'status', $dateFN = 'created_at')
     {
         if (! empty($filters)) {
             if (isset($filters['start_date']) && isset($filters['end_date'])) {
@@ -99,7 +100,14 @@ trait ExportTrait
                 $this->checkDateFilter($start_date, $end_date);
 
                 // Additional filter/where clause on between
-                $between = "(DATE({$table}.created_at) BETWEEN '{$start_date}' AND '{$end_date}')";
+                // The default date format
+                $format     = '%Y-%m-%d';
+                // When date was already formmated into string date
+                // then convert back to default date format
+                $convert    = "DATE(DATE_FORMAT(STR_TO_DATE({$table}.{$dateFN}, '%b %d, %Y at %h:%i %p'), '{$format}'))";
+                $between    = "
+                    IF(DATE_FORMAT({$table}.{$dateFN}, '{$format}') IS NULL, {$convert}, DATE({$table}.{$dateFN})) BETWEEN '{$start_date}' AND '{$end_date}'
+                ";
                 $builder->where(new RawSql($between));
             }
 
@@ -107,7 +115,7 @@ trait ExportTrait
                 $status     = is_array($filters['status']) ? $filters['status'] : [$filters['status']];
                 
                 // Additional filter/where clause on status
-                $builder->where("{$table}.{$optionFN}", $status);
+                $builder->whereIn("{$table}.{$optionFN}", $status);
             }
         }
     }
@@ -156,5 +164,25 @@ trait ExportTrait
         $months = ($interval->y * 12) + $interval->m;
 
         return $months;
+    }
+
+    /**
+     * Log select query
+     *
+     * @param object|\Model $builder
+     * @param string $method
+     * 
+     * @return void
+     */
+    public function logSelectQuery($builder, $method)
+    {
+        $query = method_exists($builder, 'getCompiledSelect')
+            ? $builder->getCompiledSelect()
+            : $builder->getLastQuery();
+
+        log_message('error', "Query: {query} \nMethod: '{method}()'.", [
+            'query'     => $query,
+            'method'    => $method,
+        ]);
     }
 }

@@ -728,7 +728,8 @@ function setOptionValue(selector, val) {
 function formatOptionsForSelect2(options, id, text) {
 	if (isEmpty(options)) return [];
 	return $.map(options, (val, i) => {
-		if (Number.isInteger(Number(i))) return { id: val[id], text: val[text] };
+		if (Number.isInteger(Number(i)) && (isArray(val) || isObject(val)))
+			return { id: val[id], text: strCapitalize(val[text]) };
 		return { id: i, text: strCapitalize(val) };
 	});
 }

@@ -4,21 +4,12 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\InventoryDropdownModel;
-use App\Models\EmployeeModel;
-use App\Models\AccountModel;
-use App\Models\CustomerModel;
-use App\Models\CustomerBranchModel;
-use App\Models\TaskLeadView;
-use App\Models\InventoryModel;
-use App\Models\ProjectRequestFormModel;
-use App\Models\SuppliersModel;
-use App\Models\SupplierBrandsModel;
-use App\Models\PurchaseOrderModel;
-use App\Models\RequestPurchaseFormModel;
-use App\Models\JobOrderModel;
-use App\Models\ScheduleModel;
-use App\Models\DispatchModel;
-use App\Services\Export\ClientExport;
+use App\Services\Export\ClientExportService;
+use App\Services\Export\HRExportService;
+use App\Services\Export\AdminExportService;
+use App\Services\Export\InventoryExportService;
+use App\Services\Export\SalesExportService;
+use App\Services\Export\PurchasingExportService;
 
 class ExportData extends BaseController
 {
@@ -60,7 +51,7 @@ class ExportData extends BaseController
         $data['select2']        = true;
         $data['custom_js']      = ['export/index.js'];
         $data['modules']        = $this->_get_modules();
-        $data['php_to_js']      = $this->_get_modules_options();
+        $data['php_to_js_options']  = json_encode($this->_get_modules_options());
 
         return view('export/index', $data);
     }
@@ -72,22 +63,39 @@ class ExportData extends BaseController
      */
     public function export() 
     {
-        $rules = $this->_validationRules();
+        try {
+            $rules = $this->_validationRules();
+    
+            if (! $this->validate($rules)) {
+                // If the validation fails, redirect back
+                return redirect()->back()->withInput();
+            }
+    
+            // Get request filters
+            $request    = $this->request->getVar();
+            $module     = $request['module'];
+    
+            // Get the specific export service
+            $service = $this->_getExportService($module);
 
-        if (! $this->validate($rules)) {
-            // The validation fails, so returns the form.
-            // return $this->validator->getErrors();
-            return redirect()->back()->withInput();
+            if (is_array($service)) {
+                $class  = $service[0];
+                $method = $service[1];
+
+                if ($module === 'TASK_LEAD_BOOKED') {
+                    // Call the export function
+                    $class->$method($request, true);
+                }
+                
+                // Call the export function
+                $class->$method($request);
+            }
+        } catch (\Exception $e) {
+            $error = $e->getCode() != 0 ? $e->getMessage() : lang('Response.default.error');
+            log_message('error', 'Export Exception: {exception}', ['exception' => $e]);
+
+            return redirect()->back()->withInput()->with('error', $error);
         }
-
-        // Gets the validated data.
-        $post = $this->validator->getValidated();
-        log_message('info', '$post => '. json_encode($post));
-
-        $module = $this->request->getVar('module');
-        // $this->_process($module, $post);
-
-        return redirect()->back()->with('success', 'Data has been exported!');
     }
     
     /**
@@ -98,23 +106,34 @@ class ExportData extends BaseController
     private function _get_modules()
     {
         $modules    = [];
+        // Add here the no need exporting modules
         $excludes   = [
             'DASHBOARD',
             'MANAGER_OF_SALES',
             'MANAGER_OF_SALES_INDV',
             'SETTINGS_GENERAL_INFO',
             'SETTINGS_MAILCONFIG',
+            'SETTINGS_PERMISSIONS',
+            'SETTINGS_ROLES',
             'EXPORT_DATA'
         ];
 
+        // Modules to be displayed will be based
+        // on if user has an access to that said module
         if (! empty($this->modules)) {
             foreach ($this->modules as $module) {
                 if (! in_array($module, $excludes)) {
-                    $modules[$module] = get_modules($module);
+                    $module_name        = get_modules($module);
+                    $modules[$module]   = $module_name;
 
                     if ($module === 'CUSTOMERS') {
                         // Include the customer branches
-                        $modules['CUSTOMER_BRANCHES'] = 'Customer Branches';
+                        $modules['CUSTOMER_BRANCHES'] = 'Client Branches';
+                    }
+
+                    if ($module === 'INVENTORY_PRF') {
+                        // Include the prf items
+                        $modules['INVENTORY_PRF_ITEMS'] = 'Project Request Items';
                     }
 
                     if ($module === 'TASK_LEAD') {
@@ -126,9 +145,22 @@ class ExportData extends BaseController
                         // Include the supplier branches
                         $modules['SUPPLIER_BRANCHES'] = 'Supplier Branches';
                     }
+
+                    if ($module === 'PURCHASING_PO') {
+                        // Include the purchase order items
+                        $modules['PURCHASING_PO_ITEMS'] = 'Purchase Order Items';
+                    }
+
+                    if ($module === 'PURCHASING_RPF') {
+                        // Include the rpf items
+                        $modules['PURCHASING_RPF_ITEMS'] = 'Request to Purchase Items';
+                    }
                 }
             }
         }
+
+        // Sort modules by value
+        asort($modules);
 
         return $modules;
     }
@@ -141,9 +173,13 @@ class ExportData extends BaseController
     private function _get_modules_options()
     {
         $invDropdownModel   = new InventoryDropdownModel();
-        $dropdowns          = $invDropdownModel->getDropdowns('CATEGORY', 'dropdown, dropdown_type');
-        $dropdowns          = flatten_array($dropdowns);
+        $dropdowns          = $invDropdownModel->getDropdowns('CATEGORY', 'dropdown_id AS id, dropdown AS text');
+        $prf_options        = array_replace(get_prf_status('', true), ['item_out' => 'Item Out']);
+        $po_options         = get_po_status('', true);
+        $rpf_options        = get_rpf_status('', true);
+        $supplier_options   = get_supplier_type();
 
+        // Add here if module has filter like status
         return [
             'EMPLOYEES'             => [
                 'name'      => 'Employment Status',
@@ -157,13 +193,13 @@ class ExportData extends BaseController
                 'name'      => 'Status',
                 'options'   => get_tasklead_status(),
             ],
+            'TASK_LEAD_BOOKED'      => [
+                'name'      => 'Quarter',
+                'options'   => get_quarters(),
+            ],
             'INVENTORY'             => [
                 'name'      => 'Category',
                 'options'   => $dropdowns,
-            ],
-            'PURCHASING_SUPPLIERS'  => [
-                'name'      => 'Status',
-                'options'   => get_supplier_type(),
             ],
             'ADMIN_JOB_ORDER'       => [
                 'name'      => 'Status',
@@ -175,63 +211,71 @@ class ExportData extends BaseController
             ],
             'INVENTORY_PRF'         => [
                 'name'      => 'Status',
-                'options'   => get_prf_status('', true),
+                'options'   => $prf_options,
             ],
-            'PURCHASING_RPF'        => [
+            'INVENTORY_PRF_ITEMS'   => [
                 'name'      => 'Status',
-                'options'   => get_rpf_status('', true),
+                'options'   => $prf_options,
             ],
             'PURCHASING_PO'         => [
                 'name'      => 'Status',
-                'options'   => get_po_status('', true),
+                'options'   => $po_options,
+            ],
+            'PURCHASING_PO_ITEMS'   => [
+                'name'      => 'Status',
+                'options'   => $po_options,
+            ],
+            'PURCHASING_SUPPLIERS'  => [
+                'name'      => 'Supplier Type',
+                'options'   => $supplier_options,
+            ],
+            'SUPPLIER_BRANCHES'     => [
+                'name'      => 'Supplier Type',
+                'options'   => $supplier_options,
+            ],
+            'PURCHASING_RPF'        => [
+                'name'      => 'Status',
+                'options'   => $rpf_options,
+            ],
+            'PURCHASING_RPF_ITEMS'  => [
+                'name'      => 'Status',
+                'options'   => $rpf_options,
             ],
         ];
     }
     
     /**
-     * Get module's model
+     * Get the export service
      * 
      * @param string $module
      * @return array
      */
-    private function _process($module, $filters)
+    private function _getExportService($module)
     {
-        // $models = [
-        //     'ACCOUNTS'              => new AccountModel,
-        //     'EMPLOYEES'             => new EmployeeModel,
-        //     'CUSTOMERS'             => new CustomerModel,
-        //     'CUSTOMER_BRANCHES'     => new CustomerBranchModel,
-        //     'TASK_LEAD'             => new TaskLeadView,
-        //     'TASK_LEAD_BOOKED'      => new TaskLeadView,
-        //     'INVENTORY'             => new InventoryModel,
-        //     'PURCHASING_SUPPLIERS'  => new SuppliersModel,
-        //     'SUPPLIER_BRANCHES'     => new SupplierBrandsModel,
-        //     'ADMIN_JOB_ORDER'       => new JobOrderModel,
-        //     'ADMIN_SCHEDULES'       => new ScheduleModel,
-        //     'ADMIN_DISPATCH'        => new DispatchModel,
-        //     'INVENTORY_PRF'         => new ProjectRequestFormModel,
-        //     'PURCHASING_RPF'        => new RequestPurchaseFormModel,
-        //     'PURCHASING_PO'         => new PurchaseOrderModel,
-        // ];
-
+        // If new main module, please create a new file
+        // in the \App\Services\Export\ directory
         $services = [
-            // 'ACCOUNTS'              => new AccountModel,
-            // 'EMPLOYEES'             => new EmployeeModel,
-            'CUSTOMERS'             => (new ClientExport())->clients($filters),
-            // 'CUSTOMER_BRANCHES'     => new CustomerBranchModel,
-            // 'TASK_LEAD'             => new TaskLeadView,
-            // 'TASK_LEAD_BOOKED'      => new TaskLeadView,
-            // 'INVENTORY'             => new InventoryModel,
-            // 'PURCHASING_SUPPLIERS'  => new SuppliersModel,
-            // 'SUPPLIER_BRANCHES'     => new SupplierBrandsModel,
-            // 'ADMIN_JOB_ORDER'       => new JobOrderModel,
-            // 'ADMIN_SCHEDULES'       => new ScheduleModel,
-            // 'ADMIN_DISPATCH'        => new DispatchModel,
-            // 'INVENTORY_PRF'         => new ProjectRequestFormModel,
-            // 'PURCHASING_RPF'        => new RequestPurchaseFormModel,
-            // 'PURCHASING_PO'         => new PurchaseOrderModel,
+            'ACCOUNTS'              => [new HRExportService(), 'accounts'],
+            'EMPLOYEES'             => [new HRExportService(), 'employees'],
+            'CUSTOMERS'             => [new ClientExportService(), 'clients'],
+            'CUSTOMER_BRANCHES'     => [new ClientExportService(), 'branches'],
+            'ADMIN_JOB_ORDER'       => [new AdminExportService(), 'jobOrders'],
+            'ADMIN_SCHEDULES'       => [new AdminExportService(), 'schedules'],
+            'ADMIN_DISPATCH'        => [new AdminExportService(), 'dispatch'],
+            'INVENTORY'             => [new InventoryExportService(), 'items'],
+            'INVENTORY_PRF'         => [new InventoryExportService(), 'prf'],
+            'INVENTORY_PRF_ITEMS'   => [new InventoryExportService(), 'prfItems'],
+            'TASK_LEAD'             => [new SalesExportService(), 'taskleads'],
+            'TASK_LEAD_BOOKED'      => [new SalesExportService(), 'taskleads'],
+            'PURCHASING_PO'         => [new PurchasingExportService(), 'purchaseOrders'],
+            'PURCHASING_PO_ITEMS'   => [new PurchasingExportService(), 'poItems'],
+            'PURCHASING_SUPPLIERS'  => [new PurchasingExportService(), 'suppliers'],
+            'SUPPLIER_BRANCHES'     => [new PurchasingExportService(), 'supplierBranches'],
+            'PURCHASING_RPF'        => [new PurchasingExportService(), 'rpf'],
+            'PURCHASING_RPF_ITEMS'  => [new PurchasingExportService(), 'rpfItems'],
         ];
 
+        // Return the initailized service class and the method name
         return $services[$module];
     }
     

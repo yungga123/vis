@@ -17,9 +17,6 @@
                 </div>
                 <div class="card-body">
                     <p>To <strong>EDIT</strong> or <strong>DELETE</strong> a schedule, click the event first in the calendar.</p>
-                    <div class="text-center">
-                         <a href="<?= url_to('schedule.export'); ?>" class="btn btn-success">Export All Schedules</a>
-                    </div>
                 </div>
             </div>
         </div>

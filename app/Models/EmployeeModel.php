@@ -254,6 +254,7 @@ class EmployeeModel extends Model
         'spouse_contact_no', 
         'no_of_children', 
         'spouse_address',
+        'created_by',
         'created_at'
     ];
 
