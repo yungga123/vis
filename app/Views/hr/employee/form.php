@@ -171,11 +171,9 @@
 										<label class="required" for="employment_status">Employment Status</label>
 										<select type="text" class="form-control" name="employment_status" id="employment_status">
 											<option value="">---Please Select---</option>
-											<option value="Probation">Probation</option>
-											<option value="Regular">Regular</option>
-											<option value="Contractual">Contractual</option>
-											<option value="Temporary">Temporary</option>
-											<option value="Project-based">Project-Based</option>
+											<?php foreach (get_employment_status() as $val => $text): ?>
+												<option value="<?= $val ?>"><?= $text ?></option>
+											<?php endforeach; ?>
 										</select>
 										<small id="alert_employment_status" class="form-text text-danger"></small>
 									</div>

@@ -224,6 +224,13 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('settings/general-info') ? 'active' : ''),
                 'icon'      => 'fas fa-info-circle',
             ],
+            'EXPORT_DATA'  => [
+                'menu'      => '', // Leave empty if none
+                'name'      => get_modules('EXPORT_DATA'),
+                'url'       => url_to('export.home'),
+                'class'     => (url_is('export') ? 'active' : ''),
+                'icon'      => 'fas fa-file-export',
+            ],
         ];
 
         return $param ? $modules[$param] : $modules;

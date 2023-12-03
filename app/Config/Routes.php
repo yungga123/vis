@@ -355,6 +355,12 @@ $routes->group('purchase-orders', ['filter' => 'checkauth'], static function ($r
 
 /* PURCHASING */
 
+// EXPORT DATA
+$routes->group('export', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'ExportData::index', ['as' => 'export.home']);
+    $routes->post('data', 'ExportData::export', ['as' => 'export.data']);
+});
+
 
 /***************** PHASE 2 *****************/
 

@@ -11,6 +11,10 @@ require APPPATH.'Helpers/extend/datatable.php';
 // Helper functions for select/options related
 require APPPATH.'Helpers/extend/select_options.php';
 
+// Helper functions checking and getting
+// the session flashdata in view
+require APPPATH.'Helpers/extend/view_session.php';
+
 // Mixed helper functions - start from here
 if (! function_exists('check_string_contains'))
 {
@@ -238,5 +242,28 @@ if (! function_exists('get_file_icons'))
         }
 
         return $icon;
+	}
+}
+
+if (! function_exists('flatten_array'))
+{
+    /**
+     * Flatten a multidimensional array.
+     * Or convert into one dimensional array.
+     */
+	function flatten_array(array $array): array
+	{
+        if (is_array($array) && ! empty($array)) {
+            $arr = [];
+            foreach ($array as $key => $val) {
+                if (is_array($val)) {
+                    $vals = array_values($val);
+                    $arr[$vals[0]] = $vals[1];
+                } else
+                    $arr[$key] = $val;  
+            }
+            return $arr;
+        }
+        return $array;
 	}
 }
