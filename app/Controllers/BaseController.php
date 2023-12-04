@@ -244,9 +244,9 @@ abstract class BaseController extends Controller
         if ($dbTrans) $this->transRollback();
 
 		log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-        $data['status']     = STATUS_ERROR;
+        $data['status']     = res_lang('status.error');
         $data['message']    = $e->getCode() === 2 
-            ? $e->getMessage() : lang('Response.default.error');
+            ? $e->getMessage() : res_lang('error.process');
 
         return $data;
 	}

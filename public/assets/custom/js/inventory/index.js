@@ -169,6 +169,9 @@ function edit(id) {
 
 			if (res.status === STATUS.SUCCESS) {
 				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+				$("#item_sdp").val(parseNumber(res.data.item_sdp));
+				$("#item_srp").val(parseNumber(res.data.item_srp));
+				$("#project_price").val(parseNumber(res.data.project_price));
 
 				setSelect2Selection("#category", res.data.category);
 				dropdownInit("#sub_category", res.data.category, res.data.sub_category);
@@ -176,6 +179,11 @@ function edit(id) {
 				dropdownInit("#item_size", "SIZE", res.data.item_size);
 				dropdownInit("#stock_unit", "UNIT", res.data.stock_unit);
 				_initSuppliers();
+				setSelect2AjaxSelection(
+					supplierSelector,
+					res.data.supplier_name,
+					res.data.supplier_id
+				);
 
 				$("#encoder").val(res.data.created_by_name);
 				$(`#${modal}`).modal("show");

@@ -155,8 +155,8 @@ class PurchaseOrder extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Purchase Order has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Purchase Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -164,9 +164,9 @@ class PurchaseOrder extends BaseController
                 $print_po_id = $this->request->getVar('po_id');
 
                 if (! $this->validate($this->_validationRules($print_po_id))) {
-                    $data['status']     = STATUS_ERROR;
+                    $data['status']     = res_lang('status.error');
                     $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = 'Validation error!';
+                    $data ['message']   = res_lang('error.validation');
 
                     return $data;
                 } 
@@ -253,8 +253,8 @@ class PurchaseOrder extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Purchase Order has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.fetched', 'Purchase Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -264,7 +264,7 @@ class PurchaseOrder extends BaseController
 
                 if ($this->request->getVar('po_items')) {
                     $data['data']       = $results;
-                    $data['message']    = 'Purchase Order items has been retrieved!';
+                    $data['message']    = res_lang('success.fetched', 'Purchase Order items');
                 } else {
                     $record                 = $this->_model->getPurchaseOrders($id, 'rpf_id, attention_to');
                     $rpfModel               = new RequestPurchaseFormModel();
@@ -294,8 +294,8 @@ class PurchaseOrder extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Purchase Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -307,8 +307,8 @@ class PurchaseOrder extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
@@ -334,11 +334,11 @@ class PurchaseOrder extends BaseController
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'Purchase Order has been '. strtoupper($status) .' successfully!';
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['Purchase Order', strtoupper($status)]);
                 }
                 return $data;
             }

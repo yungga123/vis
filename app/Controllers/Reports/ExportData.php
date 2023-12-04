@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Reports;
 
 use App\Controllers\BaseController;
 use App\Models\InventoryDropdownModel;
@@ -49,11 +49,11 @@ class ExportData extends BaseController
         $data['page_title']     = $module_name;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['export/index.js'];
+        $data['custom_js']      = ['reports/export/index.js'];
         $data['modules']        = $this->_get_modules();
         $data['php_to_js_options']  = json_encode($this->_get_modules_options());
 
-        return view('export/index', $data);
+        return view('reports/export/index', $data);
     }
 
     /**
@@ -91,7 +91,7 @@ class ExportData extends BaseController
                 $class->$method($request);
             }
         } catch (\Exception $e) {
-            $error = $e->getCode() != 0 ? $e->getMessage() : lang('Response.default.error');
+            $error = $e->getCode() != 0 ? $e->getMessage() : res_lang('error.process');
             log_message('error', 'Export Exception: {exception}', ['exception' => $e]);
 
             return redirect()->back()->withInput()->with('error', $error);

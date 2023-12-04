@@ -172,8 +172,8 @@ class JobOrder extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Job Order')
         ];
 
         $response   = $this->customTryCatch(
@@ -203,7 +203,7 @@ class JobOrder extends BaseController
                 if (! empty($id)) {
                     $inputs['id']           = $id;
                     $inputs['employee_id']  = $employee_id;
-                    $data['message']        = 'Job Order has been updated successfully!';
+                    $data['message']        = res_lang('success.updated', 'Job Order');
     
                     unset($inputs['status']);
                     unset($inputs['created_by']);
@@ -211,8 +211,8 @@ class JobOrder extends BaseController
     
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
 
                 return $data;
@@ -231,8 +231,8 @@ class JobOrder extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Job Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -270,8 +270,8 @@ class JobOrder extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Job Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -280,8 +280,8 @@ class JobOrder extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     log_message('error', "Job Order #: {$id} \n Deleted by {username}", ['username' => session('username')]);
                 }
@@ -318,11 +318,11 @@ class JobOrder extends BaseController
     
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'Job Order has been '. strtoupper($status) .' successfully!';
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['Job Order', strtoupper($status)]);
                 }
 
                 return $data;

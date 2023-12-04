@@ -1100,3 +1100,15 @@ function numberFormat(number, decimal) {
 function inObjectReturn(obj, key) {
 	return inObject(obj, key) ? obj[key] : null;
 }
+
+/**
+ * Parse number or float string
+ *
+ * @param {string} string 	Float/number string
+ * @returns {string|number}
+ */
+function parseNumber(string) {
+	// Convert if not string to avoid error
+	string = isString(string) ? string : string.toString();
+	return parseFloat(string.replace(/,/g, ""));
+}

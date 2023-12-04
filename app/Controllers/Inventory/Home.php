@@ -161,8 +161,8 @@ class Home extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -188,12 +188,12 @@ class Home extends BaseController
     
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
     
                 if ($this->request->getVar('id')) {
-                    $data['message']    = 'Item has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', 'Item');
                 }
                 return $data;
             }
@@ -210,8 +210,8 @@ class Home extends BaseController
     public function edit() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -234,16 +234,16 @@ class Home extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }

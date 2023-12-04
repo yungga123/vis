@@ -169,8 +169,8 @@ class ProjectRequestForm extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'PRF')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -201,8 +201,8 @@ class ProjectRequestForm extends BaseController
 
                     if (! $this->_model->save($inputs)) {
                         $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = "Validation error!";
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = res_lang('error.validation');
                     } else {
                         $prfItemModel   = new PRFItemModel();
                         $prf_id         = $id ? $id : $this->_model->insertID();
@@ -210,7 +210,7 @@ class ProjectRequestForm extends BaseController
                     }
 
                     if ($id) {
-                        $data['message']    = 'PRF has been updated successfully!';
+                        $data['message']    = res_lang('success.updated', 'PRF');
                     }
                 }
                 return $data;
@@ -228,8 +228,8 @@ class ProjectRequestForm extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'PRF')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -237,7 +237,7 @@ class ProjectRequestForm extends BaseController
                 $id  = $this->request->getVar('id');
                 if ($this->request->getVar('prf_items')) {                
                     $data['data']       = $this->traitFetchPrfItems($id, true, true);
-                    $data['message']    = 'PRF items has been retrieved!';
+                    $data['message']    = res_lang('success.retrieved', 'PRF Items');
                 } else {
                     $table          = $this->_model->table;
                     $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";
@@ -266,8 +266,8 @@ class ProjectRequestForm extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'PRF')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -279,8 +279,8 @@ class ProjectRequestForm extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
@@ -314,12 +314,12 @@ class ProjectRequestForm extends BaseController
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'PRF has been '. strtoupper($status) .' successfully!';
-
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['PRF', strtoupper($status)]);
+                    
                     if ($status === 'filed') {
                         $prfItemModel = new PRFItemModel();
                         $prfItemModel->updatePrfItems($this->request->getVar(), $id);

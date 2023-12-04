@@ -107,7 +107,7 @@ class CustomerBranch extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Customer Branch has been saved successfully!'
         ];
         $response   = $this->customTryCatch(
@@ -115,8 +115,8 @@ class CustomerBranch extends BaseController
             function($data) {
                 if (! $this->_model->save($this->request->getVar())) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
     
                     $errors = $this->_model->errors();
                     $arr = [];
@@ -148,7 +148,7 @@ class CustomerBranch extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Customer branches have been retrieved!'
         ];
         $response   = $this->customTryCatch(
@@ -173,7 +173,7 @@ class CustomerBranch extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Customer Branch has been deleted successfully!'
         ];
         $response   = $this->customTryCatch(
@@ -181,8 +181,8 @@ class CustomerBranch extends BaseController
             function($data) {
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }

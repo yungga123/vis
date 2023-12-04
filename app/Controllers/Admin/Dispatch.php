@@ -162,8 +162,8 @@ class Dispatch extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -189,15 +189,15 @@ class Dispatch extends BaseController
 
                 if (! empty($id)) {
                     $inputs['id']       = $id;
-                    $data['message']    = 'Dispatch has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', 'Dispatch');
 
                     unset($inputs['created_by']);
                 } 
                 
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     $dispatch_id    = !empty($id) ? $id : $this->_model->insertID();
                     $dTModel        = new DispatchedTechniciansModel();
@@ -222,8 +222,8 @@ class Dispatch extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -249,8 +249,8 @@ class Dispatch extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -259,8 +259,8 @@ class Dispatch extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     log_message('error', 'Deleted by {username}', ['username' => session('username')]);
                 }

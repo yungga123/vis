@@ -127,8 +127,8 @@ class Account extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Account has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Account')
         ];
 
         // Check if id field has value, then this is an update
@@ -171,12 +171,12 @@ class Account extends BaseController
                         $mailMsg            = $this->sendMailAccountNotif($employee_id, $this->request->getVar());
                         $data['message']    = $data['message'] . $mailMsg;
                     } else {
-                        $data['status']     = STATUS_ERROR;
+                        $data['status']     = res_lang('status.error');
                         $data['message']    = 'Employee has already an account for the selected access level!';
                     }
                 } else {
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = 'Validation error!';
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                     $data['errors']     = $this->validator->getErrors();
                 }
 
@@ -195,8 +195,8 @@ class Account extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Account has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Account')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -221,16 +221,16 @@ class Account extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Account has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Account')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
 
                 return $data;
@@ -248,8 +248,8 @@ class Account extends BaseController
     private function _update()
     {
         $data       = [
-            'status' => STATUS_SUCCESS,
-            'message' => 'Account has been successfully updated!',
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.updated', 'Account'),
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -267,7 +267,6 @@ class Account extends BaseController
                     $username   = '';
                     $bool       = false;
                 }
-    
     
                 if ($this->validate($rules, $rule_msg)) {
                     $password   = $this->request->getVar('password');
@@ -297,13 +296,13 @@ class Account extends BaseController
                         $data['message']    = $data['message'] . $mailMsg;
     
                     } else {
-                        $data['status'] = STATUS_ERROR;
-                        $data['message'] = 'Employee has already an account for the selected username or access level!';
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = 'Employee has already an account for the selected username or access level!';
                     }
                 } else {
-                    $data['status'] = STATUS_ERROR;
-                    $data['message'] = 'Validation error!';
-                    $data['errors'] = $this->validator->getErrors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                    $data['errors']     = $this->validator->getErrors();
                 }
 
                 return $data;

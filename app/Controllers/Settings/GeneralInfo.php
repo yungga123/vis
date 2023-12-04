@@ -80,8 +80,8 @@ class GeneralInfo extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -118,8 +118,8 @@ class GeneralInfo extends BaseController
     public function upload() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Image has been uploaded!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.uploaded', 'Image')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -131,9 +131,9 @@ class GeneralInfo extends BaseController
                 $validate = $this->validationFileRules($fileName, $allowed);
 
                 if (! $this->validate($validate)) {
-                    $data['status']     = STATUS_ERROR;
                     $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = 'Validation error!';
+                    $data['status']     = res_lang('status.error');
+                    $data ['message']   = res_lang('error.validation');
                     return $data;
                 } 
                 
@@ -156,8 +156,8 @@ class GeneralInfo extends BaseController
                 // Save or update file path to database
                 if (! $this->_model->upsert($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = 'Validation error!';
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
 
                     return $data;
                 }
@@ -183,8 +183,8 @@ class GeneralInfo extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -216,7 +216,7 @@ class GeneralInfo extends BaseController
     private function _canUserSave()
     {
         if (! $this->_can_add) {
-            throw new \Exception("You don't have permission for saving data. Kindly add the <strong>ADD</strong> permission first!", 2);
+            throw new \Exception(res_lang('restrict.permission.change'), 2);
         }
     }
 }

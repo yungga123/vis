@@ -91,8 +91,8 @@ class Schedule extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Schedule has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Schedule')
         ];
 
         // Using DB Transaction
@@ -115,22 +115,22 @@ class Schedule extends BaseController
                 if (!$this->checkPermissions($this->_permissions, 'EDIT')) {
                     return $this->response->setJSON(
                         [
-                            'status'    => STATUS_INFO,
+                            'status'    => res_lang('status.info'),
                             'message'   => "You don't have permission to EDIT any schedule currently! Ask your superior to provide one."
                         ]
                     );
                 }
 
                 $inputs['id']       = $id;
-                $data['message']    = 'Schedule has been updated successfully!';
+                $data['message']    = res_lang('success.updated', 'Schedule');
 
                 unset($inputs['created_by']);
             } 
 
             if (! $this->_model->save($inputs)) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -140,8 +140,8 @@ class Schedule extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -181,7 +181,7 @@ class Schedule extends BaseController
             }
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data = 'Error while processing data! Please contact your system administrator.';
+            $data = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -195,7 +195,7 @@ class Schedule extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_INFO,
+            'status'    => res_lang('status.info'),
             'message'   => "You don't have permission to DELETE any schedule currently! Ask your superior to provide one."
         ];
 
@@ -206,13 +206,13 @@ class Schedule extends BaseController
             if ($this->checkPermissions($this->_permissions, 'DELETE')) {
                 $id = $this->request->getVar('id');
                 
-                $data['status']     = STATUS_SUCCESS;
-                $data['message']    = "Schedule has been deleted successfully!";            
+                $data['status']     = res_lang('status.success');
+                $data['message']    = res_lang('success.deleted', 'Schedule');            
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     log_message('error', 'Deleted by {username}', ['username' => session('username')]);
                 }
@@ -225,8 +225,8 @@ class Schedule extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);

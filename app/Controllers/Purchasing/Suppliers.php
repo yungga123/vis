@@ -151,8 +151,8 @@ class Suppliers extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Supplier')
         ];
 
         // Using DB Transaction
@@ -163,12 +163,12 @@ class Suppliers extends BaseController
 
             if (! $model->save($this->request->getVar())) {
                 $data['errors']     = $model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             if ($this->request->getVar('id')) {
-                $data['message']    = 'Supplier has been updated successfully!';
+                $data['message']    = res_lang('success.updated', 'Supplier');
             }
 
             // Commit transaction
@@ -178,8 +178,8 @@ class Suppliers extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -193,8 +193,8 @@ class Suppliers extends BaseController
     public function edit() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier has been retrieved!'
+            'status'    => res_lang('status.error'),
+            'message'   => res_lang('success.retrieved', 'Supplier')
         ];
 
         try {
@@ -205,8 +205,8 @@ class Suppliers extends BaseController
             $data['data'] = $model->select($model->allowedFields)->find($id);;
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -220,8 +220,8 @@ class Suppliers extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier has been deleted successfully!'
+            'status'    => res_lang('status.error'),
+            'message'   => res_lang('success.deleted', 'Supplier')
         ];
 
         // Using DB Transaction
@@ -232,8 +232,8 @@ class Suppliers extends BaseController
 
             if (! $model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -243,8 +243,8 @@ class Suppliers extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);

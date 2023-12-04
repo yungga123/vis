@@ -323,8 +323,6 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('rpf/delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'rpf.delete']);
     $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
     $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print/$1', ['as' => 'rpf.print']);
-    $routes->get('rpf/export', 'Purchasing\RequestPurchaseForm::export', ['as' => 'rpf.export']);
-    $routes->get('rpf/export-items', 'Purchasing\RequestPurchaseForm::exportItems', ['as' => 'rpf.export_items']);
 });
 
 // PURCHASE ORDER / GENERATE PO
@@ -341,11 +339,11 @@ $routes->group('purchase-orders', ['filter' => 'checkauth'], static function ($r
 /* PURCHASING */
 
 /* REPORTS */
-// EXPORT DATA
 $routes->group('reports', ['filter' => 'checkauth'], static function ($routes) {
+    // EXPORT DATA
     $routes->group('export', static function ($routes) {
-        $routes->get('/', 'ExportData::index', ['as' => 'export.home']);
-        $routes->post('data', 'ExportData::export', ['as' => 'export.data']);
+        $routes->get('/', 'Reports\ExportData::index', ['as' => 'export.home']);
+        $routes->post('data', 'Reports\ExportData::export', ['as' => 'export.data']);
     });
 });
 /* REPORTS */
