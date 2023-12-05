@@ -32,9 +32,6 @@
                         </thead>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <a href="<?= url_to('dispatch.export'); ?>" class="btn btn-success">Export All Dispatch</a>
-                </div>
             </div>
         </div>
     </div>

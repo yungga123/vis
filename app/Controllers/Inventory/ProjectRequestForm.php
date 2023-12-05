@@ -8,17 +8,15 @@ use App\Models\PRFItemModel;
 use App\Models\JobOrderModel;
 use App\Models\CustomerModel;
 use App\Models\TaskLeadView;
-use App\Models\InventoryModel;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
-use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class ProjectRequestForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait, GeneralInfoTrait, CommonTrait, ExportTrait;
+    use InventoryTrait, GeneralInfoTrait, CommonTrait;
 
     /**
      * Use to initialize corresponding model
@@ -171,8 +169,8 @@ class ProjectRequestForm extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'PRF')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -203,8 +201,8 @@ class ProjectRequestForm extends BaseController
 
                     if (! $this->_model->save($inputs)) {
                         $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = "Validation error!";
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = res_lang('error.validation');
                     } else {
                         $prfItemModel   = new PRFItemModel();
                         $prf_id         = $id ? $id : $this->_model->insertID();
@@ -212,7 +210,7 @@ class ProjectRequestForm extends BaseController
                     }
 
                     if ($id) {
-                        $data['message']    = 'PRF has been updated successfully!';
+                        $data['message']    = res_lang('success.updated', 'PRF');
                     }
                 }
                 return $data;
@@ -230,8 +228,8 @@ class ProjectRequestForm extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'PRF')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -239,7 +237,7 @@ class ProjectRequestForm extends BaseController
                 $id  = $this->request->getVar('id');
                 if ($this->request->getVar('prf_items')) {                
                     $data['data']       = $this->traitFetchPrfItems($id, true, true);
-                    $data['message']    = 'PRF items has been retrieved!';
+                    $data['message']    = res_lang('success.retrieved', 'PRF Items');
                 } else {
                     $table          = $this->_model->table;
                     $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";
@@ -268,8 +266,8 @@ class ProjectRequestForm extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'PRF')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -281,8 +279,8 @@ class ProjectRequestForm extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
@@ -316,12 +314,12 @@ class ProjectRequestForm extends BaseController
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'PRF has been '. strtoupper($status) .' successfully!';
-
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['PRF', strtoupper($status)]);
+                    
                     if ($status === 'filed') {
                         $prfItemModel = new PRFItemModel();
                         $prfItemModel->updatePrfItems($this->request->getVar(), $id);
@@ -358,126 +356,5 @@ class ProjectRequestForm extends BaseController
         $data['company_logo']   = $this->getCompanyLogo();
 
         return view('inventory/prf/print', $data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $joModel        = new JobOrderModel();
-        $customerModel  = new CustomerModel();
-        $tlBookedModel  = new TaskLeadView();
-        $columns    = "
-            UPPER({$this->_model->table}.status) AS status,
-            {$this->_model->table}.id,
-            {$this->_model->table}.job_order_id,
-            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.quotation_num, {$joModel->table}.manual_quotation) AS quotation,
-            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.tasklead_type, {$joModel->table}.manual_quotation_type) AS quotation_type,
-            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.customer_name, {$customerModel->table}.name) AS client,
-            {$joModel->table}.work_type,
-            ".dt_sql_date_format("{$joModel->table}.date_requested")." AS date_requested,
-            ".dt_sql_date_format("{$joModel->table}.date_committed")." AS date_committed,
-            ".dt_sql_date_format("{$this->_model->table}.process_date")." AS process_date,
-            {$this->_model->table}.remarks,
-            {$this->_model->view}.created_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at,
-            {$this->_model->view}.accepted_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.accepted_at")." AS accepted_at,
-            {$this->_model->view}.rejected_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.rejected_at")." AS rejected_at,
-            {$this->_model->view}.item_out_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.item_out_at")." AS item_out_at,
-            {$this->_model->view}.filed_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.filed_at")." AS filed_at
-        ";
-        $builder    = $this->_model->select($columns);
-
-        $this->_model->joinView($builder)->joinJobOrder($builder);
-        $builder->where("{$this->_model->table}.deleted_at", null);
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Status',
-            'PRF #',
-            'Job Order #',
-            'Quotation',
-            'Quotation Type',
-            'Client',
-            'Work Type',
-            'Date Requested',
-            'Date Committed',
-            'Process Date',
-            'Remarks',
-            'Created By',
-            'Created At',
-            'Accepted By',
-            'Accepted At',
-            'Rejected By',
-            'Rejected At',
-            'Item Out By',
-            'Item Out At',
-            'Filed By',
-            'Filed At'
-        ];
-        $filename   = 'Project Request Forms';
-
-        $this->exportToCsv($data, $header, $filename);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function exportItems() 
-    {
-        $prfItemModel   = new PRFItemModel();
-        $inventoryModel = new InventoryModel();
-        $columns        = "
-            {$prfItemModel->table}.prf_id,
-            {$this->_model->table}.job_order_id,
-            {$prfItemModel->table}.inventory_id,
-            {$inventoryModel->table}.item_model,
-            {$inventoryModel->table}.item_description,
-            {$inventoryModel->table}.stocks,
-            {$prfItemModel->table}.quantity_out,
-            {$prfItemModel->table}.returned_q,
-            {$prfItemModel->queryConsumed()},
-            ".dt_sql_date_format("{$prfItemModel->table}.returned_date")." AS returned_date,
-            UPPER({$this->_model->table}.status) AS status,
-            {$this->_model->view}.created_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
-        ";
-        $builder        = $prfItemModel->select($columns);
-
-        $prfItemModel->join($this->_model->table, "{$this->_model->table}.id = {$prfItemModel->table}.prf_id", 'left');
-        $prfItemModel->join($this->_model->view, "{$this->_model->view}.prf_id = {$prfItemModel->table}.prf_id", 'left');
-        $prfItemModel->join($inventoryModel->table, "{$inventoryModel->table}.id = {$prfItemModel->table}.inventory_id", 'left');
-        $builder->where("{$this->_model->table}.deleted_at", null);
-        $builder->orderBy("{$prfItemModel->table}.prf_id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'PRF #',
-            'Job Order #',
-            'Item #',
-            'Item Model',
-            'Item Description',
-            'Current Stocks',
-            'Quantity Out',
-            'Quantity Returned',
-            'Consumed Qty',
-            'Date Returned',
-            'Status',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'PRF Items';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

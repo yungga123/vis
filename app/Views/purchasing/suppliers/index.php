@@ -68,10 +68,6 @@
                         </thead>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <a href="<?= url_to('suppliers.export'); ?>" class="btn btn-success">Export All Suppliers</a>
-                    <a href="<?= url_to('suppliers.brand.export'); ?>" class="btn btn-success">Export All Supplier Brands</a>
-                </div>
             </div>
         </div>
     </div>

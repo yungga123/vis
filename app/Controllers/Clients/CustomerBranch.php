@@ -107,7 +107,7 @@ class CustomerBranch extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Customer Branch has been saved successfully!'
         ];
         $response   = $this->customTryCatch(
@@ -115,8 +115,8 @@ class CustomerBranch extends BaseController
             function($data) {
                 if (! $this->_model->save($this->request->getVar())) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
     
                     $errors = $this->_model->errors();
                     $arr = [];
@@ -148,7 +148,7 @@ class CustomerBranch extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Customer branches have been retrieved!'
         ];
         $response   = $this->customTryCatch(
@@ -173,7 +173,7 @@ class CustomerBranch extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Customer Branch has been deleted successfully!'
         ];
         $response   = $this->customTryCatch(
@@ -181,56 +181,13 @@ class CustomerBranch extends BaseController
             function($data) {
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
         );
 
         return $response;
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $datetimeFormat = dt_sql_datetime_format();
-        $address    = dt_sql_concat_client_address();
-        $columns    = "
-            {$this->_model->table}.id,
-            {$this->_model->table}.customer_id,
-            {$this->_model->table}.branch_name,
-            {$this->_model->table}.contact_person,
-            {$this->_model->table}.contact_number,
-            {$this->_model->table}.email_address,
-            {$address},
-            {$this->_model->table}.notes,
-            DATE_FORMAT({$this->_model->table}.created_at, '{$datetimeFormat}') AS created_at,
-            cb.employee_name AS created_by
-        ";
-        $builder    = $this->_model->select($columns);
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-        $builder->where("deleted_at IS NULL")->orderBy('id', 'DESC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Branch ID',
-            'Client ID',
-            'Client Branch Name',
-            'Contact Person',
-            'Contact Number',
-            'Email Address',
-            'Address',
-            'Notes',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'Client Branches Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

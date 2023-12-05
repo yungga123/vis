@@ -51,10 +51,6 @@
                             </thead>
                         </table>
                     </div>
-                    <div class="card-footer">
-                        <a type="button" href="<?= url_to('customer.export') ?>" class="btn btn-success">Export All Clients</a>
-                        <a type="button" href="<?= url_to('customer.branch.export') ?>" class="btn btn-success">Export All Client Branches</a>
-                    </div>
                 </div>
             </div>
         </div>

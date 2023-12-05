@@ -9,13 +9,12 @@ use App\Models\ScheduleModel;
 use App\Models\CustomerModel;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\HRTrait;
-use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class Dispatch extends BaseController
 {
     /* Declare trait here to use */
-    use GeneralInfoTrait, ExportTrait, HRTrait;
+    use GeneralInfoTrait, HRTrait;
 
     /**
      * Use to initialize model class
@@ -163,8 +162,8 @@ class Dispatch extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -190,15 +189,15 @@ class Dispatch extends BaseController
 
                 if (! empty($id)) {
                     $inputs['id']       = $id;
-                    $data['message']    = 'Dispatch has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', 'Dispatch');
 
                     unset($inputs['created_by']);
                 } 
                 
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     $dispatch_id    = !empty($id) ? $id : $this->_model->insertID();
                     $dTModel        = new DispatchedTechniciansModel();
@@ -223,8 +222,8 @@ class Dispatch extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -250,8 +249,8 @@ class Dispatch extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -260,8 +259,8 @@ class Dispatch extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     log_message('error', 'Deleted by {username}', ['username' => session('username')]);
                 }
@@ -289,80 +288,5 @@ class Dispatch extends BaseController
         $data['company_logo']   = $this->getCompanyLogo();
 
         return view('admin/dispatch/print', $data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $scheduleModel  = new ScheduleModel();
-        $customerModel  = new CustomerModel();
-        $columns        = "
-            {$this->_model->table}.id,
-            {$this->_model->table}.schedule_id,
-            {$scheduleModel->table}.title,
-            {$customerModel->table}.name AS client,
-            {$customerModel->table}.type AS client_type,
-            ".dt_sql_date_format("{$this->_model->table}.dispatch_date")." AS dispatch_date,
-            ".dt_sql_time_format("{$this->_model->table}.dispatch_out")." AS dispatch_out,
-            ".dt_sql_time_format("{$this->_model->table}.time_in")." AS time_in,
-            ".dt_sql_time_format("{$this->_model->table}.time_out")." AS time_out,
-            {$this->_model->table}.sr_number,
-            {$this->_model->view}.technicians,
-            {$this->_model->table}.service_type,
-            {$this->_model->table}.with_permit,
-            {$this->_model->table}.comments,
-            {$this->_model->table}.remarks,
-            {$this->_model->view}.checked_by_name,
-            {$this->_model->view}.dispatched_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS dispatched_at
-        ";
-        $builder    = $this->_model->select($columns);
-
-        // Join with other tables
-        $this->_model->joinView($builder);
-        $this->_model->joinSchedule($builder);
-        $this->_model->joinCustomer($builder);
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Dispatch ID',
-            'Schedule ID',
-            'Schedule Title',
-            'Client',
-            'Client Type',
-            'Dispatch Date',
-            'Dispatch Out',
-            'Time In',
-            'Time Out',
-            'SR Number',
-            'Technicians',
-            'Service Type',
-            'With Permit',
-            'Comments',
-            'Remarks',
-            'Checked By',
-            'Dispatched By',
-            'Dispatched At'
-        ];
-        $filename   = 'Dispatch Masterlist';
-
-        $this->exportToCsv($data, $header, $filename, function($data, $output) {
-            $i          = 0;
-            $services   = get_dispatch_services();
-            while (isset($data[$i])) {
-                $row = $data[$i];
-                
-                if (isset($row['service_type']))
-                    $row['service_type'] = $services[$row['service_type']];
-
-                fputcsv($output, $row);
-                $i++;
-            }
-        });
     }
 }

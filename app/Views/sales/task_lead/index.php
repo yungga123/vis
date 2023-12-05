@@ -74,13 +74,7 @@
             </table>
         </div>
         <div class="card-footer">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <a href="<?= url_to('tasklead.export'); ?>" class="btn btn-success">Export All Task Leads Except Booked</a>
-                    <a href="<?= url_to('tasklead.export') . '?booked=true'; ?>" class="btn btn-success">Export All Booked Task Leads</a>
-                </div>
-                <a href="<?= url_to('tasklead.booked.home') ?>" class="btn btn-success">View Booked Task Leads</a>
-            </div>
+            <a href="<?= url_to('tasklead.booked.home') ?>" class="btn btn-success">View Booked Task Leads</a>
         </div>
     </div>
 </div>

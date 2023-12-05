@@ -50,9 +50,14 @@ class EmployeesView extends Seeder
                 emp.spouse_contact_no,
                 emp.no_of_children,
                 emp.spouse_address,
+                av.employee_name AS created_by,
                 DATE_FORMAT(emp.created_at, '%b %e, %Y at %h:%i %p') AS created_at
             FROM
                 employees AS emp
+            LEFT JOIN
+                accounts_view AS av
+            ON
+                emp.created_by = av.username
             WHERE
                 deleted_at IS NULL
             "

@@ -6,12 +6,11 @@ use App\Controllers\BaseController;
 use App\Models\ScheduleModel;
 use App\Traits\AdminTrait;
 use App\Traits\HRTrait;
-use App\Traits\ExportTrait;
 
 class Schedule extends BaseController
 {
     /* Declare trait here to use */
-    use AdminTrait, ExportTrait, HRTrait;
+    use AdminTrait, HRTrait;
 
     /**
      * Use to initialize ScheduleModel class
@@ -92,8 +91,8 @@ class Schedule extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Schedule has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Schedule')
         ];
 
         // Using DB Transaction
@@ -116,22 +115,22 @@ class Schedule extends BaseController
                 if (!$this->checkPermissions($this->_permissions, 'EDIT')) {
                     return $this->response->setJSON(
                         [
-                            'status'    => STATUS_INFO,
+                            'status'    => res_lang('status.info'),
                             'message'   => "You don't have permission to EDIT any schedule currently! Ask your superior to provide one."
                         ]
                     );
                 }
 
                 $inputs['id']       = $id;
-                $data['message']    = 'Schedule has been updated successfully!';
+                $data['message']    = res_lang('success.updated', 'Schedule');
 
                 unset($inputs['created_by']);
             } 
 
             if (! $this->_model->save($inputs)) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -141,8 +140,8 @@ class Schedule extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -182,7 +181,7 @@ class Schedule extends BaseController
             }
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data = 'Error while processing data! Please contact your system administrator.';
+            $data = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -196,7 +195,7 @@ class Schedule extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_INFO,
+            'status'    => res_lang('status.info'),
             'message'   => "You don't have permission to DELETE any schedule currently! Ask your superior to provide one."
         ];
 
@@ -207,13 +206,13 @@ class Schedule extends BaseController
             if ($this->checkPermissions($this->_permissions, 'DELETE')) {
                 $id = $this->request->getVar('id');
                 
-                $data['status']     = STATUS_SUCCESS;
-                $data['message']    = "Schedule has been deleted successfully!";            
+                $data['status']     = res_lang('status.success');
+                $data['message']    = res_lang('success.deleted', 'Schedule');            
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     log_message('error', 'Deleted by {username}', ['username' => session('username')]);
                 }
@@ -226,60 +225,10 @@ class Schedule extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $columns    = "
-            {$this->_model->table}.job_order_id,
-            {$this->_model->table}.title,
-            {$this->_model->table}.description,
-            {$this->_model->table}.type,
-            ".dt_sql_datetime_format("{$this->_model->table}.start")." AS start,
-            ".dt_sql_datetime_format("{$this->_model->table}.end")." AS end,
-            cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
-        ";
-        $builder    = $this->_model->select($columns);
-
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'JO #',
-            'Title',
-            'Description',
-            'Type',
-            'Start At',
-            'End At',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'Schedules Masterlist';
-
-        $this->exportToCsv($data, $header, $filename, function($data, $output) {
-            $i      = 0;
-            $types  = get_schedule_type();
-            while (isset($data[$i])) {
-                $row = $data[$i];
-                
-                if (isset($row['type']))
-                    $row['type'] = $types[$row['type']]['text'];
-
-                fputcsv($output, $row);
-                $i++;
-            }
-        });
     }
 }

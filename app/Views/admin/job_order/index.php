@@ -86,9 +86,6 @@
                         </thead>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <a href="<?= url_to('job_order.export'); ?>" class="btn btn-success">Export All Job Orders</a>
-                </div>
             </div>
         </div>
     </div>

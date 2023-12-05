@@ -119,8 +119,8 @@ class Dropdown extends BaseController
     public function types() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -142,8 +142,8 @@ class Dropdown extends BaseController
     public function show() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -182,8 +182,8 @@ class Dropdown extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -193,8 +193,8 @@ class Dropdown extends BaseController
                 if (isset($inputs['other_category_type'])) {
                     if (! $this->_model->saveOtherCategoryTypes($inputs)) {
                         $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = "Validation error!";
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = res_lang('error.validation');
                     }
                 } else {
                     if ($inputs['is_category']) {
@@ -206,13 +206,13 @@ class Dropdown extends BaseController
                     }
         
                     if ($this->request->getVar('dropdown_id')) {
-                        $data['message']    = 'Data has been updated successfully!';
+                        $data['message']    = res_lang('success.updated');
                     }
         
                     if (! $this->_model->saveDropdowns($inputs)) {
                         $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = "Validation error!";
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = res_lang('error.validation');
                     } else {
                         if ($inputs['is_category'] && !empty($inputs['dropdown_id'])) {
                             $this->_model->set(['dropdown_type' => trim($inputs['dropdown'])])
@@ -235,8 +235,8 @@ class Dropdown extends BaseController
     public function edit() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -262,21 +262,21 @@ class Dropdown extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 $id = $this->request->getVar('id');
                 if ($this->_model->categoryHasDropdowns($id)) {                
-                    $data['status']     = STATUS_INFO;
+                    $data['status']     = res_lang('status.info');
                     $data['message']    = "Category has already dropdowns added and can't be deleted! Remove the dropdown first in order to delete this category.";
                 } else {
                     if (! $this->_model->delete($id)) {
                         $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = "Validation error!";
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = res_lang('error.validation');
                     }
                 }
                 return $data;

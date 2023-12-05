@@ -8,14 +8,13 @@ use App\Models\EmployeeModel;
 use App\Models\TaskLeadView;
 use App\Models\CustomerModel;
 use App\Models\CustomerBranchModel;
-use App\Traits\ExportTrait;
 use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class JobOrder extends BaseController
 {
     /* Declare trait here to use */
-    use ExportTrait, HRTrait;
+    use HRTrait;
 
     /**
      * Use to initialize JobOrderModel class
@@ -173,8 +172,8 @@ class JobOrder extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Job Order')
         ];
 
         $response   = $this->customTryCatch(
@@ -204,7 +203,7 @@ class JobOrder extends BaseController
                 if (! empty($id)) {
                     $inputs['id']           = $id;
                     $inputs['employee_id']  = $employee_id;
-                    $data['message']        = 'Job Order has been updated successfully!';
+                    $data['message']        = res_lang('success.updated', 'Job Order');
     
                     unset($inputs['status']);
                     unset($inputs['created_by']);
@@ -212,8 +211,8 @@ class JobOrder extends BaseController
     
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
 
                 return $data;
@@ -232,8 +231,8 @@ class JobOrder extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Job Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -271,8 +270,8 @@ class JobOrder extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Job Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -281,8 +280,8 @@ class JobOrder extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     log_message('error', "Job Order #: {$id} \n Deleted by {username}", ['username' => session('username')]);
                 }
@@ -319,11 +318,11 @@ class JobOrder extends BaseController
     
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'Job Order has been '. strtoupper($status) .' successfully!';
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['Job Order', strtoupper($status)]);
                 }
 
                 return $data;
@@ -332,52 +331,5 @@ class JobOrder extends BaseController
         );
 
         return $response;
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $builder        = $this->_model->select($this->_model->dtColumns());
-
-        $this->_model->joinWithOtherTables($builder, true);
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Status',
-            'JO #',
-            'Task Lead #',
-            'Is Manual Quotation',
-            'Quotation',
-            'Quotation Type',
-            'Client Type',
-            'Client',
-            'Client Branch',
-            'Manager',
-            'Work Type',
-            'Date Requested',
-            'Date Committed',
-            'Date Reported',
-            'Warranty',
-            'Comments',
-            'Remarks',
-            'Requested By',
-            'Requested At',
-            'Accepted By',
-            'Accepted At',
-            'Filed By',
-            'Filed At',
-            'Discarded By',
-            'Discarded At',
-            'Reverted By',
-            'Reverted At'
-        ];
-        $filename   = 'Job Orders Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

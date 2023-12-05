@@ -83,13 +83,13 @@ class MailConfig extends BaseController
         $this->transBegin();
 
         try {
-            $data['status']     = STATUS_SUCCESS;
-            $data['message']    = "Changes have been saved!";
+            $data['status']     = res_lang('status.success');
+            $data['message']    = res_lang('success.saved', 'Changes');
 
             if (!$this->_model->save($this->request->getVar())) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             } else {
                 log_message(
                     'error',
@@ -111,9 +111,9 @@ class MailConfig extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status'] = STATUS_ERROR;
+            $data['status'] = res_lang('status.error');
             // $data['errors']     = $e->getMessage();
-            $data['message'] = 'Error while processing data! Please contact your system administrator.';
+            $data['message'] = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -150,7 +150,7 @@ class MailConfig extends BaseController
         if (null === $provider) {
             // exit('Provider missing');
             log_message('error', 'OAuth2: Provider missing!');
-            return $this->_status(STATUS_ERROR, $view);
+            return $this->_status(res_lang('status.error'), $view);
         }
 
         if (!isset($_GET['code'])) {
@@ -173,7 +173,7 @@ class MailConfig extends BaseController
             // exit('Invalid state');
 
             log_message('error', 'OAuth2: Invalid state!');
-            return $this->_status(STATUS_ERROR, $view);
+            return $this->_status(res_lang('status.error'), $view);
         } else {
             //Try to get an access token (using the authorization code grant)
             $token = $provider->getAccessToken(
@@ -196,7 +196,7 @@ class MailConfig extends BaseController
 
             $this->_model->saveRefreshToken($token->getRefreshToken());
 
-            return $this->_status(STATUS_SUCCESS, $view);
+            return $this->_status(res_lang('status.success'), $view);
         }
     }
 
@@ -352,7 +352,7 @@ class MailConfig extends BaseController
     public function _status($status = 'success', $view = true)
     {
         $message = 'Your OAuth2 Google Client configuration is success.';
-        if ($status === STATUS_ERROR) {
+        if ($status === res_lang('status.error')) {
             $status = 'danger';
             $message = "There's an error in your OAuth2 Google Client configuration";
         }

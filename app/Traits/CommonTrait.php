@@ -22,10 +22,10 @@ trait CommonTrait
 
         $result = $builder->find($id);
         if ($result) {
-            $status = strtoupper(str_replace('_', ' ', $result['status']));
-            throw new \Exception("
-                <strong>EDIT</strong> or <strong>DELETE</strong> action for this record are not allowed! It's already in <strong>{$status}</strong> status.
-            ", 2);
+            $status     = strtoupper(str_replace('_', ' ', $result['status']));
+            $message    = res_lang('restrict.action.change') ." It's already in <strong>{$status}</strong> status.
+            ";
+            throw new \Exception($message, 2);
         }
     }
 }
