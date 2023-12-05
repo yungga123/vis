@@ -42,9 +42,6 @@
 						</thead>
 					</table>
 				</div>
-				<div class="card-footer">
-					<a type="button" href="<?= url_to('employee.export') ?>" class="btn btn-success">Export All Employees</a>
-				</div>
 			</div>
 		</div>
 	</div>

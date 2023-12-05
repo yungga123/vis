@@ -74,8 +74,8 @@ class CustomerFile extends Customer
     public function upload()
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'File(s) have successfully uploaded!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.uploaded', 'File(s)')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -83,9 +83,9 @@ class CustomerFile extends Customer
                 $rules = $this->validationFileRules('file', null, 15);
             
                 if (! $this->validate($rules)) {
-                    $data['status']     = STATUS_ERROR;
                     $data['errors']     = $this->validator->getErrors();
-                    $data['message']    = 'Validation error!';
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
 
                     return $data;
                 } 
@@ -118,8 +118,8 @@ class CustomerFile extends Customer
                     // Insert or update if $id exists
                     if (! $this->_model->upsert($inputs)) {
                         $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = 'Validation error!';
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = res_lang('error.validation');
 
                         return $data;
                     }
@@ -151,8 +151,8 @@ class CustomerFile extends Customer
     public function remove()
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'File has been removed!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.removed', 'File')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -181,8 +181,8 @@ class CustomerFile extends Customer
                     // Insert or update if $id exists
                     if (! $this->_model->upsert($inputs)) {
                         $data['errors']     = $this->_model->errors();
-                        $data['status']     = STATUS_ERROR;
-                        $data['message']    = 'Validation error!';
+                        $data['status']     = res_lang('status.error');
+                        $data['message']    = res_lang('error.validation');
                         return $data;
                     }
         

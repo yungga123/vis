@@ -125,8 +125,8 @@ class Employee extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Employee has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Employee')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -144,11 +144,11 @@ class Employee extends BaseController
     
                 if (! $this->_model->save($this->request->getVar())) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = 'Validation error! There are still required fields that need to be addressed. Please double check!';
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation') . ' There are still required fields that need to be addressed. Please double check!';
                 } else {
                     if (! empty($id)) {
-                        $data['message']    = 'Employee has been updated successfully!';
+                        $data['message']    = res_lang('success.updated', 'Employee');
         
                         if ($prev !== $curr) {
                             $accountModel = new AccountModel();
@@ -173,8 +173,8 @@ class Employee extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Employee has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Employee')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -199,16 +199,16 @@ class Employee extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Employee has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Employee')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
 
                 return $data;
@@ -216,52 +216,5 @@ class Employee extends BaseController
         );
 
         return $response;
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $builder    = $this->_model->db->table($this->_model->view);
-        $builder->select($this->_model->dtColumns);
-        $builder->orderBy('employee_name', 'ASC');
-
-        $data       = $builder->get()->getResultArray();
-        $header     = [
-            'Employee ID',
-            'Employee Name',
-            'Address',
-            'Gender',
-            'Civil Status',
-            'Birthdate',
-            'Birthplace',
-            'Position',
-            'Employment Status',
-            'Date Hired',
-            'Date Resigned',
-            'Contact Number',
-            'Email Address',
-            'SSS Number',
-            'TIN Number',
-            'PhilHealth Number',
-            'PAGIBIG Number',
-            'Educational Attainment',
-            'Course',
-            'Emergency Name',
-            'Emergency Contact Number',
-            'Emergency Address',
-            'Spouse Name',
-            'Spouse Contact Number',
-            'No. of Children',
-            'Spouse Address',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'Employees Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

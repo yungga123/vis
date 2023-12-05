@@ -152,20 +152,20 @@ class Customer extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Customer has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Client')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 if (! $this->_model->save($this->request->getVar())) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = 'Validation error!';
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
     
                 if ($this->request->getVar('id')) {
-                    $data['message']    = 'Customer has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', 'Client');
                 }
                 return $data;
             },
@@ -183,8 +183,8 @@ class Customer extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Customer has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Client')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -207,16 +207,16 @@ class Customer extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Customer has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Client')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             },
@@ -224,54 +224,5 @@ class Customer extends BaseController
         );
 
         return $response;
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $address    = dt_sql_concat_client_address($this->_model->table);
-        $columns    = "
-            {$this->_model->table}.id,
-            IF({$this->_model->table}.forecast = 0, 'NO', 'YES') AS new_client,
-            {$this->_model->table}.name,
-            {$this->_model->table}.type,
-            {$this->_model->table}.contact_person,
-            {$this->_model->table}.contact_number,
-            {$this->_model->table}.email_address,
-            {$address},
-            {$this->_model->table}.source, 
-            {$this->_model->table}.notes,
-            {$this->_model->table}.referred_by,
-            cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
-        ";
-        $builder    = $this->_model->select($columns);
-
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-        $builder->where("deleted_at IS NULL")->orderBy('id', 'DESC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Client ID',
-            'New Client?',
-            'Client Name',
-            'Client Type',
-            'Contact Person',
-            'Contact Number',
-            'Email Address',
-            'Address',
-            'Source',
-            'Notes',
-            'Referred By',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'Clients Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

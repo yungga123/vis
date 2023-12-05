@@ -4,15 +4,11 @@ namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
 use App\Models\SupplierBrandsModel;
-use App\Models\SuppliersModel;
-use App\Traits\ExportTrait;
-use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class SupplierBrands extends BaseController
 {
     /* Declare trait here to use */
-    use ExportTrait, HRTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -95,8 +91,8 @@ class SupplierBrands extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier Brands has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Supplier\'s brand')
         ];
 
         // Using DB Transaction
@@ -107,12 +103,12 @@ class SupplierBrands extends BaseController
 
             if (! $model->save($this->request->getVar())) {
                 $data['errors']     = $model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             if ($this->request->getVar('id')) {
-                $data['message']    = 'Supplier Brands has been updated successfully!';
+                $data['message']    = res_lang('success.updated', 'Supplier\'s brand');
             }
 
             // Commit transaction
@@ -122,8 +118,8 @@ class SupplierBrands extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -137,8 +133,8 @@ class SupplierBrands extends BaseController
     public function edit() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier Brands has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Supplier\'s brand')
         ];
 
         try {
@@ -148,8 +144,8 @@ class SupplierBrands extends BaseController
             $data['data'] = $model->select($model->allowedFields)->find($id);;
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -163,8 +159,8 @@ class SupplierBrands extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier Brands has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Supplier\'s brand')
         ];
 
         // Using DB Transaction
@@ -175,8 +171,8 @@ class SupplierBrands extends BaseController
 
             if (! $model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -186,52 +182,10 @@ class SupplierBrands extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $supplierModel  = new SuppliersModel();
-        $columns        = "
-            {$supplierModel->table}.id,
-            {$supplierModel->table}.supplier_name,
-            {$this->_model->table}.id AS brand_id,
-        ". $this->_model->dtColumns();
-        $builder        = $this->_model->select($columns);
-
-        $this->_model->joinSupplier(null, $supplierModel);
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-
-        $builder->where("{$this->_model->table}.deleted_at IS NULL");
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Supplier ID',
-            'Supplier Name',
-            'Brand ID',
-            'Brand Name',
-            'Brand Product',
-            'Warranty',
-            'Sales Person',
-            'Sales Contact Number',
-            'Tech Support',
-            'Tech Contact Number',
-            'Remarks',
-            'Created By',
-            'Created At'
-        ];
-        $filename   = 'Supplier Brands Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

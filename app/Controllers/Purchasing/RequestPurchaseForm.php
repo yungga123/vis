@@ -5,18 +5,15 @@ namespace App\Controllers\Purchasing;
 use App\Controllers\BaseController;
 use App\Models\RequestPurchaseFormModel;
 use App\Models\RPFItemModel;
-use App\Models\InventoryModel;
-use App\Models\SuppliersModel;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
-use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class RequestPurchaseForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait, GeneralInfoTrait, CommonTrait, ExportTrait;
+    use InventoryTrait, GeneralInfoTrait, CommonTrait;
 
     /**
      * Use to initialize corresponding model
@@ -151,8 +148,8 @@ class RequestPurchaseForm extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'RFP has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'RFP')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -174,8 +171,8 @@ class RequestPurchaseForm extends BaseController
 
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     $rpfItemModel   = new RPFItemModel();
                     $rpf_id         = $id ? $id : $this->_model->insertedID;
@@ -183,7 +180,7 @@ class RequestPurchaseForm extends BaseController
                 }
   
                 if ($id) {
-                    $data['message']    = 'RFP has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', 'RFP');
                 }
                 return $data;
             }
@@ -200,8 +197,8 @@ class RequestPurchaseForm extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'RPF has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'RFP')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -217,7 +214,7 @@ class RequestPurchaseForm extends BaseController
                 $items          = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
                 if ($this->request->getVar('rpf_items')) {
                     $data['data']       = $items;
-                    $data['message']    = 'RPF items has been retrieved!';
+                    $data['message']    = res_lang('success.retrieved', 'RFP Items');
                 } else {
                     $table      = $this->_model->table;
                     $columns    = "
@@ -245,8 +242,8 @@ class RequestPurchaseForm extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'RFP')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -258,8 +255,8 @@ class RequestPurchaseForm extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
@@ -285,12 +282,12 @@ class RequestPurchaseForm extends BaseController
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'RPF has been '. strtoupper($status) .' successfully!';
-
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['RFP', strtoupper($status)]);
+                    
                     if ($status === 'received') {
                         $prfItemModel = new RPFItemModel();
                         $prfItemModel->updateRpfItems($this->request->getVar(), $id);
@@ -308,12 +305,11 @@ class RequestPurchaseForm extends BaseController
      *
      * @return view
      */
-    public function print() 
+    public function print($id) 
     {
         // Check role & action if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, 'PRINT');
         
-        $id                 = $this->request->getUri()->getSegment(3);
         $columns            = $this->_model->columns(true, true);
         $builder            = $this->_model->select($columns);
         
@@ -327,113 +323,5 @@ class RequestPurchaseForm extends BaseController
         $data['company_logo']   = $this->getCompanyLogo();
 
         return view('purchasing/rpf/print', $data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $columns    = "
-            UPPER({$this->_model->table}.status) AS status,
-            {$this->_model->table}.id,
-            ".dt_sql_date_format("{$this->_model->table}.date_needed")." AS date_needed,
-            {$this->_model->view}.created_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at,
-            {$this->_model->view}.accepted_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.accepted_at")." AS accepted_at,
-            {$this->_model->view}.rejected_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.rejected_at")." AS rejected_at,
-            {$this->_model->view}.reviewed_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.reviewed_at")." AS reviewed_at,
-            {$this->_model->view}.received_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.received_at")." AS received_at
-        ";
-        $data       = $this->_model->getRequestPurchaseForms(null, true, $columns);
-        $header     = [
-            'Status',
-            'RPF #',
-            'Delivery Date',
-            'Requested By',
-            'Requested At',
-            'Accepted By',
-            'Accepted At',
-            'Reviewed By',
-            'Reviewed At',
-            'Received By',
-            'Received At',
-            'Rejected By',
-            'Rejected At'
-        ];
-        $filename   = 'Request to Purchase Forms';
-
-        $this->exportToCsv($data, $header, $filename);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function exportItems() 
-    {
-        $rpfItemModel   = new RPFItemModel();
-        $inventoryModel = new InventoryModel();
-        $columns        = "
-            {$rpfItemModel->table}.rpf_id,
-            {$rpfItemModel->table}.inventory_id,
-            {$inventoryModel->view}.supplier_name,
-            {$inventoryModel->view}.brand,
-            {$inventoryModel->table}.item_model,
-            {$inventoryModel->table}.item_description,
-            {$inventoryModel->view}.size,
-            {$inventoryModel->view}.unit,
-            {$inventoryModel->table}.stocks,
-            {$rpfItemModel->table}.quantity_in,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_price,
-            {$rpfItemModel->table}.received_q,
-            ".dt_sql_date_format("{$rpfItemModel->table}.received_date")." AS received_date,
-            UPPER({$this->_model->table}.status) AS status,
-            {$rpfItemModel->table}.purpose,
-            {$this->_model->view}.created_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
-        ";
-        $builder        = $rpfItemModel->select($columns);
-
-        $rpfItemModel->join($this->_model->table, "{$this->_model->table}.id = {$rpfItemModel->table}.rpf_id", 'left');
-        $rpfItemModel->join($this->_model->view, "{$this->_model->view}.rpf_id = {$rpfItemModel->table}.rpf_id", 'left');
-        $rpfItemModel->join($inventoryModel->table, "{$inventoryModel->table}.id = {$rpfItemModel->table}.inventory_id", 'left');
-        $rpfItemModel->join($inventoryModel->view, "{$inventoryModel->table}.id = {$inventoryModel->view}.inventory_id", 'left');
-
-        $builder->where("{$this->_model->table}.deleted_at", null);
-        $builder->orderBy("{$rpfItemModel->table}.rpf_id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'RPF #',
-            'Item #',
-            'Supplier',
-            'Item Brand',
-            'Item Model',
-            'Item Description',
-            'Item Size',
-            'Item Unit',
-            'Current Stocks',
-            'Quantity In',
-            'Item Price',
-            'Total Price',
-            'Received Qty',
-            'Received Date',
-            'Status',
-            'Purpose',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'RPF Items';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

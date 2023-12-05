@@ -44,10 +44,6 @@
                         </thead>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <a href="<?= url_to('rpf.export'); ?>" class="btn btn-success">Export All RPFs</a>
-                    <a href="<?= url_to('rpf.export_items'); ?>" class="btn btn-success">Export All RPF Items</a>
-                </div>
             </div>
         </div>
     </div>

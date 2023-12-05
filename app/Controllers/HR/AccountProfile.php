@@ -77,22 +77,22 @@ class AccountProfile extends BaseController
     public function changePassword()
     {
         $data       = [
-            'status'    => STATUS_ERROR,
+            'status'    => res_lang('status.error'),
             'message'   => 'Wrong current password! Please try again.'
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 if (! $this->validate($this->_rules())) {
-                    $data['status']     = STATUS_ERROR;
+                    $data['status']     = res_lang('status.error');
                     $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = 'Validation error!';
+                    $data ['message']   = res_lang('error.validation');
                 } else {
                     $model          = new AccountModel();
                     $username       = session()->get('username');
                     $curr_password  = $this->request->getVar('current_password');
     
-                    $data['status']     = STATUS_ERROR;
+                    $data['status']     = res_lang('status.error');
                     $data['message']    = "Wrong current password! Please try again.";
     
                     if ($model->authenticate($username, $curr_password)) {
@@ -102,7 +102,7 @@ class AccountProfile extends BaseController
                             PASSWORD_DEFAULT
                         );
         
-                        $data['status']     = STATUS_SUCCESS;
+                        $data['status']     = res_lang('status.success');
                         $data['message']    = "You have successfully changed your password! You will be logged out now in <b></b>...";
     
                         // Turn protection off - to skip validation
@@ -139,7 +139,7 @@ class AccountProfile extends BaseController
     public function changeProfileImage()
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'You have successfully changed your profile image! Page will be reloaded in <b></b>...'
         ];
         $response   = $this->customTryCatch(
@@ -151,9 +151,9 @@ class AccountProfile extends BaseController
                 $rules      = $this->validationFileRules($name, $allowed, 5, 'Profile Image');
             
                 if (! $this->validate($rules)) {
-                    $data['status']     = STATUS_ERROR;
+                    $data['status']     = res_lang('status.error');
                     $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = 'Validation error!';
+                    $data ['message']   = res_lang('error.validation');
 
                     return $data;
                 }
@@ -174,8 +174,8 @@ class AccountProfile extends BaseController
 
                 if (! $save) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = 'Validation error!';
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
 
                     return $data;
                 }

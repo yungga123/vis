@@ -63,7 +63,7 @@ class SalesTarget extends BaseController
     public function save()
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Sales Target has been saved successfully!'
         ];
 
@@ -73,8 +73,8 @@ class SalesTarget extends BaseController
         try {
             if (! $this->_model->save($this->request->getVar())) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             if ($this->request->getVar('id')) {
@@ -88,8 +88,8 @@ class SalesTarget extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -117,7 +117,7 @@ class SalesTarget extends BaseController
     public function delete()
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
+            'status'    => res_lang('status.success'),
             'message'   => 'Succesfully Deleted!!'
         ];
 
@@ -127,8 +127,8 @@ class SalesTarget extends BaseController
         try {
             if (! $this->_model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -138,8 +138,8 @@ class SalesTarget extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);

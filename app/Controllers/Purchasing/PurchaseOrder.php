@@ -12,13 +12,12 @@ use App\Models\SuppliersModel;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
 use App\Traits\HRTrait;
-use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 class PurchaseOrder extends BaseController
 {
     /* Declare trait here to use */
-    use GeneralInfoTrait, CommonTrait, HRTrait, ExportTrait;
+    use GeneralInfoTrait, CommonTrait, HRTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -156,8 +155,8 @@ class PurchaseOrder extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Purchase Order has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Purchase Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -165,9 +164,9 @@ class PurchaseOrder extends BaseController
                 $print_po_id = $this->request->getVar('po_id');
 
                 if (! $this->validate($this->_validationRules($print_po_id))) {
-                    $data['status']     = STATUS_ERROR;
+                    $data['status']     = res_lang('status.error');
                     $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = 'Validation error!';
+                    $data ['message']   = res_lang('error.validation');
 
                     return $data;
                 } 
@@ -254,8 +253,8 @@ class PurchaseOrder extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Purchase Order has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.fetched', 'Purchase Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -265,7 +264,7 @@ class PurchaseOrder extends BaseController
 
                 if ($this->request->getVar('po_items')) {
                     $data['data']       = $results;
-                    $data['message']    = 'Purchase Order items has been retrieved!';
+                    $data['message']    = res_lang('success.fetched', 'Purchase Order items');
                 } else {
                     $record                 = $this->_model->getPurchaseOrders($id, 'rpf_id, attention_to');
                     $rpfModel               = new RequestPurchaseFormModel();
@@ -295,8 +294,8 @@ class PurchaseOrder extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Purchase Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -308,8 +307,8 @@ class PurchaseOrder extends BaseController
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
@@ -335,11 +334,11 @@ class PurchaseOrder extends BaseController
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'Purchase Order has been '. strtoupper($status) .' successfully!';
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['Purchase Order', strtoupper($status)]);
                 }
                 return $data;
             }
@@ -398,128 +397,6 @@ class PurchaseOrder extends BaseController
         $data['custom_js']      = ['functions.js', 'purchasing/purchase_order/print.js'];
 
         return view('purchasing/purchase_order/print', $data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $supplierModel  = new SuppliersModel();
-        $rpfModel       = new RequestPurchaseFormModel();
-        $columns        = "
-            UPPER({$this->_model->table}.status) AS status,
-            {$this->_model->table}.id,
-            {$this->_model->table}.rpf_id,
-            {$supplierModel->table}.supplier_name,
-            {$this->_model->table}.attention_to,
-            IF({$this->_model->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
-            {$rpfModel->view}.created_by_name AS requested_by,
-            ".dt_sql_datetime_format("{$rpfModel->table}.created_at")." AS requested_at,
-            cb.employee_name AS generated_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS generated_at,
-            ab.employee_name AS approved_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.approved_at")." AS approved_at,
-            fb.employee_name AS filed_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.filed_at")." AS filed_at
-        ";
-        $builder    = $this->_model->select($columns);
-
-        $this->_model->joinSupplier($builder, $supplierModel);
-        $this->_model->joinRpf($builder, $rpfModel);
-        $this->_model->joinRpf($builder, $rpfModel, true);
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-        $this->joinAccountView($builder, "{$this->_model->table}.approved_by", 'ab');
-        $this->joinAccountView($builder, "{$this->_model->table}.filed_by", 'fb');
-
-        $builder->where("{$this->_model->table}.deleted_at", null);
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Status',
-            'PO #',
-            'RPF #',
-            'Supplier',
-            'Attention To',
-            'With Vat',
-            'Requested By',
-            'Requested At',
-            'Generated By',
-            'Generated At',
-            'Approved By',
-            'Approved At',
-            'Filed By',
-            'Filed At',
-        ];
-        $filename   = 'Purchase Orders';
-
-        $this->exportToCsv($data, $header, $filename);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function exportItems() 
-    {
-        $poItemModel    = new POItemModel();
-        $rpfItemModel   = new RPFItemModel();
-        $inventoryModel = new InventoryModel();
-        $columns        = "
-            {$poItemModel->table}.po_id,
-            {$rpfItemModel->table}.rpf_id,
-            {$rpfItemModel->table}.inventory_id,
-            {$inventoryModel->view}.supplier_name,
-            {$inventoryModel->view}.brand,
-            {$inventoryModel->table}.item_model,
-            {$inventoryModel->table}.item_description,
-            {$inventoryModel->table}.stocks,
-            {$inventoryModel->view}.size,
-            {$inventoryModel->view}.unit,
-            {$rpfItemModel->table}.quantity_in,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_price,
-            UPPER({$this->_model->table}.status) AS status,
-            cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
-        ";
-        $builder        = $this->_model->select($columns);
-
-        $this->_model->joinPOItem($builder, $poItemModel);
-        $this->_model->joinRpfItem($builder, $rpfItemModel);
-        $poItemModel->joinInventory($builder, $inventoryModel);
-        $poItemModel->joinInventory($builder, $inventoryModel, true);
-        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
-
-        $builder->where("{$this->_model->table}.deleted_at", null);
-        $builder->orderBy("{$poItemModel->table}.po_id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'PO #',
-            'RPF #',
-            'Item #',
-            'Supplier',
-            'Item Brand',
-            'Item Model',
-            'Item Description',
-            'Item Size',
-            'Item Unit',
-            'Current Stocks',
-            'Quantity In',
-            'Item Price',
-            'Total Price',
-            'Status',
-            'Created By',
-            'Created At',
-        ];
-        $filename   = 'RPF Items';
-
-        $this->exportToCsv($data, $header, $filename);
     }
     
     /**

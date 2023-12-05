@@ -185,7 +185,12 @@ class TaskLeadModel extends Model
     public function dtGetTaskLeads($booked = false)
     {
         $builder    = $this->db->table($this->view);
-        $builder->select($this->dtColumns);
+        $columns    = $this->dtColumns;
+        $columns    = $booked 
+            ? array_merge($columns, [dt_sql_datetime_format('updated_at') . ' AS updated_at'])
+            : $columns;
+
+        $builder->select($columns);
 
         if ($booked) $builder->where('status', $this->booked);
         return $builder;

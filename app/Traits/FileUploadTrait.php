@@ -158,6 +158,7 @@ trait FileUploadTrait
         $allowed    = empty($allowed) ? $default : $allowed;
         $sizeToKb   = mb_to_kb((int) $maxSize);
         $label      = empty($label) ? $filename : $label;
+        $label      = str_replace('_', ' ', $label);
         $rules      = [
             "{$filename}" => [
                 'label' => ucwords($label),

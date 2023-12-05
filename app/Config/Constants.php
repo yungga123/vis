@@ -214,9 +214,9 @@ define('MODULES', [
     'ADMIN_DISPATCH'        => 'Dispatch',
     'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
     'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
-    'INVENTORY_PRF'         => 'Project Request Forms',
     'PURCHASING_PO'         => 'Purchase Orders',
     'SETTINGS_GENERAL_INFO' => 'General Info',
+    'EXPORT_DATA'           => 'Export Data',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -243,6 +243,7 @@ define('MODULE_CODES', [
     'purchasing_rpf'        => 'PURCHASING_RPF',
     'purchase_order'        => 'PURCHASING_PO',
     'general_info'          => 'SETTINGS_GENERAL_INFO',
+    'export_data'           => 'EXPORT_DATA',
 ]);
 
 // Developer Account

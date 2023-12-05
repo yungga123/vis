@@ -8,18 +8,17 @@
                     <table id="account_table" class="table table-striped table-hover nowrap">
                         <thead class="nowrap">
                             <tr>
+                                <th>Actions</th>
                                 <th>Employee ID</th>
                                 <th>Employee Name</th>
                                 <th>Username</th>
                                 <th>Role</th>
-                                <th>Action</th>
+                                <th>Created By</th>
+                                <th>Created At</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
-				<div class="card-footer">
-					<a type="button" href="<?= url_to('account.export') ?>" class="btn btn-success">Export All Accounts</a>
-				</div>
             </div>
         </div>
     </div>

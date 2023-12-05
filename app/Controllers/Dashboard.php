@@ -63,32 +63,37 @@ class Dashboard extends BaseController
             foreach ($modules as $val) {
                 // Not include DASHBOARD module                
                 if ($val !== 'DASHBOARD' && in_array($val, $setup_modules)) {
-                    $module = setup_modules($val);
-                    $menu   = empty($module['menu']) ? $val : $module['menu'];
-                    $count      = '';
-                    $more_info  = '';
+                    $module         = setup_modules($val);
+                    $module_name    = $module['name'];
+                    $menu           = empty($module['menu']) ? $val : $module['menu'];
+                    $count          = '';
+                    $more_info      = '';
 
                     if (isset($record_counts[$val])) {
                         $param = $record_counts[$val];
                         $count = $param;
                         if (is_array($param)) {
-                            $count = $param['count'];
-                            foreach ($param['more_info'] as $key => $value) {
-                                $bg         = isset($value['bg']) ? $value['bg'] : 'info';
-                                $icon       = isset($value['icon']) ? $value['icon'] : $module['icon'];
-                                $text       = ucwords(str_replace('_', ' ', $key));
-                                $text       = isset($value['link']) ? "<a href='{$value['link']}'>{$text}</a>" : $text;
-                                $more_info  .= <<<EOF
-                                    <div class="info-box text-dark">
-                                        <span class="info-box-icon bg-{$bg}">
-                                            <i class="{$icon}"></i>
-                                        </span>
-                                        <div class="info-box-content">
-                                            <span class="info-box-text">{$text}</span>
-                                            <span class="info-box-number mt-0">{$value['count']}</span>
+                            $count          = $param['count'];
+                            $module_name    = isset($param['name']) ? $param['name'] : $module_name;
+
+                            if (isset($param['more_info'])) {
+                                foreach ($param['more_info'] as $key => $value) {
+                                    $bg         = isset($value['bg']) ? $value['bg'] : 'info';
+                                    $icon       = isset($value['icon']) ? $value['icon'] : $module['icon'];
+                                    $text       = ucwords(str_replace('_', ' ', $key));
+                                    $text       = isset($value['link']) ? "<a href='{$value['link']}'>{$text}</a>" : $text;
+                                    $more_info  .= <<<EOF
+                                        <div class="info-box text-dark">
+                                            <span class="info-box-icon bg-{$bg}">
+                                                <i class="{$icon}"></i>
+                                            </span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">{$text}</span>
+                                                <span class="info-box-number mt-0">{$value['count']}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                EOF;
+                                    EOF;
+                                }
                             }
                         }
 
@@ -115,7 +120,7 @@ class Dashboard extends BaseController
                         <div class="small-box bg-success">
                             <div class="inner">
                                 {$count}
-                                <h5>{$module['name']}</h5>
+                                <h5>{$module_name}</h5>
                             </div>
                             <div class="icon"><i class="{$module['icon']}"></i></div>
                             <a $action class="small-box-footer">
@@ -229,29 +234,8 @@ class Dashboard extends BaseController
             ],
             'ADMIN_DISPATCH'        => $dispatchCount,
             'ADMIN_JOB_ORDER'       => [
-                'count'     => $jobOrderModel->countRecords(),
-                'more_info' => [
-                    'pending' => [
-                        'icon'  => 'far fa-clock',
-                        'count' => $jobOrderModel->countRecords('pending'),
-                        'bg'    => 'warning',
-                    ],
-                    'accepted' => [
-                        'icon'  => 'fas fa-check-circle',
-                        'count' => $jobOrderModel->countRecords('accepted'),
-                        'bg'    => 'primary',
-                    ],
-                    'filed' => [
-                        'icon'  => 'fas fa-file-import',
-                        'count' => $jobOrderModel->countRecords('filed'),
-                        'bg'    => 'success',
-                    ],
-                    'discarded' => [
-                        'icon'  => 'fas fa-times-circle',
-                        'count' => $jobOrderModel->countRecords('discarded'),
-                        'bg'    => 'secondary',
-                    ],
-                ]
+                'name'  => 'Pending Job Order',
+                'count' => $jobOrderModel->countRecords('pending'),
             ],
             'ADMIN_SCHEDULES'       => [
                 'count'     => $scheduleCount,

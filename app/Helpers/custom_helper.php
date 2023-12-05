@@ -1,5 +1,8 @@
 <?php
 // Helper functions for sidebar rendering
+
+use GuzzleHttp\Promise\Is;
+
 require APPPATH.'Helpers/extend/sidebar.php';
 
 // Helper functions for user related functionality
@@ -10,6 +13,10 @@ require APPPATH.'Helpers/extend/datatable.php';
 
 // Helper functions for select/options related
 require APPPATH.'Helpers/extend/select_options.php';
+
+// Helper functions checking and getting
+// the session flashdata in view
+require APPPATH.'Helpers/extend/view_session.php';
 
 // Mixed helper functions - start from here
 if (! function_exists('check_string_contains'))
@@ -238,5 +245,94 @@ if (! function_exists('get_file_icons'))
         }
 
         return $icon;
+	}
+}
+
+if (! function_exists('flatten_array'))
+{
+    /**
+     * Flatten a multidimensional array.
+     * Or convert into one dimensional array.
+     */
+	function flatten_array(array $array): array
+	{
+        if (is_array($array) && ! empty($array)) {
+            $arr = [];
+            foreach ($array as $key => $val) {
+                if (is_array($val)) {
+                    $vals = array_values($val);
+
+                    if (count($vals) > 1)
+                        $arr[$vals[0]] = $vals[1];
+                    else 
+                        $arr[$vals[0]] = $vals[0];
+                } else
+                    $arr[$key] = $val;  
+            }
+            return $arr;
+        }
+        return $array;
+	}
+}
+
+if (! function_exists('_lang'))
+{
+    /**
+     * Add a custom logic in lang() function 
+     * before returning the result/response
+     */
+	function _lang(string $line, array|string $args = [], ?string $locale = null): string
+	{
+        // Convert $args to array and store in $_args
+        $_args      = is_array($args) ? $args : [$args];
+        // Get the corresponding line/value
+        $string     = lang($line, $_args, $locale);
+        // Define the pattern to match placeholders
+        $pattern    = '/\{([^}]*)\}/';
+
+        // Match placeholders in the string
+        preg_match_all($pattern, $string, $matches);
+
+        // Check if matches
+        if (! empty($matches[0])) { 
+            $result = $matches[1];
+
+            // Loop through each placeholder if $_args is not empty
+            if (! empty($_args)) {
+                // Replace the placeholder with value
+                for ($i=0; $i < count($result); $i++) { 
+                    $search     = $matches[0][$i];
+                    $replace    = $_args[$i];
+                    $string     = str_replace($search, $replace, $string);
+                }
+            } else {
+                // Replace the placeholder with value
+                $replace    = is_string($args) ? $args : 'Data';
+                $replace    = strpos($line, 'change') !== false ? 'CHANGE' : $replace;
+                $replace    = strpos($line, 'uploaded') !== false ? 'File' : $replace;
+                $string     = str_replace($matches[0][0], $replace, $string);
+            }
+        }
+
+        return $string;
+	}
+}
+
+if (! function_exists('res_lang'))
+{
+    /**
+     * Custom function for getting the value/line
+     * from Response Language (App\Language\en\Response).
+     * 
+     * You can call it instead of the usual lang() function
+     * so that you don't need to add the file name.
+     */
+	function res_lang(string $line, array|string $args = [], ?string $locale = null): string
+	{
+        // Add the prefix or the file name
+        $line   = 'Response.' . $line;
+        $string = _lang($line, $args, $locale);
+
+        return $string;
 	}
 }

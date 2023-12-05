@@ -31,7 +31,7 @@ class LoginPage extends BaseController
                 $username       = $this->request->getVar('username');
                 $password       = $this->request->getVar('password');
 
-                $data['status']         = STATUS_ERROR;
+                $data['status']         = res_lang('status.error');
                 $data['message']        = 'Wrong username or password. Please try again!';
 
                 if ($user = $accountsModel->authenticate($username, $password)) {
@@ -59,20 +59,19 @@ class LoginPage extends BaseController
                         'logged_at'     => date('Y-m-d H:i:s'),
                     ]);
 
-                    $data['status']     = STATUS_SUCCESS;
+                    $data['status']     = res_lang('status.success');
                     $data['message']    = 'You have successfully logged in!';
                     $data['redirect']   = base_Url('/dashboard');
                 }
             } else {
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = 'Validation error!';
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
                 $data['errors']     = $this->validator->getErrors();
             }
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status'] = STATUS_ERROR;
-            // $data['errors']     = $e->getMessage();
-            $data ['message']   = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data ['message']   = res_lang('error.process');
         }
 
         return $this->response->setJSON($data); 

@@ -7,7 +7,6 @@ use App\Models\CustomerBranchModel;
 use App\Models\CustomerModel;
 use App\Models\TaskleadHistoryModel;
 use App\Models\TaskLeadModel;
-use App\Traits\ExportTrait;
 use CodeIgniter\I18n\Time;
 use Exception;
 use monken\TablesIgniter;
@@ -15,7 +14,6 @@ use monken\TablesIgniter;
 class Tasklead extends BaseController
 {
     /* Declare trait here to use */
-    use ExportTrait;
 
     /**
      * Use to initialize PermissionModel class
@@ -153,8 +151,8 @@ class Tasklead extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Employee has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Task/Lead')
         ];
 
         // Using DB Transaction
@@ -168,12 +166,12 @@ class Tasklead extends BaseController
 
             if (! $this->_model->save($this->request->getVar())) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             if (! empty($id)) {                
-                $data['message']    = 'Tasklead has been updated successfully!';                
+                $data['message']    = res_lang('success.updated', 'Task/Lead');                
             } else $id = $this->_model->getInsertID();
 
 
@@ -221,8 +219,8 @@ class Tasklead extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -236,8 +234,8 @@ class Tasklead extends BaseController
     public function edit() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Tasklead has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Task/Lead')
         ];
 
         try {
@@ -247,8 +245,8 @@ class Tasklead extends BaseController
             $data['data'] = $this->_model->select($fields)->find($id);;
         } catch (\Exception$e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.validation');
         }
 
         return $this->response->setJSON($data);
@@ -262,8 +260,8 @@ class Tasklead extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Tasklead has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Task/Lead')
         ];
 
         // Using DB Transaction
@@ -272,8 +270,8 @@ class Tasklead extends BaseController
         try {
             if (! $this->_model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -283,56 +281,11 @@ class Tasklead extends BaseController
             $this->transRollback();
 
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.validation');
         }
 
         return $this->response->setJSON($data);
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $booked     = $this->request->getVar('booked') !== null;
-        $builder    = $this->_model->dtGetTaskLeads($booked);
-        
-        if (! $booked) $builder->where('status !=', $this->_model->booked);
-
-        $query      = $builder->orderBy('id', 'ASC')->get();
-        $data       = $query->getResultArray();
-        $header     = [
-            'Tasklead ID',
-            'Employee Name',
-            'Quarter',
-            'Percent',
-            'Status',
-            'Client Name',
-            'Client Type',
-            'Branch Name',
-            'Contact Number',
-            'Project',
-            'Amount',
-            'Quotation Number',
-            'Quotation Type',
-            'Forecast Close Date',
-            'Min. Forecast',
-            'Max Forecast',
-            'Hit?',
-            'Remark Next Step',
-            'Close Deal Date',
-            'Start Date',
-            'End Date',
-            'Duration',
-            'Created By',
-            'Created At'
-        ];
-        $filename   = $booked ? 'Booked Task Leads' : 'Task Leads';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 
     public function getVtCustomer() 

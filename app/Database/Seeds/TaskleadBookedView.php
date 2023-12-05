@@ -41,6 +41,8 @@ class TaskleadBookedView extends Seeder
             DATE_FORMAT(project_start_date,'%b %d, %Y') as project_start_date,
             DATE_FORMAT(project_finish_date,'%b %d, %Y') as project_finish_date,
             CONCAT(DATEDIFF(project_finish_date,project_start_date),' day/s') as project_duration,
+            tasklead.created_at,
+            tasklead.updated_at,
             tasklead.deleted_at
         FROM 
             tasklead

@@ -5,7 +5,6 @@ namespace App\Controllers\Inventory;
 use App\Controllers\BaseController;
 use App\Models\InventoryModel;
 use App\Models\InventoryDropdownModel;
-use App\Traits\ExportTrait;
 use monken\TablesIgniter;
 
 /**
@@ -14,7 +13,6 @@ use monken\TablesIgniter;
 class Home extends BaseController
 {
     /* Declare trait here to use */
-    use ExportTrait;
 
     /**
      * Use to initialize corresponding model
@@ -163,8 +161,8 @@ class Home extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -190,12 +188,12 @@ class Home extends BaseController
     
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
     
                 if ($this->request->getVar('id')) {
-                    $data['message']    = 'Item has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', 'Item');
                 }
                 return $data;
             }
@@ -212,8 +210,8 @@ class Home extends BaseController
     public function edit() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -236,80 +234,21 @@ class Home extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
         );
 
         return $response;
-    }
-
-    /**
-     * For exporting data to csv
-     *
-     * @return void
-     */
-    public function export() 
-    {
-        $columns    = "
-            {$this->_model->table}.id,
-            {$this->_model->view}.supplier_name,
-            {$this->_model->view}.category_name,
-            {$this->_model->view}.subcategory_name,
-            {$this->_model->view}.brand,
-            {$this->_model->table}.item_model,
-            {$this->_model->table}.item_description,
-            {$this->_model->view}.size,
-            {$this->_model->view}.unit,
-            {$this->_model->table}.stocks,
-            ".dt_sql_number_format("{$this->_model->table}.item_sdp")." AS item_sdp,
-            ".dt_sql_number_format("({$this->_model->table}.stocks * {$this->_model->table}.item_sdp)")." AS total_price,
-            ".dt_sql_number_format("{$this->_model->table}.item_srp")." AS item_srp,
-            ".dt_sql_number_format("{$this->_model->table}.project_price")." AS project_price,
-            ".dt_sql_date_format("{$this->_model->table}.date_of_purchase")." AS date_of_purchase,
-            {$this->_model->table}.location,
-            {$this->_model->view}.created_by_name,
-            ".dt_sql_datetime_format("{$this->_model->table}.created_at")." AS created_at
-        ";
-        $builder    = $this->_model->select($columns);
-
-        $this->_model->joinView($builder);
-        $builder->where("{$this->_model->table}.deleted_at", null);
-        $builder->orderBy("{$this->_model->table}.id", 'ASC');
-
-        $data       = $builder->findAll();
-        $header     = [
-            'Item #',
-            'Supplier',
-            'Category',
-            'Sub-Category',
-            'Item Brand',
-            'Item Model',
-            'Item Description',
-            'Item Size',
-            'Item Unit',
-            'Quantity',
-            "Dealer's Price",
-            'Total Price',
-            'Retail Price',
-            'Project Price',
-            'Date of Purchase',
-            'Location',
-            'Encoder',
-            'Encoded At'
-        ];
-        $filename   = 'Inventory Items Masterlist';
-
-        $this->exportToCsv($data, $header, $filename);
     }
 }

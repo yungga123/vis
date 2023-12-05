@@ -186,7 +186,8 @@ abstract class BaseController extends Controller
         // If has access in the module, then check 
         // if user has the specific permission/action
         // Ex. User has access to Dispatch but don't have permission for printing
-        if ($this->getSpecificActionsByModule($module) !== $action)
+        $actions = $this->getSpecificActionsByModule($module);
+        if ( ! in_array($action, $actions))
             $this->redirectToAccessDenied();
 	}
 
@@ -243,9 +244,9 @@ abstract class BaseController extends Controller
         if ($dbTrans) $this->transRollback();
 
 		log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-        $data['status']     = STATUS_ERROR;
+        $data['status']     = res_lang('status.error');
         $data['message']    = $e->getCode() === 2 
-            ? $e->getMessage() : 'Error while processing data! Please contact your system administrator.';
+            ? $e->getMessage() : res_lang('error.process');
 
         return $data;
 	}

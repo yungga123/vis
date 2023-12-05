@@ -38,7 +38,8 @@ class TaskleadView extends Seeder
                 DATE_FORMAT(tasklead.project_finish_date, '%b %d, %Y') AS project_finish_date,
                 CONCAT(DATEDIFF(tasklead.project_finish_date, tasklead.project_start_date),' day/s') AS project_duration,
                 accounts_view.employee_name AS created_by,
-                DATE_FORMAT(tasklead.created_at, '%b %e, %Y at %h:%i %p') AS created_at
+                DATE_FORMAT(tasklead.created_at, '%b %e, %Y at %h:%i %p') AS created_at,
+                tasklead.updated_at
             FROM 
                 tasklead
             LEFT JOIN
