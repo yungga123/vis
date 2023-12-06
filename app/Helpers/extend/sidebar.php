@@ -156,7 +156,7 @@ if (! function_exists('setup_modules'))
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
                 'name'      => get_modules('SETTINGS_MAILCONFIG'),
-                'url'       => url_to('mail.home'),
+                'url'       => url_to('mail_config.home'),
                 'class'     => (url_is('settings/mail') ? 'active' : ''),
                 'icon'      => 'fas fa-envelope',
             ],

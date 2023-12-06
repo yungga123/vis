@@ -10,8 +10,10 @@ class AdminMailService extends BaseService
      * @param   array $data
      * @return  void
      */
-    public function sendJOMailNotif($data)
+    public function sendJOMailNotif($data, $module_code = null)
     {
+        if (! $this->isMailNotifEnabled($module_code)) return;
+
         $module     = 'Job Order';
         $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
         $info       = [
@@ -43,8 +45,10 @@ class AdminMailService extends BaseService
      * @param   array $data
      * @return  void
      */
-    public function sendScheduleMailNotif($data)
+    public function sendScheduleMailNotif($data, $module_code = null)
     {
+        if (! $this->isMailNotifEnabled($module_code)) return;
+
         $module     = 'Schedule';
         $title      = $module .' Created';
         $type       = get_schedule_type($data['type']);

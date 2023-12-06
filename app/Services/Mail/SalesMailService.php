@@ -10,8 +10,11 @@ class SalesMailService extends BaseService
      * @param   array $data
      * @return  void
      */
-    public function sendTaskleadMailNotif($data)
+    public function sendTaskleadMailNotif($data, $module_code = null)
     {
+        $module_code = $module_code ? $module_code : get_module_codes('purchasing_rpf');
+        if (! $this->isMailNotifEnabled($module_code)) return;
+
         $module     = 'Task Lead';
         $title      = $module .' Booked';
         $info       = [

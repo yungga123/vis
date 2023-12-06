@@ -4,20 +4,23 @@ namespace App\Controllers\Settings;
 
 use App\Controllers\BaseController;
 use App\Models\MailConfigModel;
+use App\Models\MailNotifModel;
 use League\OAuth2\Client\Provider\Google;
-use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\OAuth;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use App\Libraries\Mail\PHPMailerSMTPService;
 
 class MailConfig extends BaseController
 {
     /**
-     * Use to initialize PermissionModel class
+     * Use to initialize model class
      * @var object
      */
     private $_model;
+
+    /**
+     * Use to initialize model class
+     * @var object
+     */
+    private $_mailNotifModel;
 
     /**
      * Use to get current module code
@@ -43,10 +46,11 @@ class MailConfig extends BaseController
      */
     public function __construct()
     {
-        $this->_model       = new MailConfigModel(); // Current model
-        $this->_module_code = MODULE_CODES['mail_config']; // Current module
-        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_model           = new MailConfigModel(); // Current model
+        $this->_mailNotifModel  = new MailNotifModel(); // Current model
+        $this->_module_code     = MODULE_CODES['mail_config']; // Current module
+        $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add         = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -59,15 +63,24 @@ class MailConfig extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
+        $mail_notifs            = $this->_mailNotifModel->getMailNotifs();
         $data['title']          = 'Settings | Mail Configuration';
         $data['page_title']     = 'Settings | Mail Configuration';
         $data['custom_js']      = 'settings/mail_config.js';
-        $data['sweetalert2']    = true;
-        $data['exclude_toastr'] = true;
         $data['can_save']       = is_admin() ? true : $this->_can_add;
         $data['mail']           = $this->_model->getMailConfig();
+        $data['mail_notifs']    = flatten_array($mail_notifs, 'module_code');
+        $data['modules']        = get_modules();
+        $data['sweetalert2']    = true;
+        $data['exclude_toastr'] = false;
+        $data['bootstrap_switch'] = true;
+        $data['routes']         = json_encode([
+            'mail_config' => [
+                'save'      => url_to('mail_config.save'),
+            ],
+        ]);
 
-        return view('settings/mail_config/send_mail', $data);
+        return view('settings/mail_config/index', $data);
     }   
 
     /**
@@ -77,46 +90,60 @@ class MailConfig extends BaseController
      */
     public function save()
     {
-        $data = [];
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Changes')
+        ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $inputs = $this->request->getVar();
+                $model  = $this->_model;
+                $param  = 'config';
 
-        // Using DB Transaction
-        $this->transBegin();
+                if (isset($inputs['module_code'])) {
+                    $param  = 'notifs';
+                    $column = $inputs['column'];
+                    $inputs = [
+                        'module_code'   => $inputs['module_code'],
+                        "{$column}"     => $inputs['value'],
+                        'updated_by'    => session('username'),
+                    ];
 
-        try {
-            $data['status']     = res_lang('status.success');
-            $data['message']    = res_lang('success.saved', 'Changes');
+                    if ($column === 'has_mail_notif' && empty($inputs['value'])) {
+                        $inputs['is_mail_notif_enabled'] = false;
+                    }
 
-            if (!$this->_model->save($this->request->getVar())) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = res_lang('status.error');
-                $data['message']    = res_lang('error.validation');
-            } else {
-                log_message(
-                    'error',
-                    'Mail config data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.',
-                    [
-                        'username'      => session()->get('username'),
-                        'employee_id'   => session()->get('employee_id'),
-                        'access_level'  => session()->get('access_level'),
-                        'saved_at'      => date('Y-m-d H:i:s'),
-                        'ip_address'    => $this->request->getIPAddress(),
-                    ]
-                );
+                    $model  = new MailNotifModel();
+                    $save   = $model->upsert($inputs);
+                } else {
+                    $inputs['is_enable'] = isset($inputs['is_enable']) ? $inputs['is_enable'] : 'NO';
+                    $save   = $model->save($inputs);
+                }
+
+                if (! $save) {
+                    $data['errors']     = $model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                } else {
+                    log_message(
+                        'error',
+                        "Mail {$param} data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.",
+                        [
+                            'username'      => session()->get('username'),
+                            'employee_id'   => session()->get('employee_id'),
+                            'access_level'  => session()->get('access_level'),
+                            'saved_at'      => date('Y-m-d H:i:s'),
+                            'ip_address'    => $this->request->getIPAddress(),
+                        ]
+                    );
+                }
+
+                return $data;
             }
+        );
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status'] = res_lang('status.error');
-            // $data['errors']     = $e->getMessage();
-            $data['message'] = res_lang('error.process');
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 
     /**
@@ -211,7 +238,7 @@ class MailConfig extends BaseController
         unset($_SESSION['oauth2state']);
         unset($_SESSION['refresh_token']);
 
-        return redirect()->route('mail.home');
+        return redirect()->route('mail_config.home');
     }
 
     /**

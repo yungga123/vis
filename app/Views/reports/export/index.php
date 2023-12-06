@@ -79,7 +79,7 @@
                             </div>
                             <div class="col-12">
                                 <div class="d-flex justify-content-lg-end justify-content-sm-center">
-                                    <button type="submit" class="btn btn-success px-5">Export Data</button>
+                                    <button type="submit" class="btn btn-success px-5">Generate</button>
                                 </div>
                             </div>
                         </div>

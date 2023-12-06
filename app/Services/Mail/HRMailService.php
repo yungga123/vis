@@ -10,8 +10,11 @@ class HRMailService extends BaseService
      * @param   array $data
      * @return  void
      */
-    public function sendEmployeeMailNotif($data)
+    public function sendEmployeeMailNotif($data, $module_code = null)
     {
+        $module_code = $module_code ? $module_code : get_module_codes('employees');
+        if (! $this->isMailNotifEnabled($module_code)) return;
+
         $module     = 'Employee Record';
         $title      = $module .' Created';
         $info       = [

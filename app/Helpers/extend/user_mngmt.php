@@ -11,6 +11,21 @@ if (! function_exists('get_permissions'))
 	}
 }
 
+if (! function_exists('is_developer'))
+{
+	/**
+	 * Check if current logged user is the developer
+	 */
+	function is_developer(): bool
+	{
+        return (
+			strtoupper(session('access_level')) === strtoupper(AAL_ADMIN) &&
+			session('username') == DEVELOPER_USERNAME &&
+			session('employee_id') == DEVELOPER_ACCOUNT
+		);
+	}
+}
+
 if (! function_exists('is_admin'))
 {
 	/**
@@ -109,19 +124,36 @@ if (! function_exists('get_roles_options'))
 if (! function_exists('get_modules'))
 {
 	/**
-	 * Get the module list
+	 * Get the modules list
 	 */
 	function get_modules(string|null $param = null): string|array
 	{
-		$modules = MODULES;
+		$modules 	= MODULES;
+		$param		= $param ? strtoupper($param) : $param;
 
         asort($modules);
 
         // if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
 
 		return $param 
-			? (isset($modules[strtoupper($param)]) ? $modules[strtoupper($param)] : '')
+			? (isset($modules[$param]) ? $modules[$param] : '')
 		 	: $modules;
+	}
+}
+
+if (! function_exists('get_module_codes'))
+{
+	/**
+	 * Get the module codes list
+	 */
+	function get_module_codes(string|null $param = null): string|array
+	{
+		$module_codes = MODULE_CODES;
+		$param			= $param ? strtolower($param) : $param;
+
+		return $param 
+			? (isset($module_codes[$param]) ? $module_codes[$param] : '')
+		 	: $module_codes;
 	}
 }
 
@@ -158,6 +190,7 @@ if (! function_exists('check_permissions'))
 	}
 }
 
+/* Deprecated - use get_roles() */
 if (! function_exists('account_access_level'))
 {
 	/**
@@ -262,7 +295,26 @@ if (! function_exists('get_employees'))
 
 		$builder->where('employee_id !=', DEVELOPER_ACCOUNT);
 		$builder->orderBy('employee_name ASC');
+
+		if ($id) {
+			if (is_string($id) && strpos($id, ',') === false) {
+				$builder->where('employee_id =', $id);
+				return $builder->first();
+			}
+
+			if (is_array($id) && !empty($id)) {
+				foreach ($id as $key => $val) {
+					if (is_numeric($val)) {
+						$builder->where("id", $val);
+					} else {
+						$builder->where('employee_id =', $val);
+					}
+				}
+
+				return $builder->findAll();
+			}
+		}
 		
-		return $id ? $builder->find() : $builder->findAll();
+		return $id ? $builder->find($id) : $builder->findAll();
 	}
 }

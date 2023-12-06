@@ -14,5 +14,6 @@ class Test extends BaseController
     {
         var_dump(res_lang('restrict.action.change'));
         var_dump(res_lang('success.uploaded'));
+        d(empty('0'));
     }
 }

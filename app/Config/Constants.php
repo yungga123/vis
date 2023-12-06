@@ -236,7 +236,7 @@ define('MODULE_CODES', [
     'roles'                 => 'SETTINGS_ROLES',
     'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
     'suppliers'             => 'PURCHASING_SUPPLIERS',
-    'job_order'             => 'ADMIN_JOB_ORDER',
+    'job_orders'            => 'ADMIN_JOB_ORDER',
     'schedules'             => 'ADMIN_SCHEDULES',
     'dispatch'              => 'ADMIN_DISPATCH',
     'inventory_prf'         => 'INVENTORY_PRF',
@@ -248,6 +248,7 @@ define('MODULE_CODES', [
 
 // Developer Account
 define('DEVELOPER_ACCOUNT', 'SOFTWAREDEV');
+define('DEVELOPER_USERNAME', 'yungga');
 
 // Company Info 
 // - These following constants will be used as default data

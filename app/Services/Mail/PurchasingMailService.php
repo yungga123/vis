@@ -10,8 +10,11 @@ class PurchasingMailService extends BaseService
      * @param   array $data
      * @return  void
      */
-    public function sendRpfMailNotif($data)
+    public function sendRpfMailNotif($data, $module_code = null)
     {
+        $module_code = $module_code ? $module_code : get_module_codes('task_lead');
+        if (! $this->isMailNotifEnabled($module_code)) return;
+
         $module     = 'Request to Purchase Form';
         $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
         $url        = url_to('rpf.home') . '?id='. $data['id'] .'&mail=true';

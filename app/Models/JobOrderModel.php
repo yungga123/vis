@@ -209,12 +209,13 @@ class JobOrderModel extends Model
     protected function mailNotif(array $data)
     {
         if ($data['result']) {
-            $id         = $data['id'];
-            $job_order  = $this->_getJODetails($id);
+            $id             = $data['id'];
+            $job_order      = $this->_getJODetails($id);
+            $module_code    = get_module_codes('job_orders');
 
             // Send mail notification
             $service = new AdminMailService();
-            $service->sendJOMailNotif($job_order);
+            $service->sendJOMailNotif($job_order, $module_code);
         }
         
         return $data;
@@ -268,11 +269,13 @@ class JobOrderModel extends Model
                         ];
     
                         // Send Schedule mail notification
-                        $service->sendScheduleMailNotif($schedule);
+                        $module_code = get_module_codes('schedules');
+                        $service->sendScheduleMailNotif($schedule, $module_code);
                     }
     
                     // Send JO mail notification
-                    $service->sendJOMailNotif($job_order);
+                    $module_code = get_module_codes('job_orders');
+                    $service->sendJOMailNotif($job_order, $module_code);
                 }
             }
         } catch (\Exception $e) {

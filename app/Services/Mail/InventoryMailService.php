@@ -10,8 +10,11 @@ class InventoryMailService extends BaseService
      * @param   array $data
      * @return  void
      */
-    public function sendPrfMailNotif($data)
+    public function sendPrfMailNotif($data, $module_code = null)
     {
+        $module_code = $module_code ? $module_code : get_module_codes('inventory_prf');
+        if (! $this->isMailNotifEnabled($module_code)) return;
+
         $module     = 'Project Request Form';
         $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
         $url        = url_to('prf.home') . '?id='. $data['id'] .'&mail=true';

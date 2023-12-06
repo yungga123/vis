@@ -169,10 +169,10 @@ $routes->group('sales_target', ['filter' => 'checkauth'], static function($route
 /* SETTINGS */
 // MAIL CONFIG
 $routes->group('settings/mail', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/','Settings\MailConfig::index', ['as' => 'mail.home']);
-    $routes->post('save','Settings\MailConfig::save', ['as' => 'mail.save']);
-    $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail.config']);
-    $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail.reset']);
+    $routes->get('/','Settings\MailConfig::index', ['as' => 'mail_config.home']);
+    $routes->post('save','Settings\MailConfig::save', ['as' => 'mail_config.save']);
+    $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail_config.config']);
+    $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail_config.reset']);
 });
 
 // PERMISSIONS
