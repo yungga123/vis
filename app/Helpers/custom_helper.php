@@ -254,18 +254,24 @@ if (! function_exists('flatten_array'))
      * Flatten a multidimensional array.
      * Or convert into one dimensional array.
      */
-	function flatten_array(array $array): array
+	function flatten_array(array $array, string $param = ''): array
 	{
         if (is_array($array) && ! empty($array)) {
             $arr = [];
             foreach ($array as $key => $val) {
                 if (is_array($val)) {
-                    $vals = array_values($val);
+                    if ($param && isset($val[$param])) {
+                        $_key = $val[$param];
+                        unset($val[$param]);
+                        $arr[$_key] = $val;
+                    } else {
+                        $vals = array_values($val);
 
-                    if (count($vals) > 1)
-                        $arr[$vals[0]] = $vals[1];
-                    else 
-                        $arr[$vals[0]] = $vals[0];
+                        if (count($vals) > 1)
+                            $arr[$vals[0]] = $vals[1];
+                        else
+                            $arr[$vals[0]] = $vals[0];
+                    }
                 } else
                     $arr[$key] = $val;  
             }
@@ -334,5 +340,36 @@ if (! function_exists('res_lang'))
         $string = _lang($line, $args, $locale);
 
         return $string;
+	}
+}
+
+if (! function_exists('check_param'))
+{
+    /**
+     * Determine if passed $needle or $needle2 is existed.
+     * If $return is set to true, return the param (either empty string or not) otherwise boolean
+     */
+	function check_param(array|string $haystack, string $needle, string $needle2 = '', $return = false): mixed
+	{
+        if (empty($haystack)) 
+            return $return ? '' : false;
+
+        if (isset($haystack[$needle])) {
+            $param = $haystack[$needle];
+
+            if (! empty($param) && is_array($param)) {
+                foreach ($param as $val) {
+                    if (isset($val[$needle2]))
+                        $param = $val[$needle2];
+                }
+            }
+
+            if ($return) return $param;
+
+            // Check the value whether empty, null or zero
+            return !empty($param);
+        }
+        
+        return $return ? '' : false;
 	}
 }

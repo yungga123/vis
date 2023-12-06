@@ -5,11 +5,13 @@ namespace App\Models;
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
 use App\Traits\FilterParamTrait;
+use App\Traits\HRTrait;
+use App\Services\Mail\PurchasingMailService;
 
 class RequestPurchaseFormModel extends Model
 {
     /* Declare trait here to use */
-    use InventoryTrait, FilterParamTrait;
+    use InventoryTrait, FilterParamTrait, HRTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'request_purchase_forms';
@@ -67,7 +69,7 @@ class RequestPurchaseFormModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['setCreatedBy'];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = ['setStatusByAndAt'];
     protected $afterUpdate    = ['updateInventoryStock'];
     protected $beforeFind     = [];
@@ -77,7 +79,9 @@ class RequestPurchaseFormModel extends Model
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses = ['rejected', 'reviewed', 'received'];
+    protected $restrictedStatuses   = ['rejected', 'reviewed', 'received'];
+    // Get inserted ID
+    protected $insertedID           = 0;
 
     // Set the value for created_by before inserting
     protected function setCreatedBy(array $data)
@@ -93,6 +97,34 @@ class RequestPurchaseFormModel extends Model
             $status = $data['data']['status'];
             $data['data'][$status .'_by'] = session('username');
             $data['data'][$status .'_at'] = current_datetime();
+        }
+        
+        return $data;
+    }
+
+    // Mail notif after record created
+    protected function mailNotif(array $data)
+    {
+        $id                 = $data['id'];
+        $this->insertedID   = $id;
+
+        if ($data['result']) {
+            $columns    = "
+                {$this->table}.id,
+                {$this->table}.status,
+                {$this->table}.date_needed,
+                {$this->table}.created_at,
+                cb.employee_name AS created_by
+            ";
+            $builder    = $this->select($columns);
+            $builder->where("{$this->table}.id", $id);
+            $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+
+            $record     = $builder->first();
+
+            // Send mail notification
+            $service = new PurchasingMailService();
+            $service->sendRpfMailNotif($record);
         }
         
         return $data;
@@ -184,6 +216,15 @@ class RequestPurchaseFormModel extends Model
         $builder = $builder ? $builder : $this;
         $builder->join($this->view, "{$this->table}.id = {$this->view}.rpf_id");
         return $this;
+    }
+
+    // Check if record exist
+    public function exists($id)
+    {
+        $builder = $this->select('id');
+        $builder->where('deleted_at', null);
+
+        return !empty($builder->find($id));
     }
 
     // Get project request forms

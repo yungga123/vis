@@ -89,6 +89,7 @@
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.min.js"></script>
     <!-- General custom js -->
+    <script src="<?=base_url('assets')?>/custom/js/initialize.js"></script>
     <script src="<?= base_url('assets') ?>/custom/js/functions.js"></script>
     <!-- Login js -->
     <script src="<?= base_url('assets') ?>/custom/js/login.js"></script>

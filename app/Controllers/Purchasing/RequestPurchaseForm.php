@@ -156,7 +156,6 @@ class RequestPurchaseForm extends BaseController
             function($data) {
                 $id     = $this->request->getVar('id');
                 $inv_id = $this->request->getVar('inventory_id');
-                $sup_id = $this->request->getVar('supplier_id');
                 $q_in   = $this->request->getVar('quantity_in');
                 $inputs = [
                     'id'            => $id,
@@ -164,7 +163,6 @@ class RequestPurchaseForm extends BaseController
                     'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
                         ? (!has_empty_value($q_in) && count($inv_id) === count($q_in) ? $inv_id : null) 
                         : null,
-                    // 'supplier_id'  => (isset($inv_id) && !has_empty_value($sup_id)) ? $sup_id : null,
                     'quantity_in'   => !has_empty_value($q_in) ? $q_in : null,
                 ];
 
@@ -177,10 +175,10 @@ class RequestPurchaseForm extends BaseController
                     $data['message']    = res_lang('error.validation');
                 } else {
                     $rpfItemModel   = new RPFItemModel();
-                    $rpf_id         = $id ? $id : $this->_model->insertID();
+                    $rpf_id         = $id ? $id : $this->_model->insertedID;
                     $rpfItemModel->saveRpfItems($this->request->getVar(), $rpf_id);
                 }
-
+  
                 if ($id) {
                     $data['message']    = res_lang('success.updated', 'RFP');
                 }
@@ -206,6 +204,12 @@ class RequestPurchaseForm extends BaseController
             $data,
             function($data) {
                 $id             = $this->request->getVar('id');
+                if (! $this->_model->exists($id)) {
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "<strong>RPF #: {$id}</strong> doesn't exists anymore!";
+                    return $data;
+                }
+                
                 $rpfItemModel   = new RPFItemModel(); 
                 $items          = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
                 if ($this->request->getVar('rpf_items')) {
@@ -213,7 +217,6 @@ class RequestPurchaseForm extends BaseController
                     $data['message']    = res_lang('success.retrieved', 'RFP Items');
                 } else {
                     $table      = $this->_model->table;
-                    $view       = $this->_model->view;  
                     $columns    = "
                         {$table}.id, {$table}.date_needed,
                         DATE_FORMAT({$table}.date_needed, '".dt_sql_date_format()."') AS date_needed_formatted,

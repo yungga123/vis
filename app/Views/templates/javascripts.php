@@ -28,7 +28,7 @@
 
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
-
+<script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
 <?php endif;?>
 
 <?php if (isset($sweetalert2) && $sweetalert2): ?>
@@ -73,10 +73,16 @@
 </script>
 <?php endif;?>
 
+<?php if (isset($bootstrap_switch) && $bootstrap_switch): ?>
+<!-- Bootstrap Switch -->
+<script src="<?=base_url('assets')?>/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<?php endif;?>
+
 <!-- AdminLTE App -->
 <script src="<?=base_url('assets')?>/dist/js/adminlte.js"></script>
 
 <!-- Load custom js -->
+<script src="<?=base_url('assets')?>/custom/js/initialize.js"></script>
 <script src="<?=base_url('assets')?>/custom/js/functions.js"></script>
 <!-- Load routes options -->
 <?php if (isset($routes) && !empty($routes)): ?>

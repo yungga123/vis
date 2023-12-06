@@ -8,18 +8,14 @@ class EmployeesView extends Seeder
 {
     public function run()
     {
-        $this->db->query("
-            DROP VIEW IF EXISTS
-                employees_view
-        ");
-
+        $this->db->query("DROP VIEW IF EXISTS employees_view");
         $this->db->query(
             "CREATE VIEW 
                 employees_view 
             AS SELECT
                 emp.id,
                 emp.employee_id,
-                CONCAT(emp.firstname,' ',emp.middlename,' ',emp.lastname) AS employee_name,
+                CONCAT(emp.firstname,' ',emp.lastname) AS employee_name,
                 CONCAT(
                     IF(emp.address_province = '' || emp.address_province IS NULL, '', CONCAT(emp.address_province, ', ')),
                     IF(emp.address_city = '' || emp.address_city IS NULL, '', CONCAT(emp.address_city, ', ')),
@@ -29,12 +25,12 @@ class EmployeesView extends Seeder
                 ) AS address,
                 emp.gender,
                 emp.civil_status,
-                DATE_FORMAT(emp.date_of_birth,'%b %d, %Y') as date_of_birth,
+                DATE_FORMAT(emp.date_of_birth,'%b %d, %Y') AS date_of_birth,
                 emp.place_of_birth,
                 emp.position,
                 emp.employment_status,
-                DATE_FORMAT(emp.date_hired,'%b %d, %Y') as date_hired,
-                DATE_FORMAT(emp.date_resigned,'%b %d, %Y') as date_resigned,
+                DATE_FORMAT(emp.date_hired,'%b %d, %Y') AS date_hired,
+                DATE_FORMAT(emp.date_resigned,'%b %d, %Y') AS date_resigned,
                 emp.contact_number,
                 emp.email_address,
                 emp.sss_no,
@@ -54,10 +50,8 @@ class EmployeesView extends Seeder
                 DATE_FORMAT(emp.created_at, '%b %e, %Y at %h:%i %p') AS created_at
             FROM
                 employees AS emp
-            LEFT JOIN
-                accounts_view AS av
-            ON
-                emp.created_by = av.username
+            LEFT JOIN accounts_view av
+                ON av.username = emp.created_by
             WHERE
                 deleted_at IS NULL
             "

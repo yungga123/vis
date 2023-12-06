@@ -1,7 +1,7 @@
 <?= $this->extend('templates/default'); ?>
 <?= $this->section('content'); ?>
 <div class="container-fluid">
-    <form id="form_mail_config" class="with-label-indicator" action="<?= url_to('mail.save'); ?>" method="POST" autocomplete="off">
+    <form id="form_mail_config" class="with-label-indicator" action="<?= url_to('mail_config.save'); ?>" method="POST" autocomplete="off">
         <?= csrf_field(); ?>
         <input type="hidden" name="mail_config_id" value="<?= $mail['mail_config_id'] ?? ''; ?>">
         <div class="row">
@@ -57,25 +57,18 @@
                         </div>
                         <?php endif; ?>
                         <div class="form-group">
-                            <label for="recepients">CC Recepients</label>
+                            <label for="recepients">CC Recipients</label>
                             <textarea class="form-control" name="recepients" id="recepients" rows="2" placeholder="Enter CC Recepients"><?= $mail['recepients'] ?? ''; ?></textarea>
                             <small class="text-muted">
                                 If multiple emails, separate it by comma (e.g. mail@email.com, mail2@email.com). <br>
-                                <strong>Someone that can receive mail copy if user will change their password.</strong>
+                                <strong>Someone that can receive mail copy if user will change their password or other that has mail notifications.</strong>
                             </small><br>
                             <small id="alert_recepients" class="text-danger"></small>
                         </div>
                         <div class="form-group">
                             <label class="required" for="hostname">Is Mail Sending Enabled?</label>
                             <div>
-                                <div class="form-check form-check-inline">
-                                    <input type="radio" id="is_enable_yes" name="is_enable" class="form-check-input" value="YES" <?= $mail['is_enable'] === 'YES' ? 'checked' : ''; ?>>
-                                    <label class="form-check-label" for="is_enable_yes">Yes</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input type="radio" id="is_enable_no" name="is_enable" class="form-check-input" value="NO" <?= $mail['is_enable'] === 'NO' ? 'checked' : ''; ?>>
-                                    <label class="form-check-label" for="is_enable_no">No</label>
-                                </div>
+                                <input type="checkbox" name="is_enable" value="<?= $mail['is_enable']; ?>" <?= $mail['is_enable'] === 'YES' ? 'checked' : ''; ?> data-bootstrap-switch>
                             </div>
                         </div>
                     </div>
@@ -119,7 +112,7 @@
                             <small id="alert_access_type" class="text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <a href="<?= url_to('mail.config'); ?>" 
+                            <a href="<?= url_to('mail_config.config'); ?>" 
                                 class="btn btn-secondary mt-2" id="btn_getAccessToken"
                                 ><i class="fas fa-yin-yang"></i> Get Access Token for OAuth2</a>
                         </div>
@@ -136,6 +129,7 @@
         </div>
         <?php endif; ?>
     </form>
+    <?= is_developer() ? $this->include('settings/mail_config/mail_list') : ''; ?>
 </div>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection(); ?>

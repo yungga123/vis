@@ -47,7 +47,7 @@ class JobOrder extends BaseController
     public function __construct()
     {
         $this->_model       = new JobOrderModel(); // Current model
-        $this->_module_code = MODULE_CODES['job_order']; // Current module
+        $this->_module_code = MODULE_CODES['job_orders']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }

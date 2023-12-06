@@ -73,17 +73,17 @@ $(document).ready(function () {
 		const message = res.errors ?? res.message;
 
 		if (res.status !== STATUS.ERROR) {
-			if (res.status === STATUS.INFO) {
+			if (res.status === STATUS.SUCCESS) {
 				self[0].reset();
-				notifMsgSwal(res.status, message, res.status);
 				$("#schedule_id").val("");
 
 				if ($(`#${modal}`).hasClass("edit")) {
 					$(`#${modal}`).modal("hide");
 				}
 			}
-			toggleDeleteBtn();
+			notifMsgSwal(res.status, message, res.status);
 			refreshFullCalendar($calendar);
+			toggleDeleteBtn();
 		}
 
 		showAlertInForm(elems, message, res.status);

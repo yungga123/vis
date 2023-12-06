@@ -11,7 +11,7 @@
 
         <p>
             <?= $status === 'success'? '' : 'Please try again!'; ?>
-            <a href="<?= url_to('mail.home'); ?>">Click here</a> to return.
+            <a href="<?= url_to('mail_config.home'); ?>">Click here</a> to return.
         </p>
     </div>
 </div>

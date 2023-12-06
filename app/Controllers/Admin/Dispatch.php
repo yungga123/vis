@@ -266,8 +266,7 @@ class Dispatch extends BaseController
                 }
 
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;

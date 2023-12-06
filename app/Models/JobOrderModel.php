@@ -5,6 +5,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
+use App\Services\Mail\AdminMailService;
 
 class JobOrderModel extends Model
 {
@@ -97,7 +98,7 @@ class JobOrderModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = ['setStatusByAndAt'];
     protected $afterUpdate    = ['addToScheduleAfterJOAccepted'];
     protected $beforeFind     = [];
@@ -161,6 +162,36 @@ class JobOrderModel extends Model
         return $columns;
     }
 
+    // Get JO details for mail notif
+    private function _getJODetails($id)
+    {
+        $tlViewModel    = new TaskLeadView();
+        $customerModel  = new CustomerModel();
+        $employeeModel  = new EmployeeModel();
+        $columns        = "
+            {$this->table}.id,
+            {$this->table}.tasklead_id,
+            {$this->table}.status,
+            IF({$this->table}.is_manual = 0, 'NO', 'YES') AS is_manual,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation) AS quotation,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
+            CONCAT({$employeeModel->table}.firstname,' ',{$employeeModel->table}.lastname) AS manager,
+            {$this->table}.work_type,
+            {$this->table}.comments,
+            cb.employee_name AS requested_by,
+            ".dt_sql_date_format("{$this->table}.date_requested")." AS date_requested,
+            ".dt_sql_date_format("{$this->table}.date_committed")." AS date_committed,
+            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
+        ";
+        $builder        = $this->select($columns);  
+        $this->joinWithOtherTables($builder);
+        $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+        
+        $builder->where("{$this->table}.id", $id);
+        return $builder->first();
+    }
+
     // Set the value for 'status_' by and at before updating status
     protected function setStatusByAndAt(array $data)
     {
@@ -174,31 +205,81 @@ class JobOrderModel extends Model
         return $data;
     }
 
+    // Mail notif after JO created
+    protected function mailNotif(array $data)
+    {
+        if ($data['result']) {
+            $id             = $data['id'];
+            $job_order      = $this->_getJODetails($id);
+            $module_code    = get_module_codes('job_orders');
+
+            // Send mail notification
+            $service = new AdminMailService();
+            $service->sendJOMailNotif($job_order, $module_code);
+        }
+        
+        return $data;
+    }
+
     // After JO accepted, add corresponding new record to schedules table
     protected function addToScheduleAfterJOAccepted(array $data)
     {
-        if ($data['result']) {
-            if (isset($data['data']['status']) && $data['data']['status'] === 'accepted') {
-                $tlViewModel    = new TaskLeadView();
-                $customerModel  = new CustomerModel();
-                $id         = $data['id'][0];
-                $columns    = "
-                    IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
-                    IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
-                    {$this->table}.comments,
-                ";
-                $job_order  = $this->getJobOrders($id, $columns);
+        // Used try catch so that if there's an error
+        // mail will not be sent
+        try {
+            if ($data['result']) {
+                if (isset($data['data']['status']) && $data['data']['status'] === 'accepted') {
+                    $id             = $data['id'][0];
+                    $job_order      = $this->_getJODetails($id);
+                    
+                    // Create schedule
+                    $scheduleTitle  = $job_order['client'];
+                    $scheduleDesc   = $job_order['comments'];
+                    $scheduleStart  = $data['data']['date_committed'];
+                    $scheduleEnd    = $scheduleStart .' 23:00'; // set to 11pm
+                    $scheduleType   = empty($job_order['tasklead_type']) ? 'project' : strtolower($job_order['tasklead_type']);
+                    $scheduleModel  = new ScheduleModel();
+                    $schedBuilder   = $this->db->table($scheduleModel->table);
+                    $schedInsert    = $schedBuilder->insert([
+                            'job_order_id'  => $id,
+                            'title'         => $scheduleTitle,
+                            'description'   => $scheduleDesc,
+                            'type'          => $scheduleType,
+                            'start'         => $scheduleStart,
+                            'end'           => $scheduleEnd,
+                            'created_by'    => session('username'),
+                        ]);
+                    
+                    // Initialize service
+                    $service    = new AdminMailService();
 
-                $this->db->table('schedules')->insert([
-                    'job_order_id'  => $id,
-                    'title'         => $job_order['client'],
-                    'description'   => $job_order['comments'],
-                    'type'          => !empty($job_order['tasklead_type']) ? strtolower($job_order['tasklead_type']) : 'project',
-                    'start'         => $data['data']['date_committed'],
-                    'end'           => $data['data']['date_committed'] .' 23:00', // set to 11pm
-                    'created_by'    => session('username'),
-                ]);
+                    // If schedule successfully created, then send mail
+                    if ($schedInsert && $schedId = $scheduleModel->insertID()) {
+                        $created_at = current_datetime();
+                        $schedule   = [
+                            'id'            => $schedId,
+                            'job_order_id'  => $id,
+                            'title'         => $scheduleTitle,
+                            'description'   => $scheduleDesc,
+                            'type'          => $scheduleType,
+                            'start'         => $scheduleStart,
+                            'end'           => $scheduleEnd,
+                            'created_at'    => format_datetime($created_at),
+                            'created_by'    => session('name'),
+                        ];
+    
+                        // Send Schedule mail notification
+                        $module_code = get_module_codes('schedules');
+                        $service->sendScheduleMailNotif($schedule, $module_code);
+                    }
+    
+                    // Send JO mail notification
+                    $module_code = get_module_codes('job_orders');
+                    $service->sendJOMailNotif($job_order, $module_code);
+                }
             }
+        } catch (\Exception $e) {
+            throw $e;
         }
 
         return $data;

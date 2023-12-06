@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\HRTrait;
+use App\Services\Mail\HRMailService;
 
 class EmployeeModel extends Model
 {
+    /* Declare trait here to use */
+    use HRTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'employees';
     protected $view             = 'employees_view';
@@ -216,8 +221,8 @@ class EmployeeModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
+    protected $beforeInsert   = ['setCreatedBy'];
+    protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
@@ -258,6 +263,45 @@ class EmployeeModel extends Model
         'created_at'
     ];
 
+    // Set the value for created_by before inserting
+    protected function setCreatedBy(array $data)
+    {
+        $data['data']['created_by'] = session('username');
+        return $data;
+    }
+
+    // Mail notif after record created
+    protected function mailNotif(array $data)
+    {
+        $id = $data['id'];
+
+        if ($data['result']) {
+            $columns    = "
+                {$this->table}.employee_id,
+                CONCAT({$this->table}.firstname, ' ', {$this->table}.lastname) AS employee_name,
+                {$this->table}.gender,
+                {$this->table}.civil_status,
+                {$this->table}.position,
+                {$this->table}.date_hired,
+                {$this->table}.employment_status,
+                {$this->table}.email_address,
+                {$this->table}.contact_number,
+                {$this->table}.created_at,
+                IF({$this->table}.created_at = '' OR {$this->table}.created_at IS NULL, 'N/A', cb.employee_name) AS created_by
+            ";
+            $builder    = $this->select($columns);
+            $builder->where("{$this->table}.id", $id);
+            $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+            $record     = $builder->first();
+
+            // Send mail notification
+            $service = new HRMailService();
+            $service->sendEmployeeMailNotif($record);
+        }
+        
+        return $data;
+    }
+
     // Filter for not including resigned employees
     public function withOutResigned($builder) 
     {
@@ -289,7 +333,7 @@ class EmployeeModel extends Model
     }
 
     // Get employee row details
-    public function getEmployeeDetails($employee_id, $columns = null)
+    public function getEmployeeInView($employee_id, $columns = null)
     {
         $builder = $this->db->table($this->view);
         $builder->select($columns ?? $this->allowedFields);

@@ -88,6 +88,8 @@ $(document).ready(function () {
 
 		showAlertInForm(["remarks"], message, res.status);
 	});
+
+	showItemsIfRedirectedFromMail();
 });
 
 /* For filtering and reseting */
@@ -106,7 +108,7 @@ function filterData(reset = false) {
 
 /* Get rpf items */
 function view(id, status) {
-	$(`#rpf_items_modal .modal-title`).html("RPF Items Detials");
+	$(`#rpf_items_modal .modal-title`).html("RPF Item Details");
 	$("#received_remarks").addClass("d-none");
 	if (!status) {
 		$("#item_note").html("");
