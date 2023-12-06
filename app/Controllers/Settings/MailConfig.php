@@ -32,7 +32,6 @@ class MailConfig extends BaseController
      * Use to get current permissions
      * @var string
      */
-
     private $_permissions;
 
     /**
@@ -72,7 +71,7 @@ class MailConfig extends BaseController
         $data['mail_notifs']    = flatten_array($mail_notifs, 'module_code');
         $data['modules']        = get_modules();
         $data['sweetalert2']    = true;
-        $data['exclude_toastr'] = false;
+        $data['toastr']         = true;
         $data['bootstrap_switch'] = true;
         $data['routes']         = json_encode([
             'mail_config' => [

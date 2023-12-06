@@ -28,7 +28,9 @@
 
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
-<script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
+	<?php if (isset($toastr) && $toastr): ?>
+		<script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
+	<?php endif;?>
 <?php endif;?>
 
 <?php if (isset($sweetalert2) && $sweetalert2): ?>

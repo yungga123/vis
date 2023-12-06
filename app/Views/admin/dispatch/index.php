@@ -13,8 +13,7 @@
                                 <th>Dispatch ID</th>
                                 <th>Schedule ID</th>
                                 <th>Schedule Title</th>
-                                <th>Client</th>
-                                <th>Client Type</th>
+                                <th>Schedule Description</th>
                                 <th>Dispatch Date</th>
                                 <th>Dispatch Out</th>
                                 <th>Time In</th>

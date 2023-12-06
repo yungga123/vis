@@ -6,7 +6,6 @@ use App\Controllers\BaseController;
 use App\Models\DispatchModel;
 use App\Models\DispatchedTechniciansModel;
 use App\Models\ScheduleModel;
-use App\Models\CustomerModel;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\HRTrait;
 use monken\TablesIgniter;
@@ -71,7 +70,7 @@ class Dispatch extends BaseController
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['moment']         = true;
-        $data['custom_js']      = ['admin/dispatch/index.js', 'admin/common.js'];
+        $data['custom_js']      = 'admin/dispatch/index.js';
         $data['routes']         = json_encode([
             'dispatch' => [
                 'list'      => url_to('dispatch.list'),
@@ -102,7 +101,6 @@ class Dispatch extends BaseController
     public function list()
     {
         $scheduleModel  = new ScheduleModel();
-        $customerModel  = new CustomerModel();
         $table          = new TablesIgniter();
         $request        = $this->request->getVar();
         $builder        = $this->_model->noticeTable($request);
@@ -110,8 +108,7 @@ class Dispatch extends BaseController
             'id',
             'schedule_id',
             'schedule',
-            'customer_name',
-            'customer_type',
+            'description',
             'dispatch_date',
             'dispatch_out',
             'time_in',
@@ -139,7 +136,6 @@ class Dispatch extends BaseController
                 "{$this->_model->table}.sr_number",
                 "{$this->_model->view}.dispatched_by",
                 "{$this->_model->view}.checked_by_name",
-                "{$customerModel->table}.name",
             ])
             ->setOrder(array_merge([null, null], $fields, [null], $fields1))
             ->setOutput(
@@ -171,7 +167,6 @@ class Dispatch extends BaseController
                 $id     = $this->request->getVar('id');
                 $inputs = [
                     'schedule_id'   => $this->request->getVar('schedule_id'),
-                    'customer_id'   => $this->request->getVar('customer_id'),
                     'customer_type' => $this->request->getVar('customer_type'),
                     'sr_number'     => $this->request->getVar('sr_number'),
                     'dispatch_date' => $this->request->getVar('dispatch_date'),
@@ -231,7 +226,7 @@ class Dispatch extends BaseController
                 $id         = $this->request->getVar('id');
                 $dTModel    = new DispatchedTechniciansModel();
 
-                $data['data']                   = $this->_model->getDispatch($id, false, true, true);
+                $data['data']                   = $this->_model->getDispatch($id, false, true);
                 $data['data']['technicians']    = $dTModel->getDispatchedTechnicians($id);
                 
                 return $data;
