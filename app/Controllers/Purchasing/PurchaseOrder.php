@@ -385,7 +385,7 @@ class PurchaseOrder extends BaseController
             {$rpfModel->view}.created_by_name  AS requested_by
         ";
         $general_info           = $this->getGeneralInfo(['company_logo', 'company_name', 'company_address'], true);
-        $general_info['company_logo'] = $this->getCompanyLogo($general_info['company_logo']);
+        $general_info['company_logo'] = $this->getCompanyLogo($general_info['company_logo'] ?? '');
 
         $data['purchase_order'] = $purchase_order;
         $data['supplier']       = $supplier;

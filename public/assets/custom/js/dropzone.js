@@ -216,7 +216,7 @@ function dzOnSuccessEvent(_dropzone, button, callback) {
 		}
 
 		// If error response status, reset the file to initial
-		if (inObjectReturn(response, "status") === "error") {
+		if (inObjectReturn(response, "status") === "error" && files.length > 0) {
 			files.forEach((file, i) => {
 				// Revert file to initial just like first selected file
 				file.previewElement.classList.remove("dz-processing");
