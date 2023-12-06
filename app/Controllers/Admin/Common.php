@@ -22,7 +22,7 @@ class Common extends BaseController
 
             return $this->response->setJSON($result);
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
         }
     }
 
@@ -38,7 +38,7 @@ class Common extends BaseController
     
             return $this->response->setJSON($result);
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
         }
     }
 
@@ -54,7 +54,7 @@ class Common extends BaseController
             
             return $this->response->setJSON($result);
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
         }
     }
 
@@ -70,7 +70,7 @@ class Common extends BaseController
             
             return $this->response->setJSON($result);
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
         }
     }
 }

@@ -116,8 +116,8 @@ class SupplierBrands extends BaseController
         } catch (\Exception$e) {
             // Rollback transaction if there's an error
             $this->transRollback();
+            $this->logExceptionError($e, __METHOD__);
 
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.process');
         }
@@ -143,7 +143,7 @@ class SupplierBrands extends BaseController
 
             $data['data'] = $model->select($model->allowedFields)->find($id);;
         } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.process');
         }
@@ -180,8 +180,8 @@ class SupplierBrands extends BaseController
         } catch (\Exception$e) {
             // Rollback transaction if there's an error
             $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
+            
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.process');
         }

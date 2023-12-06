@@ -3,7 +3,6 @@
 namespace App\Controllers\Purchasing;
 
 use App\Controllers\BaseController;
-use App\Models\RequestPurchaseFormModel;
 use App\Traits\PurchasingTrait;
 
 class Common extends BaseController
@@ -23,7 +22,7 @@ class Common extends BaseController
 
             return $this->response->setJSON($results);
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
         }
     }
 
@@ -39,7 +38,7 @@ class Common extends BaseController
 
             return $this->response->setJSON($results);
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
         }
     }
 }
