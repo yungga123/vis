@@ -68,6 +68,7 @@
 									<div class="form-group">
 										<label class="required" for="place_of_birth">Place of Birth</label>
 										<input type="text" class="form-control" name="place_of_birth" id="place_of_birth" placeholder="Enter here...">
+										<small class="form-text">Format: (Town, City, Province)</small>
 										<small id="alert_place_of_birth" class="form-text text-danger"></small>
 									</div>
 									<div class="form-group">
