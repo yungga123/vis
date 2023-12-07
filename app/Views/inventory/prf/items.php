@@ -21,6 +21,7 @@
                                     <th>Category</th>
                                     <th>Item Model</th>
                                     <th>Item Description</th>
+                                    <th>Item Unit</th>
                                     <th>Current Stocks</th>
                                     <th>Quantity Out</th>
                                     <th>Returned</th>

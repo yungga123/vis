@@ -186,6 +186,7 @@ function view(id, status) {
 								<td>${val.category_name}</td>
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
+								<td>${val.unit || "N/A"}</td>
 								<td>
 									${val.stocks}
 									${stocks}
@@ -277,8 +278,10 @@ function edit(id) {
 						// $(qelem).attr("max", parseInt(item.quantity_out));
 						// Get the parent next sibling td (which where the item_available input) each
 						const parentSiblingElem = $(elem).parent().next();
-						// Set available stocks each
+						// Set available stocks each item
 						_populateAvailableItemStocks(parentSiblingElem[0], item.stocks);
+						// Display the item unit in each item
+						$(elem).parent().children(".item-unit").text(item.unit);
 					}
 				}
 
@@ -405,8 +408,9 @@ function toggleItemField(row) {
 				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
 				<div class="original-item"></div>
 			</td>
-			<td>
-				<input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+			<td class="text-center items-center">
+				<input type="hidden" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+				<div class="item-unit text-bold"></div>
 			</td>
 			<td>
 				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
@@ -487,21 +491,34 @@ function _loadItemDetails(data) {
 		const parentSiblingElem =
 			data.element.parentElement.parentElement.nextElementSibling;
 		let stocks = data.stocks;
+		let unit = data.unit;
 
-		if (_fetchItems[data.id]) stocks = _fetchItems[data.id].stocks;
+		if (_fetchItems[data.id]) {
+			stocks = _fetchItems[data.id].stocks;
+			unit = _fetchItems[data.id].unit;
+		}
 
 		if (!isEmpty(stocks))
-			_populateAvailableItemStocks(parentSiblingElem, stocks);
+			_populateAvailableItemStocks(parentSiblingElem, stocks, false, unit);
 	}
 }
 
 /* Populate the item available stocks */
-function _populateAvailableItemStocks(parentSiblingElem, stock, noChild) {
+function _populateAvailableItemStocks(
+	parentSiblingElem,
+	stock,
+	noChild,
+	item_unit
+) {
 	if (parentSiblingElem.tagName === "TD" && typeof stock !== "undefined") {
 		if (noChild) {
 			$(parentSiblingElem).text(stock);
 			return;
 		}
 		$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
+
+		$(parentSiblingElem)
+			.children(".item-unit")
+			.text(item_unit || "N/A");
 	}
 }

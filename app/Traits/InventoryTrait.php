@@ -68,6 +68,8 @@ trait InventoryTrait
             category_name,
             subcategory_name,
             brand,
+            unit,
+            size,
             supplier_name
         ";
         $builder = $model->select($fields);

@@ -49,7 +49,7 @@
                                     <thead>
                                         <tr>
                                             <th width="55%">Item Details</th>
-                                            <th width="15%">Available</th>
+                                            <th width="15%">Item Unit</th>
                                             <th width="20%">Quantity Out</th>
                                             <th width="5%">Button</th>
                                         </tr>
@@ -60,8 +60,9 @@
                                                 <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
                                                 <div class="original-item"></div>
                                             </td>
-                                            <td>
-                                                <input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+                                            <td class="text-center items-center">
+                                                <input type="hidden" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+                                                <div class="item-unit text-bold"></div>
                                             </td>
                                             <td>
                                                 <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
