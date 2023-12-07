@@ -40,6 +40,7 @@
                                     <th>Client Type</th>
                                     <th>Contact Person</th>
                                     <th>Contact Number</th>
+                                    <th>Telephone Number</th>
                                     <th>Email Address</th>
                                     <th>Address</th>
                                     <th>Source</th>

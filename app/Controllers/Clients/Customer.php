@@ -67,6 +67,7 @@ class Customer extends BaseController
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
         $data['dropzone']       = true;
+        $data['inputmask']      = true;
         $data['custom_js']      = [
             'customer/index.js', 
             'customer/branch.js', 
@@ -113,6 +114,7 @@ class Customer extends BaseController
             'type',
             'contact_person',
             'contact_number',
+            'telephone',
             'email_address',
             'address',
             'source',
@@ -158,7 +160,17 @@ class Customer extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                if (! $this->_model->save($this->request->getVar())) {
+                $request        = $this->request->getVar();
+                $mobile_number  = $request['contact_number'];
+                $mobile_number  = $mobile_number ? str_replace('-', '', $mobile_number) : '';
+                $mobile_number2 = $request['contact_number2'];
+                $mobile_number2 = $mobile_number2 ? '/'. str_replace('-', '', $mobile_number2) : '';
+
+                // Replace the contact_number value
+                $request['contact_number']  = $mobile_number . $mobile_number2;
+                $request['is_cn_formatted'] = true;
+
+                if (! $this->_model->save($request)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
@@ -190,7 +202,47 @@ class Customer extends BaseController
             $data,
             function($data) {
                 $id             = $this->request->getVar('id');
-                $data['data']   = $this->_model->select($this->_model->allowedFields)->find($id);;
+                $record         = $this->_model->select($this->_model->allowedFields)
+                    ->where('id', $id)->first();
+                
+                if (! empty($record['contact_number'])) {
+                    $remove         = [' ', '"', "'", '-'];
+                    $_orig_connum   = $record['contact_number'];
+                    $contact_number = str_replace($remove, '', clean_input($_orig_connum));
+                    $explode        = explode('/', $contact_number);
+                    $regex_mobile   = '/^(09)\d{9}$/';
+                    
+                    if (count($explode) === 1) {
+                        preg_match($regex_mobile, $contact_number, $match);
+
+                        if (empty($match)) {
+                            $record['is_cn_formatted']  = false;
+                            $record['unformatted_cn']   = $_orig_connum;
+                            $record['contact_number']   = '';
+                        }
+                    }
+
+                    foreach ($explode as $key => $val) {
+                        preg_match($regex_mobile, $val, $match);
+
+                        if (! empty($match)) {
+                            // Replace value
+                            if ($key === 0) $record['contact_number'] = $val;
+                            else $record['contact_number2'] = $val;
+
+                            $record['is_cn_formatted'] = true;
+                        }
+                    }
+                    
+                    if (! isset($record['contact_number2']) && count($explode) > 1) {
+                        $record['is_cn_formatted']  = false;
+                        $record['unformatted_cn']   = $_orig_connum;
+                    }
+
+                    $record['source'] = clean_input($record['source']);
+                }
+
+                $data['data']   = $record;
                 return $data;
             },
             false

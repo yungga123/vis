@@ -75,6 +75,21 @@ $(document).ready(function () {
 	});
 });
 
+/* Check if is toastr is loaded */
+function isToastrLoaded() {
+	return window.toastr != undefined;
+}
+
+/* Check if is swal is loaded */
+function isSwalLoaded() {
+	return window.Swal != undefined;
+}
+
+/* Check if is inputmask is loaded */
+function isInputmaskLoaded() {
+	return $.fn.inputmask != undefined;
+}
+
 /*
  * Initializations and others
  */

@@ -432,16 +432,6 @@ function isNumber(param) {
 	return typeof param === "number" && isFinite(param);
 }
 
-/* Check if is toastr is loaded */
-function isToastrLoaded() {
-	return window.toastr != undefined;
-}
-
-/* Check if is swal is loaded */
-function isSwalLoaded() {
-	return window.Swal != undefined;
-}
-
 /* Source: https://flexiple.com/javascript/javascript-capitalize-first-letter/ */
 /* Capitalize first letter of string/word */
 function strCapitalize(str) {
