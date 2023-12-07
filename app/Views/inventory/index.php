@@ -11,7 +11,7 @@
                             <span class="input-group-text">Category</span>
                         </div>
                         <select class="custom-select select2" id="filter_category" data-placeholder="Select a category" multiple>
-                            <?= $categories ?>
+                            <?= $categories_filter ?>
                         </select>
                         <div class="input-group-prepend ml-1">
                             <span class="input-group-text">Dropdowns</span>

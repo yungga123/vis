@@ -151,25 +151,29 @@ class ProjectRequestFormModel extends Model
     public function updateInventoryStock(array $data)
     {
         if ($data['result'] && isset($data['data']['status'])) {
-            if ($data['data']['status'] === 'item_out') {
+            $status = $data['data']['status'];
+            if (in_array($status, ['item_out', 'filed'])) {
                 $prfItemModel   = new PRFItemModel();
                 $columns        = "
                     {$prfItemModel->table}.inventory_id, 
                     {$prfItemModel->table}.quantity_out,
+                    {$prfItemModel->table}.returned_q,
                     inventory.stocks
                 ";
                 $record         = $prfItemModel->getPrfItemsByPrfId($data['id'], $columns, false, true);
-                $action         = 'ITEM_OUT';
+                $action         = strtoupper($status);
+                $item_out       = $action === 'ITEM_OUT';
 
                 if (! empty($record)) {
                     $logs_data = [];
                     foreach ($record as $val) {
-                        $this->traitUpdateInventoryStock($val['inventory_id'], $val['quantity_out'], $action);
-                        $logs_data[] = [
+                        $quantity       = $item_out ? $val['quantity_out'] : $val['returned_q'];
+                        $this->traitUpdateInventoryStock($val['inventory_id'], $quantity, $action);
+                        $logs_data[]    = [
                             'inventory_id'  => $val['inventory_id'],
-                            'stocks'        => $val['quantity_out'],
+                            'stocks'        => $quantity,
                             'parent_stocks' => $val['stocks'],
-                            'action'        => $action,
+                            'action'        => $item_out ? $action : 'ITEM_IN',
                             'created_by'    => session('username'),
                         ];
                     }
@@ -191,7 +195,8 @@ class ProjectRequestFormModel extends Model
             {$this->table}.job_order_id,
             {$this->table}.process_date,
             {$this->table}.status,
-            {$this->table}.remarks
+            {$this->table}.remarks,
+            {$this->table}.created_at
         ";
 
         if ($date_format) {

@@ -61,13 +61,14 @@ trait InventoryTrait
         $model  = new InventoryModel();
         $fields = $fields ? $fields : "
             id,
-            CONCAT(id, ' | ', item_model, ' | ',item_description) AS text,
+            CONCAT(item_model, ' | ',item_description, ' | ',supplier_name) AS text,
             item_model,
             item_description,
             stocks,
             category_name,
             subcategory_name,
-            brand
+            brand,
+            supplier_name
         ";
         $builder = $model->select($fields);
         $model->joinView($builder);
@@ -130,7 +131,7 @@ trait InventoryTrait
         $sign       = $action === 'ITEM_OUT' ? '-' : '+';
         $builder    = $model->db->table($model->table);
 
-        $builder->set('stocks', "stocks $sign ". $stock, false);
+        $builder->set('stocks', "stocks {$sign} ". $stock, false);
         $builder->where('id', $id)->update();
     }
 

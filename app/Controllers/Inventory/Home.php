@@ -30,7 +30,6 @@ class Home extends BaseController
      * Use to get current permissions
      * @var string
      */
-
     private $_permissions;
 
     /**
@@ -97,7 +96,8 @@ class Home extends BaseController
                 ]
             ],
         ]);
-        $data['categories']     = inventory_categories_options($this->_mdropdown, true);
+        $data['categories']         = inventory_categories_options($this->_mdropdown, false);
+        $data['categories_filter']  = inventory_categories_options($this->_mdropdown, true);
 
         return view('inventory/index', $data);
     }
@@ -162,7 +162,7 @@ class Home extends BaseController
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.saved', 'Item')
+            'message'   => res_lang('success.added', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,

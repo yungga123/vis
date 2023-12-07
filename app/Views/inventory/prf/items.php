@@ -17,6 +17,7 @@
                             <thead>
                                 <tr>
                                     <th>Item #</th>
+                                    <th>Supplier</th>
                                     <th>Category</th>
                                     <th>Item Model</th>
                                     <th>Item Description</th>

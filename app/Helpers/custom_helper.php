@@ -391,3 +391,17 @@ if (! function_exists('log_msg'))
         return log_message($level, 'log_msg: '. $message, $context);
 	}
 }
+
+if (! function_exists('get_array_duplicate'))
+{
+    /**
+     * Get the duplicate value(s) of an array
+     */
+	function get_array_duplicate(array $array): array
+	{
+        $unique     = array_unique($array);
+        $duplicates = array_diff_assoc($array, $unique);
+
+        return $duplicates;
+	}
+}

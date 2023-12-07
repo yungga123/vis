@@ -4,7 +4,7 @@ if (! function_exists('inventory_categories_options'))
     /**
      * Get inventory dropdowns
      */
-	function inventory_categories_options($model, $all = false) 
+	function inventory_categories_options(object $model, bool $all = false): string
 	{
 		$option     = '';
         $others     = '';

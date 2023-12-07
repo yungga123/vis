@@ -1,4 +1,11 @@
-var table, modal, form, elems, joSelector, invSelector, itemFieldTable;
+var table,
+	modal,
+	form,
+	elems,
+	joSelector,
+	invSelector,
+	itemFieldTable,
+	_fetchItems;
 
 $(document).ready(function () {
 	table = "prf_table";
@@ -8,6 +15,7 @@ $(document).ready(function () {
 	joSelector = "#job_order_id";
 	invSelector = ".inventory_id";
 	itemFieldTable = $("#item_field_table tbody");
+	_fetchItems = [];
 
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
@@ -26,6 +34,7 @@ $(document).ready(function () {
 		$("#orig_item").addClass("d-none");
 		$(".job-order-details").html("");
 		$(".item-row").remove();
+		$(".original-item").html("");
 		clearSelect2Selection(joSelector);
 		clearSelect2Selection(invSelector);
 		clearAlertInForm(elems);
@@ -173,6 +182,7 @@ function view(id, status) {
 									${val.inventory_id}
 									${inventory_id}
 								</td>
+								<td>${val.supplier_name}</td>
 								<td>${val.category_name}</td>
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
@@ -211,12 +221,15 @@ function view(id, status) {
 
 /* Get record details */
 function edit(id) {
+	_fetchItems = [];
+
 	$("#prf_items_modal").modal("hide");
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#prf_id").val(id);
 	$(".quantity_out").val("");
 	$(".item-row").remove();
+	$(".original-item").html("");
 
 	clearSelect2Selection(joSelector);
 	clearSelect2Selection(invSelector);
@@ -237,6 +250,7 @@ function edit(id) {
 
 				if (!isEmpty(res.data.items)) {
 					const items = res.data.items;
+
 					// Add item fields
 					for (let i = 1; i < items.length; i++) toggleItemField();
 
@@ -247,12 +261,20 @@ function edit(id) {
 						const elem = itemFields[x];
 						const qelem = quantity_out[x];
 						const item = items[x];
-						const text = `${item.inventory_id} | ${item.item_model} | ${item.item_description}`;
+						const text = `${item.item_model} | ${item.item_description} | ${item.supplier_name}`;
+
+						// Store items in a variable with inventory_id as key
+						_fetchItems[item.inventory_id] = item;
 						// Set selected item in each select2
 						setSelect2AjaxSelection(elem, text, item.inventory_id);
+						// Display the selected item in a div under each select2
+						$(elem)
+							.parent()
+							.children(".original-item")
+							.html(`Original Item: <strong>${text}</strong>`);
 						// Set quantity_out in each input
 						$(qelem).val(parseInt(item.quantity_out));
-						$(qelem).attr("max", parseInt(item.quantity_out));
+						// $(qelem).attr("max", parseInt(item.quantity_out));
 						// Get the parent next sibling td (which where the item_available input) each
 						const parentSiblingElem = $(elem).parent().next();
 						// Set available stocks each
@@ -353,9 +375,12 @@ function change(id, changeTo, status, proceed) {
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					refreshDataTable($("#" + table));
 					notifMsgSwal(res.status, message, res.status);
-					$("#prf_items_modal").modal("hide");
+
+					if (res.status !== STATUS.ERROR) {
+						refreshDataTable($("#" + table));
+						$("#prf_items_modal").modal("hide");
+					}
 				})
 				.catch((err) => catchErrMsg(err));
 		},
@@ -378,6 +403,7 @@ function toggleItemField(row) {
 		<tr class="item-row" id="row_${itemFieldCount}">
 			<td>
 				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
+				<div class="original-item"></div>
 			</td>
 			<td>
 				<input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
@@ -460,8 +486,12 @@ function _loadItemDetails(data) {
 	if (data.id) {
 		const parentSiblingElem =
 			data.element.parentElement.parentElement.nextElementSibling;
-		if (!isEmpty(data.stocks))
-			_populateAvailableItemStocks(parentSiblingElem, data.stocks);
+		let stocks = data.stocks;
+
+		if (_fetchItems[data.id]) stocks = _fetchItems[data.id].stocks;
+
+		if (!isEmpty(stocks))
+			_populateAvailableItemStocks(parentSiblingElem, stocks);
 	}
 }
 

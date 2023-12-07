@@ -183,10 +183,14 @@ class ProjectRequestForm extends BaseController
                     $q_out
                 );
 
+                if (! empty(get_array_duplicate($inv_id))) {
+                    throw new \Exception("There are <strong>duplicate items</strong> in the list! Please double check and remove the duplicate one.", 2);
+                }
+
                 // Check restriction
                 $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
-                if ($bool) {
+                if (false) { // $bool
                     throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
                 } else {
                     $inputs = [
@@ -249,8 +253,8 @@ class ProjectRequestForm extends BaseController
                     $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";
                     
                     $record         = $this->_model->getProjectRequestForms($id, true, $columns);
-                    $job_order      = $this->fetchJobOrders($record['job_order_id'], []);
-                    $items          = $this->traitFetchPrfItems($id, true);
+                    $job_order      = $this->fetchJobOrders($record['job_order_id']);
+                    $items          = $this->traitFetchPrfItems($id, true, true);
 
                     $data['data']               = $record;
                     $data['data']['job_order']  = $job_order[0];
@@ -313,7 +317,8 @@ class ProjectRequestForm extends BaseController
                 if (null !== $this->request->getVar('remarks'))
                     $inputs['remarks'] = trim($this->request->getVar('remarks'));
 
-                if (in_array($status, ['accepted', 'item_out'])) {
+                // Prev ['accepted', 'item_out']
+                if (in_array($status, ['item_out'])) {
                     if ($this->checkPrfItemsOutNStocks($id))
                         throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
                 }

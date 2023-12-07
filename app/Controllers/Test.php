@@ -3,10 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\CustomersModel;
-use App\Models\CustomersVtModel;
-use App\Models\TaskLeadModel;
-use Kint\Zval\Value;
 
 class Test extends BaseController
 {
@@ -14,6 +10,6 @@ class Test extends BaseController
     {
         var_dump(res_lang('restrict.action.change'));
         var_dump(res_lang('success.uploaded'));
-        d(empty('0'));
+        d(get_array_duplicate([1, 2, 2, '3', 3, 4, 5]));
     }
 }

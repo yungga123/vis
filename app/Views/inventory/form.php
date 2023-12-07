@@ -52,18 +52,18 @@
                                 <small id="alert_item_description" class="text-danger"></small>
                             </div>
                             <div class="form-group">
-                                <label class="required" for="item_sdp">Dealer's Price</label>
-                                <input type="number" name="item_sdp" id="item_sdp" class="form-control" placeholder="Enter Dealer's Price">
+                                <label class="required" for="item_sdp">Item Cost</label>
+                                <input type="number" name="item_sdp" id="item_sdp" class="form-control" placeholder="Enter Item Cost" step="0.01">
                                 <small id="alert_item_sdp" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="item_srp">Retail Price</label>
-                                <input type="number" name="item_srp" id="item_srp" class="form-control" placeholder="Enter Retail Price">
+                                <input type="number" name="item_srp" id="item_srp" class="form-control" placeholder="Enter Retail Price" step="0.01">
                                 <small id="alert_item_srp" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="project_price">Project Price</label>
-                                <input type="number" name="project_price" id="project_price" class="form-control" placeholder="Enter Project Price">
+                                <input type="number" name="project_price" id="project_price" class="form-control" placeholder="Enter Project Price" step="0.01">
                                 <small id="alert_project_price" class="text-danger"></small>
                             </div>
                         </div>
