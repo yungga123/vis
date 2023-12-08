@@ -16,7 +16,7 @@
                         If not empty, initial dropdowns of <strong>Job Order & Inventory Masterlist</strong> are by 10. Type the QUOTATION NUMBER and ITEM MODEL & DESCRIPTION to search if not in the options and then, click to select.
                     </div>
                     <div class="row">
-                        <div class="col-sm-12 col-lg-4">
+                        <div class="col-sm-12 col-lg-7">
                             <div class="form-group">
                                 <input type="hidden" id="prf_id" name="id" readonly>
                                 <label class="required" for="job_order_id">Job Order</label>
@@ -30,23 +30,26 @@
                                 <div id="alert_job_order_id" class="text-sm text-danger"></div>
                                 <div class="mt-2 job-order-details"></div>
                             </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-5">
                             <div class="form-group">
-                                <label class="required" for="process_date">Process Date</label>
+                                <label class="required" for="process_date">Date Needed</label>
+                                <div>Format: MM/DD/YYYY</div>
                                 <input type="date" name="process_date" id="process_date" class="form-control">
                                 <small id="alert_process_date" class="text-danger"></small>
                             </div>
                         </div>
-                        <div class="col-sm-12 col-lg-8">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label class="required text-center">Masterlist Items</label>
-                                <div>Format: Item # | Model | Description</div>
+                                <div>Format: Model | Description | Supplier</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table" id="item_field_table">
                                     <thead>
                                         <tr>
                                             <th width="55%">Item Details</th>
-                                            <th width="15%">Available</th>
+                                            <th width="15%">Item Unit</th>
                                             <th width="20%">Quantity Out</th>
                                             <th width="5%">Button</th>
                                         </tr>
@@ -55,9 +58,11 @@
                                         <tr>
                                             <td>
                                                 <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
+                                                <div class="original-item"></div>
                                             </td>
-                                            <td>
-                                                <input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+                                            <td class="text-center items-center">
+                                                <input type="hidden" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+                                                <div class="item-unit text-bold"></div>
                                             </td>
                                             <td>
                                                 <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>

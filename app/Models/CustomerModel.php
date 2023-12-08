@@ -28,6 +28,8 @@ class CustomerModel extends Model
         'subdivision',
         'contact_person',
         'contact_number',
+        'is_cn_formatted',
+        'telephone',
         'email_address',
         'type',
         'forecast',
@@ -71,11 +73,19 @@ class CustomerModel extends Model
             'label' => 'contact person'
         ],
         'contact_number' => [
-            'rules' => 'required|string|min_length[6]|max_length[255]',
+            'rules' => 'permit_empty|max_length[50]',
             'label' => 'contact number'
         ],
+        'mobile_number' => [
+            'rules' => 'required|max_length[50]',
+            'label' => 'mobile number'
+        ],
+        'telephone' => [
+            'rules' => 'permit_empty|max_length[50]',
+            'label' => 'telephone'
+        ],
         'email_address' => [
-            'rules' => 'permit_empty|string|min_length[2]|max_length[255]',
+            'rules' => 'permit_empty|valid_email',
             'label' => 'email address'
         ],
         'type' => [
@@ -129,6 +139,7 @@ class CustomerModel extends Model
             {$this->table}.subdivision,
             {$this->table}.contact_person,
             {$this->table}.contact_number,
+            {$this->table}.telephone,
             {$this->table}.email_address,
             {$this->table}.type,
             {$this->table}.forecast,

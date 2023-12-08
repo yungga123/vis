@@ -28,7 +28,9 @@
 
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
-<script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
+	<?php if (isset($toastr) && $toastr): ?>
+		<script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
+	<?php endif;?>
 <?php endif;?>
 
 <?php if (isset($sweetalert2) && $sweetalert2): ?>
@@ -76,6 +78,11 @@
 <?php if (isset($bootstrap_switch) && $bootstrap_switch): ?>
 <!-- Bootstrap Switch -->
 <script src="<?=base_url('assets')?>/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<?php endif;?>
+
+<?php if (isset($inputmask) && $inputmask): ?>
+<!-- Inputmask -->
+<script src="<?=base_url('assets')?>/plugins/inputmask/jquery.inputmask.min.js"></script>
 <?php endif;?>
 
 <!-- AdminLTE App -->

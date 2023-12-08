@@ -116,7 +116,10 @@ class PRFItemModel extends Model
                 {$inventoryModel->view}.category_name,
                 {$inventoryModel->view}.subcategory_name,
                 {$inventoryModel->view}.brand,
-                {$inventoryModel->view}.created_by_name
+                {$inventoryModel->view}.unit,
+                {$inventoryModel->view}.size,
+                {$inventoryModel->view}.created_by_name,
+                {$inventoryModel->view}.supplier_name
             ";
         }
 

@@ -200,6 +200,7 @@ function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#job_order_id").val(id);
+	$("#is_manual").prop("checked", false);
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -326,10 +327,10 @@ function status(id, changeTo, status) {
 		$("#status_modal").modal("show");
 		$("#job_order_id_status").val(id);
 		$("#status").val(changeTo);
-
 		$("#status_modal .modal-title").text(
 			`Change Status from ${status.toUpperCase()} to ${changeTo.toUpperCase()}`
 		);
+		$("#is_manual").prop("checked", false);
 
 		// Get other details
 		$.post(router.job_order.fetch, { id: id, status: true })
@@ -343,11 +344,12 @@ function status(id, changeTo, status) {
 				$("#manual_quotation_type").addClass("d-none");
 				$("#manual_quotation_type").attr("disabled", true);
 
-				if (res.data.is_manual !== "0") {
+				if (res.data.is_manual != "0") {
 					$("#manual_quotation_type").val(res.data.type || "project"); // Default Project
 					$("#manual_quotation_type").removeClass("d-none");
 					$("#manual_quotation_type").removeAttr("disabled");
 					$("#quotation_type_wrapper").addClass("d-none");
+					$("#is_manual").prop("checked", true);
 				}
 			})
 			.catch((err) => catchErrMsg(err));

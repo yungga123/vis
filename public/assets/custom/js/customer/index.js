@@ -22,6 +22,18 @@ $(document).ready(function () {
 
 	select2Init("#filter_source");
 
+	/* Inputmask init */
+	const mobile = {
+		mask: "0999-999-9999",
+		placeholder: "09XX-XXX-XXXX",
+	};
+	$("#contact_number").inputmask(mobile);
+	$("#contact_number2").inputmask(mobile);
+	$("#telephone").inputmask({
+		mask: "(99) 9999-9999",
+		placeholder: "(02) 8XXX-XXXX",
+	});
+
 	/* Load dataTable */
 	loadDataTable(table, router.customer.list, METHOD.POST);
 
@@ -31,8 +43,19 @@ $(document).ready(function () {
 		$(`#${modal} .modal-title`).text("Add New Client");
 		$(`#${form}`)[0].reset();
 		$("#customer_id").val("");
+		$("#unformatted_cn").html("");
+		$("#contact_number_wrapper").removeClass("d-none");
+		$("#telephone_only").prop("checked", false);
 
 		clearAlertInForm(elems);
+	});
+
+	$("#telephone_only").on("change", function () {
+		$("#contact_number_wrapper").removeClass("d-none");
+
+		if ($(this).is(":checked")) {
+			$("#contact_number_wrapper").addClass("d-none");
+		}
 	});
 
 	/* Form for saving customer */
@@ -43,6 +66,8 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
+			$("#contact_number_wrapper").removeClass("d-none");
+			$("#telephone_only").prop("checked", false);
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -61,6 +86,9 @@ function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Client");
 	$("#customer_id").val(id);
+	$("#unformatted_cn").html("");
+	$("#contact_number_wrapper").removeClass("d-none");
+	$("#telephone_only").prop("checked", false);
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -73,9 +101,23 @@ function edit(id) {
 				$(`#${modal}`).modal("show");
 
 				if (inObject(res, "data") && !isEmpty(res.data)) {
-					$.each(res.data, (key, value) => {
-						$("#" + key).val(value);
-					});
+					if (res.data.unformatted_cn) {
+						$("#unformatted_cn").html(
+							"<strong>Previous unformatted contact number:</strong> " +
+								res.data.unformatted_cn || res.data.contact_number
+						);
+					}
+
+					if (
+						!isEmpty(res.data.telephone) &&
+						isEmpty(res.data.contact_number)
+					) {
+						// Hide the contact number fields
+						$("#contact_number_wrapper").addClass("d-none");
+						$("#telephone_only").prop("checked", true);
+					}
+
+					$.each(res.data, (key, value) => $("#" + key).val(value || ""));
 				}
 			} else {
 				notifMsgSwal(res.status, res.message, res.status);

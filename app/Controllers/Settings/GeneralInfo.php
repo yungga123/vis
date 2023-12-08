@@ -162,9 +162,11 @@ class GeneralInfo extends BaseController
                     return $data;
                 }
 
-                // Remove the previous file
-                $filepath = $this->fullFilePathLogo() . $curFilename;
-                $this->removeFile($filepath);
+                if (! empty($curFilename)) {
+                    // Remove the previous file
+                    $filepath = $this->fullFilePathLogo() . $curFilename;
+                    $this->removeFile($filepath);
+                }
                 
                 $data['files'] = $file;
                 return $data;
@@ -192,10 +194,14 @@ class GeneralInfo extends BaseController
                 if ($q = $this->request->getVar('q')) {
                     $files              = [];
                     $filename           = $this->getGeneralInfo($q);
-                    $nfilename          = strpos($filename, '/') ? explode('/', $filename) : $filename;
-                    $nfilename          = is_array($nfilename) ? array_pop($nfilename) : $nfilename;
-                    $downloadUrl        = base_url($this->initialFilePathLogo . $nfilename);
-                    $files              = $this->getFiles($q, [$nfilename], $this->fullFilePathLogo(), $downloadUrl);
+
+                    if (! empty($filename)) {
+                        $nfilename          = strpos($filename, '/') ? explode('/', $filename) : $filename;
+                        $nfilename          = is_array($nfilename) ? array_pop($nfilename) : $nfilename;
+                        $downloadUrl        = base_url($this->initialFilePathLogo . $nfilename);
+                        $files              = $this->getFiles($q, [$nfilename], $this->fullFilePathLogo(), $downloadUrl);
+                    }
+
                     $data['files']      = $files;
                 } else {
                     $data['data']       = $this->_model->fetchAll();

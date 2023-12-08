@@ -223,7 +223,7 @@ abstract class BaseController extends Controller
 
             // Commit transaction
             if ($dbTrans) $this->transCommit();
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             // Try catch exception error handling
             $data = $this->tryCatchException($data, $e, $dbTrans);
         }
@@ -243,11 +243,27 @@ abstract class BaseController extends Controller
         // Rollback transaction if there's an error
         if ($dbTrans) $this->transRollback();
 
-		log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+		$this->logExceptionError($e, __METHOD__);
+        
         $data['status']     = res_lang('status.error');
         $data['message']    = $e->getCode() === 2 
             ? $e->getMessage() : res_lang('error.process');
 
         return $data;
+	}
+
+    /**
+     * Log the exception error
+     * 
+     * @param array|object $exception
+     * @param string $method
+     * @return void 
+     */
+    public function logExceptionError($exception, $method = null)
+	{
+		log_msg(
+            'Exception Error: {exception} \nMethod: {method}', 
+            ['exception' => $exception, 'method' => $method ?? __METHOD__]
+        );
 	}
 }

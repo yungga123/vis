@@ -217,8 +217,8 @@ class Tasklead extends BaseController
         } catch (Exception $e) {
             // Rollback transaction if there's an error
             $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
+            
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.process');
         }
@@ -244,7 +244,8 @@ class Tasklead extends BaseController
 
             $data['data'] = $this->_model->select($fields)->find($id);;
         } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
+
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.validation');
         }
@@ -279,8 +280,8 @@ class Tasklead extends BaseController
         } catch (Exception $e) {
             // Rollback transaction if there's an error
             $this->transRollback();
+            $this->logExceptionError($e, __METHOD__);
 
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.validation');
         }

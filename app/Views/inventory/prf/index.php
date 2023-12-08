@@ -36,7 +36,7 @@
                                 <th>Work Type</th>
                                 <th>Date Requested</th>
                                 <th>Date Committed</th>
-                                <th>Process Date</th>
+                                <th>Date Needed</th>
                                 <th>Remarks</th>
                                 <th>Created By</th>
                                 <th>Created At</th>

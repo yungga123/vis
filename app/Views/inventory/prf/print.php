@@ -12,7 +12,7 @@
 				<tbody>
 					<tr>
 						<td width="50%" style="font-weight: bold">PRF No:</td>
-						<td width="50%"><?= $prf['id'] ?></td>
+						<td width="50%"><?= 'PRF'. format_date($prf['created_at'], 'Ymd') . '-' . $prf['id'] ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Project/Client Name:</td>

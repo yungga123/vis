@@ -373,3 +373,35 @@ if (! function_exists('check_param'))
         return $return ? '' : false;
 	}
 }
+
+if (! function_exists('log_msg'))
+{
+    /**
+     * For logging message using the log_message() function
+     * with some little before calling the said method
+     */
+	function log_msg(mixed $message, array $context = []): bool
+	{
+        $level = ENVIRONMENT === 'development' ? 'info' : 'error';
+
+        if (empty($context)) {
+            $message = json_encode($message);
+        }
+
+        return log_message($level, 'log_msg: '. $message, $context);
+	}
+}
+
+if (! function_exists('get_array_duplicate'))
+{
+    /**
+     * Get the duplicate value(s) of an array
+     */
+	function get_array_duplicate(array $array): array
+	{
+        $unique     = array_unique($array);
+        $duplicates = array_diff_assoc($array, $unique);
+
+        return $duplicates;
+	}
+}

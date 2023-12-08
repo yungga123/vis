@@ -87,7 +87,7 @@ class SalesTarget extends BaseController
             // Rollback transaction if there's an error
             $this->transRollback();
 
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.process');
         }
@@ -137,7 +137,7 @@ class SalesTarget extends BaseController
             // Rollback transaction if there's an error
             $this->transRollback();
 
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
             $data['status']     = res_lang('status.error');
             $data['message']    = res_lang('error.process');
         }

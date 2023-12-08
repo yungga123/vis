@@ -60,7 +60,7 @@ trait FileUploadTrait
                 }
             }
         } catch (\Exception $e) {
-            log_message('error', '[DirectoryIterator] {exception}', ['exception' => $e]);
+            log_msg('DirectoryIterator: {exception}', ['exception' => $e]);
         }
 
         return $files;
@@ -105,7 +105,8 @@ trait FileUploadTrait
      */
     public function removeFile($file)
     {
-        if (file_exists($file)) unlink($file);
+        if (! empty($file) && file_exists($file))
+            if (! is_dir($file)) unlink($file);
     }
 
     /**

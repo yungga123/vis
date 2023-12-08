@@ -55,6 +55,10 @@ $(document).ready(function () {
 				title: `<strong>${info.event.title}</strong>`,
 				content: `
 					<div>
+						<strong>ID: </strong>
+						<span>${info.event.id}</span>
+					</div>
+					<div>
 						<strong>Type</strong>
 						<div>${info.event.extendedProps.typeText}</div>
 					</div>

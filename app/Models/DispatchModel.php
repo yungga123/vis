@@ -19,8 +19,6 @@ class DispatchModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'schedule_id',
-        'customer_id',
-        'customer_type',
         'sr_number',
         'dispatch_date',
         'dispatch_out',
@@ -44,10 +42,6 @@ class DispatchModel extends Model
     // Validation
     protected $validationRules      = [
         'schedule_id' => [
-            'rules' => 'required',
-            'label' => 'schedule'
-        ],
-        'customer_id' => [
             'rules' => 'required',
             'label' => 'schedule'
         ],
@@ -112,14 +106,12 @@ class DispatchModel extends Model
     protected $afterDelete    = [];
 
     // Common columns
-    private function _columns($dateTimeformmated = false, $joinSchedule = false, $withClientDetials = false)
+    private function _columns($dateTimeformmated = false, $joinSchedule = false)
     {
         $scheduleModel  = new ScheduleModel();
-        $customerModel  = new CustomerModel();
         $columns        = "
             {$this->table}.id,
-            {$this->table}.schedule_id,
-            {$this->table}.customer_id,            
+            {$this->table}.schedule_id,     
             {$this->table}.sr_number,
             {$this->table}.dispatch_date,
             {$this->table}.dispatch_out,
@@ -161,18 +153,6 @@ class DispatchModel extends Model
             ";
         }
 
-        if ($withClientDetials) {
-            $addressConcat = dt_sql_concat_client_address($customerModel->table);
-            $columns .= ",
-                {$customerModel->table}.name as customer_name,
-                {$customerModel->table}.type as customer_type,
-                {$customerModel->table}.contact_person,
-                {$customerModel->table}.contact_number,
-                {$customerModel->table}.email_address,
-                {$addressConcat}
-            ";
-        }
-
         return $columns;
     }
 
@@ -201,14 +181,13 @@ class DispatchModel extends Model
     }
     
     // Get dispatch data - either by id or all
-    public function getDispatch($id = null, $dateTimeformmated = false, $joinSchedule = false, $withClientDetials = false)
+    public function getDispatch($id = null, $dateTimeformmated = false, $joinSchedule = false)
     {
-        $builder = $this->select($this->_columns($dateTimeformmated, $joinSchedule, $withClientDetials));
+        $builder = $this->select($this->_columns($dateTimeformmated, $joinSchedule));
         
         $this->joinView($builder);
 
         if ($joinSchedule) $this->joinSchedule($builder);
-        if ($withClientDetials) $this->joinCustomer($builder);
         
         $builder->where("{$this->table}.deleted_at IS NULL");
 
@@ -224,7 +203,6 @@ class DispatchModel extends Model
         // Join with other tables
         $this->joinView($builder);
         $this->joinSchedule($builder);
-        $this->joinCustomer($builder);
 
         $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy("{$this->table}.id", 'DESC');

@@ -97,7 +97,6 @@ class MailNotifModel extends Model
     public function isMailNotifEnabled($module_code)
     {
         $result = $this->getMailNotifs($module_code);
-        log_message('info', '$result: '. json_encode($result));
         return !empty($result) && $result['is_mail_notif_enabled'] == 1;
     }
 }

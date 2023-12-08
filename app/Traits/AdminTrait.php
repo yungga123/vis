@@ -145,6 +145,9 @@ trait AdminTrait
             $model->orLike('description', $q);
         }
 
+        if (isset($options['from_jo_only']))
+            $model->where("{$model->table}.job_order_id > 0");
+
         $model->orderBy('id', 'DESC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total = $model->countAllResults();
@@ -168,7 +171,6 @@ trait AdminTrait
         $model  = new CustomerModel();
         $type   = strtoupper($options['customer_type']);
         $fields = $fields ? $fields : "{$model->table}.id, {$model->table}.name AS text";
-        // $fields = $fields ? $fields : "{$model->table}.id, {$model->table}.name AS text, IF(cb.branch_name IS NULL, '', 'YES') AS have_branches";
 
         $model->select($fields);
         $model->join('customer_branches AS cb', "cb.customer_id = {$model->table}.id", 'left');
@@ -182,7 +184,8 @@ trait AdminTrait
         }
 
         $model->groupBy("{$model->table}.id, {$model->table}.name");
-        $model->orderBy('name', 'ASC');
+        $model->orderBy("{$model->table}.id", 'DESC');
+
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total  = $model->countAllResults();
 

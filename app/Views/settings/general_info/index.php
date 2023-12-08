@@ -71,7 +71,7 @@
                                     <small id="alert_company_name" class="text-danger"></small>
                                 </div>
                                 <div class="form-group">
-                                    <label class="required" for="company_address">Addess</label>
+                                    <label class="required" for="company_address">Address</label>
                                     <input type="text" name="company_address" id="company_address" class="form-control" placeholder="Addess">
                                     <small id="alert_company_address" class="text-danger"></small>
                                 </div>
