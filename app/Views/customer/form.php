@@ -46,7 +46,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Notes</label>
-                                        <input name="notes" id="notes" type="text" class="form-control" placeholder="Enter...">
+                                        <textarea name="notes" id="notes" class="form-control" cols="2" rows="3" placeholder="Enter..."></textarea>
                                         <small id="alert_notes" class="form-text text-danger"></small>
                                     </div>
                                 </div>
@@ -61,18 +61,26 @@
                                     <div class="col-sm-12">
                                         <p id="unformatted_cn"></p>
                                         <div class="form-group">
-                                            <label class="required">Mobile Number</label>
-                                            <input name="contact_number" id="contact_number" type="text" class="form-control" placeholder="09XX-XXX-XXXX" required>
-                                            <small id="alert_contact_number" class="form-text text-danger"></small>
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="telephone_only" id="telephone_only" value="1">
+                                                <label for="telephone_only" class="custom-control-label">Check this if Telephone Number only.</label>
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label>Mobile Number 2</label>
-                                            <input name="contact_number2" id="contact_number2" type="text" class="form-control" placeholder="09XX-XXX-XXXX">
-                                            <small id="alert_contact_number" class="form-text text-danger"></small>
+                                        <div id="contact_number_wrapper">
+                                            <div class="form-group">
+                                                <label class="required">Mobile Number</label>
+                                                <input name="mobile_number" id="contact_number" type="text" class="form-control" placeholder="09XX-XXX-XXXX">
+                                                <small id="alert_contact_number" class="form-text text-danger"></small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Mobile Number 2</label>
+                                                <input name="mobile_number2" id="mobile_number2" type="text" class="form-control" placeholder="09XX-XXX-XXXX">
+                                                <small id="alert_mobile_number2" class="form-text text-danger"></small>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label>Telephone Number</label>
-                                            <input name="telephone" id="telephone" type="text" class="form-control" placeholder="(02) 888X-XXXX">
+                                            <input name="telephone" id="telephone" type="text" class="form-control" placeholder="(02) 8XXX-XXXX">
                                             <small id="alert_telephone" class="form-text text-danger"></small>
                                         </div>
                                         <div class="form-group">

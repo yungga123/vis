@@ -44,8 +44,18 @@ $(document).ready(function () {
 		$(`#${form}`)[0].reset();
 		$("#customer_id").val("");
 		$("#unformatted_cn").html("");
+		$("#contact_number_wrapper").removeClass("d-none");
+		$("#telephone_only").prop("checked", false);
 
 		clearAlertInForm(elems);
+	});
+
+	$("#telephone_only").on("change", function () {
+		$("#contact_number_wrapper").removeClass("d-none");
+
+		if ($(this).is(":checked")) {
+			$("#contact_number_wrapper").addClass("d-none");
+		}
 	});
 
 	/* Form for saving customer */
@@ -56,6 +66,8 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
+			$("#contact_number_wrapper").removeClass("d-none");
+			$("#telephone_only").prop("checked", false);
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -75,6 +87,8 @@ function edit(id) {
 	$(`#${modal} .modal-title`).text("Edit Client");
 	$("#customer_id").val(id);
 	$("#unformatted_cn").html("");
+	$("#contact_number_wrapper").removeClass("d-none");
+	$("#telephone_only").prop("checked", false);
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -92,6 +106,15 @@ function edit(id) {
 							"<strong>Previous unformatted contact number:</strong> " +
 								res.data.unformatted_cn || res.data.contact_number
 						);
+					}
+
+					if (
+						!isEmpty(res.data.telephone) &&
+						isEmpty(res.data.contact_number)
+					) {
+						// Hide the contact number fields
+						$("#contact_number_wrapper").addClass("d-none");
+						$("#telephone_only").prop("checked", true);
 					}
 
 					$.each(res.data, (key, value) => $("#" + key).val(value || ""));

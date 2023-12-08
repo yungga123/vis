@@ -73,11 +73,15 @@ class CustomerModel extends Model
             'label' => 'contact person'
         ],
         'contact_number' => [
-            'rules' => 'required',
+            'rules' => 'permit_empty|max_length[50]',
             'label' => 'contact number'
         ],
+        'mobile_number' => [
+            'rules' => 'required|max_length[50]',
+            'label' => 'mobile number'
+        ],
         'telephone' => [
-            'rules' => 'permit_empty',
+            'rules' => 'permit_empty|max_length[50]',
             'label' => 'telephone'
         ],
         'email_address' => [
