@@ -169,11 +169,13 @@ class Customer extends BaseController
                     $mobile_number2 = $request['mobile_number2'];
                     $mobile_number2 = $mobile_number2 ? '/'. str_replace('-', '', $mobile_number2) : '';
                     $contact_number = $mobile_number . $mobile_number2;
+                } else {
+                    // Set temp value to bypass validation
+                    $request['mobile_number']   = 'value'; 
                 }
 
                 // Replace the contact_number value
                 $request['contact_number']  = $contact_number;
-                $request['mobile_number']   = 'value'; // Temp value
                 $request['is_cn_formatted'] = true;
 
                 if (! $this->_model->save($request)) {

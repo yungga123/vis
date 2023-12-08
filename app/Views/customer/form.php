@@ -63,7 +63,7 @@
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" type="checkbox" name="telephone_only" id="telephone_only" value="1">
-                                                <label for="telephone_only" class="custom-control-label">Check this if Telephone Number only.</label>
+                                                <label for="telephone_only" class="custom-control-label">Check this if telephone number only or client has no contact number.</label>
                                             </div>
                                         </div>
                                         <div id="contact_number_wrapper">
@@ -71,6 +71,7 @@
                                                 <label class="required">Mobile Number</label>
                                                 <input name="mobile_number" id="contact_number" type="text" class="form-control" placeholder="09XX-XXX-XXXX">
                                                 <small id="alert_contact_number" class="form-text text-danger"></small>
+                                                <small id="alert_mobile_number" class="form-text text-danger"></small>
                                             </div>
                                             <div class="form-group">
                                                 <label>Mobile Number 2</label>
