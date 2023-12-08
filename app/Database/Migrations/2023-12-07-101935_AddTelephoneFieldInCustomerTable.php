@@ -13,7 +13,7 @@ class AddTelephoneFieldInCustomerTable extends Migration
         $this->forge->addColumn(self::TABLE, [
             'telephone' => [
                 'type' => 'VARCHAR',
-                'constraint' => 20,
+                'constraint' => 50,
                 'null' => true,
                 'after' => 'contact_number',
             ],
@@ -27,7 +27,7 @@ class AddTelephoneFieldInCustomerTable extends Migration
         $this->forge->modifyColumn(self::TABLE, [
             'contact_number' => [
                 'type' => 'VARCHAR',
-                'constraint' => 20,
+                'constraint' => 50,
             ]
         ]);
     }
