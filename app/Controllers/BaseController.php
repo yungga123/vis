@@ -130,9 +130,17 @@ abstract class BaseController extends Controller
     protected function getSpecificActionsByModule($module_code)
 	{
         if ($this->isAdmin()) {
+            // Get the array keys only
+            $actions        = array_keys(get_actions());
+            // Get the actions under OTHERS key
             $action_others  = get_actions('OTHERS', true);
+            // Check if module has other actions
             $is_exist       = array_key_exists($module_code, $action_others);
-            return $is_exist ? $action_others[$module_code] : get_actions();
+            // Get the array keys only
+            $action_others  = array_keys($action_others[$module_code]);
+            
+            return $is_exist 
+                ? array_merge($actions, $action_others) : $actions;
         }
 
         foreach ($this->permissions as $permission) {
@@ -201,7 +209,7 @@ abstract class BaseController extends Controller
         // Add the default PENDING
         $actions[]  = 'PENDING';
         
-        if ( ! in_array($action, $actions)) {
+        if ( ! in_array($action, $actions) && ! isset($actions[$action])) {
             if ($throwException) {
                 throw new \Exception(res_lang('restrict.permission.change', $action), 2);
             }
