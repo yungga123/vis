@@ -46,7 +46,7 @@ class Account extends BaseController
         $this->_model       = new AccountModel(); // Current model
         $this->_module_code = MODULE_CODES['accounts']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -139,6 +139,8 @@ class Account extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_ADD, true);
+
                 $password       = $this->request->getVar('password');
                 $employee_id    = $this->request->getVar('employee_id');
                 $password_hash  = password_hash($password, PASSWORD_BCRYPT);
@@ -227,6 +229,8 @@ class Account extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
@@ -254,6 +258,8 @@ class Account extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_EDIT, true);
+
                 $bool       = true;
                 $id         = $this->request->getVar('id');
                 $username   = $this->request->getVar('username');

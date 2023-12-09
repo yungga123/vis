@@ -49,7 +49,7 @@ class MailConfig extends BaseController
         $this->_mailNotifModel  = new MailNotifModel(); // Current model
         $this->_module_code     = MODULE_CODES['mail_config']; // Current module
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add         = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -125,11 +125,10 @@ class MailConfig extends BaseController
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 } else {
-                    log_message(
-                        'error',
+                    log_msg(
                         "Mail {$param} data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.",
                         [
-                            'username'      => session()->get('username'),
+                            'username'      => session('username'),
                             'employee_id'   => session()->get('employee_id'),
                             'access_level'  => session()->get('access_level'),
                             'saved_at'      => date('Y-m-d H:i:s'),

@@ -151,13 +151,13 @@ class CustomerBranchModel extends Model
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
             $buttons = '';
-            if (check_permissions($permissions, 'EDIT')) {
+            if (check_permissions($permissions, ACTION_EDIT)) {
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-warning" onclick="editBranch({$row["$id"]})" title="Edit Branch"><i class="fas fa-edit"></i> </button> 
                 EOF;
             }
 
-            if (check_permissions($permissions, 'DELETE')) {
+            if (check_permissions($permissions, ACTION_DELETE)) {
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-danger" onclick="removeBranch({$row["$id"]})" title="Delete Branch"><i class="fas fa-trash"></i></button>  
                 EOF;

@@ -82,7 +82,7 @@
                                 <div class="form-group row">
                                     <label for="username" class="col-sm-2 col-form-label">Username</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="<?= esc(session()->get('username')); ?>" readonly>
+                                        <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="<?= esc(session('username')); ?>" readonly>
                                         <small id="alert_username" class="form-text text-danger"></small>
                                     </div>
                                 </div>
