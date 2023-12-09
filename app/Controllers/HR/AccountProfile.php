@@ -89,7 +89,7 @@ class AccountProfile extends BaseController
                     $data ['message']   = res_lang('error.validation');
                 } else {
                     $model          = new AccountModel();
-                    $username       = session()->get('username');
+                    $username       = session('username');
                     $curr_password  = $this->request->getVar('current_password');
     
                     $data['status']     = res_lang('status.error');

@@ -93,6 +93,7 @@ abstract class BaseController extends Controller
 
     /**
      * Check if current logged user is administrator
+     * 
      * @return bool
      */
     protected function isAdmin()
@@ -104,6 +105,7 @@ abstract class BaseController extends Controller
      * Get specific permissions based on module code
      *
      * @param string $module_code
+     * 
      * @return string|array
      */
     protected function getSpecificPermissions($module_code)
@@ -122,14 +124,23 @@ abstract class BaseController extends Controller
      * Get specific permissions from $this->permissions based on module code
      *
      * @param string $module_code
+     * 
      * @return array
      */
     protected function getSpecificActionsByModule($module_code)
 	{
         if ($this->isAdmin()) {
+            // Get the array keys only
+            $actions        = array_keys(get_actions());
+            // Get the actions under OTHERS key
             $action_others  = get_actions('OTHERS', true);
+            // Check if module has other actions
             $is_exist       = array_key_exists($module_code, $action_others);
-            return $is_exist ? $action_others[$module_code] : get_actions();
+            // Get the array keys only
+            $action_others  = array_keys($action_others[$module_code]);
+            
+            return $is_exist 
+                ? array_merge($actions, $action_others) : $actions;
         }
 
         foreach ($this->permissions as $permission) {
@@ -145,6 +156,7 @@ abstract class BaseController extends Controller
      *
      * @param string|array $permissions
      * @param string $needle
+     * 
      * @return bool
      */
     protected function checkPermissions($permissions, $needle)
@@ -160,8 +172,10 @@ abstract class BaseController extends Controller
     /**
      * Check role permissions based on the passed arguments
      * and redirect to denied page
+     * 
      * @param string $module
      * @param string $action
+     * 
      * @return void|view
      */
     public function checkRolePermissions($module, $action = null)
@@ -176,19 +190,33 @@ abstract class BaseController extends Controller
     /**
      * Check role & action permissions based on the passed argument
      * and redirect to denied page if user don't have
+     * 
      * @param string $module
      * @param string $action
-     * @return void|view
+     * @param bool $throwException  Whether to throw an exception or the default return
+     * 
+     * @return void|view|\Exception
      */
-    public function checkRoleActionPermissions($module, $action)
+    public function checkRoleActionPermissions($module, $action, $throwException = false)
 	{
+        $module     = $module ? strtoupper($module) : $module;
 		$this->checkRolePermissions($module);
         // If has access in the module, then check 
         // if user has the specific permission/action
         // Ex. User has access to Dispatch but don't have permission for printing
-        $actions = $this->getSpecificActionsByModule($module);
-        if ( ! in_array($action, $actions))
+        $action     = $action ? strtoupper($action) : $action;
+        $actions    = $this->getSpecificActionsByModule($module);
+        // Add the default PENDING
+        $actions[]  = 'PENDING';
+        log_msg('$action: '. $action);
+        log_msg($actions);
+        if ( ! in_array($action, $actions) && ! isset($actions[$action])) {
+            if ($throwException) {
+                throw new \Exception(res_lang('restrict.permission.change', $action), 2);
+            }
+
             $this->redirectToAccessDenied();
+        }
 	}
 
     /**
@@ -209,8 +237,9 @@ abstract class BaseController extends Controller
      * The custom try catch function for handling error
      * 
      * @param array $data           The $data variable from the parent method
-     * @param function $callback    The callback function where logic is
+     * @param callable $callback    The callback function where logic is
      * @param bool $dbTrans         [Optional - default true] The identifier if will use db transactions
+     * 
      * @return array|object         The passed/response $data variable
      */
     public function customTryCatch($data, $callback, $dbTrans = true)
@@ -236,6 +265,7 @@ abstract class BaseController extends Controller
      * 
      * @param array $data   The $data variable from the parent method
      * @param object $e     The exception object
+     * 
      * @return array        The passed $data variable
      */
     public function tryCatchException($data, $e, $dbTrans = true)
@@ -246,7 +276,7 @@ abstract class BaseController extends Controller
 		$this->logExceptionError($e, __METHOD__);
         
         $data['status']     = res_lang('status.error');
-        $data['message']    = $e->getCode() === 2 
+        $data['message']    = $e->getCode() > 0 
             ? $e->getMessage() : res_lang('error.process');
 
         return $data;
@@ -257,12 +287,13 @@ abstract class BaseController extends Controller
      * 
      * @param array|object $exception
      * @param string $method
+     * 
      * @return void 
      */
     public function logExceptionError($exception, $method = null)
 	{
 		log_msg(
-            'Exception Error: {exception} \nMethod: {method}', 
+            "Exception Error: {exception} \nMethod: '{method}'", 
             ['exception' => $exception, 'method' => $method ?? __METHOD__]
         );
 	}

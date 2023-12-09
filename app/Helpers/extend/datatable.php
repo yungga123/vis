@@ -47,12 +47,12 @@ if (! function_exists('dt_button_actions'))
             ],
         ];
             
-        if (check_permissions($permissions, 'EDIT')) {
+        if (check_permissions($permissions, ACTION_EDIT)) {
             $arr['edit']['text']        = $dropdown ? 'Edit' : '';
             $arr['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
         }
             
-        if (check_permissions($permissions, 'DELETE')) {
+        if (check_permissions($permissions, ACTION_DELETE)) {
             $arr['delete']['text']        = $dropdown ? 'Delete' : '';
             $arr['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
         }

@@ -47,7 +47,7 @@ class Employee extends BaseController
         $this->_model       = new EmployeeModel(); // Current model
         $this->_module_code = MODULE_CODES['employees']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -131,14 +131,20 @@ class Employee extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action = ACTION_ADD;
                 $id     = $this->request->getVar('id');
                 $prev   = $this->request->getVar('prev_employee_id');
                 $curr   = $this->request->getVar('employee_id');
                 $rules  = $this->_model->getValidationRules();
     
-                if (! empty($id) && $prev === $curr) {
-                    $rules['employee_id'] = 'required|alpha_numeric|max_length[20]';
+                if (! empty($id)) {
+                    $action = ACTION_EDIT;
+
+                    if ($prev === $curr)
+                        $rules['employee_id'] = 'required|alpha_numeric|max_length[20]';
                 }
+
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
     
                 $this->_model->setValidationRules($rules);
     
@@ -205,6 +211,8 @@ class Employee extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');

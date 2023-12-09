@@ -50,7 +50,7 @@ class ProjectRequestForm extends BaseController
         $this->_model       = new ProjectRequestFormModel(); // Current model
         $this->_module_code = MODULE_CODES['inventory_prf']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -175,6 +175,7 @@ class ProjectRequestForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action = ACTION_ADD;
                 $id     = $this->request->getVar('id');
                 $inv_id = $this->request->getVar('inventory_id');
                 $q_out  = $this->request->getVar('quantity_out');
@@ -203,6 +204,13 @@ class ProjectRequestForm extends BaseController
                         'quantity_out'  => !has_empty_value($q_out) ? $q_out : null,
                     ];
 
+                    if ($id) {
+                        $action             = ACTION_EDIT;
+                        $data['message']    = res_lang('success.updated', 'PRF');
+                    }
+
+                    $this->checkRoleActionPermissions($this->_module_code, $action, true);
+
                     if (! $this->_model->save($inputs)) {
                         $data['errors']     = $this->_model->errors();
                         $data['status']     = res_lang('status.error');
@@ -211,10 +219,6 @@ class ProjectRequestForm extends BaseController
                         $prfItemModel   = new PRFItemModel();
                         $prf_id         = $id ? $id : $this->_model->insertedID;
                         $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
-                    }
-
-                    if ($id) {
-                        $data['message']    = res_lang('success.updated', 'PRF');
                     }
                 }
                 return $data;
@@ -285,6 +289,7 @@ class ProjectRequestForm extends BaseController
                 $id = $this->request->getVar('id');
 
                 // Check restriction
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
                 $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                 if (! $this->_model->delete($id)) {
@@ -310,9 +315,12 @@ class ProjectRequestForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id     = $this->request->getVar('id');
-                $status = set_prf_status($this->request->getVar('status'));
-                $inputs = ['status' => $status];
+                $id         = $this->request->getVar('id');
+                $_status    = $this->request->getVar('status');
+                $status     = set_prf_status($_status);
+                $inputs     = ['status' => $status];
+
+                $this->checkRoleActionPermissions($this->_module_code, $_status, true);
 
                 if (null !== $this->request->getVar('remarks'))
                     $inputs['remarks'] = trim($this->request->getVar('remarks'));
@@ -352,7 +360,7 @@ class ProjectRequestForm extends BaseController
     public function print($id) 
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code, 'PRINT');
+        $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
         
         $columns = $this->_model->columns(true, true);
         $columns .= ','. $this->_model->jobOrderColumns(false, true);

@@ -52,7 +52,7 @@ class Home extends BaseController
         $this->_model       = new InventoryModel(); // Current model
         $this->_module_code = MODULE_CODES['inventory']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
         $this->_mdropdown   = new InventoryDropdownModel();
     }
 
@@ -167,6 +167,7 @@ class Home extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action = ACTION_ADD;
                 $inputs = [
                     'id'                => $this->request->getVar('id'),
                     'category'          => $this->request->getVar('category'),
@@ -186,14 +187,17 @@ class Home extends BaseController
                     'location'          => $this->request->getVar('location'),
                 ];
     
+                if ($this->request->getVar('id')) {
+                    $action             = ACTION_EDIT;
+                    $data['message']    = res_lang('success.updated', 'Item');
+                }
+
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
+    
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
-                }
-    
-                if ($this->request->getVar('id')) {
-                    $data['message']    = res_lang('success.updated', 'Item');
                 }
                 return $data;
             }
@@ -240,6 +244,8 @@ class Home extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
