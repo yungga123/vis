@@ -280,11 +280,12 @@ class RequestPurchaseForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id     = $this->request->getVar('id');
-                $status = set_rpf_status($this->request->getVar('status'));
-                $inputs = ['status' => $status];
+                $id         = $this->request->getVar('id');
+                $_status    = $this->request->getVar('status');
+                $status     = set_rpf_status($_status);
+                $inputs     = ['status' => $status];
 
-                $this->checkRoleActionPermissions($this->_module_code, $status, true);
+                $this->checkRoleActionPermissions($this->_module_code, $_status, true);
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();

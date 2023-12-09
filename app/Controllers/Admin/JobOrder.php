@@ -313,11 +313,12 @@ class JobOrder extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id     = $this->request->getVar('id');
-                $status = set_jo_status($this->request->getVar('status'));
-                $inputs = ['status' => $status];
+                $id         = $this->request->getVar('id');
+                $_status    = $this->request->getVar('status');
+                $status     = set_jo_status($_status);
+                $inputs     = ['status' => $status];
 
-                $this->checkRoleActionPermissions($this->_module_code, $status, true);
+                $this->checkRoleActionPermissions($this->_module_code, $_status, true);
     
                 if ($this->request->getVar('is_form')) { 
                     $inputs['employee_id']      = $this->request->getVar('employee_id');

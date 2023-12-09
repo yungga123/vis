@@ -208,7 +208,8 @@ abstract class BaseController extends Controller
         $actions    = $this->getSpecificActionsByModule($module);
         // Add the default PENDING
         $actions[]  = 'PENDING';
-        
+        log_msg('$action: '. $action);
+        log_msg($actions);
         if ( ! in_array($action, $actions) && ! isset($actions[$action])) {
             if ($throwException) {
                 throw new \Exception(res_lang('restrict.permission.change', $action), 2);
