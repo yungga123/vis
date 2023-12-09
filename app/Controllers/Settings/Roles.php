@@ -41,7 +41,7 @@ class Roles extends BaseController
         $this->_model       = new RolesModel(); // Current model
         $this->_module_code = MODULE_CODES['roles']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -209,8 +209,6 @@ class Roles extends BaseController
         $this->transBegin();
 
         try {
-            $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-            
             $id         = $this->request->getVar('id');
             $role_code  = $this->_model->getSpecificRoleCode($id);
 

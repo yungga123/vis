@@ -43,7 +43,7 @@ class SupplierBrands extends BaseController
         $this->_model       = new SupplierBrandsModel(); // Current model
         $this->_module_code = MODULE_CODES['suppliers']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -168,8 +168,6 @@ class SupplierBrands extends BaseController
 
         try {
             $model = $this->_model;
-            
-            $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
 
             if (! $model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $model->errors();

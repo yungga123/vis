@@ -49,7 +49,7 @@ class JobOrder extends BaseController
         $this->_model       = new JobOrderModel(); // Current model
         $this->_module_code = MODULE_CODES['job_orders']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -179,7 +179,6 @@ class JobOrder extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $action         = ACTION_ADD;
                 $id             = $this->request->getVar('id');
                 $is_manual      = $this->request->getVar('is_manual');
                 $employee_id    = $this->request->getVar('employee_id');
@@ -202,7 +201,6 @@ class JobOrder extends BaseController
                 ];
     
                 if (! empty($id)) {
-                    $action                 = ACTION_EDIT;
                     $inputs['id']           = $id;
                     $inputs['employee_id']  = $employee_id;
                     $data['message']        = res_lang('success.updated', 'Job Order');
@@ -210,8 +208,6 @@ class JobOrder extends BaseController
                     unset($inputs['status']);
                     unset($inputs['created_by']);
                 } 
-
-                $this->checkRoleActionPermissions($this->_module_code, $action, true);
     
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
@@ -220,7 +216,8 @@ class JobOrder extends BaseController
                 }
 
                 return $data;
-            }
+            },
+            true
         );
 
         return $response;
@@ -259,8 +256,7 @@ class JobOrder extends BaseController
                 $data['data']   = $record;
 
                 return $data;
-            },
-            false
+            }
         );
 
         return $response;
@@ -280,8 +276,6 @@ class JobOrder extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-                
                 $id = $this->request->getVar('id');
 
                 if (! $this->_model->delete($id)) {
@@ -289,14 +283,12 @@ class JobOrder extends BaseController
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 } else {
-                    log_msg(
-                        $data['message']. " Job Order #: {$id} \nDeleted by: {username}",
-                        ['username' => session('username')]
-                    );
+                    log_message('error', "Job Order #: {$id} \n Deleted by {username}", ['username' => session('username')]);
                 }
 
                 return $data;
-            }
+            },
+            true
         );
 
         return $response;
@@ -316,8 +308,6 @@ class JobOrder extends BaseController
                 $id     = $this->request->getVar('id');
                 $status = set_jo_status($this->request->getVar('status'));
                 $inputs = ['status' => $status];
-
-                $this->checkRoleActionPermissions($this->_module_code, $status, true);
     
                 if ($this->request->getVar('is_form')) { 
                     $inputs['employee_id']      = $this->request->getVar('employee_id');

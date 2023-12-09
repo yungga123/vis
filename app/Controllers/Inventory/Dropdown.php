@@ -41,7 +41,7 @@ class Dropdown extends BaseController
         $this->_model       = new InventoryDropdownModel(); // Current model
         $this->_module_code = MODULE_CODES['inventory']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -57,8 +57,8 @@ class Dropdown extends BaseController
         $data['title']          = 'Inventory Dropdowns';
         $data['page_title']     = '<a href="'. url_to('inventory.home') .'" title="Click here to go to Inventory.">Inventory</a> Dropdowns';
         $data['can_add']        = $this->_can_add;
-        $data['can_edit']       = $this->checkPermissions($this->_permissions, ACTION_EDIT);
-        $data['can_delete']     = $this->checkPermissions($this->_permissions, ACTION_DELETE);
+        $data['can_edit']       = $this->checkPermissions($this->_permissions, 'EDIT');
+        $data['can_delete']     = $this->checkPermissions($this->_permissions, 'DELETE');
         $data['btn_add_lbl']    = 'Add Dropdown';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
@@ -268,8 +268,6 @@ class Dropdown extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-                
                 $id = $this->request->getVar('id');
                 if ($this->_model->categoryHasDropdowns($id)) {                
                     $data['status']     = res_lang('status.info');

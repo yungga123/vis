@@ -45,7 +45,7 @@ class Customer extends BaseController
         $this->_model           = new CustomerModel(); // Current model
         $this->_module_code     = MODULE_CODES['customers']; // Current module
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add         = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -155,12 +155,11 @@ class Customer extends BaseController
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.added', 'Client')
+            'message'   => res_lang('success.saved', 'Client')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $action         = ACTION_ADD;
                 $request        = $this->request->getVar();
                 $contact_number = '';
                 
@@ -178,18 +177,15 @@ class Customer extends BaseController
                 // Replace the contact_number value
                 $request['contact_number']  = $contact_number;
                 $request['is_cn_formatted'] = true;
-    
-                if ($this->request->getVar('id')) {
-                    $action             = ACTION_EDIT;
-                    $data['message']    = res_lang('success.updated', 'Client');
-                }
-
-                $this->checkRoleActionPermissions($this->_module_code, $action, true);
 
                 if (! $this->_model->save($request)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
+                }
+    
+                if ($this->request->getVar('id')) {
+                    $data['message']    = res_lang('success.updated', 'Client');
                 }
                 return $data;
             },
@@ -277,8 +273,6 @@ class Customer extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');

@@ -172,13 +172,6 @@ define('ACTIONS', [
     ],
 ]);
 
-// Individual actions constants
-define('ACTION_ADD', 'ADD');
-define('ACTION_EDIT', 'EDIT');
-define('ACTION_DELETE', 'DELETE');
-define('ACTION_PRINT', 'PRINT');
-define('ACTION_UPLOAD', 'UPLOAD');
-
 // Roles - No need to add new roles here
 // Adding new roles will be on the dashboard
 define('ROLES', [

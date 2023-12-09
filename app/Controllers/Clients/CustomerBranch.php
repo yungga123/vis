@@ -29,6 +29,7 @@ class CustomerBranch extends BaseController
      * Use to get current permissions
      * @var string
      */
+
     private $_permissions;
 
     /**
@@ -45,7 +46,7 @@ class CustomerBranch extends BaseController
         $this->_model       = new CustomerBranchModel(); // Current model
         $this->_module_code = MODULE_CODES['customers']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -107,19 +108,11 @@ class CustomerBranch extends BaseController
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.added', 'Client Branch')
+            'message'   => 'Customer Branch has been saved successfully!'
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $action = ACTION_ADD;
-    
-                if ($this->request->getVar('id')) {
-                    $action             = ACTION_EDIT;
-                    $data['message']    = res_lang('success.updated', 'Client Branch');
-                }
-
-                $this->checkRoleActionPermissions($this->_module_code, $action, true);
                 if (! $this->_model->save($this->request->getVar())) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
@@ -134,6 +127,10 @@ class CustomerBranch extends BaseController
                     }
     
                     $data['errors']  = $arr;
+                }
+    
+                if ($this->request->getVar('id')) {
+                    $data['message']    = 'Customer Branch has been updated successfully!';
                 }
                 return $data;
             },
@@ -152,7 +149,7 @@ class CustomerBranch extends BaseController
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.retrieved', 'Client Branch')
+            'message'   => 'Customer branches have been retrieved!'
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -177,13 +174,11 @@ class CustomerBranch extends BaseController
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.deleted', 'Client Branch')
+            'message'   => 'Customer Branch has been deleted successfully!'
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');

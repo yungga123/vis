@@ -51,7 +51,7 @@ class PurchaseOrder extends BaseController
         $this->_model       = new PurchaseOrderModel(); // Current model
         $this->_module_code = MODULE_CODES['purchase_order']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -156,7 +156,7 @@ class PurchaseOrder extends BaseController
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.added', 'Purchase Order')
+            'message'   => res_lang('success.saved', 'Purchase Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -303,7 +303,6 @@ class PurchaseOrder extends BaseController
                 $id = $this->request->getVar('id');
 
                 // Check restriction
-                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
                 $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                 if (! $this->_model->delete($id)) {
@@ -333,8 +332,6 @@ class PurchaseOrder extends BaseController
                 $status = set_po_status($this->request->getVar('status'));
                 $inputs = ['status' => $status];
 
-                $this->checkRoleActionPermissions($this->_module_code, $status, true);
-
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
@@ -358,7 +355,7 @@ class PurchaseOrder extends BaseController
     public function print($id) 
     {
         // Check role & action if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
+        $this->checkRolePermissions($this->_module_code, 'PRINT');
         
         $rpfModel               = new RequestPurchaseFormModel();
         $supplierModel          = new SuppliersModel();

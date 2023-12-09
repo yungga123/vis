@@ -167,7 +167,7 @@ class SuppliersModel extends Model
         $closureFun = function($row) use($id, $permissions, $dropdown) {
             $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
 
-            if (check_permissions($permissions, ACTION_ADD)) {
+            if (check_permissions($permissions, 'ADD')) {
                 // Add Brand
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-success" onclick="brand_add({$row[$id]})" title="Add Brand"><i class="fas fa-plus-square"></i></button>

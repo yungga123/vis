@@ -47,7 +47,7 @@ class TaskLeadBooked extends BaseController
         $this->_model       = new TaskLeadView(); // Current model
         $this->_module_code = MODULE_CODES['task_lead']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
         $this->_path_file   = WRITEPATH . '/project-booked/';
     }
 

@@ -261,7 +261,7 @@ class TaskLeadModel extends Model
 
             $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
 
-            if (check_permissions($permissions, ACTION_EDIT) && !is_admin()) {
+            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
                 $edit = <<<EOF
                     <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-edit"></i> </button> 
                 EOF;
@@ -269,7 +269,7 @@ class TaskLeadModel extends Model
 
             $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
 
-            if (check_permissions($permissions, ACTION_DELETE) && !is_admin()) {
+            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
                 $delete = <<<EOF
                     <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
                 EOF;

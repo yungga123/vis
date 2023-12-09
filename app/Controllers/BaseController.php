@@ -93,7 +93,6 @@ abstract class BaseController extends Controller
 
     /**
      * Check if current logged user is administrator
-     * 
      * @return bool
      */
     protected function isAdmin()
@@ -105,7 +104,6 @@ abstract class BaseController extends Controller
      * Get specific permissions based on module code
      *
      * @param string $module_code
-     * 
      * @return string|array
      */
     protected function getSpecificPermissions($module_code)
@@ -124,7 +122,6 @@ abstract class BaseController extends Controller
      * Get specific permissions from $this->permissions based on module code
      *
      * @param string $module_code
-     * 
      * @return array
      */
     protected function getSpecificActionsByModule($module_code)
@@ -148,7 +145,6 @@ abstract class BaseController extends Controller
      *
      * @param string|array $permissions
      * @param string $needle
-     * 
      * @return bool
      */
     protected function checkPermissions($permissions, $needle)
@@ -164,10 +160,8 @@ abstract class BaseController extends Controller
     /**
      * Check role permissions based on the passed arguments
      * and redirect to denied page
-     * 
      * @param string $module
      * @param string $action
-     * 
      * @return void|view
      */
     public function checkRolePermissions($module, $action = null)
@@ -182,32 +176,19 @@ abstract class BaseController extends Controller
     /**
      * Check role & action permissions based on the passed argument
      * and redirect to denied page if user don't have
-     * 
      * @param string $module
      * @param string $action
-     * @param bool $throwException  Whether to throw an exception or the default return
-     * 
-     * @return void|view|\Exception
+     * @return void|view
      */
-    public function checkRoleActionPermissions($module, $action, $throwException = false)
+    public function checkRoleActionPermissions($module, $action)
 	{
-        $module     = $module ? strtoupper($module) : $module;
 		$this->checkRolePermissions($module);
         // If has access in the module, then check 
         // if user has the specific permission/action
         // Ex. User has access to Dispatch but don't have permission for printing
-        $action     = $action ? strtoupper($action) : $action;
-        $actions    = $this->getSpecificActionsByModule($module);
-        // Add the default PENDING
-        $actions[]  = 'PENDING';
-        
-        if ( ! in_array($action, $actions)) {
-            if ($throwException) {
-                throw new \Exception(res_lang('restrict.permission.change', $action), 2);
-            }
-
+        $actions = $this->getSpecificActionsByModule($module);
+        if ( ! in_array($action, $actions))
             $this->redirectToAccessDenied();
-        }
 	}
 
     /**
@@ -228,9 +209,8 @@ abstract class BaseController extends Controller
      * The custom try catch function for handling error
      * 
      * @param array $data           The $data variable from the parent method
-     * @param callable $callback    The callback function where logic is
+     * @param function $callback    The callback function where logic is
      * @param bool $dbTrans         [Optional - default true] The identifier if will use db transactions
-     * 
      * @return array|object         The passed/response $data variable
      */
     public function customTryCatch($data, $callback, $dbTrans = true)
@@ -256,7 +236,6 @@ abstract class BaseController extends Controller
      * 
      * @param array $data   The $data variable from the parent method
      * @param object $e     The exception object
-     * 
      * @return array        The passed $data variable
      */
     public function tryCatchException($data, $e, $dbTrans = true)
@@ -267,7 +246,7 @@ abstract class BaseController extends Controller
 		$this->logExceptionError($e, __METHOD__);
         
         $data['status']     = res_lang('status.error');
-        $data['message']    = $e->getCode() > 0 
+        $data['message']    = $e->getCode() === 2 
             ? $e->getMessage() : res_lang('error.process');
 
         return $data;
@@ -278,13 +257,12 @@ abstract class BaseController extends Controller
      * 
      * @param array|object $exception
      * @param string $method
-     * 
      * @return void 
      */
     public function logExceptionError($exception, $method = null)
 	{
 		log_msg(
-            "Exception Error: {exception} \nMethod: '{method}'", 
+            'Exception Error: {exception} \nMethod: {method}', 
             ['exception' => $exception, 'method' => $method ?? __METHOD__]
         );
 	}

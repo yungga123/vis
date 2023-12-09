@@ -45,7 +45,7 @@ class Schedule extends BaseController
         $this->_model       = new ScheduleModel(); // Current model
         $this->_module_code = MODULE_CODES['schedules']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
     }
 
     /**
@@ -90,46 +90,61 @@ class Schedule extends BaseController
      */
     public function save() 
     {
-        $data       = [
+        $data = [
             'status'    => res_lang('status.success'),
             'message'   => res_lang('success.added', 'Schedule')
         ];
-        $response   = $this->customTryCatch(
-            $data,
-            function($data) {
-                $action     = ACTION_ADD;
-                $id         = $this->request->getVar('id');
-                $inputs     = [
-                    'date_range'    => $this->request->getVar('date_range'),
-                    'title'         => $this->request->getVar('title'),
-                    'description'   => $this->request->getVar('description'),
-                    'start'         => $this->request->getVar('start'),
-                    'end'           => $this->request->getVar('end'),
-                    'type'          => $this->request->getVar('type'),
-                    'created_by'    => session('username'),
-                ];
-                
-                if (! empty($id)) {
-                    $action             = ACTION_EDIT;
-                    $inputs['id']       = $id;
-                    $data['message']    = res_lang('success.updated', 'Schedule');
-    
-                    unset($inputs['created_by']);
+
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            $id         = $this->request->getVar('id');
+            $inputs = [
+                'date_range'    => $this->request->getVar('date_range'),
+                'title'         => $this->request->getVar('title'),
+                'description'   => $this->request->getVar('description'),
+                'start'         => $this->request->getVar('start'),
+                'end'           => $this->request->getVar('end'),
+                'type'          => $this->request->getVar('type'),
+                'created_by'    => session('username'),
+            ];
+
+            
+            if (! empty($id)) {
+                if (!$this->checkPermissions($this->_permissions, 'EDIT')) {
+                    return $this->response->setJSON(
+                        [
+                            'status'    => res_lang('status.info'),
+                            'message'   => "You don't have permission to EDIT any schedule currently! Ask your superior to provide one."
+                        ]
+                    );
                 }
 
-                $this->checkRoleActionPermissions($this->_module_code, $action, true);
-    
-                if (! $this->_model->save($inputs)) {
-                    $data['errors']     = $this->_model->errors();
-                    $data['status']     = res_lang('status.error');
-                    $data['message']    = res_lang('error.validation');
-                }
+                $inputs['id']       = $id;
+                $data['message']    = res_lang('success.updated', 'Schedule');
 
-                return $data;
+                unset($inputs['created_by']);
+            } 
+
+            if (! $this->_model->save($inputs)) {
+                $data['errors']     = $this->_model->errors();
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
-        );
 
-        return $response;
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception $e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+            $this->logExceptionError($e, __METHOD__);
+            
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
+        }
+
+        return $this->response->setJSON($data);
     }
     
     /**
@@ -179,32 +194,41 @@ class Schedule extends BaseController
      */
     public function delete() 
     {
-        $data       = [
-            'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.deleted', 'Schedule')
+        $data = [
+            'status'    => res_lang('status.info'),
+            'message'   => "You don't have permission to DELETE any schedule currently! Ask your superior to provide one."
         ];
-        $response   = $this->customTryCatch(
-            $data,
-            function($data) {
-                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-    
-                $id = $this->request->getVar('id');        
-    
+
+        // Using DB Transaction
+        $this->transBegin();
+
+        try {
+            if ($this->checkPermissions($this->_permissions, 'DELETE')) {
+                $id = $this->request->getVar('id');
+                
+                $data['status']     = res_lang('status.success');
+                $data['message']    = res_lang('success.deleted', 'Schedule');            
+
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 } else {
-                    log_msg(
-                        $data['message']. " Schedule #: {$id} \nDeleted by: {username}",
-                        ['username' => session('username')]
-                    );
+                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
                 }
-
-                return $data;
             }
-        );
 
-        return $response;
+            // Commit transaction
+            $this->transCommit();
+        } catch (\Exception$e) {
+            // Rollback transaction if there's an error
+            $this->transRollback();
+            $this->logExceptionError($e, __METHOD__);
+
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
+        }
+
+        return $this->response->setJSON($data);
     }
 }
