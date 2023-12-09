@@ -18,6 +18,7 @@ class MailNotifModel extends Model
         'module_code',
         'has_mail_notif',
         'is_mail_notif_enabled',
+        'cc_recipients',
     ];
 
     // Dates
@@ -28,10 +29,7 @@ class MailNotifModel extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [
-        'module_code'   => 'required',
-        'column'        => 'required',
-    ];
+    protected $validationRules      = [];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
@@ -53,13 +51,16 @@ class MailNotifModel extends Model
      * 
      * @param string|array|null $module_code
      * @param string|array $columns
+     * @param callable $callable
      * 
      * @return array|object
      */
-    public function getMailNotifs($module_code = null, $columns = '')
+    public function getMailNotifs($module_code = null, $columns = '', $callable = null)
     {
         $columns = $columns ? $columns : $this->allowedFields;
         $builder = $this->select($columns);
+
+        if ($callable) $callable($builder);
 
         if ($module_code) {
             if (is_array($module_code)) {

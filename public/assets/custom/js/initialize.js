@@ -74,6 +74,9 @@ $(document).ready(function () {
 		const fileName = e.target.files[0].name;
 		$(this).next(".custom-file-label").text(fileName);
 	});
+
+	// Collapsible accordion
+	if ($(".collapse").length > 0) $(".collapse").collapse();
 });
 
 /* Check if is toastr is loaded */

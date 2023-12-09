@@ -152,9 +152,11 @@ if (! function_exists('clean_input'))
         if (is_array($input)) {
             $arr = [];
             foreach ($input as $key => $val) {
-                $val = trim($val);
-                if ($func_name) $val = $func_name($val);
-                $arr[$key] = $val;
+                $val = is_string($val) ? trim($val) : array_filter($val);
+                if (! empty($val)) {
+                    if ($func_name) $val = $func_name($val);
+                    $arr[$key] = $val;
+                }
             }
 
             return $arr;
