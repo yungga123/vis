@@ -44,7 +44,7 @@ class Permission extends BaseController
         $this->_model       = new PermissionModel(); // Current model
         $this->_module_code = MODULE_CODES['permissions']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -217,6 +217,8 @@ class Permission extends BaseController
         $this->transBegin();
 
         try {
+            $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+            
             if (! $this->_model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $this->_model->errors();
                 $data['status']     = res_lang('status.error');

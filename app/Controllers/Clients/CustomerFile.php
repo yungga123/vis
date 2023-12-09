@@ -17,6 +17,12 @@ class CustomerFile extends Customer
     private $_model;
 
     /**
+     * Use to get current module code
+     * @var string
+     */
+    private $_module_code;
+
+    /**
      * The root directory to save the uploaded files
      * @var string
      */
@@ -42,6 +48,7 @@ class CustomerFile extends Customer
         parent::__construct();
 
         $this->_model           = new CustomerFileModel(); // Current model
+        $this->_module_code     = MODULE_CODES['customers']; // Current module
         $this->_rootDirPath     = $this->setRootFileUploadsDirPath();
         // Please don't change this
         $this->_initialFilePath = 'uploads/customers/';
@@ -80,6 +87,8 @@ class CustomerFile extends Customer
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_UPLOAD, true);
+
                 $rules = $this->validationFileRules('file', null, 15);
             
                 if (! $this->validate($rules)) {

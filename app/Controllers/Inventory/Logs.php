@@ -48,7 +48,7 @@ class Logs extends BaseController
         $this->_model       = new InventoryLogsModel(); // Current model
         $this->_module_code = MODULE_CODES['inventory']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
         // $this->_mdropdown   = new InventoryDropdownModel();
     }
 

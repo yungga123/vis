@@ -48,7 +48,7 @@ class Dispatch extends BaseController
         $this->_model       = new DispatchModel(); // Current model
         $this->_module_code = MODULE_CODES['dispatch']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -164,6 +164,7 @@ class Dispatch extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action = ACTION_ADD;
                 $id     = $this->request->getVar('id');
                 $inputs = [
                     'schedule_id'   => $this->request->getVar('schedule_id'),
@@ -183,11 +184,14 @@ class Dispatch extends BaseController
                 ];
 
                 if (! empty($id)) {
+                    $action             = ACTION_EDIT;
                     $inputs['id']       = $id;
                     $data['message']    = res_lang('success.updated', 'Dispatch');
 
                     unset($inputs['created_by']);
                 } 
+
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
                 
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
@@ -250,6 +254,8 @@ class Dispatch extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                
                 $id = $this->request->getVar('id');
 
                 if (! $this->_model->delete($id)) {
@@ -257,7 +263,10 @@ class Dispatch extends BaseController
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 } else {
-                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
+                    log_msg(
+                        $data['message']. " Dispatch #: {$id} \nDeleted by: {username}",
+                        ['username' => session('username')]
+                    );
                 }
 
                 return $data;
@@ -275,7 +284,7 @@ class Dispatch extends BaseController
     public function print($id) 
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
         
         $data['dispatch']       = $this->_model->getDispatch($id, false, false, true);
         $data['title']          = 'Print Dispatch';

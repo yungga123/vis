@@ -195,7 +195,7 @@ class CustomerModel extends Model
             $buttons = dt_button_actions($row, $id, $permissions);
 
             if (strtoupper($row['type']) === 'COMMERCIAL') {
-                if (check_permissions($permissions, 'ADD')) {
+                if (check_permissions($permissions, ACTION_ADD)) {
                     $buttons .= <<<EOF
                         <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
                     EOF;
@@ -206,7 +206,7 @@ class CustomerModel extends Model
                 EOF;
             }
 
-            if (check_permissions($permissions, 'UPLOAD')) {
+            if (check_permissions($permissions, ACTION_UPLOAD)) {
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-primary" onclick="upload({$row["$id"]}, '{$row["name"]}')" title="View or Attach Files"><i class="fas fa-paperclip"></i> </button> 
                 EOF;

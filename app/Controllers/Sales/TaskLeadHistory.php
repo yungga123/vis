@@ -49,7 +49,7 @@ class TaskLeadHistory extends BaseController
         $this->_model       = new TaskleadHistoryModel(); // Current model
         $this->_module_code = MODULE_CODES['task_lead']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     public function history_add($data)

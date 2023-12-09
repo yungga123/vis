@@ -133,14 +133,14 @@ class SupplierBrandsModel extends Model
         $closureFun = function($row) use($id, $permissions) {
             $buttons = '';
 
-            if (check_permissions($permissions, 'EDIT')) {
+            if (check_permissions($permissions, ACTION_EDIT)) {
                 // Add Brand
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-warning" onclick="brand_edit({$row[$id]})"  data-toggle="modal" data-target="#modal_add_supplier_brand" title="Edit"><i class="fas fa-edit"></i></button>
                 EOF;
             }
 
-            if (check_permissions($permissions, 'DELETE')) {
+            if (check_permissions($permissions, ACTION_DELETE)) {
                 // Add Brand
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-danger" onclick="brand_remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button>
