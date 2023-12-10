@@ -34,27 +34,6 @@ $(document).ready(function () {
 		}
 	);
 
-	$("input[name='has_mail_notif'], input[name='is_mail_notif_enabled']").on(
-		"switchChange.bootstrapSwitch",
-		function (event, state) {
-			event.preventDefault();
-
-			const name = event.target.name;
-			const has_mail_notif = event.target.dataset.has_mail_notif;
-
-			if (
-				name === "is_mail_notif_enabled" &&
-				(has_mail_notif == 0 || isEmpty(has_mail_notif))
-			) {
-				const message =
-					"You need to set the <strong>Has Mail Notif?</strong> to YES first!";
-				notifMsgSwal(TITLE.ERROR, message, STATUS.WARNING);
-				$(this).bootstrapSwitch("state", false);
-				return;
-			}
-		}
-	);
-
 	$("#btn_getAccessToken").on("click", function () {
 		if (
 			isEmpty($("#oauth_client_id").val()) ||
@@ -121,12 +100,25 @@ function save(module_code, has_mail, is_enabled) {
 	if (hasMailElem.length) has_mail = hasMailElem.is(":checked");
 	if (isEnabledElem.length) is_enabled = isEnabledElem.is(":checked");
 
+	has_mail = has_mail ? 1 : 0;
+	is_enabled = is_enabled ? 1 : 0;
+
+	if (has_mail == 0 && isEnabledElem.is(":checked")) {
+		const message =
+			"You need to set the <strong>Has Mail Notif?</strong> to YES first!";
+		notifMsgSwal(TITLE.ERROR, message, STATUS.WARNING);
+		isEnabledElem.bootstrapSwitch("state", false);
+		return;
+	}
+
+	hasMailElem.val(has_mail);
+	isEnabledElem.val(is_enabled);
 	recipAlertElem.text("");
 
 	const data = {
 		module_code: module_code,
-		has_mail_notif: has_mail ? 1 : 0,
-		is_mail_notif_enabled: is_enabled ? 1 : 0,
+		has_mail_notif: has_mail,
+		is_mail_notif_enabled: is_enabled,
 		cc_recipients: recipients.val(),
 	};
 

@@ -45,10 +45,10 @@
                                     <tr id="ROW_<?= $key ?>">
                                         <td><?= $val ?></td>
                                         <td>
-                                            <input type="checkbox" name="has_mail_notif" id="HAS_<?= $key ?>" data-bootstrap-switch <?= $has_mail_notif ? 'checked' : '' ?> <?= $data ?>>
+                                            <input type="checkbox" name="has_mail_notif" value="<?= $has_mail_notif ?>" data-bootstrap-switch <?= $has_mail_notif ? 'checked' : '' ?> <?= $data ?>>
                                         </td>
                                         <td>
-                                            <input type="checkbox" name="is_mail_notif_enabled" id="IS_<?= $key ?>" <?= $is_enabled ? 'checked' : '' ?> data-bootstrap-switch <?= $data2 ?>>
+                                            <input type="checkbox" name="is_mail_notif_enabled" value="<?= $is_enabled ?>" <?= $is_enabled ? 'checked' : '' ?> data-bootstrap-switch <?= $data2 ?>>
                                         </td>
                                         <td>
                                             <textarea class="form-control" name="recipients" rows="2" placeholder="Enter CC Recipients"><?= $cc_recipients ?? ''; ?></textarea>
