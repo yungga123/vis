@@ -7,6 +7,7 @@ use App\Models\AccountModel;
 use App\Models\EmployeeModel;
 use App\Traits\AccountMailTrait;
 use App\Traits\FileUploadTrait;
+use CodeIgniter\Events\Events;
 
 class AccountProfile extends BaseController
 {
@@ -84,9 +85,9 @@ class AccountProfile extends BaseController
             $data,
             function($data) {
                 if (! $this->validate($this->_rules())) {
+                    $data['errors']     = $this->validator->getErrors();
                     $data['status']     = res_lang('status.error');
-                    $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = res_lang('error.validation');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     $model          = new AccountModel();
                     $username       = session('username');
@@ -117,9 +118,13 @@ class AccountProfile extends BaseController
     
                         if (! empty($new_password)) {
                             // Send mail to employee
-                            $employee_id        = $this->request->getVar('employee_id');
-                            $mailMsg            = $this->sendMailAccountNotif($employee_id, $this->request->getVar(), true);
-                            $data['message']    = $data['message'] . $mailMsg;
+                            $details = [
+                                'employee_id'   => $this->request->getVar('employee_id'),
+                                'username'      => $username,
+                                'password'      => $new_password,
+                                'action'        => 'Password Changed',
+                            ];
+                            Events::trigger('send_mail_notif_account', $details);
                         }
                     }
                 }
@@ -128,7 +133,7 @@ class AccountProfile extends BaseController
             }
         );
 
-        return $response; 
+        return $response;
     }
 
     /**
@@ -228,7 +233,7 @@ class AccountProfile extends BaseController
             contact_number,
             email_address
         ';
-        $record         = $model->getEmployeeDetails($employee_id, $fields); 
+        $record         = $model->getEmployeeInView($employee_id, $fields); 
 
         return $record;
     }

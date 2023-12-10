@@ -293,7 +293,9 @@ if (! function_exists('get_employees'))
 		$model 		= new \App\Models\EmployeeModel();
         $builder 	= $model->select($columns);
 
-		$builder->where('employee_id !=', DEVELOPER_ACCOUNT);
+		if (! is_developer()) 
+			$builder->where('employee_id !=', DEVELOPER_ACCOUNT);
+		
 		$builder->orderBy('employee_name ASC');
 
 		if ($id) {

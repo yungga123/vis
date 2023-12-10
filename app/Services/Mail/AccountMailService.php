@@ -2,6 +2,8 @@
 
 namespace App\Services\Mail;
 
+use App\Models\AccountModel;
+
 class AccountMailService extends BaseMailService implements MailServiceInterface
 {
     /**
@@ -14,29 +16,34 @@ class AccountMailService extends BaseMailService implements MailServiceInterface
      */
     public function send(array $data, ?string $module_code = null): void
     {
-        $module_code = $module_code ? $module_code : get_module_codes('schedules');
+        $module_code = $module_code ? $module_code : get_module_codes('accounts');
         if (! $this->isMailNotifEnabled($module_code)) return;
 
-        $module     = 'Schedule';
-        $title      = $module .' Created';
-        $type       = get_schedule_type($data['type']);
+        $model      = new AccountModel();
+        $columns    = 'employee_name, email_address';
+        $record     = $model->getAccountsView($data['employee_id'], null, $columns);
+
+        $module     = 'Account';
+        $title      = $module .' '. $data['action'];
         $info       = [
             'module'    => $module,
             'title'     => $title,
             'details'   => [
-                'Schedule #'        => $data['id'],
-                'Job Order #'       => empty($data['job_order_id']) ? 'N/A' : $data['job_order_id'],
-                'Title'             => $data['title'],
-                'Description'       => $data['description'],
-                'Schedule Type'     => ucwords($type['text']),
-                'Start'             => format_datetime($data['start']),
-                'End'               => format_datetime($data['end']),
-                'Created By'        => $data['created_by'],
-                'Created At'        => format_datetime($data['created_at']),
+                'Account Name'  => $record['employee_name'],
+                'Username'      => $data['username'],
+                'Password'      => $data['password'],
+                'Link'          => base_url(),
+                $data['action'].' By'    => session('name'),
+                $data['action'].' At'    => format_datetime(current_datetime()),
             ],
         ];
 
+
         // Send the mail
-        $this->sendMail($info, $title, $module_code);
+        $options = [
+            'send_to'   => $record['email_address'],
+            'send_name' => $record['employee_name'],
+        ];
+        $this->sendMail($info, $title, $module_code, $options);
     }
 }

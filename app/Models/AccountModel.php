@@ -14,7 +14,7 @@ class AccountModel extends Model
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'employee_id',
@@ -120,6 +120,55 @@ class AccountModel extends Model
         }
 
         return $builder->findAll();
+    }
+
+    /**
+     * Get accounts via view - either by employee_id or username
+     */
+    public function getAccountsView($id = null, $username = null, $columns = '') 
+    {
+        $columns = $columns ? $columns : '
+            id, 
+            employee_id, 
+            employee_name, 
+            username, 
+            access_level, 
+            profile_img,
+            created_by_name,
+            created_at
+        ';
+        $builder = $this->db->table($this->view)->select($columns);
+
+        if ($username) {
+            if (
+                is_array($username) ||
+                (is_string($username) && strpos(',', $username) !== false)
+            ) {
+                $username = is_array($username) ? $username : explode(',', $username);
+                $builder->whereIn('username', clean_param($username));
+            } else
+                $builder->where('username', $username);
+        }
+
+        if ($id) {
+            if (is_array($id)) {
+                $builder->whereIn('employee_id', $id);
+                return $builder->get()->getResultArray();
+            }
+           
+            if (strpos(',', $id) !== false) {
+                $builder->whereIn('employee_id', clean_param(explode(',', $id)));
+                return $builder->get()->getResultArray();
+            } 
+            
+            return $builder->where('employee_id', $id)->get()->getRowArray();
+
+        } else {
+            if (is_string($username) && strpos(',', $username) === false)
+                return $builder->get()->getRowArray();
+        }
+
+        return $builder->get()->getResultArray();
     }
 
     // For dataTables
