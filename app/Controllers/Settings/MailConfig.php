@@ -104,6 +104,8 @@ class MailConfig extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, [ACTION_ADD, ACTION_EDIT], true);
+
                 $inputs         = $this->request->getVar();
                 $model          = $this->_model;
                 $param          = 'config';

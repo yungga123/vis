@@ -12,19 +12,25 @@ $(document).ready(function () {
 		"switchChange.bootstrapSwitch",
 		function (event, state) {
 			const value = state ? "YES" : "NO";
+			const currValue = $(this).val();
 			const mail_config_id = event.target.dataset.mail_config_id;
 			const data = {
 				mail_config_id: mail_config_id,
 				is_enable: value,
 			};
 
-			$.post(router.mail_config.save, data)
-				.then((res) => {
-					const message = res.errors ?? res.message;
+			if (currValue !== value) {
+				$.post(router.mail_config.save, data)
+					.then((res) => {
+						const message = res.errors ?? res.message;
 
-					if (!isEmpty(res.message)) notifMsg(message, res.status);
-				})
-				.catch((err) => catchErrMsg(err));
+						if (!isEmpty(res.message)) notifMsg(message, res.status);
+						if (res.status === STATUS.ERROR) {
+							$(this).bootstrapSwitch("state", !state);
+						} else $(this).val(value);
+					})
+					.catch((err) => catchErrMsg(err));
+			}
 		}
 	);
 
@@ -114,6 +120,7 @@ function save(module_code, has_mail, is_enabled) {
 
 	if (hasMailElem.length) has_mail = hasMailElem.is(":checked");
 	if (isEnabledElem.length) is_enabled = isEnabledElem.is(":checked");
+
 	recipAlertElem.text("");
 
 	const data = {
