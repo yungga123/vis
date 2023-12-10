@@ -142,12 +142,12 @@ if (! function_exists('is_array_multi_dimen'))
 	}
 }
 
-if (! function_exists('clean_input'))
+if (! function_exists('clean_param'))
 {
     /**
      * Clean input using trim default function
      */
-	function clean_input(string|array $input, $func_name = ''): string|array
+	function clean_param(string|array $input, $func_name = ''): string|array
 	{
         if (is_array($input)) {
             $arr = [];
@@ -405,5 +405,21 @@ if (! function_exists('get_array_duplicate'))
         $duplicates = array_diff_assoc($array, $unique);
 
         return $duplicates;
+	}
+}
+
+if (! function_exists('has_internet_connection'))
+{
+    /**
+     * Check if server has internet connection
+     */
+	function has_internet_connection(): bool
+	{
+        $url = "http://www.google.com"; // Use a reliable and accessible URL
+
+        $headers = @get_headers($url);
+
+        // Check if there is a response and the response code is 200 OK
+        return $headers && strpos($headers[0], '200') !== false;
 	}
 }

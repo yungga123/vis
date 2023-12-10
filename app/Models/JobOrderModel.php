@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
-use App\Services\Mail\AdminMailService;
 
 class JobOrderModel extends Model
 {
@@ -211,11 +211,9 @@ class JobOrderModel extends Model
         if ($data['result']) {
             $id             = $data['id'];
             $job_order      = $this->_getJODetails($id);
-            $module_code    = get_module_codes('job_orders');
 
             // Send mail notification
-            $service = new AdminMailService();
-            $service->sendJOMailNotif($job_order, $module_code);
+            Events::trigger('send_mail_notif_job_order', $job_order);
         }
         
         return $data;
@@ -249,9 +247,6 @@ class JobOrderModel extends Model
                             'end'           => $scheduleEnd,
                             'created_by'    => session('username'),
                         ]);
-                    
-                    // Initialize service
-                    $service    = new AdminMailService();
 
                     // If schedule successfully created, then send mail
                     if ($schedInsert && $schedId = $scheduleModel->insertID()) {
@@ -269,13 +264,11 @@ class JobOrderModel extends Model
                         ];
     
                         // Send Schedule mail notification
-                        $module_code = get_module_codes('schedules');
-                        $service->sendScheduleMailNotif($schedule, $module_code);
+                        Events::trigger('send_mail_notif_schedule', $schedule);
                     }
     
                     // Send JO mail notification
-                    $module_code = get_module_codes('job_orders');
-                    $service->sendJOMailNotif($job_order, $module_code);
+                    Events::trigger('send_mail_notif_job_order', $job_order);
                 }
             }
         } catch (\Exception $e) {

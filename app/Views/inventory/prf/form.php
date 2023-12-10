@@ -49,7 +49,7 @@
                                     <thead>
                                         <tr>
                                             <th width="55%">Item Details</th>
-                                            <th width="15%">Item Unit</th>
+                                            <th width="15%" class="text-center">Item Unit</th>
                                             <th width="20%">Quantity Out</th>
                                             <th width="5%">Button</th>
                                         </tr>

@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\InventoryTrait;
 use App\Traits\FilterParamTrait;
 use App\Traits\HRTrait;
-use App\Services\Mail\PurchasingMailService;
 
 class RequestPurchaseFormModel extends Model
 {
@@ -123,8 +123,7 @@ class RequestPurchaseFormModel extends Model
             $record     = $builder->first();
 
             // Send mail notification
-            $service = new PurchasingMailService();
-            $service->sendRpfMailNotif($record);
+            Events::trigger('send_mail_notif_rpf', $record);
         }
         
         return $data;

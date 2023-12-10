@@ -122,7 +122,7 @@ class MailConfig extends BaseController
                         'updated_by'            => session('username'),
                     ];
                     if (! empty($_recipients)) {
-                        $recipients = ['cc_recipients' => clean_input(explode(',', $_recipients))];
+                        $recipients = ['cc_recipients' => clean_param(explode(',', $_recipients))];
                         $validate   = $this->validateData(
                             $recipients,
                             ['cc_recipients.*' => 'permit_empty|valid_email|max_length[500]']

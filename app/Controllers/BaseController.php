@@ -204,7 +204,7 @@ abstract class BaseController extends Controller
         // If has access in the module, then check 
         // if user has the specific permission/action
         // Ex. User has access to Dispatch but don't have permission for printing
-        $action     = clean_input($action, 'strtoupper');
+        $action     = clean_param($action, 'strtoupper');
         $action     = is_string($action) ? [$action] : $action;
         $actions    = $this->getSpecificActionsByModule($module);
         // Add the default PENDING

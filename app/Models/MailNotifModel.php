@@ -100,4 +100,21 @@ class MailNotifModel extends Model
         $result = $this->getMailNotifs($module_code);
         return !empty($result) && $result['is_mail_notif_enabled'] == 1;
     }
+
+    /**
+     * Check module if has mail notif and is enabled via module_code
+     * 
+     * @param string $module_code
+     * 
+     * @return array
+     */
+    public function getCCRecipients($module_code, $is_array = false)
+    {
+        $column = 'cc_recipients';
+        $result = $this->getMailNotifs($module_code, $column);
+        
+        return empty($result) 
+            ? [] 
+            : ($is_array ? explode(',', $result[$column]) : $result[$column]);
+    }
 }

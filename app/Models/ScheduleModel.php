@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\HRTrait;
-use App\Services\Mail\AdminMailService;
 
 class ScheduleModel extends Model
 {
@@ -74,7 +74,7 @@ class ScheduleModel extends Model
     protected function mailNotif(array $data)
     {
         if ($data['result']) {
-            $record = [
+            $schedule = [
                 'id'            => $data['id'],
                 'job_order_id'  => $data['data']['job_order_id'] ?? '',
                 'title'         => $data['data']['title'],
@@ -87,8 +87,7 @@ class ScheduleModel extends Model
             ];
 
             // Send mail notification
-            $service = new AdminMailService();
-            $service->sendScheduleMailNotif($record);
+            Events::trigger('send_mail_notif_schedule', $schedule);
         }
         
         return $data;

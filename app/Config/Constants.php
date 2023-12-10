@@ -180,7 +180,7 @@ define('ACTION_PRINT', 'PRINT');
 define('ACTION_UPLOAD', 'UPLOAD');
 
 // Roles - No need to add new roles here
-// Adding new roles will be on the dashboard
+// Deprecated - Adding new roles will be on the dashboard
 define('ROLES', [
     'ADMIN'                 => 'Administrator',
     'EXECUTIVE'             => 'Executive',

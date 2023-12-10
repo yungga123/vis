@@ -5,7 +5,7 @@ namespace App\Services\Mail;
 use App\Models\MailNotifModel;
 use App\Traits\MailTrait;
 
-class BaseService
+class BaseMailService
 {
     /* Declare trait here to use */
     use MailTrait;
@@ -18,16 +18,18 @@ class BaseService
      * 
      * @return  void
      */
-    public function sendMail($info, $title)
+    public function sendMail($info, $title, $module_code = null)
     {
         try {
+            $model      = new MailNotifModel();
             $sendTo     = session('email_address');
             $sendName   = session('name');
             $subject    = 'User Notification - ' . $title;
             $body       = $this->mailTemplate($info);
+            $cc         = $module_code ? clean_param($model->getCCRecipients($module_code, true)) : [];
     
             // Send the mail via SMTP
-            $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body);
+            $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body, $cc);
             $this->logInfo($mail, $title, $info, __METHOD__);
         } catch (\Exception $e) {
             throw $e;

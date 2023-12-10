@@ -2,17 +2,19 @@
 
 namespace App\Services\Mail;
 
-class PurchasingMailService extends BaseService
+class RpfMailService extends BaseMailService implements MailServiceInterface
 {
     /**
-     * Send the RPF mail notification
+     * Send the mail notification
      *
      * @param   array $data
+     * @param   string|null $module_code
+     * 
      * @return  void
      */
-    public function sendRpfMailNotif($data, $module_code = null)
+    public function send(array $data, ?string $module_code = null): void
     {
-        $module_code = $module_code ? $module_code : get_module_codes('task_lead');
+        $module_code = $module_code ? $module_code : get_module_codes('purchasing_rpf');
         if (! $this->isMailNotifEnabled($module_code)) return;
 
         $module     = 'Request to Purchase Form';
@@ -33,6 +35,6 @@ class PurchasingMailService extends BaseService
         ];
 
         // Send the mail
-        $this->sendMail($info, $title);
+        $this->sendMail($info, $title, $module_code);
     }
 }
