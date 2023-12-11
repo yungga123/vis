@@ -201,13 +201,14 @@ if (! function_exists('dt_sql_concat_client_address'))
     {
         $model  = new \App\Models\CustomerModel();
         $alias  = empty($alias) ? $model->table : $alias;
+        $as     = empty($as) ? '' : 'AS '. $as;
         return "
             CONCAT(
                 IF({$alias}.province = '' || {$alias}.province IS NULL, '', CONCAT({$alias}.province, ', ')),
                 IF({$alias}.city = '' || {$alias}.city IS NULL, '', CONCAT({$alias}.city, ', ')),
                 IF({$alias}.barangay = '' || {$alias}.barangay IS NULL, '', CONCAT({$alias}.barangay, ', ')),
                 IF({$alias}.subdivision = '', '', {$alias}.subdivision)
-            ) AS {$as}
+            ) $as
         ";
     }
 }
