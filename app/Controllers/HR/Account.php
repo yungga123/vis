@@ -139,7 +139,7 @@ class Account extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $this->checkRoleActionPermissions($this->_module_code, ACTION_ADD, true);
+                // $this->checkRoleActionPermissions($this->_module_code, ACTION_ADD, true);
 
                 $password       = $this->request->getVar('password');
                 $employee_id    = $this->request->getVar('employee_id');

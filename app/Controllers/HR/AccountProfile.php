@@ -151,9 +151,9 @@ class AccountProfile extends BaseController
                 $rules      = $this->validationFileRules($name, $allowed, 5, 'Profile Image');
             
                 if (! $this->validate($rules)) {
+                    $data['errors']     = $this->validator->getErrors();
                     $data['status']     = res_lang('status.error');
-                    $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = res_lang('error.validation');
+                    $data['message']    = res_lang('error.validation');
 
                     return $data;
                 }
@@ -228,7 +228,7 @@ class AccountProfile extends BaseController
             contact_number,
             email_address
         ';
-        $record         = $model->getEmployeeDetails($employee_id, $fields); 
+        $record         = $model->getEmployeeInView($employee_id, $fields); 
 
         return $record;
     }

@@ -47,5 +47,6 @@
 	</div>
 </div>
 <?= $this->include('hr/employee/form'); ?>
+<?= $this->include('hr/employee/change'); ?>
 <?= $this->include('templates/loading'); ?>
 <?= $this->endSection() ;?>

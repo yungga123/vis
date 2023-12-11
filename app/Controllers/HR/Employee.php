@@ -187,7 +187,8 @@ class Employee extends BaseController
             function($data) {
                 $id             = $this->request->getVar('id');
                 $fields         = $this->_model->allowedFields;    
-                $data['data']   = $this->_model->select($fields)->find($id);
+                $record         = $this->_model->select($fields)->find($id);
+                $data['data']   = $record;
 
                 return $data;
             },
@@ -218,6 +219,71 @@ class Employee extends BaseController
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 }
+
+                return $data;
+            }
+        );
+
+        return $response;
+    }
+
+    /**
+     * Changing employment status of employee
+     *
+     * @return json
+     */
+    public function change() 
+    {
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Changes')
+        ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_CHANGE, true);
+
+                $id     = $this->request->getVar('id');
+                $status = $this->request->getVar('employment_status');
+                $inputs = [
+                    'employment_status' => $status,
+                    'date_resigned'     => $this->request->getVar('date_resigned'),
+                ];
+                $rules          = [
+                    'employment_status' => [
+                        'label' => 'employment status',
+                        'rules' => 'required'
+                    ],
+                    'date_resigned'     => [
+                        'label' => 'date resigned',
+                        'rules' => ($status === $this->_model->resigned) ? 'required' : 'permit_empty'
+                    ],
+                ];
+
+                if (! $this->validateData($inputs, $rules)) {
+                    $data['errors']     = $this->validator->getErrors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+
+                    return $data;
+                }
+
+                // Disable the model validation
+                $this->_model->protect(false);
+                $this->_model->cleanRules(true);
+                $this->_model->skipValidation(true);
+
+                // Save changes
+                if (! $this->_model->update($id, $inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                }
+
+                // Enable again the model validation
+                $this->_model->protect(true);
+                $this->_model->cleanRules(true);
+                $this->_model->skipValidation(false);
 
                 return $data;
             }

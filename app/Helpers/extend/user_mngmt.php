@@ -282,18 +282,25 @@ if (! function_exists('get_employees'))
 {
 	/**
 	 * Get employees - default columns (id, name) only
+	 * 
 	 * @param int|null $id [optional]
 	 * @param string|array $columns [optional]
+	 * @param bool $with_resign [optional]
 	 * 
 	 * @return array
 	 */
-	function get_employees(int $id = null, string|array $columns = []): array 
+	function get_employees(int $id = null, string|array $columns = [], $without_resign = false): array 
 	{
 		$columns 	= !empty($columns) ? $columns : "employee_id, CONCAT(firstname,' ',lastname) AS employee_name";
 		$model 		= new \App\Models\EmployeeModel();
         $builder 	= $model->select($columns);
 
-		$builder->where('employee_id !=', DEVELOPER_ACCOUNT);
+		if (! is_developer()) $builder->where('employee_id !=', DEVELOPER_ACCOUNT);
+
+		// Whether to not include resigned employees
+		// Default - resigned are included
+		if ($without_resign) $model->withOutResigned($builder);
+		
 		$builder->orderBy('employee_name ASC');
 
 		if ($id) {

@@ -197,16 +197,17 @@ if (! function_exists('dt_sql_concat_client_address'))
     /**
      * DataTable SQL client address concatination
      */
-	function dt_sql_concat_client_address($alias = ''): string
+	function dt_sql_concat_client_address($alias = '', $as = 'address'): string
     {
-        $alias = empty($alias) ? '' : $alias .'.';
+        $model  = new \App\Models\CustomerModel();
+        $alias  = empty($alias) ? $model->table : $alias;
         return "
             CONCAT(
-                IF({$alias}province = '' || {$alias}province IS NULL, '', CONCAT(province, ', ')),
-                IF({$alias}city = '' || {$alias}city IS NULL, '', CONCAT({$alias}city, ', ')),
-                IF({$alias}barangay = '' || {$alias}barangay IS NULL, '', CONCAT({$alias}barangay, ', ')),
-                IF({$alias}subdivision = '', '', {$alias}subdivision)
-            ) AS address
+                IF({$alias}.province = '' || {$alias}.province IS NULL, '', CONCAT({$alias}.province, ', ')),
+                IF({$alias}.city = '' || {$alias}.city IS NULL, '', CONCAT({$alias}.city, ', ')),
+                IF({$alias}.barangay = '' || {$alias}.barangay IS NULL, '', CONCAT({$alias}.barangay, ', ')),
+                IF({$alias}.subdivision = '', '', {$alias}.subdivision)
+            ) AS {$as}
         ";
     }
 }

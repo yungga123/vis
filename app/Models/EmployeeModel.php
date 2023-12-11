@@ -224,13 +224,15 @@ class EmployeeModel extends Model
     protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
+    protected $afterUpdate    = ['deleteEmployeeAccounts'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = ['checkRecordIfOneself'];
-    protected $afterDelete    = [];
+    protected $afterDelete    = ['deleteEmployeeAccounts'];
 
     /* Custom variables */
+    protected $resigned       = 'Resigned';
+
     // For DataTable columns
     protected $dtColumns      = [
         'employee_id',
@@ -302,32 +304,71 @@ class EmployeeModel extends Model
         return $data;
     }
 
-    // Filter for not including resigned employees
-    public function withOutResigned($builder) 
+    // If employee record is deleted or marked as resigned
+    // soft delete their corresponding account(s)
+    protected function deleteEmployeeAccounts(array $data)
     {
-        $builder->where("date_resigned = '' OR IS NULL");
+        log_msg($data);
+        if ($data['result']) {
+            $id     = $data['id'];
+            $status = $data['data']['employment_status'] ?? null;
+
+            if ($status || isset($data['purge'])) {
+                $record = $this->select('employee_id')->find($data['id']);
+                log_msg($record);
+
+                // Delete corresponding accounts - if exist
+                // $accountModel = new AccountModel();
+                // $accountModel->where('employee_id', $record[0]['employee_id'])->delete();
+            }
+        }
+
+        return $data;
+    }
+
+
+    // Filter for not including resigned employees
+    public function withOutResigned($builder = null) 
+    {
+        ($builder ?? $this)
+            ->where("date_resigned = '' OR date_resigned IS NULL")
+            ->where('employment_status !=', $this->resigned);
+            
         return $this;
     }
 
     // Check user trying to delete own record
-    public function checkRecordIfOneself($data) 
+    public function checkRecordIfOneself(array $data) 
     {
         $id     = $data['id'];
-        $result = $this->getEmployees($id, session('employee_id'), 'employee_id');
+        $result = $this->getEmployees($id, null, 'employee_id');
 
-        if (! empty($result)) {
+        if ($result[0]['employee_id'] === session('employee_id'))  {
             throw new \Exception("You can't delete your own record!", 2);
         }
     }
 
     // Get employees
-    public function getEmployees($id = null, $employee_id = null, $columns = null) 
+    public function getEmployees($id = null, $employee_id = null, $columns = null, $without_resign = false) 
     {
         $builder = $this->select($columns ?? $this->allowedFields);
         $builder->where('deleted_at IS NULL');
 
-        if (is_int($id)) return $builder->find($id);
-        if ($employee_id) return $builder->where('employee_id', $employee_id)->find($id);
+		// Whether to not include resigned employees
+		// Default - resigned are included
+		if ($without_resign) $this->withOutResigned($builder);
+
+        if ($id) {            
+            return (! is_array($id))
+                ? $builder->where('id', $id)->first()
+                : $builder->find($id);
+        }
+
+        if ($employee_id) {
+            return is_array($employee_id)
+                ? $builder->whereIn('employee_id', $employee_id)->find()
+                : $builder->where('employee_id', $employee_id)->first();
+        }
 
         return $builder->findAll();
     }
@@ -360,6 +401,20 @@ class EmployeeModel extends Model
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
             $buttons = dt_button_actions($row, $id, $permissions);
+
+            if (check_permissions($permissions, 'CHANGE')) {
+                // Change Employment Status
+                $onclick = <<<EOF
+                    onclick="change({$row[$id]}, '{$row['employee_id']}', '{$row['employment_status']}')" title="Change employment status"
+                EOF;
+                $buttons .= dt_button_html([
+                    'text'      => '',
+                    'button'    => 'btn-success',
+                    'icon'      => 'fas fa-random',
+                    'condition' => $onclick,
+                ]);
+            }
+
             return $buttons;
         };
         

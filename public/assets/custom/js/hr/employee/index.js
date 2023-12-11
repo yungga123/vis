@@ -75,6 +75,26 @@ $(document).ready(function () {
 
 		showAlertInForm(elems, message, res.status);
 	});
+
+	/* Form for changing employment status */
+	formSubmit($("#employment_status_form"), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+
+		if (res.status !== STATUS.ERROR) {
+			self[0].reset();
+			refreshDataTable($("#" + table));
+			$(`#employment_status_modal`).modal("hide");
+		}
+
+		notifMsgSwal(res.status, message, res.status);
+	});
+
+	$("#employment_status_modal #_employment_status").on("change", function () {
+		$("#label_date_resigned").removeClass("required");
+
+		if ($(this).val() === "Resigned")
+			$("#label_date_resigned").addClass("required");
+	});
 });
 
 /* Get employee details */
@@ -122,7 +142,7 @@ function remove(id) {
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					refreshDataTable($("#" + table));
+					if (res.status === STATUS.SUCCESS) refreshDataTable($("#" + table));
 					notifMsgSwal(res.status, message, res.status);
 				})
 				.catch((err) => catchErrMsg(err));
@@ -131,4 +151,16 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+/* Change employment status */
+function change(id, employee_id, status) {
+	const modal = "employment_status_modal";
+	$(`#${modal}`).modal("show");
+	console.log(...arguments);
+
+	// Set value
+	$(`#${modal} #_id`).val(id);
+	$(`#${modal} #_employee_id`).val(employee_id);
+	setOptionValue(`#${modal} #_employment_status`, status);
 }
