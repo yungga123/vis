@@ -11,6 +11,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> Once an employee is marked as resigned, their corresponding accounts will be deleted also!
+                    </div>
                     <div class="form-group">
                         <label class="required" for="_employee_id">Employee ID</label>
                         <input type="text" name="employee_id" id="_employee_id" class="form-control" readonly>

@@ -11,9 +11,9 @@
                     </button>
                 </div>
                 <div class="modal-body">                    
-                    <div class="alert alert-info" role="alert">
-                        <strong>Note for Quotation Number:</strong> 
-                        If not empty, initial dropdowns are by 10. Type the number to search if not in the options and then, click to select. Same for the Client.
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> 
+                        If <strong>Quotation Number</strong> is not empty, initial dropdowns are by 10. Type the number to search if not in the options and then, click to select. Same for the <strong>Client</strong>.
                     </div>
                     <div class="form-group">
                         <div class="custom-control custom-checkbox text-center">

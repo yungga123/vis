@@ -4,12 +4,13 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\HRTrait;
+use App\Traits\FilterParamTrait;
 use App\Services\Mail\HRMailService;
 
 class EmployeeModel extends Model
 {
     /* Declare trait here to use */
-    use HRTrait;
+    use HRTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'employees';
@@ -316,7 +317,7 @@ class EmployeeModel extends Model
     }
 
     // Filter for not including resigned employees
-    public function withOutResigned($builder = null) 
+    public function withOutResigned($builder = null)
     {
         ($builder ?? $this)
             ->where("date_resigned = '' OR date_resigned IS NULL")
@@ -326,7 +327,7 @@ class EmployeeModel extends Model
     }
 
     // If employee record is deleted or marked as resigned
-    // soft delete their corresponding account(s)
+    // delete their corresponding account(s)
     public function deleteEmployeeAccounts($employee_id)
     {
         if ($employee_id) {
@@ -383,14 +384,22 @@ class EmployeeModel extends Model
     }
 
     // For dataTables
-    public function noticeTable() 
+    public function noticeTable($request) 
     {
         $builder = $this->db->table($this->view);
 
-        if (! is_admin()) {
+        if (! is_developer()) {
             $builder->where('employee_id !=', DEVELOPER_ACCOUNT);
         }
 
+        $status = $request['params']['employment_status'] ?? [];
+
+        if (! isset($request['params']) || ! in_array($this->resigned, $status)) {
+            $this->withOutResigned($builder);
+        }
+
+        $this->filterParam($request, $builder, "{$this->view}.employment_status", 'employment_status');
+        
         return $builder;
     }
 
@@ -399,14 +408,15 @@ class EmployeeModel extends Model
     {
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
-            $buttons = dt_button_actions($row, $id, $permissions);
+            $buttons    = dt_button_actions($row, $id, $permissions);
+            $status     = $row['employment_status'];
 
-            if (check_permissions($permissions, 'CHANGE')) {
+            if (check_permissions($permissions, 'CHANGE') && $status !== $this->resigned) {
                 // Change Employment Status
-                $onclick = <<<EOF
-                    onclick="change({$row[$id]}, '{$row['employee_id']}', '{$row['employment_status']}')" title="Change employment status"
+                $onclick    = <<<EOF
+                    onclick="change({$row[$id]}, '{$row['employee_id']}', '{$status}')" title="Change employment status"
                 EOF;
-                $buttons .= dt_button_html([
+                $buttons    .= dt_button_html([
                     'text'      => '',
                     'button'    => 'btn-success',
                     'icon'      => 'fas fa-random',

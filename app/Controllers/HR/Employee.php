@@ -67,8 +67,9 @@ class Employee extends BaseController
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
+        $data['select2']        = true;
         $data['exclude_toastr'] = true;
-        $data['custom_js']      = 'hr/employee/index.js';
+        $data['custom_js']      = ['hr/employee/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'employee' => [
                 'list'      => url_to('employee.list'),
@@ -87,9 +88,11 @@ class Employee extends BaseController
      */
     public function list()
     {
-        $table = new TablesIgniter();
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
 
-        $table->setTable($this->_model->noticeTable())
+        $table->setTable($builder)
             ->setSearch([
                 'employee_id', 
                 'employee_name', 
@@ -132,6 +135,7 @@ class Employee extends BaseController
             $data,
             function($data) {
                 $action = ACTION_ADD;
+                $inputs = $this->request->getVar();
                 $id     = $this->request->getVar('id');
                 $prev   = $this->request->getVar('prev_employee_id');
                 $curr   = $this->request->getVar('employee_id');
@@ -147,8 +151,12 @@ class Employee extends BaseController
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
     
                 $this->_model->setValidationRules($rules);
+
+                // Remove the csrf
+                unset($inputs['csrf_test_name']);
+                unset($inputs['prev_employee_id']);
     
-                if (! $this->_model->save($this->request->getVar())) {
+                if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation') . ' There are still required fields that need to be addressed. Please double check!';

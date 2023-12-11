@@ -220,7 +220,7 @@ class Customer extends BaseController
                 if (! empty($record['contact_number'])) {
                     $remove         = [' ', '"', "'", '-'];
                     $_orig_connum   = $record['contact_number'];
-                    $contact_number = str_replace($remove, '', clean_input($_orig_connum));
+                    $contact_number = str_replace($remove, '', clean_param($_orig_connum));
                     $explode        = explode('/', $contact_number);
                     $regex_mobile   = '/^(09)\d{9}$/';
                     
@@ -251,7 +251,7 @@ class Customer extends BaseController
                         $record['unformatted_cn']   = $_orig_connum;
                     }
 
-                    $record['source'] = clean_input($record['source']);
+                    $record['source'] = clean_param($record['source']);
                 }
 
                 $data['data']   = $record;

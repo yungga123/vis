@@ -39,6 +39,8 @@ $(document).ready(function () {
 		"date_resigned",
 	];
 
+	select2Init("#filter_status");
+
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
@@ -96,6 +98,24 @@ $(document).ready(function () {
 			$("#label_date_resigned").addClass("required");
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const status = getSelect2Selection("#filter_status");
+	const params = {
+		employment_status: status,
+	};
+	const condition = !isEmpty(status);
+
+	filterParam(
+		router.employee.list,
+		table,
+		params,
+		condition,
+		() => clearSelect2Selection("#filter_status"),
+		reset
+	);
+}
 
 /* Get employee details */
 function edit(id) {
