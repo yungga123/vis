@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/fontawesome-free/css/all.min.css">
     <!-- AdminLTE -->
     <link rel="stylesheet" href="<?=base_url('assets')?>/dist/css/adminlte.min.css">
+    <!-- Load custom css -->
+    <link rel="stylesheet" href="<?=base_url('assets')?>/custom/css/style.css">
 
     <style type="text/css">
 		@media print {
@@ -34,6 +36,15 @@
     <script src="<?= base_url('assets') ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.min.js"></script>
-    <script type="text/javascript">window.addEventListener("load", window.print());</script>
+    <?php if(! isset($disable_auto_print)): ?>
+        <script type="text/javascript">window.addEventListener("load", window.print());</script>
+    <?php endif; ?>
+    <?php
+    if (isset($custom_js) && !empty($custom_js)):
+        $custom_js = is_string($custom_js) ? [$custom_js] : $custom_js;
+        foreach ($custom_js as $val): ?>
+            <script src="<?=base_url('assets/custom/js/' . $val)?>"></script>
+        <?php endforeach;
+    endif; ?>
 </body>
 </html>

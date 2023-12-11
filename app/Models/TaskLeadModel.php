@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-
+use App\Traits\FilterParamTrait;
+use App\Services\Mail\SalesMailService;
 
 class TaskLeadModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'tasklead';
     protected $view             = 'task_lead';
@@ -85,14 +89,90 @@ class TaskLeadModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = [];
     protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
+    protected $afterUpdate    = ['mailNotif'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Custom variable(s)
+    // DataTable default columns     
+    protected $dtColumns      = [
+        'id',
+        'employee_name',
+        'quarter',
+        'status',
+        'status_percent',
+        'customer_name',
+        'customer_type',
+        'branch_name',
+        'contact_number',
+        'project',
+        'project_amount',
+        'quotation_num',
+        'tasklead_type',
+        'forecast_close_date',
+        'min_forecast_date',
+        'max_forecast_date',
+        'status1',
+        'remark_next_step',
+        'close_deal_date',
+        'project_start_date',
+        'project_finish_date',
+        'project_duration',
+        'created_by',
+        'created_at',
+    ];
+    protected $booked         = '100.00%';
+
+    // Set the value for created_by before inserting
+    protected function setCreatedBy(array $data)
+    {
+        $data['data']['created_by'] = session('username');
+        return $data;
+    }
+
+    // Mail notif after record created
+    protected function mailNotif(array $data)
+    {
+        $id = $data['id'];
+
+        if ($data['result']) {
+            $tlViewModel    = new TaskLeadView();
+            $columns        = "
+                id,
+                status,
+                status1 AS hit_or_missed,
+                quotation_num,
+                tasklead_type,
+                employee_name AS manager,
+                customer_name AS client,
+                customer_type AS client_type,
+                branch_name AS client_branch,
+                quarter,
+                project,
+                project_amount,
+                close_deal_date,
+                project_start_date,
+                project_finish_date,
+                project_duration,
+                remark_next_step
+            ";
+            $builder    = $tlViewModel->select($columns);
+            $record     = $builder->where('id', $id)->first();
+
+            if (! empty($record)) {
+                // Send mail notification
+                $service = new SalesMailService();
+                $service->sendTaskleadMailNotif($record);
+            }
+        }
+        
+        return $data;
+    }
 
     public function countRecords($param = null)
     {
@@ -100,55 +180,70 @@ class TaskLeadModel extends Model
 
         if (! $param) return $builder->countAllResults();
         return $builder->where('status', strtolower($param))->countAllResults();
-        
     }
 
-    public function noticeTable()
+    public function dtGetTaskLeads($booked = false)
     {
-        $booked     = '100.00%';
         $builder    = $this->db->table($this->view);
-        $builder->select('*')->where('status !=', $booked);
+        $columns    = $this->dtColumns;
+        $columns    = $booked 
+            ? array_merge($columns, [dt_sql_datetime_format('updated_at') . ' AS updated_at'])
+            : $columns;
+
+        $builder->select($columns);
+
+        if ($booked) $builder->where('status', $this->booked);
+        return $builder;
+    }
+
+    public function noticeTable($request)
+    {
+        $builder    = $this->dtGetTaskLeads();
+        $builder->where('status !=', $this->booked);
 
         if (is_admin() || is_executive() || is_manager()) {
         } else {
             $builder->where('employee_id', session('employee_id'));
         }
 
+        $this->filterParam($request, $builder);
+        $this->filterParam($request, $builder, 'customer_type', 'client_type');
+        $this->filterParam($request, $builder, 'quarter', 'quarter');
+
         return $builder;
     }
 
-    public function noticeTableExistingCustomer(){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_existing_customer');
-        $builder->select('*');
+    public function noticeTableExistingCustomer()
+    {
+        $builder = $this->db->table('task_lead_existing_customer');
         return $builder;
     }
 
 
-    public function noticeTableWhere($employee_id){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead')->where('employee_id',$employee_id);
-        $builder->select('*');
+    public function noticeTableWhere($employee_id)
+    {
+        $builder = $this->db->table('task_lead');
+        $builder->where('employee_id', $employee_id);
         return $builder;
     }
 
-    public function noticeTableWhereExistingCustomer($employee_id){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_existing_customer')->where('employee_id',$employee_id);
-        $builder->select('*');
+    public function noticeTableWhereExistingCustomer($employee_id)
+    {
+        $builder = $this->db->table('task_lead_existing_customer');
+        $builder->where('employee_id', $employee_id);
         return $builder;
     }
 
-    public function noticeTableBooked(){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_booked');
-        $builder->select('*');
+    public function noticeTableBooked()
+    {
+        $builder = $this->db->table('task_lead_booked');
+        $builder;
         return $builder;
     }
-    public function noticeTableBookedWhere($employee_id){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('task_lead_booked')->where('employee_id',$employee_id);
-        $builder->select('*');
+    public function noticeTableBookedWhere($employee_id)
+    {
+        $builder = $this->db->table('task_lead_booked');
+        $builder->where('employee_id', $employee_id);
         return $builder;
     }
 
@@ -166,7 +261,7 @@ class TaskLeadModel extends Model
 
             $edit = '<button class="btn btn-sm btn-warning" title="Cannot edit" disabled><i class="fas fa-edit"></i> </button>';
 
-            if (check_permissions($permissions, 'EDIT') && !is_admin()) {
+            if (check_permissions($permissions, ACTION_EDIT) && !is_admin()) {
                 $edit = <<<EOF
                     <button class="btn btn-sm btn-warning" onclick="edit({$row["$id"]})" data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-edit"></i> </button> 
                 EOF;
@@ -174,7 +269,7 @@ class TaskLeadModel extends Model
 
             $delete = '<button class="btn btn-sm btn-danger" title="Cannot delete" disabled><i class="fas fa-trash"></i> </button>';
 
-            if (check_permissions($permissions, 'DELETE') && !is_admin()) {
+            if (check_permissions($permissions, ACTION_DELETE) && !is_admin()) {
                 $delete = <<<EOF
                     <button class="btn btn-sm btn-danger" onclick="remove({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>  
                 EOF;

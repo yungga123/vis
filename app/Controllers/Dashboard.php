@@ -4,8 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Traits\AdminTrait;
-use App\Models\Accounts as AccountModel;
-use App\Models\EmployeesModel;
+use App\Models\AccountModel;
+use App\Models\EmployeeModel;
 use App\Models\CustomerModel;
 use App\Models\DispatchModel;
 use App\Models\JobOrderModel;
@@ -16,6 +16,7 @@ use App\Models\TaskLeadModel;
 use App\Models\TaskLeadView;
 use App\Models\SuppliersModel;
 use App\Models\RequestPurchaseFormModel;
+use App\Models\PurchaseOrderModel;
 use App\Models\RolesModel;
 use App\Models\PermissionModel;
 
@@ -62,32 +63,37 @@ class Dashboard extends BaseController
             foreach ($modules as $val) {
                 // Not include DASHBOARD module                
                 if ($val !== 'DASHBOARD' && in_array($val, $setup_modules)) {
-                    $module = setup_modules($val);
-                    $menu   = empty($module['menu']) ? $val : $module['menu'];
-                    $count      = '';
-                    $more_info  = '';
+                    $module         = setup_modules($val);
+                    $module_name    = $module['name'];
+                    $menu           = empty($module['menu']) ? $val : $module['menu'];
+                    $count          = '';
+                    $more_info      = '';
 
                     if (isset($record_counts[$val])) {
                         $param = $record_counts[$val];
                         $count = $param;
                         if (is_array($param)) {
-                            $count = $param['count'];
-                            foreach ($param['more_info'] as $key => $value) {
-                                $bg         = isset($value['bg']) ? $value['bg'] : 'info';
-                                $icon       = isset($value['icon']) ? $value['icon'] : $module['icon'];
-                                $text       = ucwords(str_replace('_', ' ', $key));
-                                $text       = isset($value['link']) ? "<a href='{$value['link']}'>{$text}</a>" : $text;
-                                $more_info  .= <<<EOF
-                                    <div class="info-box text-dark">
-                                        <span class="info-box-icon bg-{$bg}">
-                                            <i class="{$icon}"></i>
-                                        </span>
-                                        <div class="info-box-content">
-                                            <span class="info-box-text">{$text}</span>
-                                            <span class="info-box-number mt-0">{$value['count']}</span>
+                            $count          = $param['count'];
+                            $module_name    = isset($param['name']) ? $param['name'] : $module_name;
+
+                            if (isset($param['more_info'])) {
+                                foreach ($param['more_info'] as $key => $value) {
+                                    $bg         = isset($value['bg']) ? $value['bg'] : 'info';
+                                    $icon       = isset($value['icon']) ? $value['icon'] : $module['icon'];
+                                    $text       = ucwords(str_replace('_', ' ', $key));
+                                    $text       = isset($value['link']) ? "<a href='{$value['link']}'>{$text}</a>" : $text;
+                                    $more_info  .= <<<EOF
+                                        <div class="info-box text-dark">
+                                            <span class="info-box-icon bg-{$bg}">
+                                                <i class="{$icon}"></i>
+                                            </span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">{$text}</span>
+                                                <span class="info-box-number mt-0">{$value['count']}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                EOF;
+                                    EOF;
+                                }
                             }
                         }
 
@@ -114,7 +120,7 @@ class Dashboard extends BaseController
                         <div class="small-box bg-success">
                             <div class="inner">
                                 {$count}
-                                <h5>{$module['name']}</h5>
+                                <h5>{$module_name}</h5>
                             </div>
                             <div class="icon"><i class="{$module['icon']}"></i></div>
                             <a $action class="small-box-footer">
@@ -148,6 +154,7 @@ class Dashboard extends BaseController
             foreach ($arr as $key => $val) {
                 $box    = implode('', $val);
                 $title  = isset($modules[$key]) ? get_modules($key) : get_nav_menus($key)['name'];
+                $title  = $key === 'INVENTORY' ? 'Inventory' : $title;
                 $html   .= <<<EOF
                     <div class="col-4">
                         <div class="card">
@@ -175,7 +182,7 @@ class Dashboard extends BaseController
     {
         // Models initialization
         $accountModel       = new AccountModel();
-        $employeeModel      = new EmployeesModel();
+        $employeeModel      = new EmployeeModel();
         $customerModel      = new CustomerModel();
         $dispatchModel      = new DispatchModel();
         $jobOrderModel      = new JobOrderModel();
@@ -184,6 +191,7 @@ class Dashboard extends BaseController
         $prfModel           = new ProjectRequestFormModel();
         $supplierModel      = new SuppliersModel();
         $rpfModel           = new RequestPurchaseFormModel();
+        $poModel            = new PurchaseOrderModel();
         $taskLeadModel      = new TaskLeadModel();
         $taskLeadView       = new TaskLeadView();
         $rolesModel         = new RolesModel();
@@ -226,29 +234,8 @@ class Dashboard extends BaseController
             ],
             'ADMIN_DISPATCH'        => $dispatchCount,
             'ADMIN_JOB_ORDER'       => [
-                'count'     => $jobOrderModel->countRecords(),
-                'more_info' => [
-                    'pending' => [
-                        'icon'  => 'far fa-clock',
-                        'count' => $jobOrderModel->countRecords('pending'),
-                        'bg'    => 'warning',
-                    ],
-                    'accepted' => [
-                        'icon'  => 'fas fa-check-circle',
-                        'count' => $jobOrderModel->countRecords('accepted'),
-                        'bg'    => 'primary',
-                    ],
-                    'filed' => [
-                        'icon'  => 'fas fa-file-import',
-                        'count' => $jobOrderModel->countRecords('filed'),
-                        'bg'    => 'success',
-                    ],
-                    'discarded' => [
-                        'icon'  => 'fas fa-times-circle',
-                        'count' => $jobOrderModel->countRecords('discarded'),
-                        'bg'    => 'secondary',
-                    ],
-                ]
+                'name'  => 'Pending Job Order',
+                'count' => $jobOrderModel->countRecords('pending'),
             ],
             'ADMIN_SCHEDULES'       => [
                 'count'     => $scheduleCount,
@@ -317,6 +304,26 @@ class Dashboard extends BaseController
                         'icon'  => 'fas fa-times-circle',
                         'count' => $rpfModel->countRecords('rejected'),
                         'bg'    => 'secondary',
+                    ],
+                ]
+            ],
+            'PURCHASING_PO'         => [
+                'count'     => $poModel->countRecords(),
+                'more_info' => [
+                    'pending'   => [
+                        'icon'  => 'far fa-clock',
+                        'count' => $poModel->countRecords('pending'),
+                        'bg'    => 'warning',
+                    ],
+                    'approved'  => [
+                        'icon'  => 'fas fa-check-circle',
+                        'count' => $poModel->countRecords('approved'),
+                        'bg'    => 'primary',
+                    ],
+                    'filed'     => [
+                        'icon'  => 'fas fa-file-import',
+                        'count' => $poModel->countRecords('received'),
+                        'bg'    => 'success',
                     ],
                 ]
             ],

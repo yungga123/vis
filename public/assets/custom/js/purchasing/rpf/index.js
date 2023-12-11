@@ -19,6 +19,9 @@ $(document).ready(function () {
 	/* Load dataTable */
 	loadDataTable(table, router.rpf.list, METHOD.POST);
 
+	/* Init filter */
+	select2Init("#filter_status");
+
 	/* Toggle modal */
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -85,11 +88,27 @@ $(document).ready(function () {
 
 		showAlertInForm(["remarks"], message, res.status);
 	});
+
+	showItemsIfRedirectedFromMail();
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	let status = getSelect2Selection("#filter_status");
+
+	filterParam(
+		router.rpf.list,
+		table,
+		{ status: status },
+		!isEmpty(status),
+		() => clearSelect2Selection("#filter_status"),
+		reset
+	);
+}
 
 /* Get rpf items */
 function view(id, status) {
-	$(`#rpf_items_modal .modal-title`).html("RPF Items Detials");
+	$(`#rpf_items_modal .modal-title`).html("RPF Item Details");
 	$("#received_remarks").addClass("d-none");
 	if (!status) {
 		$("#item_note").html("");
@@ -166,8 +185,8 @@ function view(id, status) {
 									${quantity_in}
 								</td>
 								<td>${val.unit || "N/A"}</td>
-								<td>${val.item_sdp}</td>
-								<td>${totalCost}</td>
+								<td>${numberFormat(val.item_sdp)}</td>
+								<td>${numberFormat(totalCost)}</td>
 								<td>${status === "receive" ? received_q : val.received_q || "0.00"}</td>
 								<td>${
 									status === "receive"
@@ -177,8 +196,8 @@ function view(id, status) {
 							</tr>
 						`;
 					});
-					$(`#total_amount`).text(totalAmount);
-					$(`#total_amount_received`).text(totalAmountReceived);
+					$(`#total_amount`).text(numberFormat(totalAmount));
+					$(`#total_amount_received`).text(numberFormat(totalAmountReceived));
 				} else {
 					html =
 						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';

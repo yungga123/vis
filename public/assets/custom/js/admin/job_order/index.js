@@ -16,9 +16,10 @@ $(document).ready(function () {
 	];
 
 	/* Filters */
-	initSelect2Filters("filter_status", $pjOptions.status);
-	initSelect2Filters("filter_qtype", $pjOptions.qtype);
-	initSelect2Filters("filter_worktype", $pjOptions.worktype);
+	select2Init("#filter_status");
+	select2Init("#filter_qtype");
+	select2Init("#filter_is_manual");
+	select2Init("#filter_work_type");
 
 	/* Quotation via ajax data source */
 	select2AjaxInit(
@@ -41,8 +42,10 @@ $(document).ready(function () {
 		$("#job_order_id").val("");
 		$("#orig_qn").addClass("d-none");
 
+		clearSelect2Selection("#select2Quotation");
 		clearSelect2Selection("#customer_id");
-		toggleQuotationFields(is_manual);
+		clearSelect2Selection("#customer_branch_id");
+		toggleQuotationFields(false);
 		clearAlertInForm(elems);
 	});
 
@@ -118,32 +121,33 @@ $(document).ready(function () {
 function filterData(reset = false) {
 	const status = getSelect2Selection("#filter_status");
 	const qtype = getSelect2Selection("#filter_qtype");
-	const worktype = getSelect2Selection("#filter_worktype");
+	const is_manual = getSelect2Selection("#filter_is_manual");
+	const work_type = getSelect2Selection("#filter_work_type");
+	const params = {
+		status: status,
+		type: qtype,
+		work_type: work_type,
+		is_manual: is_manual,
+	};
+	const condition =
+		!isEmpty(status) ||
+		!isEmpty(qtype) ||
+		!isEmpty(is_manual) ||
+		!isEmpty(work_type);
 
-	showLoading();
-	if (!isEmpty(status) || !isEmpty(qtype) || !isEmpty(worktype)) {
-		let options = {
-			params: {
-				status: status,
-				type: qtype,
-				work_type: worktype,
-			},
-		};
-
-		if (reset) {
-			options.params = null;
+	filterParam(
+		router.job_order.list,
+		table,
+		params,
+		condition,
+		() => {
 			clearSelect2Selection("#filter_status");
 			clearSelect2Selection("#filter_qtype");
-			clearSelect2Selection("#filter_worktype");
-		}
-
-		loadDataTable(table, router.job_order.list, METHOD.POST, options, true);
-	} else {
-		closeLoading();
-		if (reset) return;
-		notifMsgSwal(TITLE.WARNING, "Please select at least first!", STATUS.INFO);
-	}
-	closeLoading();
+			clearSelect2Selection("#filter_is_manual");
+			clearSelect2Selection("#filter_work_type");
+		},
+		reset
+	);
 }
 
 /* Load selected tasklead/quotation details */
@@ -175,7 +179,7 @@ function loadQDetails(data) {
 						<td>${data.client}</td>
 						<td>${data.manager}</td>
 						<td>${data.project}</td>
-						<td>${data.project_amount}</td>
+						<td>${numberFormat(data.project_amount)}</td>
 						<td>${data.project_start_date || "N/A"}</td>
 						<td>${data.project_finish_date || "N/A"}</td>
 					</tr>
@@ -196,6 +200,7 @@ function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#job_order_id").val(id);
+	$("#is_manual").prop("checked", false);
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -322,10 +327,10 @@ function status(id, changeTo, status) {
 		$("#status_modal").modal("show");
 		$("#job_order_id_status").val(id);
 		$("#status").val(changeTo);
-
 		$("#status_modal .modal-title").text(
 			`Change Status from ${status.toUpperCase()} to ${changeTo.toUpperCase()}`
 		);
+		$("#is_manual").prop("checked", false);
 
 		// Get other details
 		$.post(router.job_order.fetch, { id: id, status: true })
@@ -339,11 +344,12 @@ function status(id, changeTo, status) {
 				$("#manual_quotation_type").addClass("d-none");
 				$("#manual_quotation_type").attr("disabled", true);
 
-				if (res.data.is_manual !== "0") {
+				if (res.data.is_manual != "0") {
 					$("#manual_quotation_type").val(res.data.type || "project"); // Default Project
 					$("#manual_quotation_type").removeClass("d-none");
 					$("#manual_quotation_type").removeAttr("disabled");
 					$("#quotation_type_wrapper").addClass("d-none");
+					$("#is_manual").prop("checked", true);
 				}
 			})
 			.catch((err) => catchErrMsg(err));
@@ -356,15 +362,6 @@ function toggleStatusFields(changeTo, val) {
 
 	if (val === changeTo) fields.removeClass("d-none");
 	else $("#fields_" + val).addClass("d-none");
-}
-
-/* Initialize select2 filters */
-function initSelect2Filters(id, options) {
-	$("#" + id).select2({
-		data: formatOptionsForSelect2(options),
-		allowClear: true,
-		width: "100%",
-	});
 }
 
 /* Initialize select2 customer branches */

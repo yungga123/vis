@@ -4,10 +4,14 @@ namespace App\Controllers\Settings;
 
 use App\Controllers\BaseController;
 use App\Models\GeneralInfoModel;
-use CodeIgniter\Database\RawSql;
+use App\Traits\GeneralInfoTrait;
+use App\Traits\FileUploadTrait;
 
 class GeneralInfo extends BaseController
 {
+    /* Declare trait here to use */
+    use GeneralInfoTrait, FileUploadTrait;
+
     /**
      * Use to initialize model class
      * @var object
@@ -41,7 +45,7 @@ class GeneralInfo extends BaseController
         $this->_model       = new GeneralInfoModel(); // Current model
         $this->_module_code = MODULE_CODES['general_info']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -56,8 +60,9 @@ class GeneralInfo extends BaseController
         
         $data['title']          = 'Settings | General Info';
         $data['page_title']     = 'Settings | General Info';
-        $data['custom_js']      = 'settings/general_info.js';
         $data['sweetalert2']    = true;
+        $data['dropzone']       = true;
+        $data['custom_js']      = ['settings/general_info.js', 'dropzone.js'];
         $data['routes']         = json_encode([
             'general_info' => [
                 'fetch' => url_to('general_info.fetch'),
@@ -75,8 +80,8 @@ class GeneralInfo extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -113,45 +118,57 @@ class GeneralInfo extends BaseController
     public function upload() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been uploaded successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.uploaded', 'Image')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 $this->_canUserSave();
 
-                $fileName = 'company_logo';
-                $validate = $this->_validationRule($fileName);
+                $fileName   = 'company_logo';
+                $allowed    = implode(',', $this->imgExtensions);
+                $validate = $this->validationFileRules($fileName, $allowed);
 
                 if (! $this->validate($validate)) {
-                    $data['status']     = STATUS_ERROR;
                     $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = 'Validation error!';
-
+                    $data['status']     = res_lang('status.error');
+                    $data ['message']   = res_lang('error.validation');
                     return $data;
                 } 
                 
-                $img = $this->request->getFile($fileName);
+                $img            = $this->request->getFile($fileName);
+                $newName        = $img->getRandomName();
+                $downloadUrl    = base_url($this->initialFilePathLogo . $newName);
+                // Upload image and get formatted file info
+                $file           = $this->uploadFile($fileName, $img, $newName, $this->fullFilePathLogo(), $downloadUrl);
 
-                if ($img->isValid() && ! $img->hasMoved()) {
-                    $newName    = 'company-logo.' . $img->getClientExtension();
+                // The data to save or update
+                $inputs     = [
+                    'key'   => $fileName,
+                    'value' => $newName,
+                    'updated_by' => session('username'),
+                ];
 
-                    // Move uploaded files to public folder
-                    $img->move('../public/uploads/logo/', $newName, true);
+                // Get the current record/ filename
+                $curFilename = $this->getGeneralInfo($fileName);
+            
+                // Save or update file path to database
+                if (! $this->_model->upsert($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
 
-                    // File path to display preview
-                    $filepath   = ('uploads/logo/'. $newName);
-                    $inputs     = [
-                        'key'   => $fileName,
-                        'value' => $filepath,
-                        'updated_by' => session('username'),
-                    ];
-                
-                    // Save file path to database
-                    $this->_model->singleSave($inputs);
+                    return $data;
                 }
 
+                if (! empty($curFilename)) {
+                    // Remove the previous file
+                    $filepath = $this->fullFilePathLogo() . $curFilename;
+                    $this->removeFile($filepath);
+                }
+                
+                $data['files'] = $file;
                 return $data;
             },
             true
@@ -168,46 +185,33 @@ class GeneralInfo extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Data has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $data['data']       = $this->_model->fetchAll();
-                $data['base_url']   = base_url();
+                if ($q = $this->request->getVar('q')) {
+                    $files              = [];
+                    $filename           = $this->getGeneralInfo($q);
+
+                    if (! empty($filename)) {
+                        $nfilename          = strpos($filename, '/') ? explode('/', $filename) : $filename;
+                        $nfilename          = is_array($nfilename) ? array_pop($nfilename) : $nfilename;
+                        $downloadUrl        = base_url($this->initialFilePathLogo . $nfilename);
+                        $files              = $this->getFiles($q, [$nfilename], $this->fullFilePathLogo(), $downloadUrl);
+                    }
+
+                    $data['files']      = $files;
+                } else {
+                    $data['data']       = $this->_model->fetchAll();
+                    $data['base_url']   = base_url();
+                }
                 return $data;
             }
         );
 
         return $response;
-    }
-
-    /**
-     * For uploading files validation rule
-     *
-     * @return array
-     */
-    private function _validationRule($fileName)
-    {
-        $validate = [
-            "{$fileName}" => [
-                'label' => 'Image file',
-                'rules' => [
-                    "uploaded[{$fileName}]",
-                    "ext_in[{$fileName},jpg,jpeg,png,gif]",
-                    "mime_in[{$fileName},image/jpg,image/jpeg,image/gif,image/png]",
-                    "max_size[{$fileName},5120]",
-                ],
-                'errors' => [
-                    'ext_in' => 'File must be image only (jpg,jpeg,png).',
-                    'mime_in' => 'File must be image only (jpg,jpeg,png).',
-                    'max_size' => 'Image file size must be 5mb only.',
-                ]
-            ]
-        ];
-
-        return $validate;
     }
 
     /**
@@ -218,7 +222,7 @@ class GeneralInfo extends BaseController
     private function _canUserSave()
     {
         if (! $this->_can_add) {
-            throw new \Exception("You don't have permission for saving data. Kindly add the <strong>ADD</strong> permission first!", 2);
+            throw new \Exception(res_lang('restrict.permission.change'), 2);
         }
     }
 }

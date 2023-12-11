@@ -61,100 +61,118 @@ $routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 /***************** PHASE 1 *****************/
 /* HUMAN RESOURCE */
 //ACCOUNTS
-$routes->get('accounts','Accounts::index', ['filter' => 'checkauth', 'as' => 'account.home']);
-$routes->group('account', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->post('list', 'Accounts::list', ['as' => 'account.list']);
-    $routes->post('save', 'Accounts::save', ['as' => 'account.save']);
-    $routes->post('edit', 'Accounts::edit', ['as' => 'account.edit']);
-    $routes->post('delete', 'Accounts::delete', ['as' => 'account.delete']);
+$routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'HR\Account::index', ['as' => 'account.home']);
+    $routes->post('list', 'HR\Account::list', ['as' => 'account.list']);
+    $routes->post('save', 'HR\Account::save', ['as' => 'account.save']);
+    $routes->post('fetch', 'HR\Account::fetch', ['as' => 'account.fetch']);
+    $routes->post('delete', 'HR\Account::delete', ['as' => 'account.delete']);
 
     // Account Profile
-    $routes->get('profile','AccountProfile::index', ['as' => 'account.profile']);
-    $routes->post('change-password','AccountProfile::changePassword', ['as' => 'account.change_pass']);
-    $routes->post('change-profile-image','AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
+    $routes->get('profile','HR\AccountProfile::index', ['as' => 'account.profile']);
+    $routes->post('change-password','HR\AccountProfile::changePassword', ['as' => 'account.change_pass']);
+    $routes->post('change-profile-image','HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
 });
 
 //EMPLOYEES
-$routes->get('employees','Employees::index', ['filter' => 'checkauth', 'as' => 'employee.home']);
-$routes->group('employee', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->post('list', 'Employees::list', ['as' => 'employee.list']);
-    $routes->post('save', 'Employees::save', ['as' => 'employee.save']);
-    $routes->post('edit', 'Employees::edit', ['as' => 'employee.edit']);
-    $routes->post('delete', 'Employees::delete', ['as' => 'employee.delete']);
+$routes->group('employees', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'HR\Employee::index', ['as' => 'employee.home']);
+    $routes->post('list', 'HR\Employee::list', ['as' => 'employee.list']);
+    $routes->post('save', 'HR\Employee::save', ['as' => 'employee.save']);
+    $routes->post('fetch', 'HR\Employee::fetch', ['as' => 'employee.fetch']);
+    $routes->post('delete', 'HR\Employee::delete', ['as' => 'employee.delete']);
 });
 /* HUMAN RESOURCE */
 
 /* SALES */
-// CUSTOMERS
+// CUSTOMERS / CLIENTS
 $routes->group('clients', ['filter' => 'checkauth'], static function($routes) {
-    $routes->get('/','Clients\Customers::index', ['as' => 'customer.home']);
-    $routes->post('list','Clients\Customers::list',['as' => 'customer.list']);
-    $routes->post('save','Clients\Customers::save',['as' => 'customer.save']);
-    $routes->post('fetch','Clients\Customers::fetch',['as' => 'customer.fetch']);
-    $routes->post('delete','Clients\Customers::delete',['as' => 'customer.delete']);
+    $routes->get('/','Clients\Customer::index', ['as' => 'customer.home']);
+    $routes->post('list','Clients\Customer::list', ['as' => 'customer.list']);
+    $routes->post('save','Clients\Customer::save', ['as' => 'customer.save']);
+    $routes->post('fetch','Clients\Customer::fetch', ['as' => 'customer.fetch']);
+    $routes->post('delete','Clients\Customer::delete', ['as' => 'customer.delete']);
+
+    // FILES
+    $routes->match(['post', 'get'], 'files/(:num)','Clients\CustomerFile::fetchFiles/$1', ['as' => 'customer.files.fetch']);
+    $routes->group('files', static function ($routes) {
+        $routes->match(['post', 'put'], 'upload','Clients\CustomerFile::upload', ['as' => 'customer.files.upload']);
+        $routes->match(['post', 'get'], 'download/(:any)','Clients\CustomerFile::download/$1', ['as' => 'customer.files.download']);
+        $routes->match(['post', 'put'], 'remove','Clients\CustomerFile::remove', ['as' => 'customer.files.remove']);
+    });
     
     // BRANCH
-    $routes->post('branches','Clients\CustomerBranch::list',['as' => 'customer.branch.list']);
-    $routes->post('branches/save','Clients\CustomerBranch::save',['as' => 'customer.branch.save']);
-    $routes->post('branches/fetch','Clients\CustomerBranch::fetch',['as' => 'customer.branch.fetch']);
-    $routes->post('branches/delete','Clients\CustomerBranch::delete',['as' => 'customer.branch.delete']);
+    $routes->group('branches', static function ($routes) {
+        $routes->post('','Clients\CustomerBranch::list', ['as' => 'customer.branch.list']);
+        $routes->post('save','Clients\CustomerBranch::save', ['as' => 'customer.branch.save']);
+        $routes->post('fetch','Clients\CustomerBranch::fetch', ['as' => 'customer.branch.fetch']);
+        $routes->post('delete','Clients\CustomerBranch::delete', ['as' => 'customer.branch.delete']);
+    });
 });
 
 //Task Lead
 $routes->group('tasklead', ['filter' => 'checkauth'], static function($routes){
-    $routes->get('/','TaskLead::index', ['as' => 'tasklead.home']);
-    $routes->post('list','TaskLead::list',['as' => 'tasklead.list']);
-    $routes->post('save','TaskLead::save',['as' => 'tasklead.save']);
-    $routes->post('edit','TaskLead::edit',['as' => 'tasklead.edit']);
-    $routes->post('delete','TaskLead::delete',['as' => 'tasklead.delete']);
-    $routes->get('fetchcustomervt','TaskLead::getVtCustomer',['as' => 'tasklead.getcustomervt']);
-    $routes->get('fetchcustomerresidential','TaskLead::getResidentialCustomers',['as' => 'tasklead.getcustomerresidential']);
-    $routes->get('fetchcustomervtbranch','TaskLead::getCustomerVtBranch',['as' => 'tasklead.getcustomervtbranch']);
-    $routes->get('booked','TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
-    $routes->post('booked/list','TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
-    $routes->post('booked/project_details','TaskLeadBooked::get_booked_details',['as' => 'tasklead.booked.details']);
-    $routes->post('booked/history_details','TaskLeadBooked::get_tasklead_history',['as' => 'tasklead.booked.history']);
-    $routes->post('booked/upload','TaskLeadBooked::upload',['as' => 'tasklead.booked.upload']);
-    $routes->post('booked/tasklead_files','TaskLeadBooked::getTaskleadFiles',['as' => 'tasklead.booked.files']);
-    $routes->get('booked/download','TaskLeadBooked::downloadFile',['as' => 'tasklead.booked.download']);
-    $routes->get('booked/show/(:num)','TaskLeadBooked::show', ['as' => 'tasklead.booked.show/$1']);
+    $routes->get('/', 'Sales\TaskLead::index', ['as' => 'tasklead.home']);
+    $routes->post('list', 'Sales\TaskLead::list', ['as' => 'tasklead.list']);
+    $routes->post('save', 'Sales\TaskLead::save', ['as' => 'tasklead.save']);
+    $routes->post('edit', 'Sales\TaskLead::edit', ['as' => 'tasklead.edit']);
+    $routes->post('delete', 'Sales\TaskLead::delete', ['as' => 'tasklead.delete']);
+    $routes->get('fetchcustomervt', 'Sales\TaskLead::getVtCustomer', ['as' => 'tasklead.getcustomervt']);
+    $routes->get('fetchcustomerresidential', 'Sales\TaskLead::getResidentialCustomers', ['as' => 'tasklead.getcustomerresidential']);
+    $routes->get('fetchcustomervtbranch', 'Sales\TaskLead::getCustomerVtBranch', ['as' => 'tasklead.getcustomervtbranch']);
+    $routes->get('booked', 'Sales\TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
+    $routes->post('booked/list', 'Sales\TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
+    $routes->post('booked/project_details', 'Sales\TaskLeadBooked::get_booked_details', ['as' => 'tasklead.booked.details']);
+    $routes->post('booked/history_details', 'Sales\TaskLeadBooked::get_tasklead_history', ['as' => 'tasklead.booked.history']);
+    $routes->post('booked/upload', 'Sales\TaskLeadBooked::upload', ['as' => 'tasklead.booked.upload']);
+    $routes->post('booked/tasklead_files', 'Sales\TaskLeadBooked::getTaskleadFiles', ['as' => 'tasklead.booked.files']);
+    $routes->get('booked/download', 'Sales\TaskLeadBooked::downloadFile', ['as' => 'tasklead.booked.download']);
+    $routes->get('booked/show/(:num)', 'Sales\TaskLeadBooked::show/$1', ['as' => 'tasklead.booked.show']);
+
+    // FILES
+    $routes->match(['post', 'get'], 'booked/files/(:num)','Sales\TaskLeadBookedFile::fetchFiles/$1', ['as' => 'tasklead.booked.files.fetch']);
+    $routes->group('booked/files', static function ($routes) {
+        $routes->match(['post', 'put'], 'upload','Sales\TaskLeadBookedFile::upload', ['as' => 'tasklead.booked.files.upload']);
+        $routes->match(['post', 'get'], 'download/(:any)','Sales\TaskLeadBookedFile::download/$1', ['as' => 'tasklead.booked.files.download']);
+        $routes->match(['post', 'put'], 'remove','Sales\TaskLeadBookedFile::remove', ['as' => 'tasklead.booked.files.remove']);
+    });
 });
 
 // Sales Manager
 $routes->group('sales_manager', ['filter' => 'checkauth'], static function($routes){
-    $routes->get('/','SalesManager::index',['as' => 'sales_manager.home']);
-    $routes->post('taskleads','SalesManager::taskleads',['as' => 'sales_manager.taskleads']);
-    $routes->post('tasklead_stats_url','SalesManager::taskleads_stats',['as' => 'sales_manager.taskleads_stats']);
-    $routes->post('tasklead_quarterly_url','SalesManager::taskleads_quarterly',['as' => 'sales_manager.taskleads_quarterly']);
+    $routes->get('/','Sales\SalesManager::index', ['as' => 'sales_manager.home']);
+    $routes->post('taskleads','Sales\SalesManager::taskleads', ['as' => 'sales_manager.taskleads']);
+    $routes->post('tasklead_stats_url','Sales\SalesManager::taskleads_stats', ['as' => 'sales_manager.taskleads_stats']);
+    $routes->post('tasklead_quarterly_url','Sales\SalesManager::taskleads_quarterly', ['as' => 'sales_manager.taskleads_quarterly']);
 });
 
 // Sales Manager Individual
 $routes->group('sales_manager_indv', ['filter' => 'checkauth'], static function($routes){
-    $routes->get('/','SalesManagerIndividual::index',['as' => 'sales_manager_indv.home']);
-    $routes->post('taskleads','SalesManagerIndividual::taskleads',['as' => 'sales_manager_indv.taskleads']);
-    $routes->post('tasklead_stats_url','SalesManagerIndividual::taskleads_stats',['as' => 'sales_manager_indv.taskleads_stats']);
-    $routes->post('tasklead_quarterly_url','SalesManagerIndividual::taskleads_quarterly',['as' => 'sales_manager_indv.taskleads_quarterly']);
+    $routes->get('/','Sales\SalesManagerIndividual::index', ['as' => 'sales_manager_indv.home']);
+    $routes->post('taskleads','Sales\SalesManagerIndividual::taskleads', ['as' => 'sales_manager_indv.taskleads']);
+    $routes->post('tasklead_stats_url','Sales\SalesManagerIndividual::taskleads_stats', ['as' => 'sales_manager_indv.taskleads_stats']);
+    $routes->post('tasklead_quarterly_url','Sales\SalesManagerIndividual::taskleads_quarterly', ['as' => 'sales_manager_indv.taskleads_quarterly']);
 });
 
 // Sales Target
 $routes->group('sales_target', ['filter' => 'checkauth'], static function($routes){
-    $routes->post('save','SalesTarget::save',['as' => 'sales_target.save']);
-    $routes->post('employees','SalesTarget::employees',['as' => 'sales_target.employees']);
-    $routes->post('employee','SalesTarget::employee',['as' => 'sales_target.employee']);
-    $routes->post('list','SalesTarget::list',['as' => 'sales_target.list']);
-    $routes->post('target_sales','SalesTarget::totalSalesTarget',['as' => 'sales_target.target_sales']);
-    $routes->post('indv_sales_target','SalesTarget::indvSalesTarget',['as' => 'sales_target.indv_sales_target']);
-    $routes->post('delete','SalesTarget::delete',['as' => 'sales_target.delete']);
+    $routes->post('save','Sales\SalesTarget::save', ['as' => 'sales_target.save']);
+    $routes->post('employees','Sales\SalesTarget::employees', ['as' => 'sales_target.employees']);
+    $routes->post('employee','Sales\SalesTarget::employee', ['as' => 'sales_target.employee']);
+    $routes->post('list','Sales\SalesTarget::list', ['as' => 'sales_target.list']);
+    $routes->post('target_sales','Sales\SalesTarget::totalSalesTarget', ['as' => 'sales_target.target_sales']);
+    $routes->post('indv_sales_target','Sales\SalesTarget::indvSalesTarget', ['as' => 'sales_target.indv_sales_target']);
+    $routes->post('delete','Sales\SalesTarget::delete', ['as' => 'sales_target.delete']);
 });
 /* SALES */
 
 /* SETTINGS */
 // MAIL CONFIG
 $routes->group('settings/mail', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/','Settings\MailConfig::index', ['as' => 'mail.home']);
-    $routes->post('save','Settings\MailConfig::save', ['as' => 'mail.save']);
-    $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail.config']);
-    $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail.reset']);
+    $routes->get('/','Settings\MailConfig::index', ['as' => 'mail_config.home']);
+    $routes->post('save','Settings\MailConfig::save', ['as' => 'mail_config.save']);
+    $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail_config.config']);
+    $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail_config.reset']);
 });
 
 // PERMISSIONS
@@ -180,7 +198,7 @@ $routes->group('settings/general-info', ['filter' => 'checkauth'], static functi
     $routes->get('/', 'Settings\GeneralInfo::index', ['as' => 'general_info.home']);
     $routes->post('save', 'Settings\GeneralInfo::save', ['as' => 'general_info.save']);
     $routes->post('upload', 'Settings\GeneralInfo::upload', ['as' => 'general_info.upload']);
-    $routes->get('fetch', 'Settings\GeneralInfo::fetch', ['as' => 'general_info.fetch']);
+    $routes->match(['get', 'post'], 'fetch', 'Settings\GeneralInfo::fetch', ['as' => 'general_info.fetch']);
 });
 
 /* Access denied */
@@ -200,18 +218,18 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('delete', 'Inventory\Home::delete', ['as' => 'inventory.delete']);
 
     // Dropdowns
-    $routes->get('dropdowns', 'Inventory\\Dropdown::index', ['as' => 'inventory.dropdown.home']);
-    $routes->get('dropdown/types', 'Inventory\\Dropdown::types', ['as' => 'inventory.dropdown.types']);
-    $routes->post('dropdown/show', 'Inventory\\Dropdown::show', ['as' => 'inventory.dropdown.show']);
-    $routes->post('dropdown/list', 'Inventory\\Dropdown::list', ['as' => 'inventory.dropdown.list']);
-    $routes->post('dropdown/save', 'Inventory\\Dropdown::save', ['as' => 'inventory.dropdown.save']);
-    $routes->post('dropdown/edit', 'Inventory\\Dropdown::edit', ['as' => 'inventory.dropdown.edit']);
-    $routes->post('dropdown/delete', 'Inventory\\Dropdown::delete', ['as' => 'inventory.dropdown.delete']);
+    $routes->get('dropdowns', 'Inventory\Dropdown::index', ['as' => 'inventory.dropdown.home']);
+    $routes->get('dropdown/types', 'Inventory\Dropdown::types', ['as' => 'inventory.dropdown.types']);
+    $routes->post('dropdown/show', 'Inventory\Dropdown::show', ['as' => 'inventory.dropdown.show']);
+    $routes->post('dropdown/list', 'Inventory\Dropdown::list', ['as' => 'inventory.dropdown.list']);
+    $routes->post('dropdown/save', 'Inventory\Dropdown::save', ['as' => 'inventory.dropdown.save']);
+    $routes->post('dropdown/edit', 'Inventory\Dropdown::edit', ['as' => 'inventory.dropdown.edit']);
+    $routes->post('dropdown/delete', 'Inventory\Dropdown::delete', ['as' => 'inventory.dropdown.delete']);
 
     // Logs (Item In and Out)
-    $routes->get('logs', 'InventoryLogs::index', ['as' => 'inventory.logs.home']);
-    $routes->post('logs/save', 'InventoryLogs::save', ['as' => 'inventory.logs.save']);
-    $routes->post('logs/list', 'InventoryLogs::list', ['as' => 'inventory.logs.list']);
+    $routes->get('logs', 'Inventory\Logs::index', ['as' => 'inventory.logs.home']);
+    $routes->post('logs/save', 'Inventory\Logs::save', ['as' => 'inventory.logs.save']);
+    $routes->post('logs/list', 'Inventory\Logs::list', ['as' => 'inventory.logs.list']);
 
     // Common
     $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
@@ -226,7 +244,7 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('prf/fetch', 'Inventory\ProjectRequestForm::fetch', ['as' => 'prf.fetch']);
     $routes->post('prf/delete', 'Inventory\ProjectRequestForm::delete', ['as' => 'prf.delete']);
     $routes->post('prf/change', 'Inventory\ProjectRequestForm::change', ['as' => 'prf.change']);
-    $routes->get('prf/print/(:num)', 'Inventory\ProjectRequestForm::print', ['as' => 'prf.print/$1']);
+    $routes->get('prf/print/(:num)', 'Inventory\ProjectRequestForm::print/$1', ['as' => 'prf.print']);
 });
 /* INVENTORY */
 
@@ -266,7 +284,7 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
     $routes->post('save', 'Admin\Dispatch::save', ['as' => 'dispatch.save']);
     $routes->post('fetch', 'Admin\Dispatch::fetch', ['as' => 'dispatch.fetch']);
     $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'dispatch.delete']);
-    $routes->get('print/(:num)', 'Admin\Dispatch::print', ['as' => 'dispatch.print/$1']);
+    $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'dispatch.print']);
 });
 /* ADMIN */
 
@@ -276,6 +294,7 @@ $routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) 
 $routes->group('purchasing', ['filter' => 'checkauth'], static function ($routes) {
     // Common
     $routes->post('suppliers', 'Purchasing\Common::searchSuppliers', ['as' => 'purchasing.common.suppliers']);
+    $routes->post('rpf', 'Purchasing\Common::searchRpf', ['as' => 'purchasing.common.rpf']);
 });
 
 //SUPPLIERS
@@ -286,10 +305,12 @@ $routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('edit', 'Purchasing\Suppliers::edit', ['as' => 'suppliers.edit']);
     $routes->post('delete', 'Purchasing\Suppliers::delete', ['as' => 'suppliers.delete']);
 
-    $routes->get('brands/list','Purchasing\SupplierBrands::list',['as' => 'suppliers.brand.list']);
-    $routes->post('brands/save','Purchasing\SupplierBrands::save',['as' => 'suppliers.brand.save']);
-    $routes->post('brands/edit','Purchasing\SupplierBrands::edit',['as' => 'suppliers.brand.edit']);
-    $routes->post('brands/delete','Purchasing\SupplierBrands::delete',['as' => 'suppliers.brand.delete']);
+    $routes->group('brands', static function ($routes) {
+        $routes->get('list','Purchasing\SupplierBrands::list', ['as' => 'suppliers.brand.list']);
+        $routes->post('save','Purchasing\SupplierBrands::save', ['as' => 'suppliers.brand.save']);
+        $routes->post('edit','Purchasing\SupplierBrands::edit', ['as' => 'suppliers.brand.edit']);
+        $routes->post('delete','Purchasing\SupplierBrands::delete', ['as' => 'suppliers.brand.delete']);
+    });
 
 });
 
@@ -301,17 +322,31 @@ $routes->group('', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('rpf/fetch', 'Purchasing\RequestPurchaseForm::fetch', ['as' => 'rpf.fetch']);
     $routes->post('rpf/delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'rpf.delete']);
     $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
-    $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print', ['as' => 'rpf.print/$1']);
+    $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print/$1', ['as' => 'rpf.print']);
 });
 
-// GENERATE PO
-$routes->group('', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('generate-po', 'Purchasing\POGenerate::index', ['as' => 'generate-po.home']);
-    //$routes->post('generate-po/list', 'Purchasing\POGenerate::list', ['as' => 'generate-po.list']);
-    //$routes->post('generate-po/save', 'Purchasing\POGenerate::save', ['as' => 'generate-po.save']);
+// PURCHASE ORDER / GENERATE PO
+$routes->group('purchase-orders', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Purchasing\PurchaseOrder::index', ['as' => 'purchase_order.home']);
+    $routes->post('list', 'Purchasing\PurchaseOrder::list', ['as' => 'purchase_order.list']);
+    $routes->post('save', 'Purchasing\PurchaseOrder::save', ['as' => 'purchase_order.save']);
+    $routes->post('fetch', 'Purchasing\PurchaseOrder::fetch', ['as' => 'purchase_order.fetch']);
+    $routes->post('delete', 'Purchasing\PurchaseOrder::delete', ['as' => 'purchase_order.delete']);
+    $routes->post('change', 'Purchasing\PurchaseOrder::change', ['as' => 'purchase_order.change']);
+    $routes->get('print/(:num)', 'Purchasing\PurchaseOrder::print/$1', ['as' => 'purchase_order.print']);
 });
 
 /* PURCHASING */
+
+/* REPORTS */
+$routes->group('reports', ['filter' => 'checkauth'], static function ($routes) {
+    // EXPORT DATA
+    $routes->group('export', static function ($routes) {
+        $routes->get('/', 'Reports\ExportData::index', ['as' => 'export.home']);
+        $routes->post('data', 'Reports\ExportData::export', ['as' => 'export.data']);
+    });
+});
+/* REPORTS */
 
 
 /***************** PHASE 2 *****************/

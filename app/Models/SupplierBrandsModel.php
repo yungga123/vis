@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\HRTrait;
 
 class SupplierBrandsModel extends Model
 {
+    /* Declare trait here to use */
+    use HRTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'supplier_brands';
     protected $view             = 'suppliers_brand_view';
@@ -16,15 +20,15 @@ class SupplierBrandsModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        "supplier_id",
-        "brand_name",
-        "product",
-        "warranty",
-        "sales_person",
-        "sales_contact_number",
-        "technical_support",
-        "technical_contact_number",
-        "remarks",
+        'supplier_id',
+        'brand_name',
+        'product',
+        'warranty',
+        'sales_person',
+        'sales_contact_number',
+        'technical_support',
+        'technical_contact_number',
+        'remarks',
     ];
 
     // Dates
@@ -84,11 +88,41 @@ class SupplierBrandsModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable($suppliers_id)
+    // DataTable default columns 
+    public function dtColumns()
     {
-        $builder    = $this->db->table($this->view);
-        $builder->select('*');
-        $builder->where('supplier_id',$suppliers_id);
+        return "
+            {$this->table}.brand_name,
+            {$this->table}.product,
+            {$this->table}.warranty,
+            {$this->table}.sales_person,
+            {$this->table}.sales_contact_number,
+            {$this->table}.technical_support,
+            {$this->table}.technical_contact_number,
+            {$this->table}.remarks,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
+        ";
+    }
+
+    // Join with suppliers
+    public function joinSupplier($builder = null, $model = null, $type = 'left')
+    {
+        $builder    = $builder ?? $this;
+        $model      = $model ?? new SuppliersModel();
+        $builder->join($model->table, "{$model->table}.id = {$this->table}.supplier_id", $type);
+        return $this;
+    }
+
+    public function noticeTable($supplier_id)
+    {
+        $builder = $this->db->table($this->table);
+        $builder->select("{$this->table}.id, ". $this->dtColumns());
+
+        $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+
+        $builder->where("{$this->table}.supplier_id", $supplier_id);
+        $builder->where("{$this->table}.deleted_at IS NULL");
 
         return $builder;
     }
@@ -99,14 +133,14 @@ class SupplierBrandsModel extends Model
         $closureFun = function($row) use($id, $permissions) {
             $buttons = '';
 
-            if (check_permissions($permissions, 'EDIT')) {
+            if (check_permissions($permissions, ACTION_EDIT)) {
                 // Add Brand
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-warning" onclick="brand_edit({$row[$id]})"  data-toggle="modal" data-target="#modal_add_supplier_brand" title="Edit"><i class="fas fa-edit"></i></button>
                 EOF;
             }
 
-            if (check_permissions($permissions, 'DELETE')) {
+            if (check_permissions($permissions, ACTION_DELETE)) {
                 // Add Brand
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-danger" onclick="brand_remove({$row["id"]})" title="Delete"><i class="fas fa-trash"></i></button>

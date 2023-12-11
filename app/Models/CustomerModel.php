@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\FilterParamTrait;
+use App\Traits\HRTrait;
 
 class CustomerModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait, HRTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'customers';
     protected $accountsView     = 'accounts_view';
@@ -23,6 +28,8 @@ class CustomerModel extends Model
         'subdivision',
         'contact_person',
         'contact_number',
+        'is_cn_formatted',
+        'telephone',
         'email_address',
         'type',
         'forecast',
@@ -66,11 +73,19 @@ class CustomerModel extends Model
             'label' => 'contact person'
         ],
         'contact_number' => [
-            'rules' => 'required|string|min_length[6]|max_length[255]',
+            'rules' => 'permit_empty|max_length[50]',
             'label' => 'contact number'
         ],
+        'mobile_number' => [
+            'rules' => 'required|max_length[50]',
+            'label' => 'mobile number'
+        ],
+        'telephone' => [
+            'rules' => 'permit_empty|max_length[50]',
+            'label' => 'telephone'
+        ],
         'email_address' => [
-            'rules' => 'permit_empty|string|min_length[2]|max_length[255]',
+            'rules' => 'permit_empty|valid_email',
             'label' => 'email address'
         ],
         'type' => [
@@ -113,7 +128,7 @@ class CustomerModel extends Model
     }
 
     // Set the columns
-    protected function columns($dtTable = false)
+    public function columns($dtTable = false)
     {
         $columns = "
             {$this->table}.id,
@@ -124,6 +139,7 @@ class CustomerModel extends Model
             {$this->table}.subdivision,
             {$this->table}.contact_person,
             {$this->table}.contact_number,
+            {$this->table}.telephone,
             {$this->table}.email_address,
             {$this->table}.type,
             {$this->table}.forecast,
@@ -134,10 +150,11 @@ class CustomerModel extends Model
         ";
 
         if ($dtTable) {
-            $addressConcat = $this->customerAddressQueryConcat();
-            $columns .= ",
+            $datetimeFormat = dt_sql_datetime_format();
+            $addressConcat  = dt_sql_concat_client_address();
+            $columns        .= ",
                 {$addressConcat},
-                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y') AS created_at,
+                DATE_FORMAT({$this->table}.created_at, '{$datetimeFormat}') AS created_at,
                 {$this->accountsView}.employee_name AS created_by
             ";
         }
@@ -159,26 +176,14 @@ class CustomerModel extends Model
     {
         $builder = $this->db->table($this->table);
         $builder->select($this->columns(true));
-        $builder->join($this->accountsView, "{$this->table}.created_by = {$this->accountsView}.username", 'left');
+        $this->joinAccountView($builder, "{$this->table}.created_by");
         $builder->where("deleted_at IS NULL");
 
-        if (isset($request['params'])) {
-            $params = $request['params'];
+        $this->filterParam($request, $builder, "{$this->table}.forecast", 'new_client');
+        $this->filterParam($request, $builder, "{$this->table}.type", 'type');
+        $this->filterParam($request, $builder, "{$this->table}.source", 'source');
 
-            if (isset($params['new_client']) && $params['new_client'] != '') {
-                $builder->where('forecast', $params['new_client']);
-            }
-
-            if (isset($params['type']) && !empty($params['type'])) {
-                $builder->where('type', $params['type']);
-            }
-
-            if (isset($params['source']) && !empty($params['source'])) {
-                $builder->whereIn('source', $params['source']);
-            }
-        }
-
-        $builder->orderBy('id', 'DESC');        
+        $builder->orderBy("{$this->table}.id", 'DESC');        
         return $builder;
     }
 
@@ -190,14 +195,20 @@ class CustomerModel extends Model
             $buttons = dt_button_actions($row, $id, $permissions);
 
             if (strtoupper($row['type']) === 'COMMERCIAL') {
-                if (check_permissions($permissions, 'ADD')) {
+                if (check_permissions($permissions, ACTION_ADD)) {
                     $buttons .= <<<EOF
                         <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
                     EOF;
                 }
-    
+
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-info" onclick="branchList({$row["$id"]}, '{$row["name"]}')" title="View Branch"><i class="fas fa-eye"></i> </button>
+                EOF;
+            }
+
+            if (check_permissions($permissions, ACTION_UPLOAD)) {
+                $buttons .= <<<EOF
+                    <button class="btn btn-sm btn-primary" onclick="upload({$row["$id"]}, '{$row["name"]}')" title="View or Attach Files"><i class="fas fa-paperclip"></i> </button> 
                 EOF;
             }
 
@@ -205,18 +216,5 @@ class CustomerModel extends Model
         };
         
         return $closureFun;
-    }
-
-    // Query concat of customer address
-    public function customerAddressQueryConcat()
-    {
-        return "
-            CONCAT(
-                IF(province = '' || province IS NULL, '', CONCAT(province, ', ')),
-                IF(city = '' || city IS NULL, '', CONCAT(city, ', ')),
-                IF(barangay = '' || barangay IS NULL, '', CONCAT(barangay, ', ')),
-                IF(subdivision = '', '', subdivision)
-            ) AS address
-        ";
     }
 }

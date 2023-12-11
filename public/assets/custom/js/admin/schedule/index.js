@@ -55,6 +55,10 @@ $(document).ready(function () {
 				title: `<strong>${info.event.title}</strong>`,
 				content: `
 					<div>
+						<strong>ID: </strong>
+						<span>${info.event.id}</span>
+					</div>
+					<div>
 						<strong>Type</strong>
 						<div>${info.event.extendedProps.typeText}</div>
 					</div>
@@ -73,17 +77,17 @@ $(document).ready(function () {
 		const message = res.errors ?? res.message;
 
 		if (res.status !== STATUS.ERROR) {
-			if (res.status === STATUS.INFO) {
+			if (res.status === STATUS.SUCCESS) {
 				self[0].reset();
-				notifMsgSwal(res.status, message, res.status);
 				$("#schedule_id").val("");
 
 				if ($(`#${modal}`).hasClass("edit")) {
 					$(`#${modal}`).modal("hide");
 				}
 			}
-			toggleDeleteBtn();
+			notifMsgSwal(res.status, message, res.status);
 			refreshFullCalendar($calendar);
+			toggleDeleteBtn();
 		}
 
 		showAlertInForm(elems, message, res.status);

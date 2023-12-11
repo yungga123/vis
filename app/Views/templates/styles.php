@@ -8,7 +8,7 @@
 
 <?php if (isset($exclude_toastr) && $exclude_toastr): else: ?>
 <!-- Toastr -->
-
+<link rel="stylesheet" href="<?=base_url('assets')?>/plugins/toastr/toastr.min.css">
 <?php endif;?>
 
 <?php if (isset($sweetalert2) && $sweetalert2): ?>

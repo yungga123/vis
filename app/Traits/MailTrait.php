@@ -7,6 +7,8 @@ use App\Libraries\Mail\PHPMailerSMTPService;
 
 trait MailTrait
 {
+    use GeneralInfoTrait;
+
     /**
      * Sending mail via SMPT
      *
@@ -62,5 +64,56 @@ trait MailTrait
         }
 
         return ' '. $message;
+    }
+
+    /**
+     * Mail body template
+     *
+     * @param   array $data     Array of data should contain keys module (string), details (array) and title (string).
+     * 
+     * Eg. $data = [
+     *  'module'    => 'Module Name',
+     *  'titile'    => 'Module Name Created', 
+     *  'details'   => [
+     *      'id' => 1,
+     *      'status' => 'Pending',
+     *      ....
+     *  ], 
+     * ];
+     * @param   string $view
+     * @return  string|html
+     */
+    public function mailTemplate($data, $view = '')
+    {
+        // If empty, get the default mail template
+        $view = empty($view) ? 'templates/mail' : $view;
+        
+        // Get and add company name
+        $company_name           = $this->getGeneralInfo('company_name', true);
+        $data['company_name']   = $company_name ?? COMPANY_NAME;
+        
+        return view($view, $data);
+    }
+
+    /**
+     * Log the response and details
+     *
+     * @param   string $msg     Response message
+     * @param   string $title
+     * @param   array $details
+     * @return  void
+     */
+    public function logInfo($msg, $title, $details, $method = null)
+    {
+        log_message(
+            'error',
+            "Mail Info: \n Message: {msg} \n Title: {title} \n Details: {details} \n Class: {method}()",
+            [
+                'msg'       => $msg, 
+                'title'     => $title, 
+                'details'   => json_encode($details), 
+                'method'    => $method ?? '',
+            ]
+        );
     }
 }

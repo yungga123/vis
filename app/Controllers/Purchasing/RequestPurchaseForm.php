@@ -7,12 +7,13 @@ use App\Models\RequestPurchaseFormModel;
 use App\Models\RPFItemModel;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
+use App\Traits\CommonTrait;
 use monken\TablesIgniter;
 
 class RequestPurchaseForm extends BaseController
 {
     /* Declare trait here to use */
-    use InventoryTrait, GeneralInfoTrait;
+    use InventoryTrait, GeneralInfoTrait, CommonTrait;
 
     /**
      * Use to initialize corresponding model
@@ -46,7 +47,7 @@ class RequestPurchaseForm extends BaseController
         $this->_model       = new RequestPurchaseFormModel(); // Current model
         $this->_module_code = MODULE_CODES['purchasing_rpf']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -67,7 +68,7 @@ class RequestPurchaseForm extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'purchasing/rpf/index.js';
+        $data['custom_js']      = ['purchasing/rpf/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'rpf' => [
                 'list'      => url_to('rpf.list'),
@@ -101,45 +102,40 @@ class RequestPurchaseForm extends BaseController
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
+        $fields     = [
+            'id',
+            'date_needed_formatted',
+            'created_by_name',
+            'created_at_formatted',
+            'accepted_by_name',
+            'accepted_at_formatted',
+            'reviewed_by_name',
+            'reviewed_at_formatted',
+            'received_by_name',
+            'received_at_formatted',
+            'rejected_by_name',
+            'rejected_at_formatted',
+        ];
 
         $table->setTable($builder)
-            ->setSearch([
-                'status',
-            ])
-            ->setOrder([
-                null,
-                null,
-                null,
-                'id',
-                'date_needed_formatted',
-                'created_by_name',
-                'created_at_formatted',
-                'accepted_by_name',
-                'accepted_at_formatted',
-                'reviewed_by_name',
-                'reviewed_at_formatted',
-                'received_by_name',
-                'received_at_formatted',
-                'rejected_by_name',
-                'rejected_at_formatted',
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                $this->_model->dtViewRpfItems(),
-                $this->_model->dtRpfStatusFormat(),
-                'id',
-                'date_needed_formatted',
-                'created_by_name',
-                'created_at_formatted',
-                'accepted_by_name',
-                'accepted_at_formatted',
-                'reviewed_by_name',
-                'reviewed_at_formatted',
-                'received_by_name',
-                'received_at_formatted',
-                'rejected_by_name',
-                'rejected_at_formatted',
-            ]);
+            ->setSearch(['status'])
+            ->setOrder(
+                array_merge(
+                    [null, null, null, null], 
+                    $fields
+                )
+            )
+            ->setOutput(
+                array_merge(
+                    [
+                        dt_empty_col(),
+                        $this->_model->buttons($this->_permissions),
+                        $this->_model->dtViewRpfItems(),
+                        $this->_model->dtRpfStatusFormat(),
+                    ], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -152,15 +148,15 @@ class RequestPurchaseForm extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'RFP has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'RFP')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action = ACTION_ADD;
                 $id     = $this->request->getVar('id');
                 $inv_id = $this->request->getVar('inventory_id');
-                $sup_id = $this->request->getVar('supplier_id');
                 $q_in   = $this->request->getVar('quantity_in');
                 $inputs = [
                     'id'            => $id,
@@ -168,22 +164,26 @@ class RequestPurchaseForm extends BaseController
                     'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
                         ? (!has_empty_value($q_in) && count($inv_id) === count($q_in) ? $inv_id : null) 
                         : null,
-                    // 'supplier_id'  => (isset($inv_id) && !has_empty_value($sup_id)) ? $sup_id : null,
                     'quantity_in'   => !has_empty_value($q_in) ? $q_in : null,
                 ];
+  
+                if ($id) {
+                    $action             = ACTION_EDIT;
+                    $data['message']    = res_lang('success.updated', 'RFP');
+                }
+
+                // Check restriction
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     $rpfItemModel   = new RPFItemModel();
-                    $rpf_id         = $id ? $id : $this->_model->insertID();
+                    $rpf_id         = $id ? $id : $this->_model->insertedID;
                     $rpfItemModel->saveRpfItems($this->request->getVar(), $rpf_id);
-                }
-
-                if ($id) {
-                    $data['message']    = 'RFP has been updated successfully!';
                 }
                 return $data;
             }
@@ -200,22 +200,32 @@ class RequestPurchaseForm extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'RPF has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'RFP')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
                 $id             = $this->request->getVar('id');
+                if (! $this->_model->exists($id)) {
+                    $data['status']     = STATUS_ERROR;
+                    $data['message']    = "<strong>RPF #: {$id}</strong> doesn't exists anymore!";
+                    return $data;
+                }
+                
                 $rpfItemModel   = new RPFItemModel(); 
-                $items          = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+                $items          = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
                 if ($this->request->getVar('rpf_items')) {
                     $data['data']       = $items;
-                    $data['message']    = 'RPF items has been retrieved!';
+                    $data['message']    = res_lang('success.retrieved', 'RFP Items');
                 } else {
-                    $table          = $this->_model->table;
-                    $columns        = "{$table}.id, {$table}.date_needed";                    
-                    $record         = $this->_model->getRequestPurchaseForms($id, false, $columns);
+                    $table      = $this->_model->table;
+                    $columns    = "
+                        {$table}.id, {$table}.date_needed,
+                        DATE_FORMAT({$table}.date_needed, '".dt_sql_date_format()."') AS date_needed_formatted,
+                        DATE_FORMAT({$table}.created_at, '".dt_sql_datetime_format()."') AS created_at_formatted
+                    ";                 
+                    $record     = $this->_model->getRequestPurchaseForms($id, true, $columns);
                     $data['data']               = $record;
                     $data['data']['items']      = $items;
                 }
@@ -235,16 +245,22 @@ class RequestPurchaseForm extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'PRF has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'RFP')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                if (! $this->_model->delete($this->request->getVar('id'))) {
+                $id = $this->request->getVar('id');
+
+                // Check restriction
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
+
+                if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
@@ -264,18 +280,21 @@ class RequestPurchaseForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id     = $this->request->getVar('id');
-                $status = set_rpf_status($this->request->getVar('status'));
-                $inputs = ['status' => $status];
+                $id         = $this->request->getVar('id');
+                $_status    = $this->request->getVar('status');
+                $status     = set_rpf_status($_status);
+                $inputs     = ['status' => $status];
+
+                $this->checkRoleActionPermissions($this->_module_code, $_status, true);
 
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'RPF has been '. strtoupper($status) .' successfully!';
-
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['RFP', strtoupper($status)]);
+                    
                     if ($status === 'received') {
                         $prfItemModel = new RPFItemModel();
                         $prfItemModel->updateRpfItems($this->request->getVar(), $id);
@@ -293,23 +312,22 @@ class RequestPurchaseForm extends BaseController
      *
      * @return view
      */
-    public function print() 
+    public function print($id) 
     {
         // Check role & action if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code, 'PRINT');
+        $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
         
-        $id                 = $this->request->getUri()->getSegment(3);
         $columns            = $this->_model->columns(true, true);
         $builder            = $this->_model->select($columns);
         
         $this->_model->joinView($builder);
 
         $rpfItemModel           = new RPFItemModel(); 
-        $items                  = $rpfItemModel->getRpfItemsByPrfId($id, true, true);
+        $items                  = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
         $data['rpf']            = $builder->find($id);
         $data['rpf_items']      = $items;
         $data['title']          = 'Print Requisition Form';
-        $data['company_logo']   = $this->getGeneralInfo('company_logo');
+        $data['company_logo']   = $this->getCompanyLogo();
 
         return view('purchasing/rpf/print', $data);
     }

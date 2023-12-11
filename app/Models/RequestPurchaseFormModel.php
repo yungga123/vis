@@ -4,11 +4,14 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
+use App\Traits\FilterParamTrait;
+use App\Traits\HRTrait;
+use App\Services\Mail\PurchasingMailService;
 
 class RequestPurchaseFormModel extends Model
 {
     /* Declare trait here to use */
-    use InventoryTrait;
+    use InventoryTrait, FilterParamTrait, HRTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'request_purchase_forms';
@@ -66,13 +69,19 @@ class RequestPurchaseFormModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['setCreatedBy'];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = ['setStatusByAndAt'];
     protected $afterUpdate    = ['updateInventoryStock'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Custom variables
+    // Restrict edit/delete action for this statuses
+    protected $restrictedStatuses   = ['rejected', 'reviewed', 'received'];
+    // Get inserted ID
+    protected $insertedID           = 0;
 
     // Set the value for created_by before inserting
     protected function setCreatedBy(array $data)
@@ -88,6 +97,34 @@ class RequestPurchaseFormModel extends Model
             $status = $data['data']['status'];
             $data['data'][$status .'_by'] = session('username');
             $data['data'][$status .'_at'] = current_datetime();
+        }
+        
+        return $data;
+    }
+
+    // Mail notif after record created
+    protected function mailNotif(array $data)
+    {
+        $id                 = $data['id'];
+        $this->insertedID   = $id;
+
+        if ($data['result']) {
+            $columns    = "
+                {$this->table}.id,
+                {$this->table}.status,
+                {$this->table}.date_needed,
+                {$this->table}.created_at,
+                cb.employee_name AS created_by
+            ";
+            $builder    = $this->select($columns);
+            $builder->where("{$this->table}.id", $id);
+            $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+
+            $record     = $builder->first();
+
+            // Send mail notification
+            $service = new PurchasingMailService();
+            $service->sendRpfMailNotif($record);
         }
         
         return $data;
@@ -114,8 +151,7 @@ class RequestPurchaseFormModel extends Model
                     {$rpfItemModel->table}.received_date,
                     inventory.stocks
                 ";
-                log_message('error', 'data => '. json_encode($data));
-                $record         = $rpfItemModel->getRpfItemsByPrfId($data['id'], true, false, $columns);
+                $record         = $rpfItemModel->getRpfItemsByRpfId($data['id'], true, false, $columns);
                 $action         = 'ITEM_IN';
 
                 if (! empty($record)) {
@@ -152,12 +188,12 @@ class RequestPurchaseFormModel extends Model
 
         if ($date_format) {
             $columns .= ",
-                DATE_FORMAT({$this->table}.date_needed, '%b %e, %Y') AS date_needed_formatted,
-                DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted,
-                DATE_FORMAT({$this->table}.accepted_at, '%b %e, %Y at %h:%i %p') AS accepted_at_formatted,
-                DATE_FORMAT({$this->table}.rejected_at, '%b %e, %Y at %h:%i %p') AS rejected_at_formatted,
-                DATE_FORMAT({$this->table}.reviewed_at, '%b %e, %Y at %h:%i %p') AS reviewed_at_formatted,
-                DATE_FORMAT({$this->table}.received_at, '%b %e, %Y at %h:%i %p') AS received_at_formatted
+                ".dt_sql_date_format("{$this->table}.date_needed") ." AS date_needed_formatted,
+                ".dt_sql_datetime_format("{$this->table}.created_at") ." AS created_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.accepted_at") ." AS accepted_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.rejected_at") ." AS rejected_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.reviewed_at") ." AS reviewed_at_formatted,
+                ".dt_sql_datetime_format("{$this->table}.received_at") ." AS received_at_formatted
             ";
         }
 
@@ -175,9 +211,20 @@ class RequestPurchaseFormModel extends Model
     }
 
     // Join with rpf_view
-    public function joinView($builder)
+    public function joinView($builder = null)
     {
+        $builder = $builder ? $builder : $this;
         $builder->join($this->view, "{$this->table}.id = {$this->view}.rpf_id");
+        return $this;
+    }
+
+    // Check if record exist
+    public function exists($id)
+    {
+        $builder = $this->select('id');
+        $builder->where('deleted_at', null);
+
+        return !empty($builder->find($id));
     }
 
     // Get project request forms
@@ -200,6 +247,8 @@ class RequestPurchaseFormModel extends Model
 
        $builder->select($columns);
        $this->joinView($builder);
+
+       $this->filterParam($request, $builder, "{$this->table}.status");
 
        $builder->where("{$this->table}.deleted_at", null);
        $builder->orderBy('id', 'DESC');
@@ -264,16 +313,13 @@ class RequestPurchaseFormModel extends Model
 
             if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed', 'received'])) {
                 // Print PRF
-                $print_url = site_url('rpf/print/') . $row[$id];
-                $buttons .= <<<EOF
+                $print_url  = site_url('rpf/print/') . $row[$id];
+                $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }
 
-            $buttons = (in_array($row['status'], ['rejected', 'reviewed', 'received']) && !is_admin()) 
-                ? ($buttonView ?? '~~N/A~~') : dt_buttons_dropdown($buttons);
-                
-            return $buttons;
+            return dt_buttons_dropdown($buttons);
         };
         
         return $closureFun;

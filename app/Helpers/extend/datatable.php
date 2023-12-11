@@ -24,35 +24,45 @@ if (! function_exists('dt_button_actions'))
     /**
      * DataTable default (edit & delete) buttons actions format
      */
-	function dt_button_actions(array $row, string $id, array $permissions, bool $dropdown = false): string
+	function dt_button_actions(
+        array $row, 
+        string $id, 
+        array $permissions, 
+        bool $dropdown = false,
+        array $options = [],
+    ): string
 	{
-        $options    = [
+        $arr    = [
             'edit' => [
                 'text'      => '',
                 'button'    => 'btn-warning',
                 'icon'      => 'fas fa-edit',
-                'condition' => 'title="Cannot edit" disabled',
+                'condition' => 'title="User has no permission to edit record." disabled',
             ],
             'delete' => [
                 'text'      => '',
                 'button'    => 'btn-danger',
                 'icon'      => 'fas fa-trash',
-                'condition' => 'title="Cannot delete" disabled',
+                'condition' => 'title="User has no permission to delete record." disabled',
             ],
         ];
             
-        if (check_permissions($permissions, 'EDIT')) {
-            $options['edit']['text']        = $dropdown ? 'Edit' : '';
-            $options['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
+        if (check_permissions($permissions, ACTION_EDIT)) {
+            $arr['edit']['text']        = $dropdown ? 'Edit' : '';
+            $arr['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
         }
             
-        if (check_permissions($permissions, 'DELETE')) {
-            $options['delete']['text']        = $dropdown ? 'Delete' : '';
-            $options['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
+        if (check_permissions($permissions, ACTION_DELETE)) {
+            $arr['delete']['text']        = $dropdown ? 'Delete' : '';
+            $arr['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
         }
+        
+        $html = '';
+        if (! (in_array('exclude_edit', $options) || isset($options['exclude_edit']))) 
+            $html .= dt_button_html($arr['edit'], $dropdown);
 
-        $html = dt_button_html($options['edit'], $dropdown);
-        $html .= dt_button_html($options['delete'], $dropdown);
+        if (! (in_array('exclude_delete', $options) || isset($arr['exclude_delete'], $options))) 
+            $html .= dt_button_html($arr['delete'], $dropdown);
 
         return $html;
 	}
@@ -102,6 +112,7 @@ if (! function_exists('dt_status_color'))
                 $color = 'warning';                   
                 break;
             case 'accepted':
+            case 'approved':
             case 'add':
                 $color = 'primary';
                 break;
@@ -149,8 +160,90 @@ if (! function_exists('dt_sql_date_format'))
     /**
      * DataTable SQL date format
      */
-	function dt_sql_date_format(): string
+	function dt_sql_date_format(?string $column = null, $format = '%b %e, %Y'): string
     {
-        return '%b %e, %Y at %h:%i %p';
+        if (! empty($column)) {
+            return "DATE_FORMAT({$column}, '{$format}')";
+        }
+
+        return $format;
+    }
+}
+
+if (! function_exists('dt_sql_datetime_format'))
+{
+    /**
+     * DataTable SQL datetime format
+     */
+	function dt_sql_datetime_format(?string $column = null, $format = '%b %e, %Y at %h:%i %p'): string
+    {
+        return dt_sql_date_format($column, $format);
+    }
+}
+
+if (! function_exists('dt_sql_time_format'))
+{
+    /**
+     * DataTable SQL time format
+     */
+	function dt_sql_time_format(?string $column = null, $format = '%h:%i %p'): string
+    {
+        return dt_sql_date_format($column, $format);
+    }
+}
+
+if (! function_exists('dt_sql_concat_client_address'))
+{
+    /**
+     * DataTable SQL client address concatination
+     */
+	function dt_sql_concat_client_address($alias = '', $as = 'address'): string
+    {
+        $model  = new \App\Models\CustomerModel();
+        $alias  = empty($alias) ? $model->table : $alias;
+        $as     = empty($as) ? '' : 'AS '. $as;
+        return "
+            CONCAT(
+                IF({$alias}.province = '' || {$alias}.province IS NULL, '', CONCAT({$alias}.province, ', ')),
+                IF({$alias}.city = '' || {$alias}.city IS NULL, '', CONCAT({$alias}.city, ', ')),
+                IF({$alias}.barangay = '' || {$alias}.barangay IS NULL, '', CONCAT({$alias}.barangay, ', ')),
+                IF({$alias}.subdivision = '', '', {$alias}.subdivision)
+            ) $as
+        ";
+    }
+}
+
+if (! function_exists('dt_sql_number_format'))
+{
+    /**
+     * DataTable SQL amount format by round & decimal with comma for thousands
+     */
+	function dt_sql_number_format(string $column, int $round = 2, int $decimal = 2): string
+    {
+        return "FORMAT(ROUND(({$column}), {$round}), {$decimal})";
+    }
+}
+
+if (! function_exists('dt_sql_trim'))
+{
+    /**
+     * DataTable SQL trim column
+     */
+	function dt_sql_trim(string $column, $alias = ''): string
+    {
+        $alias = empty($alias) ? '' : ' AS '. $alias;
+        return "TRIM({$column}){$alias}";
+    }
+}
+
+if (! function_exists('dt_empty_col'))
+{
+    /**
+     * DataTable empty first column - 
+     * will be used for responsive
+     */
+	function dt_empty_col(): callable
+    {
+        return function ($row) { return ''; };
     }
 }

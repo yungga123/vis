@@ -1,4 +1,4 @@
-var table, modal, form, elems;
+var table, modal, form, elems, _dropzone;
 
 $(document).ready(function () {
 	table = "customer_table";
@@ -22,15 +22,20 @@ $(document).ready(function () {
 
 	select2Init("#filter_source");
 
+	/* Inputmask init */
+	const mobile = {
+		mask: "0999-999-9999",
+		placeholder: "09XX-XXX-XXXX",
+	};
+	$("#contact_number").inputmask(mobile);
+	$("#contact_number2").inputmask(mobile);
+	$("#telephone").inputmask({
+		mask: "(99) 9999-9999",
+		placeholder: "(02) 8XXX-XXXX",
+	});
+
 	/* Load dataTable */
 	loadDataTable(table, router.customer.list, METHOD.POST);
-
-	$("#filterby").on("change", function () {
-		const options = {
-			params: { filter: $(this).val() },
-		};
-		loadDataTable(table, route, METHOD.POST, options, true);
-	});
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -38,8 +43,19 @@ $(document).ready(function () {
 		$(`#${modal} .modal-title`).text("Add New Client");
 		$(`#${form}`)[0].reset();
 		$("#customer_id").val("");
+		$("#unformatted_cn").html("");
+		$("#contact_number_wrapper").removeClass("d-none");
+		$("#telephone_only").prop("checked", false);
 
 		clearAlertInForm(elems);
+	});
+
+	$("#telephone_only").on("change", function () {
+		$("#contact_number_wrapper").removeClass("d-none");
+
+		if ($(this).is(":checked")) {
+			$("#contact_number_wrapper").addClass("d-none");
+		}
 	});
 
 	/* Form for saving customer */
@@ -50,6 +66,8 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
+			$("#contact_number_wrapper").removeClass("d-none");
+			$("#telephone_only").prop("checked", false);
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -58,6 +76,9 @@ $(document).ready(function () {
 
 		showAlertInForm(elems, message, res.status);
 	});
+
+	/* Dropzone init */
+	_dropzoneInit();
 });
 
 /* Get record details */
@@ -65,6 +86,9 @@ function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Client");
 	$("#customer_id").val(id);
+	$("#unformatted_cn").html("");
+	$("#contact_number_wrapper").removeClass("d-none");
+	$("#telephone_only").prop("checked", false);
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -77,9 +101,23 @@ function edit(id) {
 				$(`#${modal}`).modal("show");
 
 				if (inObject(res, "data") && !isEmpty(res.data)) {
-					$.each(res.data, (key, value) => {
-						$("#" + key).val(value);
-					});
+					if (res.data.unformatted_cn) {
+						$("#unformatted_cn").html(
+							"<strong>Previous unformatted contact number:</strong> " +
+								res.data.unformatted_cn || res.data.contact_number
+						);
+					}
+
+					if (
+						!isEmpty(res.data.telephone) &&
+						isEmpty(res.data.contact_number)
+					) {
+						// Hide the contact number fields
+						$("#contact_number_wrapper").addClass("d-none");
+						$("#telephone_only").prop("checked", true);
+					}
+
+					$.each(res.data, (key, value) => $("#" + key).val(value || ""));
 				}
 			} else {
 				notifMsgSwal(res.status, res.message, res.status);
@@ -88,6 +126,7 @@ function edit(id) {
 		.catch((err) => catchErrMsg(err));
 }
 
+/* Delete record */
 function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
@@ -107,28 +146,48 @@ function remove(id) {
 	);
 }
 
+/* Uploading files */
+function upload(id, client) {
+	$("#upload_customer_id").val(id);
+	$("#upload_modal").modal("show");
+	$("#upload_modal .modal-title").html(
+		`Upload Files for <strong>${client}</strong>`
+	);
+
+	dzGetFiles(_dropzone, router.customer.files.fetch + "/" + id);
+}
+
 /* For filtering and reseting */
 function filterData(reset = false) {
-	let new_client = $("#filter_new_client").val();
-	let type = $("#filter_type").val();
-	let source = getSelect2Selection("#filter_source");
-
-	showLoading();
-	let options = {
-		params: {
-			new_client: new_client,
-			type: type,
-			source: source,
-		},
+	const new_client = $("#filter_new_client").val();
+	const type = $("#filter_type").val();
+	const source = getSelect2Selection("#filter_source");
+	const params = {
+		new_client: new_client,
+		type: type,
+		source: source,
 	};
+	const condition = !isEmpty(new_client) || !isEmpty(type) || !isEmpty(source);
 
-	if (reset) {
-		options.params = null;
-		setOptionValue("#filter_new_client");
-		setOptionValue("#filter_type");
-		clearSelect2Selection("#filter_source");
-	}
+	filterParam(
+		router.customer.list,
+		table,
+		params,
+		condition,
+		() => {
+			setOptionValue("#filter_new_client");
+			setOptionValue("#filter_type");
+			clearSelect2Selection("#filter_source");
+		},
+		reset
+	);
+}
 
-	loadDataTable(table, router.customer.list, METHOD.POST, options, true);
-	closeLoading();
+/* Dropzone init */
+function _dropzoneInit() {
+	const form = "upload_form";
+	const button = "#upload_modal .btn-upload";
+
+	_dropzone = dropzoneInit(form, router.customer.files.upload, button);
+	dzOnRemoveFileEvent(_dropzone, router.customer.files.remove);
 }

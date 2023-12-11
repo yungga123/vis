@@ -4,10 +4,18 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\JobOrderModel;
+use App\Models\EmployeeModel;
+use App\Models\TaskLeadView;
+use App\Models\CustomerModel;
+use App\Models\CustomerBranchModel;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class JobOrder extends BaseController
 {
+    /* Declare trait here to use */
+    use HRTrait;
+
     /**
      * Use to initialize JobOrderModel class
      * @var object
@@ -39,9 +47,9 @@ class JobOrder extends BaseController
     public function __construct()
     {
         $this->_model       = new JobOrderModel(); // Current model
-        $this->_module_code = MODULE_CODES['job_order']; // Current module
+        $this->_module_code = MODULE_CODES['job_orders']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -62,7 +70,7 @@ class JobOrder extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['admin/job_order/index.js', 'admin/common.js'];
+        $data['custom_js']      = ['admin/job_order/index.js', 'admin/common.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'job_order' => [
                 'list'      => url_to('job_order.list'),
@@ -95,77 +103,63 @@ class JobOrder extends BaseController
      */
     public function list()
     {
-        $table      = new TablesIgniter();
-        $request    = $this->request->getVar();
-        $builder    = $this->_model->noticeTable($request);
+        $tlViewModel            = new TaskLeadView();
+        $customerModel          = new CustomerModel();
+        $employeeModel          = new EmployeeModel();
+        $customerBranchModel    = new CustomerBranchModel();
+        $table                  = new TablesIgniter();
+        $request                = $this->request->getVar();
+        $builder                = $this->_model->noticeTable($request);
+        $fields                 = [
+            'id',
+            'tasklead_id',
+            'is_manual',
+            'quotation',
+            'tasklead_type',
+            'client',
+            'customer_branch_name',
+            'manager',
+            'work_type',
+            'date_requested',
+            'date_committed',
+            'date_reported',
+            'warranty',
+            'comments',
+            'remarks',
+            'created_by',
+            'created_at',
+            'accepted_by',
+            'accepted_at',
+            'filed_by',
+            'filed_at',
+            'discarded_by',
+            'discarded_at',
+            'reverted_by',
+            'reverted_at',
+        ];
 
         $table->setTable($builder)
             ->setSearch([
-                "{$this->_model->tableEmployees}.firstname",
-                "{$this->_model->tableEmployees}.lastname",
-                "{$this->_model->tableJoined}.customer_name",
-                "{$this->_model->tableCustomers}.name",
-                "{$this->_model->tableJoined}.quotation_num",
+                "{$employeeModel->table}.firstname",
+                "{$employeeModel->table}.lastname",
+                "{$tlViewModel->table}.customer_name",
+                "{$customerModel->table}.name",
+                "{$tlViewModel->table}.quotation_num",
                 "{$this->_model->table}.manual_quotation",
-                "{$this->_model->tableCustomerBranches}.branch_name",
-                "{$this->_model->tableJoined}.branch_name",
+                "{$customerBranchModel->table}.branch_name",
+                "{$tlViewModel->table}.branch_name",
             ])
-            ->setOrder([
-                null,
-                null,
-                'id',
-                'tasklead_id',
-                'quotation',
-                'tasklead_type',
-                'client',
-                'customer_branch_name',
-                'manager',
-                'work_type',
-                'date_requested',
-                'date_committed',
-                'date_reported',
-                'warranty',
-                'comments',
-                'remarks',
-                'created_by_formatted',
-                'created_at_formatted',
-                'accepted_by_formatted',
-                'accepted_at_formatted',
-                'filed_by_formatted',
-                'filed_at_formatted',
-                'discarded_by_formatted',
-                'discarded_at_formatted',
-                'reverted_by_formatted',
-                'reverted_at_formatted',
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                $this->_model->dtJOStatusFormat(),
-                'id',
-                'tasklead_id',
-                'quotation',
-                'tasklead_type',
-                'client',
-                'customer_branch_name',
-                'manager',
-                'work_type',
-                'date_requested',
-                'date_committed',
-                'date_reported',
-                'warranty',
-                'comments',
-                'remarks',
-                'created_by_formatted',
-                'created_at_formatted',
-                'accepted_by_formatted',
-                'accepted_at_formatted',
-                'filed_by_formatted',
-                'filed_at_formatted',
-                'discarded_by_formatted',
-                'discarded_at_formatted',
-                'reverted_by_formatted',
-                'reverted_at_formatted',
-            ]);
+            ->setOrder(array_merge([null, null, null], $fields))
+            ->setOutput(
+                array_merge(
+                    [
+                        dt_empty_col(),
+                        $this->_model->buttons($this->_permissions),
+                        $this->_model->dtJOStatusFormat(),
+                    ], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -178,13 +172,14 @@ class JobOrder extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Job Order')
         ];
 
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action         = ACTION_ADD;
                 $id             = $this->request->getVar('id');
                 $is_manual      = $this->request->getVar('is_manual');
                 $employee_id    = $this->request->getVar('employee_id');
@@ -207,23 +202,25 @@ class JobOrder extends BaseController
                 ];
     
                 if (! empty($id)) {
+                    $action                 = ACTION_EDIT;
                     $inputs['id']           = $id;
                     $inputs['employee_id']  = $employee_id;
-                    $data['message']        = 'Job Order has been updated successfully!';
+                    $data['message']        = res_lang('success.updated', 'Job Order');
     
                     unset($inputs['status']);
                     unset($inputs['created_by']);
                 } 
+
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
     
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
 
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;
@@ -237,8 +234,8 @@ class JobOrder extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Job Order')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -246,13 +243,14 @@ class JobOrder extends BaseController
                 $id = $this->request->getVar('id');
 
                 if ($this->request->getVar('status')) {
-                    $columns    = '
-                        job_orders.remarks,
-                        job_orders.date_committed,
-                        job_orders.is_manual,
-                        IF(job_orders.is_manual = 0, task_lead_booked.tasklead_type, job_orders.manual_quotation_type) AS type,
-                        task_lead_booked.employee_id,
-                    ';                
+                    $tlViewModel    = new TaskLeadView();
+                    $columns        = "
+                        {$this->_model->table}.remarks,
+                        {$this->_model->table}.date_committed,
+                        {$this->_model->table}.is_manual,
+                        IF({$this->_model->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->_model->table}.manual_quotation_type) AS type,
+                        {$tlViewModel->table}.employee_id,
+                    ";                
                     $record     = $this->_model->getJobOrders($id, $columns);
                 } else {
                     $record     = $this->_model->getJobOrders($id);
@@ -261,7 +259,8 @@ class JobOrder extends BaseController
                 $data['data']   = $record;
 
                 return $data;
-            }
+            },
+            false
         );
 
         return $response;
@@ -275,25 +274,29 @@ class JobOrder extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Job Order has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Job Order')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                
                 $id = $this->request->getVar('id');
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    log_message('error', "Job Order #: {$id} \n Deleted by {username}", ['username' => session('username')]);
+                    log_msg(
+                        $data['message']. " Job Order #: {$id} \nDeleted by: {username}",
+                        ['username' => session('username')]
+                    );
                 }
 
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;
@@ -310,9 +313,12 @@ class JobOrder extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id     = $this->request->getVar('id');
-                $status = set_jo_status($this->request->getVar('status'));
-                $inputs = ['status' => $status];
+                $id         = $this->request->getVar('id');
+                $_status    = $this->request->getVar('status');
+                $status     = set_jo_status($_status);
+                $inputs     = ['status' => $status];
+
+                $this->checkRoleActionPermissions($this->_module_code, $_status, true);
     
                 if ($this->request->getVar('is_form')) { 
                     $inputs['employee_id']      = $this->request->getVar('employee_id');
@@ -323,11 +329,11 @@ class JobOrder extends BaseController
     
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    $data['status']     = STATUS_SUCCESS;
-                    $data['message']    = 'Job Order has been '. strtoupper($status) .' successfully!';
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['Job Order', strtoupper($status)]);
                 }
 
                 return $data;

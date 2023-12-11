@@ -8,6 +8,8 @@ use monken\TablesIgniter;
 
 class SupplierBrands extends BaseController
 {
+    /* Declare trait here to use */
+
     /**
      * Use to initialize PermissionModel class
      * @var object
@@ -36,58 +38,47 @@ class SupplierBrands extends BaseController
     /**
      * Class constructor
      */
-
-    
     public function __construct()
     {
         $this->_model       = new SupplierBrandsModel(); // Current model
         $this->_module_code = MODULE_CODES['suppliers']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
-
+    /**
+     * Get list of records
+     *
+     * @return array|dataTable
+     */
     public function list()
     {
-        $table = new TablesIgniter();
-
-        $supplier_id = $this->request->getVar('supplier_id');
-        $builder = $this->_model->noticeTable($supplier_id);
+        $table          = new TablesIgniter();
+        $supplier_id    = $this->request->getVar('supplier_id');
+        $builder        = $this->_model->noticeTable($supplier_id);
+        $fields         = [
+            'brand_name',
+            'product',
+            'warranty',
+            'sales_person',
+            'sales_contact_number',
+            'technical_support',
+            'technical_contact_number',
+            'remarks',
+            'created_by',
+            'created_at',
+        ];
 
         $table->setTable($builder)
-            ->setSearch([
-                "brand_name",
-                "product",
-                "warranty",
-                "sales_person",
-                "sales_contact_number",
-                "technical_support",
-                "technical_contact_number",
-                "supplier_brands_remark"
-            ])
+            ->setSearch($fields)
             ->setDefaultOrder('id','desc')
-            ->setOrder([
-                null,
-                "brand_name",
-                "product",
-                "warranty",
-                "sales_person",
-                "sales_contact_number",
-                "technical_support",
-                "technical_contact_number",
-                "supplier_brands_remark"
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                "brand_name",
-                "product",
-                "warranty",
-                "sales_person",
-                "sales_contact_number",
-                "technical_support",
-                "technical_contact_number",
-                "supplier_brands_remark"
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(
+                array_merge(
+                    [$this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -100,8 +91,8 @@ class SupplierBrands extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier Brands has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Supplier\'s brand')
         ];
 
         // Using DB Transaction
@@ -112,12 +103,12 @@ class SupplierBrands extends BaseController
 
             if (! $model->save($this->request->getVar())) {
                 $data['errors']     = $model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             if ($this->request->getVar('id')) {
-                $data['message']    = 'Supplier Brands has been updated successfully!';
+                $data['message']    = res_lang('success.updated', 'Supplier\'s brand');
             }
 
             // Commit transaction
@@ -125,10 +116,10 @@ class SupplierBrands extends BaseController
         } catch (\Exception$e) {
             // Rollback transaction if there's an error
             $this->transRollback();
+            $this->logExceptionError($e, __METHOD__);
 
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -142,20 +133,19 @@ class SupplierBrands extends BaseController
     public function edit() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier Brands has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Supplier\'s brand')
         ];
 
         try {
             $model  = $this->_model;
             $id     = $this->request->getVar('id');
-            // $item   = $model->select($model->allowedFields)->find($id);
 
             $data['data'] = $model->select($model->allowedFields)->find($id);;
         } catch (\Exception$e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $this->logExceptionError($e, __METHOD__);
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -169,8 +159,8 @@ class SupplierBrands extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Supplier Brands has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Supplier\'s brand')
         ];
 
         // Using DB Transaction
@@ -178,11 +168,13 @@ class SupplierBrands extends BaseController
 
         try {
             $model = $this->_model;
+            
+            $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
 
             if (! $model->delete($this->request->getVar('id'))) {
                 $data['errors']     = $model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -190,10 +182,10 @@ class SupplierBrands extends BaseController
         } catch (\Exception$e) {
             // Rollback transaction if there's an error
             $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $this->logExceptionError($e, __METHOD__);
+            
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);

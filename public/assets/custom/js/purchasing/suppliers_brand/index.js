@@ -26,7 +26,7 @@ function brand_edit(id) {
 	clearAlertInForm(brand_elems);
 	showLoading();
 
-	$.post(brand_editRoute, { id: id })
+	$.post(router.supplier.brand.edit, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -50,7 +50,7 @@ function brand_remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(brand_removeRoute, { id: id })
+			$.post(router.supplier.brand.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
@@ -78,7 +78,7 @@ function brand_add(id) {
 }
 
 function supplierbrandRetrieve(id, name) {
-	const route = $("#" + brand_table).data("url") + "?supplier_id=" + id;
+	const route = router.supplier.brand.list + "?supplier_id=" + id;
 
 	$("#modal_supplier_brand").modal("show");
 	$("#modal_supplier_brand .card-title").text(name);

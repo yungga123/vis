@@ -22,7 +22,23 @@ class Common extends BaseController
 
             return $this->response->setJSON($results);
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            $this->logExceptionError($e, __METHOD__);
+        }
+    }
+
+    /* Search rpf by id */
+    public function searchRpf()
+    {
+        try {
+            $options = $this->request->getVar('options') ?? [];
+            $results = $this->fetchRpf(
+                $this->request->getVar('q'),
+                $options
+            );
+
+            return $this->response->setJSON($results);
+        } catch (\Exception $e) {
+            $this->logExceptionError($e, __METHOD__);
         }
     }
 }

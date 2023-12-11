@@ -29,21 +29,6 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label class="required" for="customer_id">Client</label>
-                                <div class="mb-2">                                    
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="customer_type" id="commercial" value="commercial" checked>
-                                        <label class="form-check-label" for="commercial">Commercial</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="customer_type" id="residential" value="residential">
-                                        <label class="form-check-label" for="residential">Residentail</label>
-                                    </div>
-                                </div>
-                                <select class="form-control" id="customer_id" name="customer_id" style="width: 100%;" required></select>
-                                <small id="alert_customer_id" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
                                 <label class="required" for="dispatch_date">Dispatch Date</label>
                                 <input type="date" name="dispatch_date" id="dispatch_date" class="form-control">
                                 <small id="alert_dispatch_date" class="text-danger"></small>
@@ -68,13 +53,13 @@
                                 <textarea name="remarks" id="remarks" class="form-control" cols="3" rows="3" placeholder="Enter remarks"></textarea>
                                 <small id="alert_remarks" class="text-danger"></small>
                             </div>
-                        </div>
-                        <div class="col-6">
                             <div class="form-group">
                                 <label for="sr_number">SR Number</label>
                                 <input type="text" name="sr_number" id="sr_number" class="form-control" placeholder="Enter sr number">
                                 <small id="alert_sr_number" class="text-danger"></small>
                             </div>
+                        </div>
+                        <div class="col-6">
                             <div class="form-group">
                                 <label class="required" for="service_type">Service Type</label>
                                 <select class="form-control" name="service_type" id="service_type" style="width: 100%;" required>
@@ -106,8 +91,9 @@
                                 <label class="required" for="checked_by">Check By</label>
                                 <select class="form-control" id="checked_by" name="checked_by" style="width: 100%;" required>
                                     <option value="">Select an employee</option>
-                                    <?php if (! empty(get_employees())): ?>
-                                    <?php foreach (get_employees() as $val): ?>
+                                    <?php $employees = get_employees(); 
+                                        if (! empty($employees)): ?>
+                                    <?php foreach ($employees as $val): ?>
                                         <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
                                     <?php endforeach; ?>
                                     <?php endif; ?>

@@ -48,7 +48,7 @@ class Logs extends BaseController
         $this->_model       = new InventoryLogsModel(); // Current model
         $this->_module_code = MODULE_CODES['inventory']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
         // $this->_mdropdown   = new InventoryDropdownModel();
     }
 
@@ -93,8 +93,8 @@ class Logs extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => '<strong>ITEM IN!</strong> Item has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', '<strong>ITEM IN!</strong> Item')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -111,8 +111,8 @@ class Logs extends BaseController
 
                 if (! $this->_model->save($inputs)) {
                     $errors = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
 
                     foreach ($errors as $key => $value) {
                         $errors[$key .'_logs'] = $value;
@@ -121,7 +121,7 @@ class Logs extends BaseController
                 }
 
                 if ($request['action_logs'] === 'ITEM_OUT') {
-                    $data['message']    = '<strong>ITEM OUT!</strong> Item has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', '<strong>ITEM OUT!</strong> Item');
                 }
                 return $data;
             }

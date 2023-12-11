@@ -5,13 +5,16 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\DispatchModel;
 use App\Models\DispatchedTechniciansModel;
+use App\Models\ScheduleModel;
+use App\Models\JobOrderModel;
 use App\Traits\GeneralInfoTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class Dispatch extends BaseController
 {
     /* Declare trait here to use */
-    use GeneralInfoTrait;
+    use GeneralInfoTrait, HRTrait;
 
     /**
      * Use to initialize model class
@@ -46,7 +49,7 @@ class Dispatch extends BaseController
         $this->_model       = new DispatchModel(); // Current model
         $this->_module_code = MODULE_CODES['dispatch']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -68,7 +71,7 @@ class Dispatch extends BaseController
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['moment']         = true;
-        $data['custom_js']      = ['admin/dispatch/index.js', 'admin/common.js'];
+        $data['custom_js']      = 'admin/dispatch/index.js';
         $data['routes']         = json_encode([
             'dispatch' => [
                 'list'      => url_to('dispatch.list'),
@@ -98,58 +101,52 @@ class Dispatch extends BaseController
      */
     public function list()
     {
-        $table      = new TablesIgniter();
-        $request    = $this->request->getVar();
-        $builder    = $this->_model->noticeTable($request);
+        $scheduleModel  = new ScheduleModel();
+        $table          = new TablesIgniter();
+        $request        = $this->request->getVar();
+        $builder        = $this->_model->noticeTable($request);
+        $fields         = [
+            'id',
+            'schedule_id',
+            'schedule',
+            'description',
+            'dispatch_date',
+            'dispatch_out',
+            'time_in',
+            'time_out',
+            'sr_number',
+            'technicians_formatted',
+        ];
+        $fields1        = [
+            'with_permit',
+            'comments',
+            'remarks',
+            'checked_by_name',
+            'dispatched_by',
+            'dispatched_at',
+        ];
 
         $table->setTable($builder)
             ->setSearch([
-                "{$this->_model->tableSchedules}.title",
+                "{$this->_model->table}.id",
+                "{$this->_model->table}.schedule_id",
+                "{$scheduleModel->table}.id",
+                "{$scheduleModel->table}.title",
                 "{$this->_model->view}.technicians",
                 "{$this->_model->table}.service_type",
                 "{$this->_model->table}.sr_number",
                 "{$this->_model->view}.dispatched_by",
                 "{$this->_model->view}.checked_by_name",
-                "{$this->_model->customersTable}.name",
             ])
-            ->setOrder([
-                null,
-                'id',
-                'schedule_id',
-                'schedule',
-                'customer_name',
-                'dispatch_date',
-                'dispatch_out',
-                'time_in',
-                'time_out',
-                'sr_number',
-                'technicians_formatted',
-                null,
-                'with_permit',
-                'comments',
-                'remarks',
-                'dispatched_by',
-                'checked_by_name',
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                'id',
-                'schedule_id',
-                'schedule',
-                'customer_name',
-                'dispatch_date',
-                'dispatch_out',
-                'time_in',
-                'time_out',
-                'sr_number',
-                'technicians_formatted',
-                $this->_model->serviceTypeFormat(),
-                'with_permit',
-                'comments',
-                'remarks',
-                'dispatched_by',
-                'checked_by_name',
-            ]);
+            ->setOrder(array_merge([null, null], $fields, [null], $fields1))
+            ->setOutput(
+                array_merge(
+                    [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
+                    $fields,
+                    [$this->_model->serviceTypeFormat()], 
+                    $fields1
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -162,16 +159,16 @@ class Dispatch extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action = ACTION_ADD;
                 $id     = $this->request->getVar('id');
                 $inputs = [
                     'schedule_id'   => $this->request->getVar('schedule_id'),
-                    'customer_id'   => $this->request->getVar('customer_id'),
                     'customer_type' => $this->request->getVar('customer_type'),
                     'sr_number'     => $this->request->getVar('sr_number'),
                     'dispatch_date' => $this->request->getVar('dispatch_date'),
@@ -188,16 +185,19 @@ class Dispatch extends BaseController
                 ];
 
                 if (! empty($id)) {
+                    $action             = ACTION_EDIT;
                     $inputs['id']       = $id;
-                    $data['message']    = 'Dispatch has been updated successfully!';
+                    $data['message']    = res_lang('success.updated', 'Dispatch');
 
                     unset($inputs['created_by']);
                 } 
+
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
                 
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
                     $dispatch_id    = !empty($id) ? $id : $this->_model->insertID();
                     $dTModel        = new DispatchedTechniciansModel();
@@ -222,8 +222,8 @@ class Dispatch extends BaseController
     public function fetch() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -231,7 +231,7 @@ class Dispatch extends BaseController
                 $id         = $this->request->getVar('id');
                 $dTModel    = new DispatchedTechniciansModel();
 
-                $data['data']                   = $this->_model->getDispatch($id, false, true, true);
+                $data['data']                   = $this->_model->getDispatch($id, false, true);
                 $data['data']['technicians']    = $dTModel->getDispatchedTechnicians($id);
                 
                 return $data;
@@ -249,25 +249,29 @@ class Dispatch extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Dispatch has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Dispatch')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                
                 $id = $this->request->getVar('id');
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
+                    log_msg(
+                        $data['message']. " Dispatch #: {$id} \nDeleted by: {username}",
+                        ['username' => session('username')]
+                    );
                 }
 
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;
@@ -278,15 +282,21 @@ class Dispatch extends BaseController
      *
      * @return view
      */
-    public function print() 
+    public function print($id) 
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
+
+        $dispatch = $this->_model->getDispatch($id, false, true);
+
+        // Get client details
+        $joModel    = new JobOrderModel();
+        $client     = $joModel->getClientInfo($dispatch['job_order_id']);
         
-        $id                     = $this->request->getUri()->getSegment(3);
-        $data['dispatch']       = $this->_model->getDispatch($id, false, false, true);
+        $data['dispatch']       = $dispatch;
+        $data['client']         = $client;
         $data['title']          = 'Print Dispatch';
-        $data['company_logo']   = $this->getGeneralInfo('company_logo');
+        $data['company_logo']   = $this->getCompanyLogo();
 
         return view('admin/dispatch/print', $data);
     }

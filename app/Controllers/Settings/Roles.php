@@ -41,7 +41,7 @@ class Roles extends BaseController
         $this->_model       = new RolesModel(); // Current model
         $this->_module_code = MODULE_CODES['roles']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -102,8 +102,8 @@ class Roles extends BaseController
     public function save() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Role has been added successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Role')
         ];
 
         // Using DB Transaction
@@ -130,7 +130,7 @@ class Roles extends BaseController
 
                 $inputs['role_id']      = $id;
                 $inputs['updated_by']   = session('username');
-                $data['message']        = 'Role has been updated successfully!';
+                $data['message']        = res_lang('success.updated', 'Role');
             } else {
                 $role_type = $this->request->getVar('role_type');
 
@@ -149,8 +149,8 @@ class Roles extends BaseController
 
             if (! $this->_model->save($inputs)) {
                 $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
             }
 
             // Commit transaction
@@ -158,10 +158,10 @@ class Roles extends BaseController
         } catch (\Exception$e) {
             // Rollback transaction if there's an error
             $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $this->logExceptionError($e, __METHOD__);
+            
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -175,8 +175,8 @@ class Roles extends BaseController
     public function edit() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Role has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Role')
         ];
 
         try {
@@ -184,9 +184,10 @@ class Roles extends BaseController
             $data['data']   = $this->_model->select($this->_model->allowedFields)->find($id);
 
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $this->logExceptionError($e, __METHOD__);
+
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -200,27 +201,32 @@ class Roles extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Role has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Role')
         ];
 
         // Using DB Transaction
         $this->transBegin();
 
         try {
+            $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+            
             $id         = $this->request->getVar('id');
             $role_code  = $this->_model->getSpecificRoleCode($id);
 
             if ($this->_model->roleHasDependecy($role_code)) {
-                $data['status']     = STATUS_ERROR;
+                $data['status']     = res_lang('status.error');
                 $data['message']    = "Role can't be deleted! This role was already used in either <b>Permissions</b> or <b>Accounts</b> modules.";
             } else {
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
+                    log_msg(
+                        "Message: {message} \nDeleted by: {username}", 
+                        ['message' => $data['message'], 'username' => session('username')]
+                    );
                 }
             }
 
@@ -229,10 +235,10 @@ class Roles extends BaseController
         } catch (\Exception$e) {
             // Rollback transaction if there's an error
             $this->transRollback();
+            $this->logExceptionError($e, __METHOD__);
 
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
+            $data['status']     = res_lang('status.error');
+            $data['message']    = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);

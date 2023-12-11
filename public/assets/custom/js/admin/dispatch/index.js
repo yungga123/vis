@@ -38,8 +38,8 @@ $(document).ready(function () {
 		$("#orig_schedule").addClass("d-none");
 		$(".schedule-details").html("");
 		clearSelect2Selection("#schedules");
-		clearSelect2Selection("#customer_id");
 		clearSelect2Selection("#technicians");
+		clearSelect2Selection("#checked_by");
 		clearAlertInForm(elems);
 	});
 
@@ -49,12 +49,9 @@ $(document).ready(function () {
 		"Search a schedule",
 		router.admin.common.schedules,
 		"title",
-		loadScheduleDetails
+		loadScheduleDetails,
+		{ from_jo_only: true }
 	);
-
-	/* Initial init of customers (commerical) via ajax data source */
-	initSelect2Customers();
-	onChangeCustomerType();
 
 	/* Initialize select2 employees/technicians */
 	select2Init("#technicians", "Select technicians", $technicians);
@@ -74,10 +71,9 @@ $(document).ready(function () {
 			$("#schedule_id").val("");
 			$("#orig_schedule").addClass("d-none");
 			$(".schedule-details").html("");
-			initSelect2Customers();
 			clearSelect2Selection("#schedules");
-			clearSelect2Selection("#customer_id");
 			clearSelect2Selection("#technicians");
+			clearSelect2Selection("#checked_by");
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -110,17 +106,11 @@ function edit(id) {
 					res.data.schedule_id
 				);
 
-				// Set selected customer in select2
-				setSelect2AjaxSelection(
-					"#customer_id",
-					res.data.customer_name,
-					res.data.customer_id
-				);
-
 				// Set selected technicians in select2
-				initSelect2Customers(strLower(res.data.customer_type));
 				setSelect2Technicians(res.data.technicians);
-				$("#" + strLower(res.data.customer_type)).prop("checked", true);
+
+				if (!isEmpty(res.data.customer_type))
+					$("#" + strLower(res.data.customer_type)).prop("checked", true);
 
 				// Set selected employee/checked by in select2
 				setSelect2Selection("#checked_by", res.data.checked_by);

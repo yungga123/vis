@@ -4,7 +4,6 @@
         <div class="modal-content">
             <form id="job_order_form" class="with-label-indicator" action="<?= url_to('job_order.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
-                <input type="hidden" id="job_order_id" name="id" readonly>
                 <div class="modal-header">
                     <h5 class="modal-title">Add Job Order</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -14,14 +13,12 @@
                 <div class="modal-body">                    
                     <div class="alert alert-info" role="alert">
                         <strong>Note for Quotation Number:</strong> 
-                        If not empty, initial dropdowns are by 10. Type the number to search if not in the options and then, click to select.
+                        If not empty, initial dropdowns are by 10. Type the number to search if not in the options and then, click to select. Same for the Client.
                     </div>
-                    <div class="form-group">                        
-                        <div class="form-check text-center">
-                            <input type="checkbox" class="form-check-input" name="is_manual" id="is_manual">
-                            <label class="form-check-label" for="is_manual">
-                                <strong>Manually enter a quotation number?</strong>
-                            </label>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox text-center">
+                            <input class="custom-control-input" type="checkbox" name="is_manual" id="is_manual" value="1">
+                            <label for="is_manual" class="custom-control-label">Manually enter a Quotation Number?</label>
                         </div>
                     </div>
                     <div class="form-group" id="quotation_wrapper">
@@ -39,7 +36,7 @@
                     <div class="row d-none" id="manual_quotation_wrapper">
                         <div class="col-6">
                             <div class="form-group">
-                                <label class="required" for="manual_quotation">Manaul Quotation Number</label>
+                                <label class="required" for="manual_quotation">Manual Quotation Number</label>
                                 <input type="text" name="manual_quotation" id="manual_quotation" class="form-control" placeholder="Enter quotation number">
                                 <small id="alert_manual_quotation" class="text-danger"></small>
                             </div>

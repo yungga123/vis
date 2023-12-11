@@ -40,6 +40,13 @@ class GeneralInfoModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    /**
+     * For saving single data using upsert
+     *
+     * @param array $data    the data to be saved
+     * @param array $additionalUpdateFields    the additional fields to be included in update
+     * @return array
+     */
     public function singleSave($data, $additionalUpdateFields = [])
     {
         $builder = $this->db->table($this->table);
@@ -49,10 +56,17 @@ class GeneralInfoModel extends Model
             $builder->updateFields($additionalUpdateFields, true);
         }
 
-        $builder->upsert();
+        return $builder->upsert();
     }
 
-    public function multipleSave($data)
+    /**
+     * For saving multiple data using upsertBatch
+     *
+     * @param array $data    the data to be saved
+     * @param array $additionalUpdateFields    the additional fields to be included in update
+     * @return array
+     */
+    public function multipleSave($data, $additionalUpdateFields = [])
     {
         $builder = $this->db->table($this->table);
         $builder->setData($data);
@@ -61,7 +75,7 @@ class GeneralInfoModel extends Model
             $builder->updateFields($additionalUpdateFields, true);
         }
 
-        $builder->upsertBatch();
+        return $builder->upsertBatch();
     }
 
     /**
@@ -76,7 +90,7 @@ class GeneralInfoModel extends Model
         $builder->where('deleted_at IS NULL');
         $builder->where('key', $key);
 
-        return $builder->find();
+        return $builder->first();
     }
 
     /**

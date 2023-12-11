@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-3 text-center mx-auto">
-			<img src="<?= base_url($company_logo) ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px; width: 200px">
+			<img src="<?= $company_logo ?>" alt="Vinculum Logo" class="img-thumbnail mb-5" style="height: 80px; width: 200px">
 		</div>
 	</div>
 	<div class="row">
@@ -49,13 +49,15 @@
 				<tbody>
 					<?php 
 					if (! empty($rpf_items)): 
+						$count = 1;
 						foreach ($rpf_items as $item): ?>
 							<tr>
-								<td><?= $item['inventory_id'] ?></td>
+								<!-- <td><?= $item['inventory_id'] ?></td> -->
+								<td><?= $count ?></td>
 								<td><?= $item['item_description'] ?></td>
 								<td><?= $item['item_model'] ?></td>
 								<td><?= number_format($item['quantity_in'], 2) ?></td>
-								<td><?= number_format($item['received_q'], 2) ?></td>
+								<td><?= $item['received_q'] ?></td>
 								<td><?= $item['unit'] ?></td>
 								<td><?= number_format($item['item_sdp'], 2) ?></td>
 								<td><?= number_format(floatval($item['item_sdp'] * $item['quantity_in']), 2) ?></td>
@@ -63,6 +65,7 @@
 								<td><?= number_format($item['stocks'], 2) ?></td>
 							</tr>
 					<?php
+							$count++;
 						endforeach;
 					endif; ?>
 				</tbody>

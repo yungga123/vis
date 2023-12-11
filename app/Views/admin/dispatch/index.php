@@ -8,11 +8,12 @@
                     <table id="dispatch_table" class="table table-hover table-striped nowrap">
                         <thead class="nowrap">
                             <tr>
+                                <th></th>
                                 <th>Actions</th>
                                 <th>Dispatch ID</th>
                                 <th>Schedule ID</th>
                                 <th>Schedule Title</th>
-                                <th>Client</th>
+                                <th>Schedule Description</th>
                                 <th>Dispatch Date</th>
                                 <th>Dispatch Out</th>
                                 <th>Time In</th>
@@ -23,8 +24,9 @@
                                 <th>With Permit</th>
                                 <th>Comments</th>
                                 <th>Remarks</th>
-                                <th>Dispatched By</th>
                                 <th>Checked By</th>
+                                <th>Dispatched By</th>
+                                <th>Dispatched At</th>
                             </tr>
                         </thead>
                     </table>

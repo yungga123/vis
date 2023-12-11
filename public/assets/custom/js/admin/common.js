@@ -24,4 +24,6 @@ function initSelect2Customers(customer_type, withBranches) {
 		callback,
 		options
 	);
+
+	if (isEmpty(customer_type)) clearSelect2Selection("#customer_id");
 }

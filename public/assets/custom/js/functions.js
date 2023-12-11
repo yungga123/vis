@@ -1,97 +1,3 @@
-/* Declaration for global variable */
-var STATUS = {
-		SUCCESS: "success",
-		ERROR: "error",
-		INFO: "info",
-		QUESTION: "question",
-		WARNING: "warning",
-		CONFIRM: "confirm",
-	},
-	TITLE = {
-		SUCCESS: "Success!",
-		ERROR: "Oops!",
-		INFO: "Info!",
-		QUESTION: "Question!",
-		WARNING: "Warning!",
-		CONFIRM: "Confirmation!",
-	},
-	METHOD = {
-		GET: "GET",
-		POST: "POST",
-		AJAX: "AJAX",
-	},
-	dtTable,
-	ACTIONS = {
-		VIEW: "View",
-		ADD: "Add",
-		EDIT: "Edit",
-		DELETE: "Delete",
-	};
-
-$(document).ready(function () {
-	$.ajaxSetup({
-		headers: {
-			"X-CSRF-TOKEN": $("meta#csrf").attr("content"),
-		},
-	});
-
-	$(document).ajaxComplete(function (event, request, settings) {
-		if (request.responseText === "already_logged_out") {
-			setTimeout(() => {
-				$(".modal").modal("hide");
-				Swal.close();
-				swalNotifRedirect(
-					TITLE.INFO,
-					"Your session has expired! You will be redirected to login page in <b></b> second/s.",
-					STATUS.WARNING,
-					"reload",
-					6000
-				);
-			}, 100);
-		}
-	});
-
-	$(document).on("hidden.bs.modal", function (event) {
-		if ($(".modal:visible").length && !$("body").hasClass("modal-open")) {
-			$("body").addClass("modal-open");
-		}
-	});
-
-	// Initialize toastr
-	if (isToastrLoaded()) {
-		toastr.options = {
-			closeButton: false,
-			debug: false,
-			newestOnTop: false,
-			progressBar: true,
-			positionClass: "toast-top-center",
-			preventDuplicates: false,
-			onclick: null,
-			showDuration: "300",
-			hideDuration: "1000",
-			timeOut: "4000",
-			extendedTimeOut: "1000",
-			showEasing: "swing",
-			hideEasing: "linear",
-			showMethod: "fadeIn",
-			hideMethod: "fadeOut",
-		};
-
-		console.log("Toastr is loaded!");
-	} else {
-		console.log("Toastr is not loaded!");
-	}
-
-	if (isSwalLoaded()) console.log("Swal is loaded!");
-	else console.log("Swal is not loaded!");
-
-	// Custom file input initialization
-	$(".custom-file-input").on("change", function (e) {
-		const fileName = e.target.files[0].name;
-		$(this).next(".custom-file-label").text(fileName);
-	});
-});
-
 /* Show loading overlay - need to include the templates/loading view to work */
 function showLoading(id) {
 	id = id || "modal_loading";
@@ -275,8 +181,8 @@ function catchErrMsg(err, swal = false) {
 
 /**
  * Show alert message in form or small elem
- * @param {string} elems    - list of name of the inputs
- * @param {string} errors   - error message pass from validation error
+ * @param {array} elems    - list of name of the inputs
+ * @param {string|object} errors   - error message pass from validation error
  * @param {string} status   - status of alert - refer to 'STATUS' global variable
  * @param {string} prefix   - prefix for small elements container for error messages
  * @param {bool} swal       - set true if using swal
@@ -384,259 +290,6 @@ function formSubmit(
 	});
 }
 
-/**
- * Load dataTable data
- * @param {string} table    - id of the table
- * @param {string} route    - url path to get data
- * @param {string} type     - type of request method (GET, POST)
- * @param {object} options  - other options for the dataTable
- */
-function loadDataTable(table, route, type, options = {}, destroy = false) {
-	let columnDefs = [
-			inObject(options, "columnDefs")
-				? options.columnDefs
-				: {
-						targets: 0,
-						orderable: false,
-				  },
-		],
-		order = inObject(options, "order") ? [options.order] : [],
-		buttons = [
-			{
-				extend: "excel",
-				titleAttr: "Export to Excel",
-				exportOptions: {
-					columns: ":visible",
-				},
-				className: "mr-1 rounded btn-outline-success",
-				text: "<i class='fas fa-file-excel'></i> Excel",
-			},
-			{
-				extend: "colvis",
-				className: "mr-1 rounded btn-outline-primary",
-				text: "<i class='fas fa-eye'></i> Column Visibility",
-			},
-		];
-
-	if (inObject(options, "buttons") && !isEmpty(options.buttons)) {
-		if (isArray(options.buttons)) {
-			for (let index = 0; index < options.buttons.length; index++) {
-				buttons.push(options.buttons[index]);
-			}
-		} else buttons.push(options.buttons);
-	}
-
-	dtTable = $("#" + table).DataTable({
-		dom: `
-			<'row px-3 pt-3'
-				<'col-sm-12 col-md-8'<'d-flex justify-content-start'lB>>
-				<'col-sm-12 col-md-4'f>
-			>
-			<'row'<'col-sm-12'tr>>
-			<'row px-3 py-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>`,
-		destroy: destroy,
-		processing: true,
-		// scrollX: true,
-		autoWidth: false,
-		columnDefs: columnDefs,
-		order: order,
-		language: {
-			emptyTable: "No records found...",
-			searchPlaceholder: "Search...",
-			search: "",
-			lengthMenu: "_MENU_",
-		},
-		lengthMenu: [
-			[10, 25, 50, 100],
-			["Show 10 rows", "Show 25 rows", "Show 50 rows", "Show 100 rows"],
-		],
-		buttons: {
-			buttons: buttons,
-			dom: {
-				button: {
-					className: "btn",
-				},
-			},
-		},
-		serverSide: true,
-		ajax: {
-			url: route,
-			type: type || METHOD.GET,
-			data: function (d) {
-				if (inObject(options, "params") && !isEmpty(options.params)) {
-					d.params = options.params;
-				}
-			},
-		},
-		createdRow: function (row, data, dataIndex) {
-			if (data.length > 1) {
-				for (var i = 0; i < data.length; i++) {
-					if (isEmpty(data[i])) {
-						$(`td:eq(${i})`, row).text("N/A");
-					}
-				}
-			}
-		},
-		initComplete: function (settings, json) {
-			// if ($(".dataTables_wrapper").parent().closest(".modal").length == 0)
-			$(".dataTables_wrapper").parent().addClass("p-0");
-			$(".dataTables_wrapper .table").css({ width: "100%" });
-			$(".dataTables_length").addClass("mr-2");
-			$(".dataTables_filter input").removeClass("form-control-sm");
-			$(".dataTables_length select").removeClass(
-				"custom-select-sm form-control-sm"
-			);
-			$(".dt-buttons").removeClass("btn-group");
-
-			// To fix not align header and body
-			$("#" + table).wrap(
-				"<div style='overflow: auto; width: 100%; position: relative;'></div>"
-			);
-		},
-	});
-}
-
-/* Refresh dataTable data */
-function refreshDataTable(table = null) {
-	if (!isEmpty(table)) table.DataTable().ajax.reload();
-	else dtTable.ajax.reload();
-}
-
-/**
- * Use for showing and hiding a password - dependent on input group password
- * You can see reference from Views/settings/send_mail.php for the input group
- *
- * @param {string} passId 		name of the password id selector
- * @param {string} showPassId 	name of the show password button id selector
- * @return {void}
- */
-function passwordShowHideInit(passId, showPassId) {
-	passId = passId || "password";
-	showPassId = showPassId || "show_password";
-
-	$("#" + showPassId).on("click", function () {
-		if (!isEmpty($("#" + passId).val())) {
-			if ($(this).hasClass("show")) {
-				$(this)
-					.removeClass("show")
-					.attr("title", "Click here to show password!");
-				$(this).children("i").removeClass().addClass("fas fa-eye");
-				$("#" + passId).attr("type", "password");
-			} else {
-				$(this).addClass("show").attr("title", "Click here to hide password!");
-				$(this).children("i").removeClass().addClass("fas fa-eye-slash");
-				$("#" + passId).attr("type", "text");
-			}
-		}
-	});
-}
-
-/*
- * Initializations and others
- */
-
-/**
- * Initialize select2 normally
- *
- * @param {string} selector    	- id or class name of the select
- * @param {string} placeholder 	- placeholder
- * @param {object} data  		- data or the options to dispaly
- * @param {object} container  	- the container to attach to (e.g for modal)
- * @return void
- */
-function select2Init(selector, placeholder, data, container) {
-	selector = selector || ".select2";
-	$(selector).select2({
-		placeholder: placeholder || "Select an option",
-		allowClear: true,
-		data: data || {},
-		attachContainer: container || "",
-	});
-}
-
-/**
- * Initialize select2 via ajax data source
- *
- * @param {string} selector    	- id or class name of the select
- * @param {string} placeholder 	- placeholder
- * @param {string} route  		- the route or url to get data from
- * @param {string} text  		- the displayed text of selected item
- * @param {function} callaback  - the callback function after selecting an item
- * @param {object} options  	- the options (data) to be passed to the backend
- * @param {number} perPage  	- the length of options to display - default set to 10
- * @return void
- */
-function select2AjaxInit(
-	selector,
-	placeholder,
-	route,
-	text,
-	callaback,
-	options,
-	perPage
-) {
-	selector = selector || ".select2";
-
-	function dataHandler(params) {
-		let newOptions = {
-			page: params.page || 1,
-			perPage: perPage || 10,
-		};
-
-		if (isObject(options) && !isEmpty(options))
-			$.each(options, (key, value) => (newOptions[key] = value));
-
-		return {
-			q: params.term || "",
-			options: newOptions,
-		};
-	}
-
-	$(selector).select2({
-		placeholder: placeholder || "Select an option",
-		allowClear: true,
-		ajax: {
-			url: route,
-			type: "post",
-			dataType: "json",
-			delay: 250,
-			cache: false,
-			data: function (params) {
-				return dataHandler(params);
-			},
-			processResults: function (response) {
-				return {
-					results: response.data,
-				};
-			},
-		},
-		templateResult: function (data) {
-			return data[text] || data.text;
-		},
-		templateSelection: function (data) {
-			if (isFunction(callaback)) callaback(data);
-			return data[text] || data.text;
-		},
-	});
-}
-
-/**
- * Re-initialize select2 and new selection
- *
- * @param {string} selector    	- id or class name of the select
- * @param {string} placeholder 	- placeholder
- * @param {object} newData  	- new data or the new options to dispaly
- * @return void
- */
-function select2Reinit(select, placeholder, newData) {
-	$(select).html("");
-	if (isSelect2Initialized(select)) $(select).select2("destroy");
-
-	select2Init(select, placeholder, newData);
-
-	$(select).val("").trigger("change");
-}
-
 /* Check if select2 was initialized */
 function isSelect2Initialized(selector, initIfNot = false) {
 	let isInitialized = $(selector).hasClass("select2-hidden-accessible");
@@ -687,119 +340,10 @@ function setOptionValue(selector, val) {
 function formatOptionsForSelect2(options, id, text) {
 	if (isEmpty(options)) return [];
 	return $.map(options, (val, i) => {
-		if (Number.isInteger(Number(i))) return { id: val[id], text: val[text] };
+		if (Number.isInteger(Number(i)) && (isArray(val) || isObject(val)))
+			return { id: val[id], text: strCapitalize(val[text]) };
 		return { id: i, text: strCapitalize(val) };
 	});
-}
-
-/**
- * Initialize date range picker
- * with custom callbacks for on apply and cancel events
- *
- * @param {string} selector 			- id or class name with '#' or '.' identifier
- * @param {object} options    			- options for date range picker
- * @param {function} onApplyCallback  	- on apply callback
- * @param {function} onCancelCallback 	- on cancel callback
- */
-function initDateRangePicker(
-	selector,
-	options,
-	onApplyCallback,
-	onCancelCallback
-) {
-	options = options || {};
-	$(selector).daterangepicker(options);
-	$(selector).on("apply.daterangepicker", function (ev, picker) {
-		if (!picker.autoUpdateInput) {
-			$(this).val(
-				picker.startDate.format(picker.locale.format) +
-					" - " +
-					picker.endDate.format(picker.locale.format)
-			);
-		}
-
-		if (isFunction(onApplyCallback)) onApplyCallback(ev, picker);
-	});
-	$(selector).on("cancel.daterangepicker", function (ev, picker) {
-		$(this).val("");
-		if (isFunction(onCancelCallback)) onCancelCallback(ev, picker);
-	});
-}
-
-/**
- * Initialize full calendar for schedule
- *
- * @param {string} elemName 		id or class name without identifier
- * @param {object} eventsData		calendar event data [object | json]
- * @param {object} options   		set other options for the calendar
- * @returns {object}				_calendar variable object
- */
-function initFullCalendar(elemName, eventsData, options) {
-	const calendarEl = document.getElementById(elemName);
-
-	const headerToolbar = inObject(options, "headerToolbar")
-		? options.headerToolbar
-		: {
-				left: "prev,next today",
-				center: "title",
-				right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-		  };
-
-	// Check if has eventPopHover callback otherwise call the default
-	const eventPopHover =
-		inObject(options, "eventPopHover") && isFunction(options.eventPopHover)
-			? options.eventPopHover
-			: (info) => {
-					$(info.el).popover({
-						container: "body",
-						placement: "top",
-						trigger: "hover",
-						title: info.event.title,
-						content: info.event.extendedProps.description,
-					});
-			  };
-
-	// Check if has eventClick callback otherwise call the default
-	const eventClick =
-		inObject(options, "eventClick") && isFunction(options.eventClick)
-			? options.eventClick
-			: (info) => {
-					// Please don't change the 'fcEventClick' function name
-					// You need to define fcEventClick function in your module
-					// to get the info from the event
-					if (isFunctionExist(fcEventClick)) fcEventClick(info);
-			  };
-
-	var _calendar = new FullCalendar.Calendar(calendarEl, {
-		themeSystem: "bootstrap",
-		initialView: "dayGridMonth",
-		displayEventTime: true,
-		editable: true,
-		height: "auto",
-		headerToolbar: headerToolbar,
-		views: {
-			dayGridMonth: { buttonText: "Month" },
-			timeGridWeek: { buttonText: "Week" },
-			timeGridDay: { buttonText: "Day" },
-			listMonth: { buttonText: "List" },
-		},
-		events: eventsData,
-		dayMaxEvents: true, // allow "more" link when too many events
-		navLinks: true,
-		eventDidMount: eventPopHover,
-		eventClick: eventClick,
-	});
-
-	_calendar.render();
-
-	// You can use the return object to refresh
-	// or add additional methods or functions to the calendar
-	return _calendar;
-}
-
-/* Refreshing Full Calendar */
-function refreshFullCalendar(elem) {
-	elem.refetchEvents();
 }
 
 /*
@@ -848,6 +392,14 @@ function inObject(obj, key) {
 	// return obj.hasOwnProperty(key); // Same as above
 }
 
+/* Check if Array key exist */
+function inArray(arr, key) {
+	return isArray(arr) ? arr.includes(key) : false;
+
+	/* Another methods */
+	// return isArray(arr) ? (arr.indexOf(key) !== -1) : false;
+}
+
 /* Check if array or object? is associative from chatgpt */
 function isArrayOrObjectAssoc(obj) {
 	if (!isObject(obj) || !isArray(obj)) return false;
@@ -880,16 +432,6 @@ function isNumber(param) {
 	return typeof param === "number" && isFinite(param);
 }
 
-/* Check if is toastr is loaded */
-function isToastrLoaded() {
-	return window.toastr != undefined;
-}
-
-/* Check if is swal is loaded */
-function isSwalLoaded() {
-	return window.Swal != undefined;
-}
-
 /* Source: https://flexiple.com/javascript/javascript-capitalize-first-letter/ */
 /* Capitalize first letter of string/word */
 function strCapitalize(str) {
@@ -898,16 +440,18 @@ function strCapitalize(str) {
 
 /* Transform string to upper case */
 function strUpper(str) {
-	return str.toUpperCase();
+	return isEmpty(str) ? "" : str.toUpperCase();
 }
 
 /* Transform string to lower case */
 function strLower(str) {
-	return str.toLowerCase();
+	return isEmpty(str) ? "" : str.toLowerCase();
 }
 
 /* Transform every words to upper case */
 function strUpperWords(str) {
+	if (isEmpty(str)) return "";
+
 	const arr = str.split(" ");
 
 	for (var i = 0; i < arr.length; i++) {
@@ -919,6 +463,8 @@ function strUpperWords(str) {
 
 /* Transform every words to lower case */
 function strUpperWords(str) {
+	if (isEmpty(str)) return "";
+
 	const arr = str.split(" ");
 
 	for (var i = 0; i < arr.length; i++) {
@@ -966,6 +512,8 @@ function getQueryStringInUrl(param) {
 	// Get the query string from the current URL
 	const queryString = window.location.search;
 
+	if (!queryString) return {};
+
 	// Remove the leading '?' character if present
 	const queryStringWithoutQuestionMark = queryString.slice(1);
 
@@ -995,6 +543,8 @@ function removeQueryStringInUrl(params) {
 	// Get the current query string from the URL
 	const queryString = window.location.search;
 
+	if (!queryString) return;
+
 	// Create a URLSearchParams object from the query string
 	const searchParams = new URLSearchParams(queryString);
 
@@ -1020,4 +570,65 @@ function removeQueryStringInUrl(params) {
 
 	// Optionally, you can also update the address bar directly
 	// window.location.search = newQueryString;
+}
+
+/**
+ * Format number - eg. 1000 to 1,000
+ *
+ * @param {integer} number 	the number to format
+ * @param {integer} decimal	identifier on how many decimals - default 2
+ * @returns {integer}
+ */
+function numberFormat(number, decimal) {
+	return parseFloat(number).toLocaleString("en-US", {
+		minimumFractionDigits: decimal || 2,
+		maximumFractionDigits: decimal || 2,
+	});
+}
+
+/**
+ * Check key in object if exist then return
+ *
+ * @param {object} obj 	the object to search from
+ * @param {string} key	the key to search for
+ * @returns {string|null}
+ */
+function inObjectReturn(obj, key) {
+	return inObject(obj, key) ? obj[key] : null;
+}
+
+/**
+ * Parse number or float string
+ *
+ * @param {string} string 	Float/number string
+ * @returns {string|number}
+ */
+function parseNumber(string) {
+	// Convert if not string to avoid error
+	string = isString(string) ? string : string.toString();
+	return parseFloat(string.replace(/,/g, ""));
+}
+
+/**
+ * Check if page is reloaded
+ *
+ * @returns {bool}
+ */
+function isPageReloaded() {
+	return performance.navigation.type === 1;
+}
+
+/**
+ * Check if there's a query paramaters
+ * Intended if from mail notif
+ *
+ * @returns {bool}
+ */
+function showItemsIfRedirectedFromMail() {
+	const query = getQueryStringInUrl();
+
+	if (!isEmpty(query)) {
+		if (query.mail && !isPageReloaded())
+			if (isFunctionExist(view)) view(query.id);
+	}
 }

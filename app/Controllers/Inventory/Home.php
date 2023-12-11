@@ -12,6 +12,8 @@ use monken\TablesIgniter;
  */
 class Home extends BaseController
 {
+    /* Declare trait here to use */
+
     /**
      * Use to initialize corresponding model
      * @var object
@@ -28,7 +30,6 @@ class Home extends BaseController
      * Use to get current permissions
      * @var string
      */
-
     private $_permissions;
 
     /**
@@ -51,7 +52,7 @@ class Home extends BaseController
         $this->_model       = new InventoryModel(); // Current model
         $this->_module_code = MODULE_CODES['inventory']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
         $this->_mdropdown   = new InventoryDropdownModel();
     }
 
@@ -95,7 +96,8 @@ class Home extends BaseController
                 ]
             ],
         ]);
-        $data['categories']     = inventory_categories_options($this->_mdropdown, true);
+        $data['categories']         = inventory_categories_options($this->_mdropdown, false);
+        $data['categories_filter']  = inventory_categories_options($this->_mdropdown, true);
 
         return view('inventory/index', $data);
     }
@@ -110,6 +112,26 @@ class Home extends BaseController
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
+        $fields     = [
+            'id',
+            'supplier_name',
+            'category_name',
+            'subcategory_name',
+            'brand',
+            'item_model',
+            'item_description',
+            'size',
+            'unit',
+            'stocks',
+            'item_sdp',
+            'total_price',
+            'item_srp',
+            'project_price',
+            'date_purchase',
+            'location',
+            'created_by_name',
+            'created_at_formatted'
+        ];
 
         $table->setTable($builder)
             ->setSearch([
@@ -120,40 +142,13 @@ class Home extends BaseController
                 "{$this->_model->table}.item_description",
                 "{$this->_model->view}.supplier_name",
             ])
-            ->setOrder([
-                null,
-                'id',
-                'supplier_name',
-                'category_name',
-                'subcategory_name',
-                'brand',
-                'item_model',
-                'item_description',
-                'stocks',
-                'total',
-                'size',
-                'unit',
-                'date_purchase',
-                'created_by_name',
-                'created_at_formatted'
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                'id',
-                'supplier_name',
-                'category_name',
-                'subcategory_name',
-                'brand',
-                'item_model',
-                'item_description',
-                'stocks',
-                'total',
-                'size',
-                'unit',
-                'date_purchase',
-                'created_by_name',
-                'created_at_formatted'
-            ]);
+            ->setOrder(array_merge([null, null], $fields))
+            ->setOutput(
+                array_merge(
+                    [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
@@ -166,12 +161,13 @@ class Home extends BaseController
     public function save() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been saved successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $action = ACTION_ADD;
                 $inputs = [
                     'id'                => $this->request->getVar('id'),
                     'category'          => $this->request->getVar('category'),
@@ -191,14 +187,17 @@ class Home extends BaseController
                     'location'          => $this->request->getVar('location'),
                 ];
     
+                if ($this->request->getVar('id')) {
+                    $action             = ACTION_EDIT;
+                    $data['message']    = res_lang('success.updated', 'Item');
+                }
+
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
+    
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
-                }
-    
-                if ($this->request->getVar('id')) {
-                    $data['message']    = 'Item has been updated successfully!';
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }
@@ -215,8 +214,8 @@ class Home extends BaseController
     public function edit() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been retrieved!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -224,7 +223,8 @@ class Home extends BaseController
                 $id             = $this->request->getVar('id');
                 $data['data']   = $this->_model->getInventories($id, true, true);
                 return $data;
-            }
+            },
+            false
         );
 
         return $response;
@@ -238,16 +238,18 @@ class Home extends BaseController
     public function delete() 
     {
         $data       = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Item has been deleted successfully!'
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Item')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                
                 if (! $this->_model->delete($this->request->getVar('id'))) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 }
                 return $data;
             }

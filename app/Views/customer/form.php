@@ -12,58 +12,77 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12 col-lg-6">
                             <div class="card">
                                 <div class="card-header text-center">
                                     <h5>Client Details</h5>
                                 </div>
-                                <div class="card-body row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label class="required">Client Type</label>
-                                            <select name="type" id="type" class="form-control" required>
-                                                <option value="COMMERCIAL">Commercial</option>
-                                                <option value="RESIDENTIAL">Residential</option>
-                                            </select>
-                                            <small id="alert_type" class="form-text text-danger"></small>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="required">New Client?</label>
-                                            <select name="forecast" id="forecast" class="form-control" required>
-                                                <option value="1">Yes</option>
-                                                <option value="0">No</option>
-                                            </select>
-                                            <small id="alert_forecast" class="form-text text-danger"></small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="required">Client Name</label>
-                                            <input name="name" id="name" type="text" class="form-control" placeholder="JC Amoranto / Vinculum Tech"  required>
-                                            <small id="alert_name" class="form-text text-danger"></small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="required">Contact Person</label>
-                                            <input name="contact_person" id="contact_person" type="text" class="form-control" placeholder="Mr. JC"  required>
-                                            <small id="alert_contact_person" class="form-text text-danger"></small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Notes</label>
-                                            <input name="notes" id="notes" type="text" class="form-control" placeholder="Enter...">
-                                            <small id="alert_notes" class="form-text text-danger"></small>
-                                        </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="required">Client Type</label>
+                                        <select name="type" id="type" class="form-control" required>
+                                            <option value="COMMERCIAL">Commercial</option>
+                                            <option value="RESIDENTIAL">Residential</option>
+                                        </select>
+                                        <small id="alert_type" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">New Client?</label>
+                                        <select name="forecast" id="forecast" class="form-control" required>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                        <small id="alert_forecast" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Client Name</label>
+                                        <input name="name" id="name" type="text" class="form-control" placeholder="JC Amoranto / Vinculum Tech"  required>
+                                        <small id="alert_name" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="required">Contact Person</label>
+                                        <input name="contact_person" id="contact_person" type="text" class="form-control" placeholder="Mr. JC"  required>
+                                        <small id="alert_contact_person" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Notes</label>
+                                        <textarea name="notes" id="notes" class="form-control" cols="2" rows="3" placeholder="Enter..."></textarea>
+                                        <small id="alert_notes" class="form-text text-danger"></small>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-6">
                             <div class="card">
                                 <div class="card-header text-center">
                                     <h5>Contact Details</h5>
                                 </div>
                                 <div class="card-body row">
                                     <div class="col-sm-12">
+                                        <p id="unformatted_cn"></p>
                                         <div class="form-group">
-                                            <label class="required">Contact Number</label>
-                                            <input name="contact_number" id="contact_number" type="text" class="form-control" placeholder="0999XXXXXXX / 888X-XXXX"  required>
-                                            <small id="alert_contact_number" class="form-text text-danger"></small>
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="telephone_only" id="telephone_only" value="1">
+                                                <label for="telephone_only" class="custom-control-label">Check this if telephone number only or client has no contact number.</label>
+                                            </div>
+                                        </div>
+                                        <div id="contact_number_wrapper">
+                                            <div class="form-group">
+                                                <label class="required">Mobile Number</label>
+                                                <input name="mobile_number" id="contact_number" type="text" class="form-control" placeholder="09XX-XXX-XXXX">
+                                                <small id="alert_contact_number" class="form-text text-danger"></small>
+                                                <small id="alert_mobile_number" class="form-text text-danger"></small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Mobile Number 2</label>
+                                                <input name="mobile_number2" id="mobile_number2" type="text" class="form-control" placeholder="09XX-XXX-XXXX">
+                                                <small id="alert_mobile_number2" class="form-text text-danger"></small>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Telephone Number</label>
+                                            <input name="telephone" id="telephone" type="text" class="form-control" placeholder="(02) 8XXX-XXXX">
+                                            <small id="alert_telephone" class="form-text text-danger"></small>
                                         </div>
                                         <div class="form-group">
                                             <label>Email Address</label>
@@ -74,7 +93,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-12 col-lg-6">
                             <div class="card">
                                 <div class="card-header text-center">
                                     <h5>Address</h5>
@@ -105,6 +124,8 @@
 
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-6">
                             <div class="card">
                                 <div class="card-header text-center">
                                     <h5>Referrals</h5>

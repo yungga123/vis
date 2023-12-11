@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\Models\EmployeesModel;
+use App\Models\EmployeeModel;
 
 trait AccountMailTrait
 {
@@ -18,7 +18,7 @@ trait AccountMailTrait
      */
     public function sendMailAccountNotif($employeeId, $request, $change = false)
     {
-        $empModel   = new EmployeesModel();
+        $empModel   = new EmployeeModel();
         // Get employe name and email address
         $employee   = $empModel->getEmployeeDetails($employeeId, 'employee_name, email_address');
         $sendTo     = $employee['email_address'];

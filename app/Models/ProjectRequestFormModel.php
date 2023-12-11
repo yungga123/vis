@@ -4,11 +4,14 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
+use App\Traits\FilterParamTrait;
+use App\Traits\HRTrait;
+use App\Services\Mail\InventoryMailService;
 
 class ProjectRequestFormModel extends Model
 {
     /* Declare trait here to use */
-    use InventoryTrait;
+    use InventoryTrait, FilterParamTrait, HRTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'project_request_forms';
@@ -64,13 +67,19 @@ class ProjectRequestFormModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['setCreatedBy'];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = ['setStatusByAndAt'];
     protected $afterUpdate    = ['updateInventoryStock'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Custom variables
+    // Restrict edit/delete action for this statuses
+    protected $restrictedStatuses   = ['rejected', 'item_out', 'filed'];
+    // Get inserted ID
+    protected $insertedID           = 0;
 
     // Set the value for created_by before inserting
     protected function setCreatedBy(array $data)
@@ -91,6 +100,44 @@ class ProjectRequestFormModel extends Model
         return $data;
     }
 
+    // Mail notif after record created
+    protected function mailNotif(array $data)
+    {
+        $id                 = $data['id'];
+        $this->insertedID   = $id;
+
+        if ($data['result']) {
+            $columns    = "
+                {$this->table}.id,
+                {$this->table}.job_order_id,
+                {$this->table}.status,
+                {$this->table}.process_date,
+                {$this->table}.created_at,
+                cb.employee_name AS created_by
+            ";
+            $builder    = $this->select($columns);
+            $builder->where("{$this->table}.id", $id);
+            $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+
+            $record     = $builder->first();
+
+            // Send mail notification
+            $service = new InventoryMailService();
+            $service->sendPrfMailNotif($record);
+        }
+        
+        return $data;
+    }
+
+    // Check if record exist
+    public function exists($id)
+    {
+        $builder = $this->select('id');
+        $builder->where('deleted_at', null);
+
+        return !empty($builder->find($id));
+    }
+
     public function countRecords($param = null)
     {
         $builder = $this->where('deleted_at IS NULL');
@@ -104,25 +151,29 @@ class ProjectRequestFormModel extends Model
     public function updateInventoryStock(array $data)
     {
         if ($data['result'] && isset($data['data']['status'])) {
-            if ($data['data']['status'] === 'item_out') {
+            $status = $data['data']['status'];
+            if (in_array($status, ['item_out', 'filed'])) {
                 $prfItemModel   = new PRFItemModel();
                 $columns        = "
                     {$prfItemModel->table}.inventory_id, 
                     {$prfItemModel->table}.quantity_out,
+                    {$prfItemModel->table}.returned_q,
                     inventory.stocks
                 ";
                 $record         = $prfItemModel->getPrfItemsByPrfId($data['id'], $columns, false, true);
-                $action         = 'ITEM_OUT';
+                $action         = strtoupper($status);
+                $item_out       = $action === 'ITEM_OUT';
 
                 if (! empty($record)) {
                     $logs_data = [];
                     foreach ($record as $val) {
-                        $this->traitUpdateInventoryStock($val['inventory_id'], $val['quantity_out'], $action);
-                        $logs_data[] = [
+                        $quantity       = $item_out ? $val['quantity_out'] : $val['returned_q'];
+                        $this->traitUpdateInventoryStock($val['inventory_id'], $quantity, $action);
+                        $logs_data[]    = [
                             'inventory_id'  => $val['inventory_id'],
-                            'stocks'        => $val['quantity_out'],
+                            'stocks'        => $quantity,
                             'parent_stocks' => $val['stocks'],
-                            'action'        => $action,
+                            'action'        => $item_out ? $action : 'ITEM_IN',
                             'created_by'    => session('username'),
                         ];
                     }
@@ -144,7 +195,8 @@ class ProjectRequestFormModel extends Model
             {$this->table}.job_order_id,
             {$this->table}.process_date,
             {$this->table}.status,
-            {$this->table}.remarks
+            {$this->table}.remarks,
+            {$this->table}.created_at
         ";
 
         if ($date_format) {
@@ -176,13 +228,18 @@ class ProjectRequestFormModel extends Model
     {
         $joModel = new JobOrderModel();
         // Get the selected columns
-        return $joModel->selectedColumns($with_text, $with_date);
+        $columns = $joModel->selectedColumns($with_text, $with_date) .",
+            ".dt_sql_date_format("{$joModel->table}.date_requested")." AS date_requested_formatted,
+            ".dt_sql_date_format("{$joModel->table}.date_committed")." AS date_committed_formatted
+        ";
+        return $columns;
     }
 
     // Join with prf_view
     public function joinView($builder)
     {
         $builder->join($this->view, "{$this->table}.id = {$this->view}.prf_id");
+        return $this;
     }
 
     // Join with job_orders
@@ -192,7 +249,8 @@ class ProjectRequestFormModel extends Model
         // Join with job_orders table
         $builder->join($joModel->table, "{$this->table}.job_order_id = {$joModel->table}.id", 'left');
         // Then join job_orders with task_lead_booked view and employees table
-        $joModel->_join($builder);
+        $joModel->joinWithOtherTables($builder);
+        return $this;
     }
 
     // Get project request forms
@@ -218,6 +276,8 @@ class ProjectRequestFormModel extends Model
         $builder->select($columns);
         $this->joinView($builder);
         $this->joinJobOrder($builder);
+
+        $this->filterParam($request, $builder, "{$this->table}.status");
 
         $builder->where("{$this->table}.deleted_at", null);
         $builder->orderBy('id', 'DESC');
@@ -287,11 +347,8 @@ class ProjectRequestFormModel extends Model
                     <a href="$print_url" class="btn btn-info btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }
-
-            $buttons = ($row['status'] === 'rejected' && !is_admin()) 
-                ? ($buttonView ?? '~~N/A~~') : dt_buttons_dropdown($buttons);
                 
-            return $buttons;
+            return dt_buttons_dropdown($buttons);
         };
         
         return $closureFun;

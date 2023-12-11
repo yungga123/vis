@@ -25,18 +25,11 @@ if (! function_exists('get_nav_menus'))
 	{
         $is_sales       = (
             url_is('tasklead') || 
+            url_is('tasklead/booked') || 
             url_is('sales_manager') || 
             url_is('sales_manager_indv')
         );
-
         $is_inventory = (
-            url_is('inventory') || 
-            url_is('inventory/dropdowns') || 
-            url_is('inventory/logs') || 
-            url_is('project-request-forms')
-        );
-
-        $is_inventory   = (
             url_is('inventory') || 
             url_is('inventory/dropdowns') || 
             url_is('inventory/logs') || 
@@ -45,7 +38,7 @@ if (! function_exists('get_nav_menus'))
         $is_purchasing  = (
             url_is('suppliers') || 
             url_is('request-purchase-forms') ||
-            url_is('generate-po')
+            url_is('purchase-orders')
         );
         $is_settings    = (
             url_is('settings/mail') || 
@@ -91,6 +84,12 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => $is_inventory,
                 'icon'      => 'fas fa-store-alt',
             ],
+            'REPORTS'         => [
+                'name'      => 'Reports',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => url_is('reports/export'),
+                'icon'      => 'fas fa-server',
+            ],
         ];
 
         return $menu[$param];
@@ -130,7 +129,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('TASK_LEAD'),
                 'url'       => url_to('tasklead.home'),
-                'class'     => (url_is('tasklead') ? 'active' : ''),
+                'class'     => (url_is('tasklead') || url_is('tasklead/booked') ? 'active' : ''),
                 'icon'      => 'fas fa-tasks',
             ],
             'MANAGER_OF_SALES'      => [
@@ -138,14 +137,14 @@ if (! function_exists('setup_modules'))
                 'name'      => get_modules('MANAGER_OF_SALES'),
                 'url'       => url_to('sales_manager.home'),
                 'class'     => (url_is('sales_manager') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
+                'icon'      => 'fas fa-user-tie',
             ],
             'MANAGER_OF_SALES_INDV' => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('MANAGER_OF_SALES_INDV'),
                 'url'       => url_to('sales_manager_indv.home'),
                 'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
+                'icon'      => 'fas fa-user-tag',
             ],
             'INVENTORY'             => [
                 'menu'      => 'INVENTORY', // Leave empty if none
@@ -157,7 +156,7 @@ if (! function_exists('setup_modules'))
             'SETTINGS_MAILCONFIG'   => [
                 'menu'      => 'SETTINGS', // Leave empty if none
                 'name'      => get_modules('SETTINGS_MAILCONFIG'),
-                'url'       => url_to('mail.home'),
+                'url'       => url_to('mail_config.home'),
                 'class'     => (url_is('settings/mail') ? 'active' : ''),
                 'icon'      => 'fas fa-envelope',
             ],
@@ -217,12 +216,12 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('request-purchase-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-bag',
             ],
-            'GENERATE_PO'           => [
+            'PURCHASING_PO'           => [
                 'menu'      => 'PURCHASING', // Leave empty if none
-                'name'      => get_modules('GENERATE_PO'),
-                'url'       => url_to('generate-po.home'),
-                'class'     => (url_is('generate-po') ? 'active' : ''),
-                'icon'      => 'fas fa-list',
+                'name'      => get_modules('PURCHASING_PO'),
+                'url'       => url_to('purchase_order.home'),
+                'class'     => (url_is('purchase-orders') ? 'active' : ''),
+                'icon'      => 'fas fa-shopping-basket',
             ],
             'SETTINGS_GENERAL_INFO'  => [
                 'menu'      => 'SETTINGS', // Leave empty if none
@@ -230,6 +229,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('general_info.home'),
                 'class'     => (url_is('settings/general-info') ? 'active' : ''),
                 'icon'      => 'fas fa-info-circle',
+            ],
+            'EXPORT_DATA'  => [
+                'menu'      => 'REPORTS', // Leave empty if none
+                'name'      => get_modules('EXPORT_DATA'),
+                'url'       => url_to('export.home'),
+                'class'     => (url_is('reports/export') ? 'active' : ''),
+                'icon'      => 'fas fa-file-export',
             ],
         ];
 

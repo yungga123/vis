@@ -5,11 +5,12 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\ScheduleModel;
 use App\Traits\AdminTrait;
+use App\Traits\HRTrait;
 
 class Schedule extends BaseController
 {
     /* Declare trait here to use */
-    use AdminTrait;
+    use AdminTrait, HRTrait;
 
     /**
      * Use to initialize ScheduleModel class
@@ -44,7 +45,7 @@ class Schedule extends BaseController
         $this->_model       = new ScheduleModel(); // Current model
         $this->_module_code = MODULE_CODES['schedules']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -89,61 +90,46 @@ class Schedule extends BaseController
      */
     public function save() 
     {
-        $data = [
-            'status'    => STATUS_SUCCESS,
-            'message'   => 'Schedule has been added successfully!'
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.added', 'Schedule')
         ];
-
-        // Using DB Transaction
-        $this->transBegin();
-
-        try {
-            $id         = $this->request->getVar('id');
-            $inputs = [
-                'date_range'    => $this->request->getVar('date_range'),
-                'title'         => $this->request->getVar('title'),
-                'description'   => $this->request->getVar('description'),
-                'start'         => $this->request->getVar('start'),
-                'end'           => $this->request->getVar('end'),
-                'type'          => $this->request->getVar('type'),
-                'created_by'    => session('username'),
-            ];
-
-            
-            if (! empty($id)) {
-                if (!$this->checkPermissions($this->_permissions, 'EDIT')) {
-                    return $this->response->setJSON(
-                        [
-                            'status'    => STATUS_INFO,
-                            'message'   => "You don't have permission to EDIT any schedule currently! Ask your superior to provide one."
-                        ]
-                    );
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $action     = ACTION_ADD;
+                $id         = $this->request->getVar('id');
+                $inputs     = [
+                    'date_range'    => $this->request->getVar('date_range'),
+                    'title'         => $this->request->getVar('title'),
+                    'description'   => $this->request->getVar('description'),
+                    'start'         => $this->request->getVar('start'),
+                    'end'           => $this->request->getVar('end'),
+                    'type'          => $this->request->getVar('type'),
+                    'created_by'    => session('username'),
+                ];
+                
+                if (! empty($id)) {
+                    $action             = ACTION_EDIT;
+                    $inputs['id']       = $id;
+                    $data['message']    = res_lang('success.updated', 'Schedule');
+    
+                    unset($inputs['created_by']);
                 }
 
-                $inputs['id']       = $id;
-                $data['message']    = 'Schedule has been updated successfully!';
+                $this->checkRoleActionPermissions($this->_module_code, $action, true);
+    
+                if (! $this->_model->save($inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                }
 
-                unset($inputs['created_by']);
-            } 
-
-            if (! $this->_model->save($inputs)) {
-                $data['errors']     = $this->_model->errors();
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = "Validation error!";
+                return $data;
             }
+        );
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception $e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
     
     /**
@@ -179,8 +165,8 @@ class Schedule extends BaseController
                 }
             }
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data = 'Error while processing data! Please contact your system administrator.';
+            $this->logExceptionError($e, __METHOD__);
+            $data = res_lang('error.process');
         }
 
         return $this->response->setJSON($data);
@@ -193,41 +179,32 @@ class Schedule extends BaseController
      */
     public function delete() 
     {
-        $data = [
-            'status'    => STATUS_INFO,
-            'message'   => "You don't have permission to DELETE any schedule currently! Ask your superior to provide one."
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Schedule')
         ];
-
-        // Using DB Transaction
-        $this->transBegin();
-
-        try {
-            if ($this->checkPermissions($this->_permissions, 'DELETE')) {
-                $id = $this->request->getVar('id');
-                
-                $data['status']     = STATUS_SUCCESS;
-                $data['message']    = "Schedule has been deleted successfully!";            
-
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+    
+                $id = $this->request->getVar('id');        
+    
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
-                    $data['status']     = STATUS_ERROR;
-                    $data['message']    = "Validation error!";
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
                 } else {
-                    log_message('error', 'Deleted by {username}', ['username' => session('username')]);
+                    log_msg(
+                        $data['message']. " Schedule #: {$id} \nDeleted by: {username}",
+                        ['username' => session('username')]
+                    );
                 }
+
+                return $data;
             }
+        );
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status']     = STATUS_ERROR;
-            $data['message']    = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
+        return $response;
     }
 }

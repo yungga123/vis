@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\HRTrait;
 
 class CustomerBranchModel extends Model
 {
+    /* Declare trait here to use */
+    use HRTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'customer_branches';
     protected $accountsView     = 'accounts_view';
@@ -116,14 +120,11 @@ class CustomerBranchModel extends Model
         ";
 
         if ($dtTable) {
-            $columns .= ",
-                CONCAT(
-                    IF(province = '' || province IS NULL, '', CONCAT(province, ', ')),
-                    IF(city = '' || city IS NULL, '', CONCAT(city, ', ')),
-                    IF(barangay = '' || barangay IS NULL, '', CONCAT(barangay, ', ')),
-                    IF(subdivision = '', '', subdivision)
-                ) AS address,
-                DATE_FORMAT(created_at, '%b %e, %Y') AS created_at,
+            $datetimeFormat = dt_sql_datetime_format();
+            $addressConcat  = dt_sql_concat_client_address();
+            $columns        .= ",
+                {$addressConcat},
+                DATE_FORMAT(created_at, '{$datetimeFormat}') AS created_at,
                 {$this->accountsView}.employee_name AS created_by
             ";
         }
@@ -136,7 +137,7 @@ class CustomerBranchModel extends Model
     {
         $builder = $this->db->table($this->table);
         $builder->select($this->columns(true));
-        $builder->join($this->accountsView, "{$this->table}.created_by = {$this->accountsView}.username", 'left');
+        $this->joinAccountView($builder, "{$this->table}.created_by");
         $builder->where('customer_id', $customer_id);
         $builder->where("deleted_at IS NULL");
         $builder->orderBy('id', 'DESC');
@@ -150,13 +151,13 @@ class CustomerBranchModel extends Model
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
             $buttons = '';
-            if (check_permissions($permissions, 'EDIT')) {
+            if (check_permissions($permissions, ACTION_EDIT)) {
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-warning" onclick="editBranch({$row["$id"]})" title="Edit Branch"><i class="fas fa-edit"></i> </button> 
                 EOF;
             }
 
-            if (check_permissions($permissions, 'DELETE')) {
+            if (check_permissions($permissions, ACTION_DELETE)) {
                 $buttons .= <<<EOF
                     <button class="btn btn-sm btn-danger" onclick="removeBranch({$row["$id"]})" title="Delete Branch"><i class="fas fa-trash"></i></button>  
                 EOF;
