@@ -285,6 +285,15 @@ class JobOrderModel extends Model
         return $data;
     }
 
+    public function countRecords($param = null)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if (! $param) return $builder->countAllResults();
+        return $builder->where('status', strtolower($param))->countAllResults();
+        
+    }
+
     // DataTable default columns 
     public function dtColumns()
     {
@@ -359,28 +368,13 @@ class JobOrderModel extends Model
 
         return $columns;
     }
-
-    public function countRecords($param = null)
-    {
-        $builder = $this->where('deleted_at IS NULL');
-
-        if (! $param) return $builder->countAllResults();
-        return $builder->where('status', strtolower($param))->countAllResults();
-        
-    }
     
     // Join job_orders with task_lead_booked , employees, customers and customer_branches
     public function joinWithOtherTables($builder, $withStatusByAndAt = false)
     {
-        $employeeModel  = new EmployeeModel();
-        $tlViewModel    = new TaskLeadView();
-        $customerModel  = new CustomerModel();
-        $customerBranchModel  = new CustomerBranchModel();
-
-        $builder->join($tlViewModel->table, "{$this->table}.tasklead_id = {$tlViewModel->table}.id", 'left');
-        $builder->join($customerModel->table, "{$this->table}.customer_id = {$customerModel->table}.id", 'left');
-        $builder->join($customerBranchModel->table, "({$this->table}.customer_branch_id = {$customerBranchModel->table}.id AND {$this->table}.customer_branch_id IS NOT NULL)", 'left');
-        $builder->join($employeeModel->table, "{$this->table}.employee_id = {$employeeModel->table}.employee_id", 'left');
+        $this->joinTaskleadBooked($builder);
+        $this->joinCustomers($builder, null, 'left', true);
+        $this->joinEmployees($builder);
 
         if ($withStatusByAndAt) {
             $this->joinAccountView($builder, "{$this->table}.created_by", 'av1');
@@ -393,6 +387,38 @@ class JobOrderModel extends Model
         $builder->where("{$this->table}.deleted_at IS NULL");
     }
 
+    // Join job_orders with task_lead_booked
+    public function joinTaskleadBooked($builder, $model = null, $type = 'left')
+    {      
+        $model ?? $model = new TaskLeadView();
+        $builder->join($model->table, "{$this->table}.tasklead_id = {$model->table}.id", $type);
+
+        return $this;
+    }
+
+    // Join job_orders with customers
+    public function joinCustomers($builder, $model = null, $type = 'left', $branch = false)
+    {      
+        $model ?? $model = new CustomerModel();
+        $builder->join($model->table, "{$this->table}.customer_id = {$model->table}.id", $type);
+
+        if ($branch) {
+            $branchModel  = new CustomerBranchModel();
+            $builder->join($branchModel->table, "({$this->table}.customer_branch_id = {$branchModel->table}.id AND {$this->table}.customer_branch_id IS NOT NULL)", 'left');
+        }
+
+        return $this;
+    }
+
+    // Join job_orders with employees
+    public function joinEmployees($builder, $model = null, $type = 'left')
+    {      
+        $model ?? $model = new EmployeeModel();
+        $builder->join($model->table, "{$this->table}.employee_id = {$model->table}.employee_id", $type);
+
+        return $this;
+    }
+
     // Get job orders
     public function getJobOrders($id = null, $columns = '', $join = true)
     {
@@ -403,6 +429,39 @@ class JobOrderModel extends Model
         else $builder->where("{$this->table}.deleted_at IS NULL");
 
         return $id ? $builder->find($id) : $builder->findAll();
+    }
+
+    // Get clients details using job_order_id
+    public function getClientInfo($job_order_id, $columns = '')
+    {
+        $customerModel  = new CustomerModel();
+        $tlViewModel    = new TaskLeadView();
+        $tlCustomer     = 'tl_customer';
+        $columns        = $columns ? $columns : "
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_id, {$this->table}.customer_id) AS client_id,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client_name,
+            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_type, {$customerModel->table}.type) AS client_type,
+            IF({$this->table}.is_manual = 0, {$tlCustomer}.contact_person, {$customerModel->table}.contact_person) AS client_contact_person,
+            IF({$this->table}.is_manual = 0, {$tlCustomer}.contact_number, {$customerModel->table}.contact_number) AS client_contact_number,
+            IF({$this->table}.is_manual = 0, {$tlCustomer}.telephone, {$customerModel->table}.telephone) AS client_telephone,
+            IF({$this->table}.is_manual = 0, {$tlCustomer}.email_address, {$customerModel->table}.email_address) AS client_email_address,
+            IF({$this->table}.is_manual = 0, ".dt_sql_concat_client_address($tlCustomer, '').", ".dt_sql_concat_client_address($customerModel->table, '').") AS client_address
+        ";
+        $builder = $this->select($columns);
+
+        $this->joinTaskleadBooked($builder, $tlViewModel);
+        $this->joinCustomers($builder, $customerModel, 'left');
+        $tlViewModel->joinCustomers($builder, $customerModel, 'left', $tlCustomer);
+        
+        $builder->where("{$this->table}.deleted_at IS NULL");
+
+        if (is_array($job_order_id) && count($job_order_id) > 1) {
+            $builder->whereIn("{$this->table}.id", $job_order_id);
+            return $builder->findAll();
+        }
+
+        $builder->where("{$this->table}.id", $job_order_id);
+        return $builder->first();
     }
 
     // For dataTables

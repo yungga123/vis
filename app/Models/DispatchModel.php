@@ -144,8 +144,9 @@ class DispatchModel extends Model
 
         if ($joinSchedule) {
             $columns .= ",
+                {$scheduleModel->table}.id AS schedule_id,
+                {$scheduleModel->table}.job_order_id,
                 {$scheduleModel->table}.title AS schedule,
-                {$scheduleModel->table}.title,
                 {$scheduleModel->table}.description,
                 {$scheduleModel->table}.start,
                 {$scheduleModel->table}.end,
@@ -169,14 +170,6 @@ class DispatchModel extends Model
     {      
         $model ?? $model = new ScheduleModel();
         $builder->join($model->table, "{$this->table}.schedule_id = {$model->table}.id", $type);
-        return $this;
-    }
-    
-    // Join with customers table 
-    public function joinCustomer($builder, $model = null, $type = 'left')
-    {
-        $model ?? $model = new CustomerModel();
-        $builder->join($model->table, "{$this->table}.customer_id = {$model->table}.id", $type);
         return $this;
     }
     
