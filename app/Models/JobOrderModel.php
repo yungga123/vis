@@ -450,7 +450,7 @@ class JobOrderModel extends Model
         $builder = $this->select($columns);
 
         $this->joinTaskleadBooked($builder, $tlViewModel);
-        $this->joinCustomers($builder, $customerModel, 'left');
+        $this->joinCustomers($builder, $customerModel);
         $tlViewModel->joinCustomers($builder, $customerModel, 'left', $tlCustomer);
         
         $builder->where("{$this->table}.deleted_at IS NULL");

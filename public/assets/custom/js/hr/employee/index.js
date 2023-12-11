@@ -157,10 +157,10 @@ function remove(id) {
 function change(id, employee_id, status) {
 	const modal = "employment_status_modal";
 	$(`#${modal}`).modal("show");
-	console.log(...arguments);
 
 	// Set value
 	$(`#${modal} #_id`).val(id);
 	$(`#${modal} #_employee_id`).val(employee_id);
+	$(`#${modal} #_date_resigned`).val("");
 	setOptionValue(`#${modal} #_employment_status`, status);
 }

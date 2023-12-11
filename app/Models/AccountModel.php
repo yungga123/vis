@@ -79,10 +79,10 @@ class AccountModel extends Model
     protected function checkRecordIfOneself($data) 
     {
         $id     = $data['id'];
-        $result = $this->getAccounts($id, session('username'));
+        $result = $this->getAccounts($id);
 
-        if (! empty($result)) {
-            throw new \Exception("You can't delete your own account!", 2);
+        if ($result[0]['username'] === session('username'))  {
+            throw new \Exception("You can't delete your own record!", 2);
         }
     }
 

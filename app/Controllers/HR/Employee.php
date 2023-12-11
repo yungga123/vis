@@ -214,10 +214,18 @@ class Employee extends BaseController
             function($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
                 
-                if (! $this->_model->delete($this->request->getVar('id'))) {
+                // Before delete get the employee_id
+                // using the primary key id
+                $id     = $this->request->getVar('id');
+                $record = $this->_model->getEmployees($id, null, 'employee_id');
+
+                if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
+                } else {
+                    // Delete also their accounts
+                    $this->_model->deleteEmployeeAccounts($record['employee_id']);
                 }
 
                 return $data;
@@ -243,20 +251,21 @@ class Employee extends BaseController
             function($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_CHANGE, true);
 
-                $id     = $this->request->getVar('id');
-                $status = $this->request->getVar('employment_status');
-                $inputs = [
+                $id         = $this->request->getVar('id');
+                $status     = $this->request->getVar('employment_status');
+                $resigned   = ($status === $this->_model->resigned);
+                $inputs     = [
                     'employment_status' => $status,
-                    'date_resigned'     => $this->request->getVar('date_resigned'),
+                    'date_resigned'     => $resigned ? $this->request->getVar('date_resigned') : '',
                 ];
-                $rules          = [
+                $rules      = [
                     'employment_status' => [
                         'label' => 'employment status',
                         'rules' => 'required'
                     ],
                     'date_resigned'     => [
                         'label' => 'date resigned',
-                        'rules' => ($status === $this->_model->resigned) ? 'required' : 'permit_empty'
+                        'rules' => $resigned ? 'required' : 'permit_empty'
                     ],
                 ];
 
@@ -270,7 +279,6 @@ class Employee extends BaseController
 
                 // Disable the model validation
                 $this->_model->protect(false);
-                $this->_model->cleanRules(true);
                 $this->_model->skipValidation(true);
 
                 // Save changes
@@ -278,12 +286,16 @@ class Employee extends BaseController
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
+                } else {
+                    // If resigned, delete their accounts
+                    if ($resigned) {
+                        $employee_id = $this->request->getVar('employee_id');
+                        $this->_model->deleteEmployeeAccounts($employee_id);
+                    }
                 }
 
                 // Enable again the model validation
                 $this->_model->protect(true);
-                $this->_model->cleanRules(true);
-                $this->_model->skipValidation(false);
 
                 return $data;
             }

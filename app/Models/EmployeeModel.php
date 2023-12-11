@@ -19,7 +19,7 @@ class EmployeeModel extends Model
     protected $insertID         = 0;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
-    protected $protectFields    = true;
+    protected $protectFields    = false;
     protected $allowedFields    = [
         'employee_id',
         'firstname',
@@ -224,11 +224,11 @@ class EmployeeModel extends Model
     protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = [];
-    protected $afterUpdate    = ['deleteEmployeeAccounts'];
+    protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = ['checkRecordIfOneself'];
-    protected $afterDelete    = ['deleteEmployeeAccounts'];
+    protected $afterDelete    = [];
 
     /* Custom variables */
     protected $resigned       = 'Resigned';
@@ -304,28 +304,16 @@ class EmployeeModel extends Model
         return $data;
     }
 
-    // If employee record is deleted or marked as resigned
-    // soft delete their corresponding account(s)
-    protected function deleteEmployeeAccounts(array $data)
+    // Check user trying to delete own record
+    public function checkRecordIfOneself(array $data) 
     {
-        log_msg($data);
-        if ($data['result']) {
-            $id     = $data['id'];
-            $status = $data['data']['employment_status'] ?? null;
+        $id     = $data['id'];
+        $result = $this->getEmployees($id, null, 'employee_id');
 
-            if ($status || isset($data['purge'])) {
-                $record = $this->select('employee_id')->find($data['id']);
-                log_msg($record);
-
-                // Delete corresponding accounts - if exist
-                // $accountModel = new AccountModel();
-                // $accountModel->where('employee_id', $record[0]['employee_id'])->delete();
-            }
+        if ($result[0]['employee_id'] === session('employee_id'))  {
+            throw new \Exception("You can't delete your own record!", 2);
         }
-
-        return $data;
     }
-
 
     // Filter for not including resigned employees
     public function withOutResigned($builder = null) 
@@ -337,14 +325,25 @@ class EmployeeModel extends Model
         return $this;
     }
 
-    // Check user trying to delete own record
-    public function checkRecordIfOneself(array $data) 
+    // If employee record is deleted or marked as resigned
+    // soft delete their corresponding account(s)
+    public function deleteEmployeeAccounts($employee_id)
     {
-        $id     = $data['id'];
-        $result = $this->getEmployees($id, null, 'employee_id');
+        if ($employee_id) {
+            // If the pass param is numberic or 
+            // the primary id, the get the employee_id
+            if (is_numeric($employee_id)) {
+                $record         = $this->getEmployees($employee_id, null, 'employee_id');
+                $employee_id    = $record['employee_id'];
+            }
 
-        if ($result[0]['employee_id'] === session('employee_id'))  {
-            throw new \Exception("You can't delete your own record!", 2);
+            // Delete corresponding accounts - if exist
+            // Used query builder since can't delete using model (encountered error)
+            // Totally delete it in db
+            $accountModel = new AccountModel();
+            $this->db->table($accountModel->table)
+                ->where('employee_id', $employee_id)
+                ->delete();
         }
     }
 
