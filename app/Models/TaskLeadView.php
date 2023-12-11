@@ -40,6 +40,18 @@ class TaskLeadView extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Join with customers
+    public function joinCustomers($builder, $model = null, $type = 'left', $alias = '')
+    {      
+        $model ?? $model = new CustomerModel();
+        $_alias = empty($alias) ? $alias : ' AS '. $alias;
+        $alias1 = empty($alias) ? $model->table : $alias;
+        
+        $builder->join($model->table . $_alias, "{$this->table}.customer_id = {$alias1}.id", $type);
+
+        return $this;
+    }
+
     // DataTable
     public function noticeTable()
     {

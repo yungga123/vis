@@ -18,19 +18,23 @@
 						<tbody>
 							<tr>
 								<td width="20%" style="font-weight: bold">Client Name</td>
-								<td width="80%"><?= $dispatch['customer_id'].' --- '.$dispatch['customer_name'] ?></td>
+								<td width="80%"><?= $client['client_id'].' --- '.$client['client_name'] ?></td>
 							</tr>
 							<tr>
 								<td width="20%" style="font-weight: bold">Contact Person</td>
-								<td width="80%"><?= $dispatch['contact_person'] ?></td>
+								<td width="80%"><?= $client['client_contact_person'] ?></td>
 							</tr>
 							<tr>
-								<td width="20%" style="font-weight: bold">Contact Number</td>
-								<td width="80%"><?= $dispatch['contact_number'] ?></td>
+								<td width="20%" style="font-weight: bold">Mobile Number</td>
+								<td width="80%"><?= $client['client_contact_number'] ?? 'N/A' ?></td>
+							</tr>
+							<tr>
+								<td width="20%" style="font-weight: bold">Telephone Number</td>
+								<td width="80%"><?= $client['client_telephone'] ?? 'N/A' ?></td>
 							</tr>
 							<tr>
 								<td width="20%" style="font-weight: bold">Address</td>
-								<td width="80%"><?= $dispatch['address'] ?></td>
+								<td width="80%"><?= $client['client_address'] ?? 'N/A' ?></td>
 							</tr>
 						</tbody>
 					</table>
