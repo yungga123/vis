@@ -122,6 +122,16 @@ class AccountModel extends Model
         return $builder->findAll();
     }
 
+    // Check if account still exist
+    public function exists($username) 
+    {
+        $builder = $this->select('account_id');
+        $builder->where('deleted_at IS NULL');
+        $builder->where('username', $username);
+
+        return ! empty($builder->first());
+    }
+
     // For dataTables
     public function noticeTable() 
     {

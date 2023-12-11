@@ -2,6 +2,7 @@
 
 namespace App\Filters;
 
+use App\Models\AccountModel;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -33,6 +34,14 @@ class CheckAuthFilter implements FilterInterface
                 exit;
             }
 
+            return redirect()->to('login');
+        }
+
+        // Check whether logged user's account still existed
+        // otherwise, destroy session and redirect to login
+        $model = new AccountModel();
+        if (! $model->exists($session->get('username'))) {
+            $session->destroy();
             return redirect()->to('login');
         }
     }
