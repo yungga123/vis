@@ -15,7 +15,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-6">
-			<img src="<?= $general_info['company_logo'] ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
+			<img src="<?= $general_info['company_logo'] ?? '' ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
 		</div>
         <div class="col-3"></div>
         <div class="col-3">
@@ -51,10 +51,10 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
             <table class="table table-bordered table-sm" style="font-size: 15px">
                 <tbody>
                     <tr class="text-center text-uppercase">
-                        <th><?php echo $supplier['supplier_name'] ?></th>
+                        <th><?php echo $supplier['supplier_name'] ?? '' ?></th>
                     </tr>
                     <tr class="text-center text-uppercase">
-                        <td><?php echo $supplier['address'] ?></td>
+                        <td><?php echo $supplier['address'] ?? '' ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -77,7 +77,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
     <div class="row mt-2">
         <div class="col-12">
             <label>ATTENTION TO:</label> 
-			<span id="attention_to_text"><?= $purchase_order['attention_to'] ?></span>
+			<span id="attention_to_text"><?= $purchase_order['attention_to'] ?? '' ?></span>
         </div>
     </div>
     <div class="row">
@@ -91,10 +91,10 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                     </tr>
                     <tr>
                         <td class="text-center" colspan="3">
-							<span><?= $rpf['requested_by'] ?></span>
+							<span><?= $rpf['requested_by'] ?? '' ?></span>
 						</td>
                         <td class="text-bold text-center text-danger" colspan="3">
-							<?= 'RF No. '. $purchase_order['rpf_id'] ?>
+							<?= 'RF No. '. $purchase_order['rpf_id'] ?? '' ?>
 						</td>
                     </tr>
 					<tr></tr>
@@ -115,19 +115,19 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 					if (! empty($items)) {
 						$count = 1;
 						foreach ($items as $val) {
-							$total_price = $val['quantity_in'] * $val['item_sdp'];
+							$total_price = $val['quantity_in'] ? $val['quantity_in'] * $val['item_sdp'] : 0;
 					?>
 							<tr>
 								<td class="text-center"><?= $count; ?></td>
-								<td class="text-center"><?= $val['item_model'] ?></td>
-								<td class="text-center"><?= $val['brand'] ?></td>
-								<td class="text-center"><?= $val['item_description'] ?></td>
+								<td class="text-center"><?= $val['item_model'] ?? 'N/A' ?></td>
+								<td class="text-center"><?= $val['brand'] ?? 'N/A' ?></td>
+								<td class="text-center"><?= $val['item_description'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['size'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['quantity_in'] ?></td>
 								<td class="text-center"><?= ($val['unit'] ?? 'N/A') ?></td>
-								<td class="text-right"><?= $val['item_sdp'] ?></td>
+								<td class="text-right"><?= $val['item_sdp'] ?? 'N/A' ?></td>
 								<td class="text-right"><?= number_format($total_price, 2) ?></td>
-								<td class="text-center"><?= $rpf['date_needed'] ?></td>
+								<td class="text-center"><?= $rpf['date_needed'] ?? 'N/A' ?></td>
 							</tr>
 					<?php 
 							$count 		+= 1;
@@ -195,14 +195,18 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 					<li>
 						Mode of Payment: 
 						<span class="text-bold text-uppercase text-underline">
-							<?= $supplier['payment_mode'] === 'Others' 
-							? $supplier['others_payment_mode'] : $supplier['payment_mode'] ?>
+							<?php 
+								if ($supplier['payment_mode']) {
+									echo $supplier['payment_mode'] === 'Others' 
+										? $supplier['others_payment_mode'] : $supplier['payment_mode'];
+								}
+							?>
 						</span>
 					</li>
 					<li>
 						Terms of Payment: 
 						<span class="text-bold text-uppercase text-underline">
-							<?= get_payment_terms($supplier['payment_terms']) ?>
+							<?= $supplier['payment_terms'] ? get_payment_terms($supplier['payment_terms']) : '' ?>
 						</span>
 					</li>
 				</ol>
@@ -213,17 +217,23 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
         <div class="col-7">
 			<div class="mb-5">
 				<h6>PREPARED BY:</h6>
-				<h6 class="text-bold ml-5 mt-4"><?= strtoupper($purchase_order['prepared_by_name']) ?></h6>
+				<h6 class="text-bold ml-5 mt-4">
+					<?= $purchase_order['prepared_by_name'] ? strtoupper($purchase_order['prepared_by_name']) : '' ?>
+				</h6>
 			</div>
 			<div>
 				<h6>CHECKED BY:</h6>
-				<h6 class="text-bold ml-5 mt-4"><?= strtoupper($purchase_order['prepared_by_name']) ?></h6>
+				<h6 class="text-bold ml-5 mt-4">
+					<?= $purchase_order['prepared_by_name'] ? strtoupper($purchase_order['prepared_by_name']) : '' ?>
+				</h6>
 			</div>
         </div>
         <div class="col-5">
 			<div class="mb-5">
 				<h6>APPROVED BY:</h6>
-				<h6 class="text-bold ml-5 mt-4"><?= strtoupper($purchase_order['approved_by_name']) ?></h6>
+				<h6 class="text-bold ml-5 mt-4">
+					<?= $purchase_order['approved_by_name'] ? strtoupper($purchase_order['approved_by_name']) : '' ?>
+				</h6>
 			</div>
 			<div>
 				<h6>ACKNOWLEDGED/RECEIVED BY:</h6>
@@ -250,7 +260,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 						<div class="col-9">
 							<div class="form-group">
 								<label class="required" for="attention_to">Attention to:</label>
-								<input type="text" class="form-control" id="attention_to" name="attention_to" placeholder="Ex: Mr. / Ms. / Mrs. Antonette" value="<?= $purchase_order['attention_to'] ?>" required>
+								<input type="text" class="form-control" id="attention_to" name="attention_to" placeholder="Ex: Mr. / Ms. / Mrs. Antonette" value="<?= $purchase_order['attention_to'] ?? '' ?>" required>
 								<small id="alert_attention_to" class="text-danger"></small>
 							</div>
 						</div>

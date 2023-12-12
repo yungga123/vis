@@ -317,8 +317,9 @@ class RequestPurchaseForm extends BaseController
         // Check role & action if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
         
-        $columns            = $this->_model->columns(true, true);
-        $builder            = $this->_model->select($columns);
+        $columns = $this->_model->columns(true, true);
+        $columns = $columns .", {$this->_model->table}.created_at";
+        $builder = $this->_model->select($columns);
         
         $this->_model->joinView($builder);
 

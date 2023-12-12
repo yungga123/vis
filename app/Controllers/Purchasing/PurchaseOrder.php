@@ -398,7 +398,7 @@ class PurchaseOrder extends BaseController
         $data['general_info']   = $general_info;
         $data['title']          = 'Generate Purchase Order';
         $data['disable_auto_print'] = true;
-        $data['custom_js']      = ['functions.js', 'purchasing/purchase_order/print.js'];
+        $data['custom_js']      = ['functions.js', 'initialize.js', 'purchasing/purchase_order/print.js'];
 
         return view('purchasing/purchase_order/print', $data);
     }
