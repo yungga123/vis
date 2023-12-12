@@ -349,8 +349,33 @@ $routes->group('reports', ['filter' => 'checkauth'], static function ($routes) {
 });
 /* REPORTS */
 
-
 /***************** PHASE 2 *****************/
+
+
+/***************** PHASE 3 *****************/
+/* PAYROLL */
+$routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
+    // SALARY RATES
+    $routes->group('salary-rates', static function ($routes) {
+        $routes->get('/', 'Payroll\SalaryRate::index', ['as' => 'salary_rate.home']);
+        $routes->post('list', 'Payroll\SalaryRate::list', ['as' => 'salary_rate.list']);
+        $routes->post('save', 'Payroll\SalaryRate::save', ['as' => 'salary_rate.save']);
+        $routes->post('fetch', 'Payroll\SalaryRate::fetch', ['as' => 'salary_rate.fetch']);
+        $routes->post('delete', 'Payroll\SalaryRate::delete', ['as' => 'salary_rate.delete']);
+    });
+
+    // PAYSLIP
+    $routes->group('payslip', static function ($routes) {
+        $routes->get('/', 'Payroll\Payslip::index', ['as' => 'payslip.home']);
+        $routes->post('list', 'Payroll\Payslip::list', ['as' => 'payslip.list']);
+        $routes->post('save', 'Payroll\Payslip::save', ['as' => 'payslip.save']);
+        $routes->post('fetch', 'Payroll\Payslip::fetch', ['as' => 'payslip.fetch']);
+        $routes->post('delete', 'Payroll\Payslip::delete', ['as' => 'payslip.delete']);
+    });
+});
+/* PAYROLL */
+
+/***************** PHASE 3 *****************/
 
 /*
  * --------------------------------------------------------------------

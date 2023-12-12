@@ -90,6 +90,12 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => url_is('reports/export'),
                 'icon'      => 'fas fa-server',
             ],
+            'PAYROLL'         => [
+                'name'      => 'Payroll',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => url_is('payroll/payslip'),
+                'icon'      => 'fas fa-file-invoice',
+            ],
         ];
 
         return $menu[$param];
@@ -236,6 +242,20 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('export.home'),
                 'class'     => (url_is('reports/export') ? 'active' : ''),
                 'icon'      => 'fas fa-file-export',
+            ],
+            'PAYROLL_SALARY_RATES'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_SALARY_RATES'),
+                'url'       => url_to('salary_rate.home'),
+                'class'     => (url_is('payroll/salary-rates') ? 'active' : ''),
+                'icon'      => 'fas fa-search-dollar',
+            ],
+            'PAYROLL_PAYSLIP'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_PAYSLIP'),
+                'url'       => url_to('payslip.home'),
+                'class'     => (url_is('payroll/payslip') ? 'active' : ''),
+                'icon'      => 'fas fa-receipt',
             ],
         ];
 

@@ -228,6 +228,8 @@ define('MODULES', [
     'PURCHASING_PO'         => 'Purchase Orders',
     'SETTINGS_GENERAL_INFO' => 'General Info',
     'EXPORT_DATA'           => 'Export Data',
+    'PAYROLL_SALARY_RATES'  => 'Salary Rates',
+    'PAYROLL_PAYSLIP'       => 'Payslip',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -255,6 +257,8 @@ define('MODULE_CODES', [
     'purchase_order'        => 'PURCHASING_PO',
     'general_info'          => 'SETTINGS_GENERAL_INFO',
     'export_data'           => 'EXPORT_DATA',
+    'salary_rates'          => 'PAYROLL_SALARY_RATES',
+    'payslip'               => 'PAYROLL_PAYSLIP',
 ]);
 
 // Developer Account
