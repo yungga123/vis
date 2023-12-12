@@ -50,16 +50,22 @@
 								<td width="100%" class="text-center" colspan="2" style="font-weight: bold">Personnel/s</td>
 							</tr>
                             <?php 
-                                $technicians = explode(',', $dispatch['technicians']);
+								if (! empty($dispatch['technicians'])):
+									$technicians = explode(',', $dispatch['technicians']);
 
-                                foreach ($technicians as $tech):
+									foreach ($technicians as $tech):
                             ?>
+									<tr>
+										<td width="50%"><?= $tech ?></td>
+									</tr>
+                            	<?php endforeach; ?>
+                            <?php else: ?>
+								<tr>
+									<td width="50%"></td>
+								</tr>
+                            <?php endif; ?>
 							<tr>
-								<td width="50%"><?= $tech ?></td>
-							</tr>
-                            <?php endforeach; ?>
-							<tr>
-								<td width="100%" class="text-center" colspan="2" style="font-weight: bold;">Service Report No. : <?= $dispatch['sr_number'] ?></td>
+								<td width="100%" class="text-center" colspan="2" style="font-weight: bold;">Service Report No. : <?= $dispatch['sr_number'] ?? '' ?></td>
 							</tr>
 						</tbody>
 					</table>
@@ -69,7 +75,7 @@
 						<tbody>
 							<tr>
 								<td class="text-bold" width="30%">Work Permit</td>
-								<td width="70%"><?= $dispatch['with_permit'] ?></td>
+								<td width="70%"><?= $dispatch['with_permit'] ?? '' ?></td>
 							</tr>
 							<tr>
 								<td width="30%" style="font-weight: bold;">Dispatch Date</td>
@@ -89,7 +95,9 @@
 							</tr>
 							<tr>
 								<td width="30%" style="font-weight: bold;">Service Type</td>
-								<td width="70%"><?= get_dispatch_services($dispatch['service_type']) ?></td>
+								<td width="70%">
+									<?= $dispatch['service_type'] ? get_dispatch_services($dispatch['service_type']) : '' ?>
+								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -101,11 +109,11 @@
 						<tbody>
 							<tr>
 								<td width="15%" style="font-weight: bold">Description</td>
-								<td width="85%"><?= $dispatch['comments'] ?></td>
+								<td width="85%"><?= $dispatch['comments'] ?? '' ?></td>
 							</tr>
 							<tr>
 								<td width="15%" style="font-weight: bold">Remarks</td>
-								<td width="85%"><?= $dispatch['remarks'] ?></td>
+								<td width="85%"><?= $dispatch['remarks'] ?? '' ?></td>
 							</tr>
 						</tbody>
 					</table>
@@ -121,7 +129,7 @@
 					<p style="font-weight: bold">Dispatched By:</p>
 					<p>
                         <u><?= $dispatch['dispatched_by'] ?></u><br> 
-					    <?= ucwords($dispatch['dispatched_by_position']) ?>
+					    <?= $dispatch['dispatched_by_position'] ? ucwords($dispatch['dispatched_by_position']) : '' ?>
                     </p>
 				</div>
 				<div class="col-2">
@@ -130,7 +138,7 @@
 					<p style="font-weight: bold">Checked By:</p>
 					<p>
                         <u><?= $dispatch['checked_by_name'] ?></u><br> 
-					    <?= ucwords($dispatch['checked_by_position']) ?>
+					    <?= $dispatch['checked_by_position'] ? ucwords($dispatch['checked_by_position']) : '' ?>
                     </p>
 				</div>
 

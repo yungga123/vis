@@ -13,24 +13,24 @@
 					<tr>
 						<td width="50%" style="font-weight: bold">PRF No:</td>
 						<td width="50%" class="text-danger text-bold">
-							<?= 'PRF'. format_date($prf['created_at'], 'Ymd') . '-' . $prf['id'] ?>
+							<?= $prf['id'] ? 'PRF'. format_date($prf['created_at'], 'Ymd') . '-' . $prf['id'] : '' ?>
 						</td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Project/Client Name:</td>
-						<td width="50%"><?= $prf['client'] ?></td>
+						<td width="50%"><?= $prf['client'] ?? '' ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Quotation No:</td>
-						<td width="50%"><?= $prf['quotation'] ?></td>
+						<td width="50%"><?= $prf['quotation'] ?? '' ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Work Type:</td>
-						<td width="50%"><?= $prf['work_type'] ?></td>
+						<td width="50%"><?= $prf['work_type'] ?? '' ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Person In-Charge:</td>
-						<td width="50%"><?= $prf['manager'] ?></td>
+						<td width="50%"><?= $prf['manager'] ?? '' ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -40,19 +40,19 @@
 				<tbody>
 					<tr>
 						<td width="50%" style="font-weight: bold">Job Order No.</td>
-						<td width="50%"><?= $prf['job_order_id'] ?></td>
+						<td width="50%"><?= $prf['job_order_id'] ?? '' ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Date Requested</td>
-						<td width="50%"><?= format_date($prf['date_requested']) ?></td>
+						<td width="50%"><?= $prf['date_requested'] ? format_date($prf['date_requested']) : '' ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Date Needed</td>
-						<td width="50%"><?= format_date($prf['date_committed']) ?></td>
+						<td width="50%"><?= $prf['date_committed'] ? format_date($prf['date_committed']) : '' ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Date Issued</td>
-						<td width="50%"><?= format_date($prf['jo_created_at']) ?></td>
+						<td width="50%"><?= $prf['jo_created_at'] ? format_date($prf['jo_created_at']) : '' ?></td>
 					</tr>
 					<tr>
 						<td width="50%" style="font-weight: bold">Date Returned</td>
@@ -86,14 +86,14 @@
 					if (! empty($prf_items)): 
 						foreach ($prf_items as $item): ?>
 							<tr>
-								<td><?= $item['inventory_id'] ?></td>
-								<td><?= $item['category_name'] ?></td>
-								<td><?= $item['item_description'] ?></td>
-								<td><?= number_format($item['quantity_out'], 2) ?></td>
-								<td><?= number_format($item['stocks'], 2) ?></td>
-								<td><?= number_format($item['consumed'], 2) ?></td>
+								<td><?= $item['inventory_id'] ?? '' ?></td>
+								<td><?= $item['category_name'] ?? '' ?></td>
+								<td><?= $item['item_description'] ?? '' ?></td>
+								<td><?= $item['quantity_out'] ? number_format($item['quantity_out'], 2) : '' ?></td>
+								<td><?= $item['stocks'] ? number_format($item['stocks'], 2) : '' ?></td>
+								<td><?= $item['consumed'] ? number_format($item['consumed'], 2) : '' ?></td>
 								<td><?= $item['returned_q'] ? number_format($item['returned_q'], 2) : $item['returned_q'] ?></td>
-								<td><?= $item['returned_date_formatted'] ?></td>
+								<td><?= $item['returned_date_formatted'] ?? '' ?></td>
 							</tr>
 					<?php
 						endforeach;
@@ -109,7 +109,7 @@
 					<tr>
 						<td width="50%">
 							<div class="text-bold">Requested by:</div>
-							<div class="text-center"><?= $prf['created_by_name'] ?></div>
+							<div class="text-center"><?= $prf['created_by_name'] ?? '' ?></div>
 						</td>
 						<td width="50%">
 							<div class="text-bold">Received by: (Person In-Charge)</div>
@@ -119,7 +119,7 @@
 					<tr>
 						<td width="50%">
 							<div class="text-bold">Prepared by:</div>
-							<div class="text-center"><?= $prf['accepted_by_name'] ?></div>
+							<div class="text-center"><?= $prf['accepted_by_name'] ?? '' ?></div>
 						</td>
 						<td width="50%">
 							<div class="text-bold">Checked By: (Project In-Charge)</div>
@@ -130,7 +130,7 @@
 						<td width="50%">
 							<div class="text-bold">Returned by:</div>
 							<div class="text-center" <?= $prf['filed_by_name'] ? '' : 'style="padding: 0.7rem 0;"' ?>>
-								<?= $prf['filed_by_name'] ?>
+								<?= $prf['filed_by_name'] ?? '' ?>
 							</div>
 						</td>
 						<td width="50%">
@@ -147,7 +147,7 @@
 					<tr>
 						<td style="height: 80px; min-height: 80px;">
 							<div class="text-bold">Remarks:</div>
-							<div><?= $prf['remarks'] ?></div>
+							<div><?= $prf['remarks'] ?? '' ?></div>
 						</td>
 					</tr>
 				</tbody>
