@@ -12,7 +12,9 @@
 				<tbody>
 					<tr>
 						<td width="25%" style="font-weight: bold">RF No:</td>
-						<td width="40%"><?= $rpf['id'] ?></td>
+						<td width="40%" class="text-danger text-bold">
+							<?= 'RPF'. format_date($rpf['created_at'], 'Ymd') . '-' . $rpf['id'] ?>
+						</td>
 						<td width="35%"><strong>PRF No:</strong> </td>
 					</tr>
 					<tr>

@@ -9,7 +9,7 @@
 				</div>
 				<div class="col-6">
 					<p class="text-center mx-auto" style="font-size: 23px; font-weight: bold;">DISPATCH FORM</p>
-					<p class="text-center mx-auto">ID No. <?= $dispatch['id'] ?></p>
+					<p class="text-center mx-auto text-danger text-bold">ID No. <?= $dispatch['id'] ?></p>
 				</div>
 			</div>
 			<div class="row">
@@ -18,23 +18,25 @@
 						<tbody>
 							<tr>
 								<td width="20%" style="font-weight: bold">Client Name</td>
-								<td width="80%"><?= $client['client_id'].' --- '.$client['client_name'] ?></td>
+								<td width="80%">
+									<?= empty($client) ? '' : $client['client_id'].' --- '.$client['client_name'] ?>
+								</td>
 							</tr>
 							<tr>
 								<td width="20%" style="font-weight: bold">Contact Person</td>
-								<td width="80%"><?= $client['client_contact_person'] ?></td>
+								<td width="80%"><?= empty($client) ? '' : $client['client_contact_person'] ?></td>
 							</tr>
 							<tr>
 								<td width="20%" style="font-weight: bold">Mobile Number</td>
-								<td width="80%"><?= $client['client_contact_number'] ?? 'N/A' ?></td>
+								<td width="80%"><?= empty($client) ? '' : $client['client_contact_number'] ?? 'N/A' ?></td>
 							</tr>
 							<tr>
 								<td width="20%" style="font-weight: bold">Telephone Number</td>
-								<td width="80%"><?= $client['client_telephone'] ?? 'N/A' ?></td>
+								<td width="80%"><?= empty($client) ? '' : $client['client_telephone'] ?? 'N/A' ?></td>
 							</tr>
 							<tr>
 								<td width="20%" style="font-weight: bold">Address</td>
-								<td width="80%"><?= $client['client_address'] ?? 'N/A' ?></td>
+								<td width="80%"><?= empty($client) ? '' : $client['client_address'] ?? 'N/A' ?></td>
 							</tr>
 						</tbody>
 					</table>
