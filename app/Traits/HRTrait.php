@@ -97,17 +97,27 @@ trait HRTrait
             {$modelV->table}.employee_id AS id, {$modelV->table}.employee_name AS text
         ";
 
-        $modelV->select($fields);
-        $model->withOutResigned($modelV);
-
-        $is_salary_rate = $options['is_salary_rate'] ?? null;
-
-        if ($is_salary_rate) {
-            $srModel = new SalaryRateModel();
+        if (
+            ($salary = $options['is_salary_rate'] ?? null) || 
+            ($computation = $options['is_payroll_computation'] ?? null)
+        ) {
+            $srModel    = new SalaryRateModel();
+            $fields     .= ",
+                {$modelV->table}.employment_status,
+                {$modelV->table}.position,
+                {$srModel->table}.rate_type,
+                {$srModel->table}.salary_rate
+            ";
             
             $modelV->join($srModel->table, "{$srModel->table}.employee_id = {$modelV->table}.employee_id", 'left');
-            $modelV->where("({$srModel->table}.rate_type = '' OR {$srModel->table}.rate_type IS NULL)");
+
+            if ($salary) {
+                $modelV->where("({$srModel->table}.rate_type = '' OR {$srModel->table}.rate_type IS NULL)");
+            }
         }
+
+        $modelV->select($fields);
+        $model->withOutResigned($modelV);
 
         if (! empty($q)) {
             if (empty($options)) {

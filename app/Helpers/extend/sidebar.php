@@ -46,6 +46,11 @@ if (! function_exists('get_nav_menus'))
             url_is('settings/roles') || 
             url_is('settings/general-info')
         );
+        $is_payroll     = (
+            url_is('payroll/salary-rates') || 
+            url_is('payroll/computation') || 
+            url_is('payroll/payslip')
+        );
         
 		$menu           = [
             'SALES'          => [
@@ -93,7 +98,7 @@ if (! function_exists('get_nav_menus'))
             'PAYROLL'         => [
                 'name'      => 'Payroll',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('payroll/payslip') || url_is('payroll/salary-rates')),
+                'urls'      => $is_payroll,
                 'icon'      => 'fas fa-ruble-sign',
             ],
         ];
@@ -256,6 +261,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('payslip.home'),
                 'class'     => (url_is('payroll/payslip') ? 'active' : ''),
                 'icon'      => 'fas fa-receipt',
+            ],
+            'PAYROLL_COMPUTATION'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_COMPUTATION'),
+                'url'       => url_to('payroll.computation.home'),
+                'class'     => (url_is('payroll/computation') ? 'active' : ''),
+                'icon'      => 'fas fa-calculator',
             ],
         ];
 

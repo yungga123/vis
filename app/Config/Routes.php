@@ -368,6 +368,15 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('delete', 'Payroll\SalaryRate::delete', ['as' => 'salary_rate.delete']);
     });
 
+    // COMPUTATION
+    $routes->group('computation', static function ($routes) {
+        $routes->get('/', 'Payroll\Computation::index', ['as' => 'payroll.computation.home']);
+        // $routes->post('list', 'Payroll\Computation::list', ['as' => 'payroll.computation.list']);
+        // $routes->post('save', 'Payroll\Computation::save', ['as' => 'payroll.computation.save']);
+        // $routes->post('fetch', 'Payroll\Computation::fetch', ['as' => 'payroll.computation.fetch']);
+        // $routes->post('delete', 'Payroll\Computation::delete', ['as' => 'payroll.computation.delete']);
+    });
+
     // PAYSLIP
     $routes->group('payslip', static function ($routes) {
         $routes->get('/', 'Payroll\Payslip::index', ['as' => 'payslip.home']);

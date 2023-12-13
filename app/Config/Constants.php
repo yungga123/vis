@@ -230,6 +230,7 @@ define('MODULES', [
     'EXPORT_DATA'           => 'Export Data',
     'PAYROLL_SALARY_RATES'  => 'Salary Rates',
     'PAYROLL_PAYSLIP'       => 'Payslip',
+    'PAYROLL_COMPUTATION'   => 'Computation',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -259,6 +260,7 @@ define('MODULE_CODES', [
     'export_data'           => 'EXPORT_DATA',
     'salary_rates'          => 'PAYROLL_SALARY_RATES',
     'payslip'               => 'PAYROLL_PAYSLIP',
+    'payroll_computation'   => 'PAYROLL_COMPUTATION',
 ]);
 
 // Developer Account

@@ -1,0 +1,7 @@
+.card-body.p-0 .table tbody > tr > td:first-of-type {
+	padding-left: 1rem;
+}
+
+.card-body.p-0 .table tbody > tr > td:last-of-type {
+	padding-right: 1rem;
+}

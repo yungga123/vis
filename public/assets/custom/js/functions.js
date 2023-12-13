@@ -593,6 +593,18 @@ function numberFormat(number, decimal) {
 }
 
 /**
+ * Add decimal to the number
+ *
+ * @param {integer} number 	the number to format
+ * @param {integer} decimal	identifier on how many decimals - default 2
+ * @returns {integer}
+ */
+function numberToFixed(number, decimal = 2) {
+	number = parseFloat(number);
+	return number.toFixed(decimal);
+}
+
+/**
  * Check key in object if exist then return
  *
  * @param {object} obj 	the object to search from
