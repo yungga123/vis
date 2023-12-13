@@ -93,8 +93,8 @@ if (! function_exists('get_nav_menus'))
             'PAYROLL'         => [
                 'name'      => 'Payroll',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => url_is('payroll/payslip'),
-                'icon'      => 'fas fa-file-invoice',
+                'urls'      => (url_is('payroll/payslip') || url_is('payroll/salary-rates')),
+                'icon'      => 'fas fa-ruble-sign',
             ],
         ];
 
@@ -248,7 +248,7 @@ if (! function_exists('setup_modules'))
                 'name'      => get_modules('PAYROLL_SALARY_RATES'),
                 'url'       => url_to('salary_rate.home'),
                 'class'     => (url_is('payroll/salary-rates') ? 'active' : ''),
-                'icon'      => 'fas fa-search-dollar',
+                'icon'      => 'fas fa-dollar-sign',
             ],
             'PAYROLL_PAYSLIP'  => [
                 'menu'      => 'PAYROLL', // Leave empty if none

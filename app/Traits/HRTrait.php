@@ -4,6 +4,8 @@ namespace App\Traits;
 
 use App\Models\AccountModel;
 use App\Models\EmployeeModel;
+use App\Models\EmployeeViewModel;
+use App\Models\SalaryRateModel;
 
 trait HRTrait
 {
@@ -77,5 +79,54 @@ trait HRTrait
 
         $builder->join($table, "{$column} = {$fieldName}", $type);
         return $builder;
+    }
+
+    /**
+     * Fetch employees
+     * 
+     * @param string $q         The query to search for
+     * @param string $options   Identifier for the options - pagination or not
+     * @param string $fields    Columns or fields in the select
+     * @return array            The results of the search
+     */
+    public function fetchEmployees($q, $options = [], $fields = '')
+    {
+        $model  = new EmployeeModel();
+        $modelV = new EmployeeViewModel();
+        $fields = $fields ? $fields : "
+            {$modelV->table}.employee_id AS id, {$modelV->table}.employee_name AS text
+        ";
+
+        $modelV->select($fields);
+        $model->withOutResigned($modelV);
+
+        $is_salary_rate = $options['is_salary_rate'] ?? null;
+
+        if ($is_salary_rate) {
+            $srModel = new SalaryRateModel();
+            
+            $modelV->join($srModel->table, "{$srModel->table}.employee_id = {$modelV->table}.employee_id", 'left');
+            $modelV->where("({$srModel->table}.rate_type = '' OR {$srModel->table}.rate_type IS NULL)");
+        }
+
+        if (! empty($q)) {
+            if (empty($options)) {
+                $modelV->where("{$modelV->table}.employee_id", $q);
+                return $modelV->first();
+            }
+
+            $modelV->like("{$modelV->table}.employee_id", $q);
+            $modelV->orLike("{$modelV->table}.employee_name", $q);
+        }
+
+        $modelV->orderBy("{$modelV->table}.employee_name", 'ASC');
+
+        $result = $modelV->paginate($options['perPage'], 'default', $options['page']);
+        $total  = $modelV->countAllResults();
+
+        return [
+            'data'  => $result,
+            'total' => $total
+        ];
     }
 }

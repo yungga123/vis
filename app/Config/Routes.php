@@ -60,7 +60,11 @@ $routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 
 /***************** PHASE 1 *****************/
 /* HUMAN RESOURCE */
-//ACCOUNTS
+// Common
+$routes->group('hr/common', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->post('employees', 'HR\Common::searchEmployees', ['as' => 'hr.common.employees']);
+});
+// ACCOUNTS
 $routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'HR\Account::index', ['as' => 'account.home']);
     $routes->post('list', 'HR\Account::list', ['as' => 'account.list']);
@@ -74,7 +78,7 @@ $routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) 
     $routes->post('change-profile-image','HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
 });
 
-//EMPLOYEES
+// EMPLOYEES
 $routes->group('employees', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'HR\Employee::index', ['as' => 'employee.home']);
     $routes->post('list', 'HR\Employee::list', ['as' => 'employee.list']);

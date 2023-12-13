@@ -308,6 +308,12 @@ function setSelect2Selection(selector, val) {
 	$(selector).val(val).trigger("change");
 }
 
+/* Set select2 selection */
+function destroySelect2(selector) {
+	if ($(selector).hasClass("select2-hidden-accessible"))
+		$(selector).select2("destroy");
+}
+
 /**
  * Set select2 selection for ajax data source
  *

@@ -317,11 +317,15 @@ class EmployeeModel extends Model
     }
 
     // Filter for not including resigned employees
-    public function withOutResigned($builder = null)
+    public function withOutResigned($builder = null, $alias = '')
     {
+        $alias = ($builder && empty($alias) && ! empty($builder->getTable())) 
+            ? $builder->getTable() : $alias;
+        $alias = empty($alias) ? '' : $alias .'.';
+        
         ($builder ?? $this)
-            ->where("date_resigned = '' OR date_resigned IS NULL")
-            ->where('employment_status !=', $this->resigned);
+            ->where("({$alias}date_resigned = '' OR {$alias}date_resigned IS NULL)")
+            ->where("{$alias}employment_status !=", $this->resigned);
             
         return $this;
     }

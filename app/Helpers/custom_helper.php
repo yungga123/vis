@@ -385,7 +385,7 @@ if (! function_exists('log_msg'))
         $level = ENVIRONMENT === 'development' ? 'info' : 'error';
 
         if (empty($context)) {
-            $message = json_encode($message);
+            $message = is_string($message) ? $message : json_encode($message);
         }
 
         return log_message($level, 'log_msg: '. $message, $context);

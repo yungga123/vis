@@ -46,15 +46,17 @@ if (! function_exists('dt_button_actions'))
                 'condition' => 'title="User has no permission to delete record." disabled',
             ],
         ];
+
+        $row_id = is_string($id) ? "'{$row[$id]}'" : $id;
             
         if (check_permissions($permissions, ACTION_EDIT)) {
             $arr['edit']['text']        = $dropdown ? 'Edit' : '';
-            $arr['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
+            $arr['edit']['condition']   = 'onclick="edit('.$row_id.')" title="Edit"';
         }
             
         if (check_permissions($permissions, ACTION_DELETE)) {
             $arr['delete']['text']        = $dropdown ? 'Delete' : '';
-            $arr['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
+            $arr['delete']['condition']   = 'onclick="remove('.$row_id.')" title="Delete"';
         }
         
         $html = '';

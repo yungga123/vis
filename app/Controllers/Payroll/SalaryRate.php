@@ -3,6 +3,7 @@
 namespace App\Controllers\Payroll;
 
 use App\Controllers\BaseController;
+use App\Models\EmployeeViewModel;
 use App\Models\SalaryRateModel;
 use monken\TablesIgniter;
 
@@ -55,10 +56,12 @@ class SalaryRate extends BaseController
 
         $data['title']          = 'Employee Salary Rates';
         $data['page_title']     = 'Employee Salary Rates';
+        $data['btn_add_lbl']    = 'Add Salary Rate';
+        $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
-        $data['exclude_toastr'] = true;
+        $data['toastr']         = true;
         $data['select2']        = true;
         $data['custom_js']      = 'payroll/salary_rate/index.js';
         $data['routes']         = json_encode([
@@ -66,6 +69,11 @@ class SalaryRate extends BaseController
                 'list'      => url_to('salary_rate.list'),
                 'fetch'     => url_to('salary_rate.fetch'),
                 'delete'    => url_to('salary_rate.delete'),
+            ],
+            'hr' => [
+                'common'    => [
+                    'employees' => url_to('hr.common.employees'),
+                ],
             ],
         ]);
 
@@ -83,32 +91,22 @@ class SalaryRate extends BaseController
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
         $fields     = [            
-            'id',
-            'new_client',
-            'name',
-            'type',
-            'contact_person',
-            'contact_number',
-            'telephone',
-            'email_address',
-            'address',
-            'source',
-            'notes',
-            'referred_by',
+            'employee_id',
+            'employee_name',
+            'position',
+            'employment_status',
+            'rate_type',
+            'salary_rate',
             'created_by',
             'created_at'
         ];
 
         $table->setTable($builder)
             ->setSearch([
-                "{$this->_model->table}.id",
-                "{$this->_model->table}.name",
-                "{$this->_model->table}.contact_person",
-                "{$this->_model->table}.province",
-                "{$this->_model->table}.city",
-                "{$this->_model->table}.subdivision",
+                "{$this->_model->table}.employee_id",
+                "{$this->_model->table}.employee_name",
+                "{$this->_model->table}.salary_rate",
             ])
-            ->setDefaultOrder("id",'desc')
             ->setOrder(array_merge([null, null], $fields))
             ->setOutput(
                 array_merge(
@@ -135,22 +133,47 @@ class SalaryRate extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $action         = ACTION_ADD;
+                $id             = $this->request->getVar('id');
                 $request        = $this->request->getVar();
-                $contact_number = '';
-    
-                if ($this->request->getVar('id')) {
-                    $action             = ACTION_EDIT;
-                    $data['message']    = res_lang('success.updated', 'Salary Rate');
-                }
+                $employee_id    = $request['employee_id'] ?? '';
+                $inputs         = [
+                    'employee_id'   => $employee_id,
+                    'rate_type'     => $request['rate_type'],
+                    'salary_rate'   => $request['salary_rate'],
+                    'is_current'    => 1,
+                ];
+                $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
+    
+                if ($id) {
+                    unset($inputs['employee_id']);
 
-                if (! $this->_model->save($request)) {
+                    $save   = $this->_model->modify($id, $inputs);
+
+                    $data['message']    = res_lang('success.updated', 'Salary Rate');
+                } else {
+                    $inputs[] = $inputs;
+                    if (! empty($employee_id) && is_array($employee_id)) {
+                        $inputs = [];
+                        foreach ($employee_id as $empId) {
+                            $inputs[] = [
+                                'employee_id'   => $empId,
+                                'rate_type'     => $request['rate_type'],
+                                'salary_rate'   => $request['salary_rate'],
+                                'is_current'    => 1,
+                            ];
+                        }
+                    }
+                    $save   = $this->_model->insertBatch($inputs);
+                }
+
+                if (! $save) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 }
+
                 return $data;
             }
         );
@@ -172,12 +195,19 @@ class SalaryRate extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id             = $this->request->getVar('id');
-                $record         = $this->_model->select($this->_model->allowedFields)
-                    ->where('id', $id)->first();
-                    
+                $id         = $this->request->getVar('id');
+                $empVModel  = new EmployeeViewModel();
+                $model      = $this->_model;
+                $table      = $model->table;
+                $columns    = "
+                    {$table}.employee_id,
+                    {$empVModel->table}.employee_name,
+                    {$table}.rate_type,
+                    {$table}.salary_rate
+                ";
+                $record     = $model->joinEmployeesView()->fetch($id, $columns);
 
-                $data['data']   = $record;
+                $data['data'] = $record;
                 return $data;
             },
             false
@@ -202,7 +232,9 @@ class SalaryRate extends BaseController
             function($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
 
-                if (! $this->_model->delete($this->request->getVar('id'))) {
+                $id = $this->request->getVar('id');
+
+                if (! $this->_model->remove($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');

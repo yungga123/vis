@@ -580,3 +580,20 @@ if (! function_exists('get_quarters'))
         return $param ? $options[$param] : $options;
 	}
 }
+
+if (! function_exists('get_salary_rate_type'))
+{
+    /**
+     * Get salary rate type of Payroll/Salary Rate module
+     */
+	function get_salary_rate_type(string $param = ''): string|array
+	{
+        $options = [
+            'Hourly'    => 'Hourly Rate',
+            'Daily'     => 'Daily Rate',
+            'Monthly'   => 'Monthly Rate',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
