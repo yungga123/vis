@@ -73,26 +73,6 @@ $(document).ready(function () {
 			_payrollCompute();
 		}
 	});
-
-	/* Form for saving record */
-	formSubmit($("#" + form), "continue", function (res, self) {
-		const message = res.errors ?? res.message;
-
-		if (res.status !== STATUS.ERROR) {
-			$("#id").val("");
-			self[0].reset();
-			notifMsgSwal(res.status, res.message, res.status);
-			clearSelect2Selection("#employee_id");
-
-			if ($(`#${modal}`).hasClass("edit")) {
-				$(`#${modal}`).modal("hide");
-			}
-		}
-
-		if (res.errors) notifMsg(res.message, res.status);
-
-		showAlertInForm(elems, message, res.status);
-	});
 });
 
 /* Employees select2 via ajax data source */
@@ -278,19 +258,23 @@ function _payrollCompute() {
 		earnings.sick_leave_amt -
 		(deductions.absent_amt + deductions.tardiness_amt);
 
-	const net_pay =
-		gross_pay +
+	const _deductions =
+		deductions.additional_rest_day_amt +
+		deductions.sss +
+		deductions.pagibig +
+		deductions.philhealth +
+		deductions.withholding_tax +
+		deductions.cash_advance +
+		deductions.other_deductions;
+
+	const _non_taxable =
 		earnings.thirteen_month +
 		earnings.commission +
 		earnings.add_back +
-		earnings.incentives -
-		(deductions.additional_rest_day_amt +
-			deductions.sss +
-			deductions.pagibig +
-			deductions.philhealth +
-			deductions.withholding_tax +
-			deductions.cash_advance +
-			deductions.other_deductions);
+		earnings.incentives;
+
+	const _subtotal = gross_pay + _non_taxable;
+	const net_pay = _subtotal - _deductions;
 
 	$("td.gross_pay").html(numberFormat(gross_pay || 0));
 	$("td.net_pay").html(numberFormat(net_pay || 0));

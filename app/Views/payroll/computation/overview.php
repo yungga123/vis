@@ -7,8 +7,8 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th colspan="2" width="50%">Earnings</th>
-                        <th colspan="2" width="50%">Deductions</th>
+                        <td colspan="2" width="50%"><strong>Earnings</strong></td>
+                        <td colspan="2" width="50%"><strong>Deductions</strong></td>
                     </tr>
                 </thead>
                 <tbody>
