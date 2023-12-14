@@ -169,6 +169,9 @@ define('ACTIONS', [
         'CUSTOMERS'         => [
             'UPLOAD'        => 'Upload',
         ],
+        'EMPLOYEES'         => [
+            'CHANGE'        => 'Change Employment Status',
+        ],
     ],
 ]);
 
@@ -178,6 +181,7 @@ define('ACTION_EDIT', 'EDIT');
 define('ACTION_DELETE', 'DELETE');
 define('ACTION_PRINT', 'PRINT');
 define('ACTION_UPLOAD', 'UPLOAD');
+define('ACTION_CHANGE', 'CHANGE');
 
 // Roles - No need to add new roles here
 // Adding new roles will be on the dashboard

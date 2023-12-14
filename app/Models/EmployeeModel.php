@@ -4,12 +4,13 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\HRTrait;
+use App\Traits\FilterParamTrait;
 use App\Services\Mail\HRMailService;
 
 class EmployeeModel extends Model
 {
     /* Declare trait here to use */
-    use HRTrait;
+    use HRTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'employees';
@@ -19,7 +20,7 @@ class EmployeeModel extends Model
     protected $insertID         = 0;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
-    protected $protectFields    = true;
+    protected $protectFields    = false;
     protected $allowedFields    = [
         'employee_id',
         'firstname',
@@ -231,6 +232,8 @@ class EmployeeModel extends Model
     protected $afterDelete    = [];
 
     /* Custom variables */
+    protected $resigned       = 'Resigned';
+
     // For DataTable columns
     protected $dtColumns      = [
         'employee_id',
@@ -302,32 +305,70 @@ class EmployeeModel extends Model
         return $data;
     }
 
-    // Filter for not including resigned employees
-    public function withOutResigned($builder) 
-    {
-        $builder->where("date_resigned = '' OR IS NULL");
-        return $this;
-    }
-
     // Check user trying to delete own record
-    public function checkRecordIfOneself($data) 
+    public function checkRecordIfOneself(array $data) 
     {
         $id     = $data['id'];
-        $result = $this->getEmployees($id, session('employee_id'), 'employee_id');
+        $result = $this->getEmployees($id, null, 'employee_id');
 
-        if (! empty($result)) {
+        if ($result[0]['employee_id'] === session('employee_id'))  {
             throw new \Exception("You can't delete your own record!", 2);
         }
     }
 
+    // Filter for not including resigned employees
+    public function withOutResigned($builder = null)
+    {
+        ($builder ?? $this)
+            ->where("date_resigned = '' OR date_resigned IS NULL")
+            ->where('employment_status !=', $this->resigned);
+            
+        return $this;
+    }
+
+    // If employee record is deleted or marked as resigned
+    // delete their corresponding account(s)
+    public function deleteEmployeeAccounts($employee_id)
+    {
+        if ($employee_id) {
+            // If the pass param is numberic or 
+            // the primary id, the get the employee_id
+            if (is_numeric($employee_id)) {
+                $record         = $this->getEmployees($employee_id, null, 'employee_id');
+                $employee_id    = $record['employee_id'];
+            }
+
+            // Delete corresponding accounts - if exist
+            // Used query builder since can't delete using model (encountered error)
+            // Totally delete it in db
+            $accountModel = new AccountModel();
+            $this->db->table($accountModel->table)
+                ->where('employee_id', $employee_id)
+                ->delete();
+        }
+    }
+
     // Get employees
-    public function getEmployees($id = null, $employee_id = null, $columns = null) 
+    public function getEmployees($id = null, $employee_id = null, $columns = null, $without_resign = false) 
     {
         $builder = $this->select($columns ?? $this->allowedFields);
         $builder->where('deleted_at IS NULL');
 
-        if (is_int($id)) return $builder->find($id);
-        if ($employee_id) return $builder->where('employee_id', $employee_id)->find($id);
+		// Whether to not include resigned employees
+		// Default - resigned are included
+		if ($without_resign) $this->withOutResigned($builder);
+
+        if ($id) {            
+            return (! is_array($id))
+                ? $builder->where('id', $id)->first()
+                : $builder->find($id);
+        }
+
+        if ($employee_id) {
+            return is_array($employee_id)
+                ? $builder->whereIn('employee_id', $employee_id)->find()
+                : $builder->where('employee_id', $employee_id)->first();
+        }
 
         return $builder->findAll();
     }
@@ -343,14 +384,22 @@ class EmployeeModel extends Model
     }
 
     // For dataTables
-    public function noticeTable() 
+    public function noticeTable($request) 
     {
         $builder = $this->db->table($this->view);
 
-        if (! is_admin()) {
+        if (! is_developer()) {
             $builder->where('employee_id !=', DEVELOPER_ACCOUNT);
         }
 
+        $status = $request['params']['employment_status'] ?? [];
+
+        if (! isset($request['params']) || ! in_array($this->resigned, $status)) {
+            $this->withOutResigned($builder);
+        }
+
+        $this->filterParam($request, $builder, "{$this->view}.employment_status", 'employment_status');
+        
         return $builder;
     }
 
@@ -359,7 +408,22 @@ class EmployeeModel extends Model
     {
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
-            $buttons = dt_button_actions($row, $id, $permissions);
+            $buttons    = dt_button_actions($row, $id, $permissions);
+            $status     = $row['employment_status'];
+
+            if (check_permissions($permissions, 'CHANGE') && $status !== $this->resigned) {
+                // Change Employment Status
+                $onclick    = <<<EOF
+                    onclick="change({$row[$id]}, '{$row['employee_id']}', '{$status}')" title="Change employment status"
+                EOF;
+                $buttons    .= dt_button_html([
+                    'text'      => '',
+                    'button'    => 'btn-success',
+                    'icon'      => 'fas fa-random',
+                    'condition' => $onclick,
+                ]);
+            }
+
             return $buttons;
         };
         

@@ -20,7 +20,7 @@ trait AccountMailTrait
     {
         $empModel   = new EmployeeModel();
         // Get employe name and email address
-        $employee   = $empModel->getEmployeeDetails($employeeId, 'employee_name, email_address');
+        $employee   = $empModel->getEmployeeInView($employeeId, 'employee_name, email_address');
         $sendTo     = $employee['email_address'];
         $sendName   = $employee['employee_name'];
         // Set mail subject

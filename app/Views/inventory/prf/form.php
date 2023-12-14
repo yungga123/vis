@@ -11,9 +11,9 @@
                     </button>
                 </div>
                 <div class="modal-body">                    
-                    <div class="alert alert-info" role="alert">
+                    <div class="callout callout-info mb-3">
                         <strong>Note:</strong> 
-                        If not empty, initial dropdowns of <strong>Job Order & Inventory Masterlist</strong> are by 10. Type the QUOTATION NUMBER and ITEM MODEL & DESCRIPTION to search if not in the options and then, click to select.
+                        If not empty, initial dropdowns of <strong>Job Order & Inventory Masterlist</strong> are by 10. Type the <strong>QUOTATION NUMBER and ITEM MODEL & DESCRIPTION</strong> to search if not in the options and then, click to select.
                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-lg-7">

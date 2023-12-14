@@ -137,7 +137,7 @@ abstract class BaseController extends Controller
             // Check if module has other actions
             $is_exist       = array_key_exists($module_code, $action_others);
             // Get the array keys only
-            $action_others  = array_keys($action_others[$module_code]);
+            $action_others  =  $is_exist ? array_keys($action_others[$module_code]) : $action_others;
             
             return $is_exist 
                 ? array_merge($actions, $action_others) : $actions;
@@ -204,15 +204,19 @@ abstract class BaseController extends Controller
         // If has access in the module, then check 
         // if user has the specific permission/action
         // Ex. User has access to Dispatch but don't have permission for printing
-        $action     = $action ? strtoupper($action) : $action;
+        $action     = clean_param($action, 'strtoupper');
+        $action     = is_string($action) ? [$action] : $action;
         $actions    = $this->getSpecificActionsByModule($module);
         // Add the default PENDING
         $actions[]  = 'PENDING';
-        log_msg('$action: '. $action);
-        log_msg($actions);
-        if ( ! in_array($action, $actions) && ! isset($actions[$action])) {
+
+        // Check if user has the permission 
+        // to perform that $action
+        $value = array_intersect($action, $actions);
+
+        if (empty($value)) {
             if ($throwException) {
-                throw new \Exception(res_lang('restrict.permission.change', $action), 2);
+                throw new \Exception(res_lang('restrict.permission.change', implode(', ', $action)), 2);
             }
 
             $this->redirectToAccessDenied();

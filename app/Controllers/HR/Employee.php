@@ -67,8 +67,9 @@ class Employee extends BaseController
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
+        $data['select2']        = true;
         $data['exclude_toastr'] = true;
-        $data['custom_js']      = 'hr/employee/index.js';
+        $data['custom_js']      = ['hr/employee/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'employee' => [
                 'list'      => url_to('employee.list'),
@@ -87,9 +88,11 @@ class Employee extends BaseController
      */
     public function list()
     {
-        $table = new TablesIgniter();
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
 
-        $table->setTable($this->_model->noticeTable())
+        $table->setTable($builder)
             ->setSearch([
                 'employee_id', 
                 'employee_name', 
@@ -132,6 +135,7 @@ class Employee extends BaseController
             $data,
             function($data) {
                 $action = ACTION_ADD;
+                $inputs = $this->request->getVar();
                 $id     = $this->request->getVar('id');
                 $prev   = $this->request->getVar('prev_employee_id');
                 $curr   = $this->request->getVar('employee_id');
@@ -147,8 +151,12 @@ class Employee extends BaseController
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
     
                 $this->_model->setValidationRules($rules);
+
+                // Remove the csrf
+                unset($inputs['csrf_test_name']);
+                unset($inputs['prev_employee_id']);
     
-                if (! $this->_model->save($this->request->getVar())) {
+                if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation') . ' There are still required fields that need to be addressed. Please double check!';
@@ -187,7 +195,8 @@ class Employee extends BaseController
             function($data) {
                 $id             = $this->request->getVar('id');
                 $fields         = $this->_model->allowedFields;    
-                $data['data']   = $this->_model->select($fields)->find($id);
+                $record         = $this->_model->select($fields)->find($id);
+                $data['data']   = $record;
 
                 return $data;
             },
@@ -213,11 +222,88 @@ class Employee extends BaseController
             function($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
                 
-                if (! $this->_model->delete($this->request->getVar('id'))) {
+                // Before delete get the employee_id
+                // using the primary key id
+                $id     = $this->request->getVar('id');
+                $record = $this->_model->getEmployees($id, null, 'employee_id');
+
+                if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
+                } else {
+                    // Delete also their accounts
+                    $this->_model->deleteEmployeeAccounts($record['employee_id']);
                 }
+
+                return $data;
+            }
+        );
+
+        return $response;
+    }
+
+    /**
+     * Changing employment status of employee
+     *
+     * @return json
+     */
+    public function change() 
+    {
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Changes')
+        ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_CHANGE, true);
+
+                $id         = $this->request->getVar('id');
+                $status     = $this->request->getVar('employment_status');
+                $resigned   = ($status === $this->_model->resigned);
+                $inputs     = [
+                    'employment_status' => $status,
+                    'date_resigned'     => $resigned ? $this->request->getVar('date_resigned') : '',
+                ];
+                $rules      = [
+                    'employment_status' => [
+                        'label' => 'employment status',
+                        'rules' => 'required'
+                    ],
+                    'date_resigned'     => [
+                        'label' => 'date resigned',
+                        'rules' => $resigned ? 'required' : 'permit_empty'
+                    ],
+                ];
+
+                if (! $this->validateData($inputs, $rules)) {
+                    $data['errors']     = $this->validator->getErrors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+
+                    return $data;
+                }
+
+                // Disable the model validation
+                $this->_model->protect(false);
+                $this->_model->skipValidation(true);
+
+                // Save changes
+                if (! $this->_model->update($id, $inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                } else {
+                    // If resigned, delete their accounts
+                    if ($resigned) {
+                        $employee_id = $this->request->getVar('employee_id');
+                        $this->_model->deleteEmployeeAccounts($employee_id);
+                    }
+                }
+
+                // Enable again the model validation
+                $this->_model->protect(true);
 
                 return $data;
             }
