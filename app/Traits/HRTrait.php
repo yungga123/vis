@@ -46,8 +46,10 @@ trait HRTrait
         $model  = $this->initAcountModel();
         $table  = empty($alias) ? $model->view : "{$model->view} AS $alias";
         $column = empty($alias) ? "{$model->view}.username" : "{$alias}.username";
+        $_table = $builder->getTable();
+        $_field = strpos($fieldName, '.') === false ? $_table .'.'. $fieldName : $fieldName;
 
-        $builder->join($table, "{$column} = {$fieldName}", $type);
+        $builder->join($table, "{$column} = {$_field}", $type);
         return $builder;
     }
 
@@ -63,10 +65,10 @@ trait HRTrait
      * 
      * @return $builder
      */
-    public function joinEmployee(
+    public function traitJoinEmployees(
         $builder, 
         $columnName, 
-        $fieldName, 
+        $fieldName = '', 
         $alias = '', 
         $type = 'left', 
         $is_view = false
@@ -76,8 +78,10 @@ trait HRTrait
         $table  = $is_view ? $model->view : $model->table;
         $table  = empty($alias) ? $table : "{$table} AS $alias";
         $column = empty($alias) ? "{$table}.{$columnName}" : "{$alias}.{$columnName}";
+        $_table = $builder->getTable();
+        $_field = empty($fieldName) ? $_table .'.'. $columnName : $fieldName;
 
-        $builder->join($table, "{$column} = {$fieldName}", $type);
+        $builder->join($table, "{$column} = {$_field}", $type);
         return $builder;
     }
 

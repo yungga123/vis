@@ -49,7 +49,8 @@ if (! function_exists('get_nav_menus'))
         $is_payroll     = (
             url_is('payroll/salary-rates') || 
             url_is('payroll/computation') || 
-            url_is('payroll/payslip')
+            url_is('payroll/payslip') || 
+            url_is('payroll/manage-leaves')
         );
         
 		$menu           = [
@@ -268,6 +269,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('payroll.computation.home'),
                 'class'     => (url_is('payroll/computation') ? 'active' : ''),
                 'icon'      => 'fas fa-calculator',
+            ],
+            'PAYROLL_MANAGE_LEAVES'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_MANAGE_LEAVES'),
+                'url'       => url_to('manage_leave.home'),
+                'class'     => (url_is('payroll/manage-leaves') ? 'active' : ''),
+                'icon'      => 'fas fa-folder-open',
             ],
         ];
 

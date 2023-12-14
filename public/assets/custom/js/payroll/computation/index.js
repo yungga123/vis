@@ -230,9 +230,9 @@ function _payrollCompute() {
 	earnings.night_diff_amt =
 		employeeInfo.hourly_rate * earnings.night_diff * 0.1;
 	earnings.regular_holiday_amt =
-		employeeInfo.daily_rate * earnings.regular_holiday * 0.3;
+		employeeInfo.daily_rate * earnings.regular_holiday;
 	earnings.special_holiday_amt =
-		employeeInfo.daily_rate * earnings.special_holiday;
+		employeeInfo.daily_rate * earnings.special_holiday * 0.3;
 	earnings.vacation_leave_amt =
 		employeeInfo.daily_rate * earnings.vacation_leave;
 	earnings.sick_leave_amt = employeeInfo.daily_rate * earnings.sick_leave;

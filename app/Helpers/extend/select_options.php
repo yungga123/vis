@@ -372,7 +372,7 @@ if (! function_exists('set_rpf_status'))
         if (is_array($param)) {
             $arr = [];
             foreach ($param as $val) {
-                $arr[] = set_prf_status($val);
+                $arr[] = set_rpf_status($val);
             }
 
             return $arr;
@@ -460,7 +460,7 @@ if (! function_exists('set_po_status'))
         if (is_array($param)) {
             $arr = [];
             foreach ($param as $val) {
-                $arr[] = set_prf_status($val);
+                $arr[] = set_po_status($val);
             }
 
             return $arr;
@@ -595,5 +595,49 @@ if (! function_exists('get_salary_rate_type'))
         ];
 
         return $param ? $options[$param] : $options;
+	}
+}
+
+if (! function_exists('get_leave_type'))
+{
+    /**
+     * Get leave type of Payroll/Manage Leave module
+     */
+	function get_leave_type(string $param = ''): string|array
+	{
+        $options = [
+            'Leave of Absence'  => 'Leave of Absence',
+            'Vacation Leave'    => 'Vacation Leave',
+            'Sick Leave'        => 'Sick Leave',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
+
+if (! function_exists('set_leave_status'))
+{
+    /**
+     * Setting status of Leave to its past tense
+     */
+	function set_leave_status(string|array $param): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'discard'   => 'discarded',
+            'process'   => 'processed',
+            'approve'   => 'approved',
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_leave_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $options[strtolower($param)];
 	}
 }

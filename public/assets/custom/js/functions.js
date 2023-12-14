@@ -290,6 +290,119 @@ function formSubmit(
 	});
 }
 
+/**
+ * Shorcut for fetching record via ajax post request
+ *
+ * @param {string} route            	- The backend delete route/url
+ * @param {object} data     			- Object of data to pass - like {id: id}
+ * @param {CallableFunction} callback 	- A callable to handle the response
+ */
+function fetchRecord(route, data, callback) {
+	showLoading();
+
+	$.post(route, data)
+		.then((res) => {
+			closeLoading();
+
+			if (res.status === STATUS.ERROR) {
+				$(`#${modal}`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status);
+				return;
+			}
+
+			if (callback) return callback(res);
+
+			// If has not callback provided
+			// populate record thru $.each method
+			if (inObject(res, "data") && !isEmpty(res.data)) {
+				$.each(res.data, (key, value) => {
+					$(`input[name="${key}"]`).val(value);
+				});
+			}
+		})
+		.catch((err) => catchErrMsg(err));
+}
+
+/**
+ * Shorcut for fetching record via ajax post request
+ *
+ * @param {string} route            	- The backend delete route/url
+ * @param {object} data     			- Object of data to pass - like {id: id}
+ * @param {string} title   				- The swal/message title
+ * @param {string} table   				- The DataTable table name
+ * @param {string} modal   				- Modal name
+ * @param {CallableFunction} callback 	- An optional callable to handle the response
+ */
+function changeRecord(route, data, title, table, modal, callback) {
+	let swalMsg = data.id ? `<div>ID #: <strong>${data.id}</strong></div>` : "";
+	let change = data.status ? data.status : "change";
+
+	change = strUpper(change);
+	swalMsg = `
+		${swalMsg} <div>Are you sure you want to <strong>${change}</strong> this record?</div>
+	`;
+
+	swalNotifConfirm(
+		function () {
+			showLoading();
+			$.post(route, data)
+				.then((res) => {
+					closeLoading();
+
+					if (callback) return callback(res);
+
+					// If no callback, code below will be executed
+					const message = res.errors ?? res.message;
+
+					notifMsgSwal(res.status, message, res.status);
+
+					if (res.status !== STATUS.ERROR) {
+						if (table) refreshDataTable($("#" + table));
+						if (modal) $(`#${modal}`).modal("hide");
+					}
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		title,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
+/**
+ * Shorcut for deleting record via ajax post request
+ *
+ * @param {string} route            	- The backend delete route/url
+ * @param {object} data     			- Object of data to pass - like {id: id}
+ * @param {string} table   				- The DataTable table name
+ * @param {CallableFunction} callback 	- An optional callable to handle the response
+ */
+function deleteRecord(route, data, table, callback) {
+	const swalMsg = "delete";
+
+	swalNotifConfirm(
+		function () {
+			$.post(route, data)
+				.then((res) => {
+					if (callback) {
+						return callback(res);
+					}
+
+					if (res.status === STATUS.SUCCESS) {
+						if (table) refreshDataTable($("#" + table));
+					}
+
+					const message = res.errors ?? res.message;
+					notifMsgSwal(res.status, message, res.status);
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		TITLE.WARNING,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
 /* Check if select2 was initialized */
 function isSelect2Initialized(selector, initIfNot = false) {
 	let isInitialized = $(selector).hasClass("select2-hidden-accessible");

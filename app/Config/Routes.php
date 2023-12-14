@@ -385,6 +385,16 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('fetch', 'Payroll\Payslip::fetch', ['as' => 'payslip.fetch']);
         $routes->post('delete', 'Payroll\Payslip::delete', ['as' => 'payslip.delete']);
     });
+
+    // MANAGE LEAVE
+    $routes->group('manage-leaves', static function ($routes) {
+        $routes->get('/', 'Payroll\ManageLeave::index', ['as' => 'manage_leave.home']);
+        $routes->post('list', 'Payroll\ManageLeave::list', ['as' => 'manage_leave.list']);
+        $routes->post('save', 'Payroll\ManageLeave::save', ['as' => 'manage_leave.save']);
+        $routes->post('fetch', 'Payroll\ManageLeave::fetch', ['as' => 'manage_leave.fetch']);
+        $routes->post('delete', 'Payroll\ManageLeave::delete', ['as' => 'manage_leave.delete']);
+        $routes->post('change', 'Payroll\ManageLeave::change', ['as' => 'manage_leave.change']);
+    });
 });
 /* PAYROLL */
 

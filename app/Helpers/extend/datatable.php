@@ -109,16 +109,18 @@ if (! function_exists('dt_status_color'))
     {
         $color   = 'secondary';
         switch (strtolower($status)) {
-            case 'pending':
             case 'edit':
+            case 'pending':
                 $color = 'warning';                   
                 break;
+            case 'add':
             case 'accepted':
             case 'approved':
-            case 'add':
+            case 'processed':
                 $color = 'primary';
                 break;
             case 'rejected':
+            case 'discarded':
                 $color = 'secondary';
                 break;
             case 'item_out':

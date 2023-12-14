@@ -30,7 +30,7 @@ class SalaryRateModel extends Model
     // Validation
     protected $validationRules      = [
         'employee_id'     => [
-            'rules' => 'required|max_length[50]',
+            'rules' => 'required|max_length[100]',
             'label' => 'employee name',
         ],
         'salary_rate'   => [

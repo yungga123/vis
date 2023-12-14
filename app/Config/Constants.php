@@ -172,6 +172,11 @@ define('ACTIONS', [
         'EMPLOYEES'         => [
             'CHANGE'        => 'Change Employment Status',
         ],
+        'PAYROLL_MANAGE_LEAVES' => [
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+        ],
     ],
 ]);
 
@@ -231,6 +236,7 @@ define('MODULES', [
     'PAYROLL_SALARY_RATES'  => 'Salary Rates',
     'PAYROLL_PAYSLIP'       => 'Payslip',
     'PAYROLL_COMPUTATION'   => 'Computation',
+    'PAYROLL_MANAGE_LEAVES' => 'Manage Leaves',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -261,6 +267,7 @@ define('MODULE_CODES', [
     'salary_rates'          => 'PAYROLL_SALARY_RATES',
     'payslip'               => 'PAYROLL_PAYSLIP',
     'payroll_computation'   => 'PAYROLL_COMPUTATION',
+    'manage_leaves'         => 'PAYROLL_MANAGE_LEAVES',
 ]);
 
 // Developer Account
