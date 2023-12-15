@@ -379,8 +379,6 @@ class JobOrderModel extends Model
             $this->joinAccountView($builder, "{$this->table}.discarded_by", 'av4');
             $this->joinAccountView($builder, "{$this->table}.reverted_by", 'av5');
         }
-
-        $builder->where("{$this->table}.deleted_at IS NULL");
     }
 
     // Join job_orders with job_orders_view
@@ -427,9 +425,18 @@ class JobOrderModel extends Model
         $builder = $this->select($columns);
 
         if ($join) $this->joinWithOtherTables($builder);
-        else $builder->where("{$this->table}.deleted_at IS NULL");
 
-        return $id ? $builder->find($id) : $builder->findAll();
+        if (is_integer($id) || is_string($id)) {
+            $builder->where("{$this->table}.id", $id);
+            
+            return $builder->first();
+        }
+
+        if (is_array($id)) {
+            $builder->whereIn("{$this->table}.id", $id);
+        }
+
+        return $builder->findAll();
     }
 
     // Get clients details using job_order_id
@@ -442,9 +449,9 @@ class JobOrderModel extends Model
             {$this->view}.client_type,
             {$this->view}.client_branch_id,
             {$this->view}.client_branch_name,
-            {$customerModel->table}.contact_person,
-            {$customerModel->table}.contact_number,
-            {$customerModel->table}.telephone,
+            {$customerModel->table}.contact_person AS client_contact_person,
+            {$customerModel->table}.contact_number AS client_contact_number,
+            {$customerModel->table}.telephone AS client_telephone,
             ".dt_sql_concat_client_address($customerModel->table, '')." AS client_address
         ";
         $this->setUseSoftDeletes(false);
