@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Models\JobOrderModel;
 use App\Models\ScheduleModel;
 use App\Traits\AdminTrait;
 use App\Traits\HRTrait;
@@ -76,6 +77,11 @@ class Schedule extends BaseController
                 'save'      => url_to('schedule.save'),
                 'delete'    => url_to('schedule.delete'),
             ],
+            'admin' => [
+                'common' => [
+                    'job_orders' => url_to('admin.common.job_orders'),
+                ]
+            ]
         ]);
         $data['type_legend']    = $this->scheduleTypeLegend();
 
@@ -100,21 +106,19 @@ class Schedule extends BaseController
                 $action     = ACTION_ADD;
                 $id         = $this->request->getVar('id');
                 $inputs     = [
+                    'job_order_id'  => $this->request->getVar('job_order_id') ?? 0,
                     'date_range'    => $this->request->getVar('date_range'),
                     'title'         => $this->request->getVar('title'),
-                    'description'   => $this->request->getVar('description'),
+                    'description'   => trim($this->request->getVar('description')),
                     'start'         => $this->request->getVar('start'),
                     'end'           => $this->request->getVar('end'),
                     'type'          => $this->request->getVar('type'),
-                    'created_by'    => session('username'),
                 ];
                 
                 if (! empty($id)) {
                     $action             = ACTION_EDIT;
                     $inputs['id']       = $id;
                     $data['message']    = res_lang('success.updated', 'Schedule');
-    
-                    unset($inputs['created_by']);
                 }
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
@@ -141,8 +145,24 @@ class Schedule extends BaseController
     {
         try {
             $data       = [];
-            $columns    = $this->_model->allowedFields;
-            $columns[]  = 'id';
+            $model      = new JobOrderModel();
+            $columns    = "
+                {$this->_model->table}.id,
+                {$this->_model->table}.job_order_id,
+                {$this->_model->table}.title,
+                {$this->_model->table}.description,
+                {$this->_model->table}.start,
+                {$this->_model->table}.end,
+                {$this->_model->table}.type,
+                {$model->view}.client_name,
+                {$model->view}.quotation
+            ";
+            $start      = $this->request->getVar('start');
+            $end        = $this->request->getVar('end');
+
+            $this->_model->joinJobOrders();
+            $this->_model->whereBetween($start, $end);
+
             $records    = $this->_model->getSchedules(null, $columns);
 
             if (! empty($records)) {
@@ -160,6 +180,11 @@ class Schedule extends BaseController
                             'description'   => $val['description'],
                             'type'          => strtolower($val['type']),
                             'typeText'      => $type['text'],
+                        ],
+                        'job_order'         => [
+                            'id'            => $val['job_order_id'],
+                            'client_name'   => $val['client_name'],
+                            'quotation'     => $val['quotation'],
                         ],
                     ]; 
                 }
