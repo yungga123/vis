@@ -256,6 +256,7 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
     $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
     $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
+    $routes->post('job-orders', 'Admin\Common::searchJobOrders', ['as' => 'admin.common.job_orders']);
     $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
     $routes->post('customer-branches', 'Admin\Common::searchCustomerBranches', ['as' => 'admin.common.customer.branches']);
 });

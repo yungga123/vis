@@ -4,7 +4,7 @@ $(document).ready(function () {
 	table = "schedule_table";
 	modal = "schedule_modal";
 	form = "schedule_form";
-	elems = ["title", "description", "type", "date_range"];
+	elems = ["job_order_id", "title", "description", "type", "date_range"];
 	dateRangeformat = "MMM DD, YYYY hh:mm A";
 	startEndDateFormat = "YYYY-MM-DD HH:mm:ss";
 
@@ -16,7 +16,8 @@ $(document).ready(function () {
 		$(`#${form}`)[0].reset();
 		$("#schedule_id").val("");
 
-		toggleDeleteBtn();
+		clearSelect2Selection("#job_order_id");
+		_toggleDeleteBtn();
 		clearAlertInForm(elems);
 	});
 
@@ -47,6 +48,11 @@ $(document).ready(function () {
 	// option for event pop hover
 	const options = {
 		eventPopHover: (info) => {
+			const job_order_id =
+				info.event.extendedProps.job_order.id != 0
+					? info.event.extendedProps.job_order.id
+					: "N/A";
+
 			$(info.el).popover({
 				container: "body",
 				placement: "top",
@@ -59,7 +65,11 @@ $(document).ready(function () {
 						<span>${info.event.id}</span>
 					</div>
 					<div>
-						<strong>Type</strong>
+						<strong>Job Order #: </strong>
+						<span>${job_order_id}</span>
+					</div>
+					<div>
+						<strong>Schedule Type</strong>
 						<div>${info.event.extendedProps.typeText}</div>
 					</div>
 					<div>
@@ -72,6 +82,19 @@ $(document).ready(function () {
 	};
 	$calendar = initFullCalendar("calendar", router.schedule.list, options);
 
+	/* Job Orders select2 via ajax data source */
+	select2AjaxInit(
+		"#job_order_id",
+		"Search and select a job order",
+		router.admin.common.job_orders,
+		"text",
+		(data) => {
+			if (data.client_name) {
+				$("#title").val(data.client_name);
+			}
+		}
+	);
+
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
@@ -80,6 +103,7 @@ $(document).ready(function () {
 			if (res.status === STATUS.SUCCESS) {
 				self[0].reset();
 				$("#schedule_id").val("");
+				clearSelect2Selection("#job_order_id");
 
 				if ($(`#${modal}`).hasClass("edit")) {
 					$(`#${modal}`).modal("hide");
@@ -87,7 +111,7 @@ $(document).ready(function () {
 			}
 			notifMsgSwal(res.status, message, res.status);
 			refreshFullCalendar($calendar);
-			toggleDeleteBtn();
+			_toggleDeleteBtn();
 		}
 
 		showAlertInForm(elems, message, res.status);
@@ -99,6 +123,7 @@ function fcEventClick(param) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Schedule");
 
+	clearSelect2Selection("#job_order_id");
 	clearAlertInForm(elems);
 	showLoading();
 
@@ -116,7 +141,11 @@ function fcEventClick(param) {
 
 	$(`#${modal}`).modal("show");
 
-	toggleDeleteBtn(param.event.id);
+	_setValueInJobOrderSelect2(
+		param.event.extendedProps.job_order.id,
+		param.event.extendedProps.job_order.client_name
+	);
+	_toggleDeleteBtn(param.event.id);
 	closeLoading();
 }
 
@@ -144,7 +173,15 @@ function remove() {
 }
 
 /* Toggle delete button */
-function toggleDeleteBtn(id) {
+function _toggleDeleteBtn(id) {
 	if (id) $("#btn_delete").removeClass("d-none");
 	else $("#btn_delete").addClass("d-none");
+}
+
+/* Set value in job_order_id select2 */
+function _setValueInJobOrderSelect2(id, text) {
+	if (text) {
+		text = `${id} | ${text}`;
+		setSelect2AjaxSelection("#job_order_id", text, id);
+	}
 }
