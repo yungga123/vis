@@ -173,9 +173,14 @@ define('ACTIONS', [
             'CHANGE'        => 'Change Employment Status',
         ],
         'PAYROLL_MANAGE_LEAVES' => [
+            'VIEW_ALL'      => 'View All',
             'DISCARD'       => 'Discard',
             'PROCESS'       => 'Process',
             'APPROVE'       => 'Approve',
+            // Add this if you want the 4 above actions only
+            // not include the generic ones
+            // such as VIEW, ADD, EDIT, DELETE
+            'OTHERS_ONLY'   => TRUE,
         ],
     ],
 ]);
@@ -268,6 +273,14 @@ define('MODULE_CODES', [
     'payslip'               => 'PAYROLL_PAYSLIP',
     'payroll_computation'   => 'PAYROLL_COMPUTATION',
     'manage_leaves'         => 'PAYROLL_MANAGE_LEAVES',
+]);
+
+// Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
+// It means user can access the said modules
+// without setting a permissions
+// Add them here
+define('MODULES_WITH_GENERIC_ACCESS', [
+    'PAYROLL_MANAGE_LEAVES',
 ]);
 
 // Developer Account

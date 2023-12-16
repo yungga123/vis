@@ -162,20 +162,60 @@ if (! function_exists('get_actions'))
 	/**
 	 * Get the action list
 	 */
-	function get_actions(string $param = null, bool $withOthers = false): string|array
+	function get_actions(string $param = null, bool $with_others = false, bool $with_generic = false): string|array
 	{
 		$actions = ACTIONS;
 
 		if ($param && !array_key_exists($param, $actions)) {
-			$others = array_values($actions['OTHERS']);
-			for ($i=0; $i <= count($others); $i++) { 
-				if (isset($others[$i][$param])) return $others[$i][$param];
+			$others 	= $actions['OTHERS'];
+			
+			// Check if param is a module code
+			if (isset($others[$param])) {
+				$param 	= $others[$param];
+
+				if (isset($param['OTHERS_ONLY'])) {
+					unset($param['OTHERS_ONLY']);
+
+					if (! $with_generic) return $param;
+				}
+
+				unset($actions['OTHERS']);
+
+				return array_merge($actions, $param);
+			}
+
+			$others_val = array_values($actions['OTHERS']);
+
+			for ($i=0; $i <= count($others_val); $i++) { 
+				if (isset($others_val[$i][$param])) {
+					return $others_val[$i][$param];
+				}
 			}
 		}
 
-        if (! $withOthers) unset($actions['OTHERS']);
+        if (! $with_others) unset($actions['OTHERS']);
+		if ($param && isset($actions[strtoupper($param)])) {
+			return $actions[strtoupper($param)];
+		}
 
-		return $param ? $actions[strtoupper($param)] : $actions;
+		return $actions;
+	}
+}
+
+if (! function_exists('get_generic_modules_actions'))
+{
+	/**
+	 * Get the actions of modules with generic acess
+	 */
+	function get_generic_modules_actions(string $param = null): string|array|bool
+	{
+		$modules = MODULES_WITH_GENERIC_ACCESS;
+
+		if (in_array($param, $modules)) {
+			return array_keys(get_actions());
+		}
+
+		return $param ? [] : $modules;
 	}
 }
 

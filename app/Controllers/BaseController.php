@@ -106,18 +106,24 @@ abstract class BaseController extends Controller
      *
      * @param string $module_code
      * 
-     * @return string|array
+     * @return string|array|bool
      */
     protected function getSpecificPermissions($module_code)
 	{
-        if ($this->isAdmin()) return array_keys(ACTIONS);
+        helper('custom');
 
-        $model = new \App\Models\PermissionModel();
-        $perms = $model->getCurrUserSpecificPermissions($module_code);
+        if ($this->isAdmin()) {
+            // Get the array keys
+            return array_keys(get_actions($module_code, false, true));
+        }
 
-        if (empty($perms)) return false;
+        $model      = new \App\Models\PermissionModel();
+        $perms      = $model->getCurrUserSpecificPermissions($module_code);
+        $generic    = get_generic_modules_actions($module_code);
+
+        if (empty($perms)) return $generic;
         
-		return explode(',', $perms['permissions']);
+		return array_merge($generic, explode(',', $perms['permissions']));
 	}
 
     /**
@@ -129,26 +135,30 @@ abstract class BaseController extends Controller
      */
     protected function getSpecificActionsByModule($module_code)
 	{
+        helper('custom');
+
+        // Get the generic action, if there's any
+        $generic = get_generic_modules_actions($module_code);
+
         if ($this->isAdmin()) {
             // Get the array keys only
-            $actions        = array_keys(get_actions());
-            // Get the actions under OTHERS key
-            $action_others  = get_actions('OTHERS', true);
-            // Check if module has other actions
-            $is_exist       = array_key_exists($module_code, $action_others);
-            // Get the array keys only
-            $action_others  =  $is_exist ? array_keys($action_others[$module_code]) : $action_others;
-            
-            return $is_exist 
-                ? array_merge($actions, $action_others) : $actions;
+            $actions = array_keys(get_actions($module_code));
+            // Merge them together
+            return array_merge($actions, $generic);
         }
 
-        foreach ($this->permissions as $permission) {
-            if ($permission['module_code'] === $module_code) 
-                return explode(',', $permission['permissions']);
+        if (! empty($this->permissions)) {
+            foreach ($this->permissions as $permission) {
+                if ($permission['module_code'] === $module_code) {
+                    // Get the permissions
+                    $actions = explode(',', $permission['permissions']);
+                    // Merge them together
+                    return array_merge($actions, $generic);
+                }
+            }
         }
         
-		return [];
+		return $generic;
 	}
 
     /**

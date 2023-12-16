@@ -10,9 +10,17 @@ if (! function_exists('get_user_modules'))
             return array_keys(MODULES);
         }
 
-        $permissions = $permissions ?? get_permissions();
-		return !empty($permissions) 
-                ? array_column($permissions, 'module_code') : [];
+        $generic        = get_generic_modules_actions();
+        $permissions    = $permissions ?? get_permissions();
+
+        if (empty($permissions)) return $generic;
+        
+        // If $permissions is not empty
+        // get the module codes
+        $modules = array_column($permissions, 'module_code');
+
+        // Merge them with the generic
+        return array_unique(array_merge($modules, $generic));
 	}
 }
 
