@@ -19,9 +19,12 @@ trait FilterParamTrait
     {
         if (isset($request['params']) && !empty($request['params'])) {
             $params = $request['params'];
+            $table  = $builder->getTable();
+            $column = strpos($columnName, '.') === false 
+                ? $table .'.'. $columnName : $columnName; 
             
             if (isset($params[$fieldName]) && !empty($params[$fieldName])) {
-                $field  = "UPPER(TRIM({$columnName}))";
+                $field  = "UPPER(TRIM({$column}))";
                 $search = $this->_convertValue(clean_param($params[$fieldName], 'strtoupper'));
 
                 if (is_array($search))

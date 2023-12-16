@@ -12,6 +12,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="callout callout-info">
+                        <strong>Note:</strong>
+                        <span>Start Date has <strong>7 days prior</strong> allowed. It is intended for late filing of leave and limit it within that days only!</span>
+                    </div>
                     <div class="form-group">
                         <label class="required" for="leave_type">Leave Type</label>
                         <select type="text" class="form-control" name="leave_type" id="leave_type">
@@ -26,13 +30,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="required" for="start_date">Start Date</label>
-                                <input type="date" class="form-control" name="start_date" id="start_date" placeholder="Start Date">
+                                <input type="date" class="form-control" name="start_date" id="start_date" min="<?= date('Y-m-d', strtotime(current_date() . ' - 7 days')) ?>" placeholder="Start Date">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="required" for="end_date">End Date</label>
-                                <input type="date" class="form-control" name="end_date" id="end_date" placeholder="End Date">
+                                <input type="date" class="form-control" name="end_date" id="end_date" placeholder="End Date" readonly>
                             </div>
                         </div>
                     </div>

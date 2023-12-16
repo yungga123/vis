@@ -641,3 +641,30 @@ if (! function_exists('set_leave_status'))
         return $options[strtolower($param)];
 	}
 }
+
+if (! function_exists('get_leave_status'))
+{
+    /**
+     * Getting leave statuses
+     */
+	function get_leave_status(string $param = '', bool $pass_tense = false): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'discard'   => 'discard',
+            'process'   => 'process',
+            'approve'   => 'approve',
+        ];
+
+        $options_pt = [
+            'pending'   => 'pending',
+            'discarded' => 'discarded',
+            'processed' => 'processed',
+            'approved'  => 'approved',
+        ];
+
+        $arr = $pass_tense ? $options_pt : $options;
+
+        return $param ? $arr[strtolower($param)] : $arr;
+	}
+}

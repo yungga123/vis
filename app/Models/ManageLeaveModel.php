@@ -4,11 +4,12 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\HRTrait;
+use App\Traits\FilterParamTrait;
 
 class ManageLeaveModel extends Model
 {
     /* Declare trait here to use */
-    use HRTrait;
+    use HRTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'manage_leaves';
@@ -73,25 +74,38 @@ class ManageLeaveModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = ['setCreatedBy'];
+    protected $beforeInsert   = ['checkDatesAndSetCreatedBy'];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = ['setStatusByAndAt'];
+    protected $beforeUpdate   = ['setStatusByAndAt', 'checkIfUserOwnRecord'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
-    protected $beforeDelete   = [];
+    protected $beforeDelete   = ['checkIfUserOwnRecord'];
     protected $afterDelete    = [];
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses = ['approved', 'discarded'];
+    protected $restrictedStatuses = ['processed', 'approved', 'discarded'];
 
     /**
-     * Set the value for created_by before inserting
+     * Check dates and set the value for created_by before inserting
      */
-    protected function setCreatedBy(array $data)
+    protected function checkDatesAndSetCreatedBy(array $data)
     {
+        // Check dates to whether user
+        // has already a leave request within that date range.
+        // Then if there's any, throw an exception
+        $start_date     = $data['data']['start_date'];
+        $end_date       = $data['data']['end_date'];
+        $check_dates    = $this->checkLeaveDates($start_date, $end_date);
+                
+        if (! empty($check_dates)) {
+            throw new \Exception('Selected leave dates are overlapping with another leave request.', 1);
+        }
+
+        // Set the value for created_by
         $data['data']['created_by'] = session('username');
+
         return $data;
     }
 
@@ -106,6 +120,25 @@ class ManageLeaveModel extends Model
             $data['data'][$status .'_at'] = current_datetime();
         }
         
+        return $data;
+    }
+
+    /**
+     * Check whether user's own record - if not, throw an exception.
+     * Restrict editing or delete other's record.
+     */
+    protected function checkIfUserOwnRecord(array $data)
+    {
+        $this->where('employee_id', session('employee_id'));
+        
+        $id     = $data['id'][0];
+        $action = isset($data['purge']) ? ACTION_DELETE : ACTION_EDIT;
+        $record = $this->fetch($id, 'employee_id');
+
+        if (empty($record)) {
+            throw new \Exception("You can't <strong>{$action}</strong> other's leave request!", 1);
+        }
+
         return $data;
     }
 
@@ -199,6 +232,18 @@ class ManageLeaveModel extends Model
         $this->joinAccountView($builder, 'processed_by', 'pb');
         $this->joinAccountView($builder, 'approved_by', 'ab');
         $this->joinAccountView($builder, 'discarded_by', 'db');
+
+        // Not include dev record
+        if (! is_developer()) {
+            $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
+        }
+
+        if (! in_array('VIEW_ALL', $permissions)) {
+            $builder->where("{$this->table}.employee_id", session('employee_id'));
+        }
+        
+        $this->filterParam($request, $builder);
+        $this->filterParam($request, $builder, 'leave_type', 'leave_type');
 
         $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy("{$this->table}.id", 'DESC');

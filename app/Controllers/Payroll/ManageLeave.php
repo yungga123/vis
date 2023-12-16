@@ -66,7 +66,7 @@ class ManageLeave extends BaseController
         $data['sweetalert2']    = true;
         $data['toastr']         = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['payroll/manage_leave/index.js', 'moment.js'];
+        $data['custom_js']      = ['payroll/manage_leave/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'manage_leave' => [
                 'list'      => url_to('manage_leave.list'),
@@ -154,12 +154,6 @@ class ManageLeave extends BaseController
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
                 $this->checkRecordRestrictionViaStatus($id, $this->_model);
-
-                $check_dates = $this->_model->checkLeaveDates($request['start_date'], $request['end_date']);
-            
-                if (! empty($check_dates)) {
-                    throw new \Exception('Selected leave dates are overlapping with another leave request.', 1);
-                }
     
                 if ($id) {
                     $data['message']    = res_lang('success.updated', 'Leave');

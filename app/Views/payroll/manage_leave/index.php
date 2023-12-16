@@ -4,6 +4,31 @@
     <div class="row">
         <div class="col-12">                    
             <div class="card">
+				<div class="card-header">
+                    <div class="input-group" style="flex-wrap: nowrap; width: 100%;">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">Filter By:</label>
+                            <span class="input-group-text">Status</span>
+                        </div>
+                        <select class="custom-select select2" id="filter_status" data-placeholder="Select a status" multiple>
+                            <?php foreach (get_leave_status('', true) as $val => $text): ?>
+                                <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Leave Type</span>
+                        </div>
+                        <select class="custom-select select2" id="filter_leave_type" data-placeholder="Select a leave type" multiple>
+                            <?php foreach (get_leave_type() as $val => $text): ?>
+                                <option value="<?= $val ?>"><?= $text ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
+                            <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterData(true)" type="button" title="Reset filter">Reset</button>
+                        </div>
+                    </div>
+				</div>
                 <div class="card-body">
                     <table id="manage_leave_table" class="table table-hover table-striped nowrap">
                         <thead class="nowrap">

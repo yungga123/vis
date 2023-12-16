@@ -13,6 +13,9 @@ $(document).ready(function () {
 		"leave_remark",
 	];
 
+	select2Init("#filter_status");
+	select2Init("#filter_leave_type");
+
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
@@ -21,6 +24,13 @@ $(document).ready(function () {
 		$("#id").val("");
 
 		clearAlertInForm(elems);
+	});
+
+	$("#start_date").on("change", function () {
+		const startDate = $(this).val();
+
+		// Set minimum end date
+		$("#end_date").attr("min", startDate).removeAttr("readonly");
 	});
 
 	/* Load dataTable */
@@ -65,6 +75,29 @@ $(document).ready(function () {
 		showAlertInForm(["leave_remark"], message, res.status);
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const status = getSelect2Selection("#filter_status");
+	const leave_type = getSelect2Selection("#filter_leave_type");
+	const params = {
+		status: status,
+		leave_type: leave_type,
+	};
+	const condition = !isEmpty(status) || !isEmpty(leave_type);
+
+	filterParam(
+		router.manage_leave.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_status");
+			clearSelect2Selection("#filter_leave_type");
+		},
+		reset
+	);
+}
 
 /* Get record details */
 function edit(id) {
