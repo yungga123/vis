@@ -73,6 +73,12 @@ $(document).ready(function () {
 			_payrollCompute();
 		}
 	});
+
+	$(".btn-submit").on("click", function () {
+		employeeInfo.id = $("#id").val();
+		employeeInfo.notes = $("#notes").val();
+		swalNotifConfirm(_submit, TITLE.WARNING, "continue", STATUS.WARNING);
+	});
 });
 
 /* Employees select2 via ajax data source */
@@ -92,6 +98,7 @@ function _initSelect2Employees() {
 /* Employees select2 callack */
 function _populateEmployeeInfo(data) {
 	_resetEmployeeInfo();
+	$(".btn-submit").attr("disabled", "true");
 
 	if (data.id) {
 		employeeInfo.employee_id = data.id;
@@ -123,7 +130,14 @@ function _populateEmployeeInfo(data) {
 					break;
 			}
 
+			// Parse float
+			employeeInfo.salary_rate = parseFloat(employeeInfo.salary_rate);
+			employeeInfo.cut_off_pay = parseFloat(employeeInfo.cut_off_pay);
+			employeeInfo.daily_rate = parseFloat(employeeInfo.daily_rate);
+			employeeInfo.hourly_rate = parseFloat(employeeInfo.hourly_rate);
+
 			_payrollCompute();
+			$(".btn-submit").removeAttr("disabled");
 		}
 	}
 
@@ -150,6 +164,7 @@ function _populateEmployeeInfo(data) {
 
 /* Reset employee info */
 function _resetEmployeeInfo() {
+	employeeInfo.id = 0;
 	employeeInfo.employee_id = "";
 	employeeInfo.employment_status = "";
 	employeeInfo.position = "";
@@ -158,6 +173,9 @@ function _resetEmployeeInfo() {
 	employeeInfo.cut_off_pay = 0;
 	employeeInfo.daily_rate = 0;
 	employeeInfo.hourly_rate = 0;
+	employeeInfo.gross_pay = 0;
+	employeeInfo.net_pay = 0;
+	employeeInfo.notes = "";
 
 	_toggleEmployeeInfo();
 }
@@ -165,9 +183,8 @@ function _resetEmployeeInfo() {
 /* Reset employee earnings */
 function _resetEarnings() {
 	earnings.basic_pay = 0;
-	earnings.working_days = 0;
-	earnings.working_day_off = 0;
-	earnings.working_day_off_amt = 0;
+	earnings.working_days_off = 0;
+	earnings.working_days_off_amt = 0;
 	earnings.over_time = 0;
 	earnings.over_time_amt = 0;
 	earnings.night_diff = 0;
@@ -182,7 +199,7 @@ function _resetEarnings() {
 	earnings.sick_leave_amt = 0;
 	earnings.incentives = 0;
 	earnings.commission = 0;
-	earnings.thirteen_month = 0;
+	earnings.thirteenth_month = 0;
 	earnings.add_back = 0;
 }
 
@@ -224,8 +241,8 @@ function _toggleEmployeeInfo(show = false) {
 function _payrollCompute() {
 	// Earnings
 	earnings.basic_pay = employeeInfo.cut_off_pay;
-	earnings.working_day_off_amt =
-		employeeInfo.daily_rate * earnings.working_day_off * 1.3;
+	earnings.working_days_off_amt =
+		employeeInfo.daily_rate * earnings.working_days_off * 1.3;
 	earnings.over_time_amt = employeeInfo.hourly_rate * earnings.over_time * 1.25;
 	earnings.night_diff_amt =
 		employeeInfo.hourly_rate * earnings.night_diff * 0.1;
@@ -247,18 +264,26 @@ function _payrollCompute() {
 	_populateDeductions();
 
 	// Total
+	const _non_taxable =
+		earnings.thirteenth_month +
+		earnings.commission +
+		earnings.add_back +
+		earnings.incentives;
+
 	const gross_pay =
 		earnings.basic_pay +
-		earnings.working_day_off_amt +
+		earnings.working_days_off_amt +
 		earnings.over_time_amt +
 		earnings.night_diff_amt +
 		earnings.regular_holiday_amt +
 		earnings.special_holiday_amt +
 		earnings.vacation_leave_amt +
-		earnings.sick_leave_amt -
-		(deductions.absent_amt + deductions.tardiness_amt);
+		earnings.sick_leave_amt +
+		_non_taxable;
 
 	const _deductions =
+		deductions.absent_amt +
+		deductions.tardiness_amt +
 		deductions.additional_rest_day_amt +
 		deductions.sss +
 		deductions.pagibig +
@@ -267,14 +292,10 @@ function _payrollCompute() {
 		deductions.cash_advance +
 		deductions.other_deductions;
 
-	const _non_taxable =
-		earnings.thirteen_month +
-		earnings.commission +
-		earnings.add_back +
-		earnings.incentives;
+	const net_pay = gross_pay - _deductions;
 
-	const _subtotal = gross_pay + _non_taxable;
-	const net_pay = _subtotal - _deductions;
+	employeeInfo.gross_pay = gross_pay;
+	employeeInfo.net_pay = net_pay;
 
 	$("td.gross_pay").html(numberFormat(gross_pay || 0));
 	$("td.net_pay").html(numberFormat(net_pay || 0));
@@ -296,4 +317,58 @@ function _populateDeductions() {
 			$("td." + key).html(numberFormat(val || 0));
 		}
 	});
+}
+
+/* Submit data */
+function _submit() {
+	const data = {
+		cut_off: {
+			start_date: cutOff.start_date,
+			end_date: cutOff.end_date,
+			sundays: cutOff.sundays,
+		},
+		employee_info: employeeInfo,
+		payroll_earnings: earnings,
+		payroll_deductions: deductions,
+	};
+
+	showLoading();
+
+	$.post(router.payroll.computation.save, data)
+		.then((res) => {
+			closeLoading();
+			notifMsgSwal(res.status, res.message, res.status);
+
+			// Reset
+			_resetAll();
+		})
+		.catch((err) => catchErrMsg(err));
+}
+
+/* Reset data */
+function _resetAll() {
+	// Reset
+	$("input").val("");
+	$("#id").val("");
+	$("#notes").val("");
+	$("td.gross_pay").html("");
+	$("td.net_pay").html("");
+	$(".btn-submit").attr("disabled", "true");
+
+	employeeInfo.id = 0;
+	employeeInfo.working_days = 0;
+	cutOff.start_date = "";
+	cutOff.end_date = "";
+	cutOff.sundays = [];
+	cutOff.elems.start_date.val("");
+	cutOff.elems.end_date.val("");
+
+	_resetEmployeeInfo();
+	_resetEarnings();
+	_resetDeductions();
+	_toggleEmployee();
+	_toggleEmployeeInfo();
+	_populateEarnings();
+	_populateDeductions();
+	clearSelect2Selection("#employee_id");
 }

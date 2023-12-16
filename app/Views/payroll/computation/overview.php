@@ -21,7 +21,7 @@
                     </tr>
                     <tr>
                         <td>Working Day-Off</td>
-                        <td class="working_day_off_amt">00.00</td>
+                        <td class="working_days_off_amt">00.00</td>
                         <!-- Deduction -->
                         <td>Tardiness</td>
                         <td class="tardiness_amt">00.00</td>
@@ -83,7 +83,7 @@
                     </tr>
                     <tr>
                         <td>13th Month</td>
-                        <td class="thirteen_month">00.00</td>
+                        <td class="thirteenth_month">00.00</td>
                         <!-- Total -->
                         <td><strong>Gross Pay</strong></td>
                         <td class="gross_pay"></td>
@@ -97,6 +97,19 @@
                     </tr>
                 </tbody>
             </table>
+        </div>        
+        <div class="p-3">            
+            <div class="form-group">
+                <label class="required" for="notes">Notes</label>
+                <textarea name="notes" id="notes" class="form-control" cols="2" rows="2" placeholder="Enter notes"></textarea>
+                <small id="alert_notes" class="text-danger"></small>
+            </div>
+            <div class="form-group">
+                <input type="hidden" id="id" name="id" readonly>
+                <?php if ($can_submit): ?>
+                    <button type="button" class="btn btn-success w-100 btn-submit" disabled>Submit</button>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>

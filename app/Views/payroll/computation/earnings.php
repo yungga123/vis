@@ -18,8 +18,8 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="working_day_off">Working Day-Off</label>
-                    <input type="number" class="form-control" name="working_day_off" id="working_day_off" placeholder="Days" step="00.5">
+                    <label for="working_days_off">Working Day-Off</label>
+                    <input type="number" class="form-control" name="working_days_off" id="working_days_off" placeholder="Days" step="00.5">
                 </div>
             </div>
         </div>
@@ -89,8 +89,8 @@
             </div>
             <div class="col-md-6 mt-2">
                 <div class="form-group">
-                <label for="thirteen_month">13th Month</label>
-                <input type="number" class="form-control" name="thirteen_month" id="thirteen_month" placeholder="00.0" step="00.01">
+                <label for="thirteenth_month">13th Month</label>
+                <input type="number" class="form-control" name="thirteenth_month" id="thirteenth_month" placeholder="00.0" step="00.01">
                 </div>
             </div>
             <div class="col-md-6 mt-2">

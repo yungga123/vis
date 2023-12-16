@@ -182,10 +182,16 @@ define('ACTIONS', [
             // such as VIEW, ADD, EDIT, DELETE
             'OTHERS_ONLY'   => TRUE,
         ],
+        'PAYROLL_COMPUTATION' => [
+            'VIEW'          => 'View',
+            'SUBMIT'        => 'Submit',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
 // Individual actions constants
+define('ACTION_VIEW', 'VIEW');
 define('ACTION_ADD', 'ADD');
 define('ACTION_EDIT', 'EDIT');
 define('ACTION_DELETE', 'DELETE');
