@@ -29,7 +29,7 @@ if (! function_exists('get_nav_menus'))
     /**
      * Get the nav menus of some of the modules
      */
-	function get_nav_menus(string $param): array
+	function get_nav_menus(?string $param = null): array
 	{
         $is_sales       = (
             url_is('tasklead') || 
@@ -112,7 +112,7 @@ if (! function_exists('get_nav_menus'))
             ],
         ];
 
-        return $menu[$param];
+        return $param ? $menu[$param] : $menu;
 	}
 }
 

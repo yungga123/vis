@@ -141,6 +141,55 @@ if (! function_exists('get_modules'))
 	}
 }
 
+if (! function_exists('get_modules_options'))
+{
+	/**
+	 * Get modules for options selection
+	 */
+	function get_modules_options(): string
+	{
+		$html 	= '';
+        $modules 	= get_modules();
+        
+        if (! empty($modules)) {
+			$options 	= [];
+			$setups		= setup_modules();
+			$menus		= get_nav_menus();
+
+			// Exclude dashboard
+			unset($modules['DASHBOARD']);
+
+            foreach ($modules as $key => $module) {
+				$setup 		= $setups[$key];
+				$menu_code 	= $setup['menu'];
+				$menu_name 	= isset($menus[$menu_code]) ? $menus[$menu_code]['name'] : $module;
+
+				// Store option with menu/module name as key
+				$options[$menu_name][] = <<<EOF
+					<option value="{$key}">{$module}</option>
+				EOF;
+			}
+
+			if (! empty($options)) {
+				ksort($options);
+
+				foreach ($options as $key => $vals) {
+					// Make the key as opt group label
+					$html .= "<optgroup label='{$key}'>";
+
+					foreach ($vals as $val) {
+						$html .= $val;
+					}
+
+					$html .= "</optgroup>";
+				}
+			}
+        }
+        
+        return $html;
+	}
+}
+
 if (! function_exists('get_module_codes'))
 {
 	/**
