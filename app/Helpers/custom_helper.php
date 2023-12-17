@@ -147,20 +147,24 @@ if (! function_exists('clean_param'))
     /**
      * Clean input using trim default function
      */
-	function clean_param(string|array $input, $func_name = ''): string|array
+	function clean_param(string|array $input, $func_name = '', $trim_chars = ''): string|array
 	{
         if (is_array($input)) {
             $arr = [];
             foreach ($input as $key => $val) {
-                $val = trim($val);
+                if (! is_array($val)) {
+                    $val = $trim_chars ? trim($val, $trim_chars) : trim($val);
+                }
                 if ($func_name) $val = $func_name($val);
+
                 $arr[$key] = $val;
             }
 
             return $arr;
         }
 
-        $input = trim($input);
+        $input = $trim_chars ? trim($input, $trim_chars) : trim($input);
+        
         if ($func_name) $input = $func_name($input);
 
         return $input;

@@ -187,6 +187,11 @@ define('ACTIONS', [
             'SUBMIT'        => 'Submit',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'PAYROLL_SETTINGS' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
@@ -248,6 +253,7 @@ define('MODULES', [
     'PAYROLL_PAYSLIP'       => 'Payslip',
     'PAYROLL_COMPUTATION'   => 'Computation',
     'PAYROLL_MANAGE_LEAVES' => 'Manage Leaves',
+    'PAYROLL_SETTINGS'      => 'Settings',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -279,6 +285,7 @@ define('MODULE_CODES', [
     'payslip'               => 'PAYROLL_PAYSLIP',
     'payroll_computation'   => 'PAYROLL_COMPUTATION',
     'manage_leaves'         => 'PAYROLL_MANAGE_LEAVES',
+    'payroll_settings'      => 'PAYROLL_SETTINGS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)

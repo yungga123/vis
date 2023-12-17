@@ -392,6 +392,13 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('delete', 'Payroll\ManageLeave::delete', ['as' => 'manage_leave.delete']);
         $routes->post('change', 'Payroll\ManageLeave::change', ['as' => 'manage_leave.change']);
     });
+
+    // SETTINGS
+    $routes->group('settings', static function ($routes) {
+        $routes->get('/', 'Payroll\Settings::index', ['as' => 'payroll.settings.home']);
+        $routes->post('save', 'Payroll\Settings::save', ['as' => 'payroll.settings.save']);
+        $routes->post('fetch', 'Payroll\Settings::fetch', ['as' => 'payroll.settings.fetch']);
+    });
 });
 /* PAYROLL */
 

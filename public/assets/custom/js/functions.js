@@ -295,9 +295,10 @@ function formSubmit(
  *
  * @param {string} route            	- The backend delete route/url
  * @param {object} data     			- Object of data to pass - like {id: id}
+ * @param {string} modal   				- Modal name
  * @param {CallableFunction} callback 	- A callable to handle the response
  */
-function fetchRecord(route, data, callback) {
+function fetchRecord(route, data, modal, callback) {
 	showLoading();
 
 	$.post(route, data)
@@ -305,7 +306,7 @@ function fetchRecord(route, data, callback) {
 			closeLoading();
 
 			if (res.status === STATUS.ERROR) {
-				$(`#${modal}`).modal("hide");
+				if (modal && $(`#${modal}`).length) $(`#${modal}`).modal("hide");
 				notifMsgSwal(res.status, res.message, res.status);
 				return;
 			}

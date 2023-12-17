@@ -26,7 +26,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="over_time">Over Time</label>
+                    <label for="over_time">Overtime</label>
                     <input type="number" class="form-control" name="over_time" id="over_time" placeholder="Hours" step="00.5">
                 </div>
             </div>

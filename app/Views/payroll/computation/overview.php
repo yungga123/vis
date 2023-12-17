@@ -27,7 +27,7 @@
                         <td class="tardiness_amt">00.00</td>
                     </tr>
                     <tr>
-                        <td>Over Time</td>
+                        <td>Overtime</td>
                         <td class="over_time_amt">00.00</td>
                         <!-- Deduction -->
                         <td>Additional Rest Day</td>

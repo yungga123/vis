@@ -668,3 +668,24 @@ if (! function_exists('get_leave_status'))
         return $param ? $arr[strtolower($param)] : $arr;
 	}
 }
+
+if (! function_exists('get_days'))
+{
+    /**
+     * Get days for Payroll/Settings module
+     */
+	function get_days(string $param = ''): string|array
+	{
+        $options = [
+            'Monday'    => 'Monday',
+            'Tuesday'   => 'Tuesday',
+            'Wednesday' => 'Wednesday',
+            'Thursday'  => 'Thursday',
+            'Friday'    => 'Friday',
+            'Saturday'  => 'Saturday',
+            'Sunday'    => 'Sunday',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
