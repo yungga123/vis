@@ -6,6 +6,8 @@ $(document).ready(function () {
 	form = "salary_rate_form";
 	elems = ["employee_id", "salary_rate", "rate_type"];
 
+	select2Init("#filter_rate_type");
+
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
@@ -42,6 +44,24 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const rate_type = getSelect2Selection("#filter_rate_type");
+	const params = {
+		rate_type: rate_type,
+	};
+	const condition = !isEmpty(rate_type);
+
+	filterParam(
+		router.salary_rate.list,
+		table,
+		params,
+		condition,
+		() => clearSelect2Selection("#filter_rate_type"),
+		reset
+	);
+}
 
 /* Get record details */
 function edit(id) {

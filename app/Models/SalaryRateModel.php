@@ -4,15 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\HRTrait;
+use App\Traits\FilterParamTrait;
 
 class SalaryRateModel extends Model
 {
     /* Declare trait here to use */
-    use HRTrait;
+    use HRTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
     protected $table            = 'salary_rates';
-    protected $primaryKey       = 'id';
+    protected $primaryKey       = 'employee_id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
@@ -132,7 +133,7 @@ class SalaryRateModel extends Model
      */
     public function joinEmployees($builder = null, $model = null, $type = 'left'): self
     {      
-        $model ?? $model = new EmployeeModel();
+        $model ??= new EmployeeModel();
 
         ($builder ?? $this)
             ->join($model->table, "{$this->table}.employee_id = {$model->table}.employee_id", $type);
@@ -149,7 +150,7 @@ class SalaryRateModel extends Model
      */
     public function joinEmployeesView($builder = null, $model = null, $type = 'left'): self
     {      
-        $model ?? $model = new EmployeeViewModel();
+        $model ??= new EmployeeViewModel();
         
         ($builder ?? $this)
             ->join($model->table, "{$this->table}.employee_id = {$model->table}.employee_id", $type);
@@ -176,10 +177,12 @@ class SalaryRateModel extends Model
         $builder    = $this->db->table($this->table);
 
         $builder->select($columns);     
-        $builder->orderBy("{$model->table}.employee_name", 'ASC');
 
         $this->joinEmployeesView($builder, $model);
         $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+        $this->filterParam($request, $builder, 'rate_type', 'rate_type');
+        
+        $builder->orderBy("{$model->table}.employee_name", 'ASC');
 
         return $builder;
     }

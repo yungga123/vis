@@ -63,7 +63,7 @@ class SalaryRate extends BaseController
         $data['sweetalert2']    = true;
         $data['toastr']         = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'payroll/salary_rate/index.js';
+        $data['custom_js']      = ['payroll/salary_rate/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'salary_rate' => [
                 'list'      => url_to('payroll.salary_rate.list'),
