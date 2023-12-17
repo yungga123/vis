@@ -17,7 +17,7 @@ class PayrollDeductionsTable extends Migration
             ],
             'days_absent' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'days_absent_amt' => [
                 'type' => 'DECIMAL',
@@ -25,7 +25,7 @@ class PayrollDeductionsTable extends Migration
             ],
             'hours_late' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'hours_late_amt' => [
                 'type' => 'DECIMAL',
@@ -33,7 +33,7 @@ class PayrollDeductionsTable extends Migration
             ],
             'addt_rest_days' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'addt_rest_days_amt' => [
                 'type' => 'DECIMAL',

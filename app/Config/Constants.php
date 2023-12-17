@@ -192,6 +192,13 @@ define('ACTIONS', [
             'SAVE'          => 'Save',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'PAYROLL_OVERTIME' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
@@ -252,7 +259,8 @@ define('MODULES', [
     'PAYROLL_SALARY_RATES'  => 'Salary Rates',
     'PAYROLL_PAYSLIP'       => 'Payslip',
     'PAYROLL_COMPUTATION'   => 'Computation',
-    'PAYROLL_MANAGE_LEAVES' => 'Manage Leaves',
+    'PAYROLL_LEAVE'         => 'Leave',
+    'PAYROLL_OVERTIME'      => 'Overtime',
     'PAYROLL_SETTINGS'      => 'Settings',
 ]);
 
@@ -284,7 +292,8 @@ define('MODULE_CODES', [
     'salary_rates'          => 'PAYROLL_SALARY_RATES',
     'payslip'               => 'PAYROLL_PAYSLIP',
     'payroll_computation'   => 'PAYROLL_COMPUTATION',
-    'manage_leaves'         => 'PAYROLL_MANAGE_LEAVES',
+    'leave'                 => 'PAYROLL_LEAVE',
+    'overtime'              => 'PAYROLL_OVERTIME',
     'payroll_settings'      => 'PAYROLL_SETTINGS',
 ]);
 
@@ -293,7 +302,8 @@ define('MODULE_CODES', [
 // without setting a permissions
 // Add them here
 define('MODULES_WITH_GENERIC_ACCESS', [
-    'PAYROLL_MANAGE_LEAVES',
+    'PAYROLL_LEAVE',
+    'PAYROLL_OVERTIME',
 ]);
 
 // Developer Account

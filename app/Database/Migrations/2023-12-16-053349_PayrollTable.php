@@ -56,7 +56,7 @@ class PayrollTable extends Migration
             ],
             'working_days' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'notes' => [
                 'type' => 'VARCHAR',

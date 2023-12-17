@@ -66,9 +66,9 @@ class SalaryRate extends BaseController
         $data['custom_js']      = 'payroll/salary_rate/index.js';
         $data['routes']         = json_encode([
             'salary_rate' => [
-                'list'      => url_to('salary_rate.list'),
-                'fetch'     => url_to('salary_rate.fetch'),
-                'delete'    => url_to('salary_rate.delete'),
+                'list'      => url_to('payroll.salary_rate.list'),
+                'fetch'     => url_to('payroll.salary_rate.fetch'),
+                'delete'    => url_to('payroll.salary_rate.delete'),
             ],
             'hr' => [
                 'common'    => [
@@ -87,6 +87,7 @@ class SalaryRate extends BaseController
      */
     public function list()
     {
+        $empModel   = new EmployeeViewModel();
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request);
@@ -104,7 +105,7 @@ class SalaryRate extends BaseController
         $table->setTable($builder)
             ->setSearch([
                 "{$this->_model->table}.employee_id",
-                "{$this->_model->table}.employee_name",
+                "{$empModel->table}.employee_name",
                 "{$this->_model->table}.salary_rate",
             ])
             ->setOrder(array_merge([null, null], $fields))

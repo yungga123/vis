@@ -63,9 +63,9 @@ class Payslip extends BaseController
         $data['custom_js']      = 'payroll/payslip/index.js';
         $data['routes']         = json_encode([
             'payslip' => [
-                'list'      => url_to('payslip.list'),
-                'fetch'     => url_to('payslip.fetch'),
-                'delete'    => url_to('payslip.delete'),
+                'list'      => url_to('payroll.payslip.list'),
+                'fetch'     => url_to('payroll.payslip.fetch'),
+                'delete'    => url_to('payroll.payslip.delete'),
             ],
         ]);
 

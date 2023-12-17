@@ -2,7 +2,7 @@
 <div class="modal fade" id="salary_rate_modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="salary_rate_form" class="with-label-indicator" action="<?= url_to('salary_rate.save'); ?>" method="post" autocomplete="off">
+            <form id="salary_rate_form" class="with-label-indicator" action="<?= url_to('payroll.salary_rate.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="id" name="id" readonly>
                 <div class="modal-header">

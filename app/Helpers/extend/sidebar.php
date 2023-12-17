@@ -58,8 +58,9 @@ if (! function_exists('get_nav_menus'))
             url_is('payroll/salary-rates') || 
             url_is('payroll/computation') || 
             url_is('payroll/payslip') || 
-            url_is('payroll/manage-leaves') ||
-            url_is('payroll/settings')
+            url_is('payroll/leave') ||
+            url_is('payroll/settings') ||
+            url_is('payroll/overtime')
         );
         
 		$menu           = [
@@ -261,14 +262,14 @@ if (! function_exists('setup_modules'))
             'PAYROLL_SALARY_RATES'  => [
                 'menu'      => 'PAYROLL', // Leave empty if none
                 'name'      => get_modules('PAYROLL_SALARY_RATES'),
-                'url'       => url_to('salary_rate.home'),
+                'url'       => url_to('payroll.salary_rate.home'),
                 'class'     => (url_is('payroll/salary-rates') ? 'active' : ''),
                 'icon'      => 'fas fa-dollar-sign',
             ],
             'PAYROLL_PAYSLIP'  => [
                 'menu'      => 'PAYROLL', // Leave empty if none
                 'name'      => get_modules('PAYROLL_PAYSLIP'),
-                'url'       => url_to('payslip.home'),
+                'url'       => url_to('payroll.payslip.home'),
                 'class'     => (url_is('payroll/payslip') ? 'active' : ''),
                 'icon'      => 'fas fa-receipt',
             ],
@@ -279,12 +280,19 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('payroll/computation') ? 'active' : ''),
                 'icon'      => 'fas fa-calculator',
             ],
-            'PAYROLL_MANAGE_LEAVES'  => [
+            'PAYROLL_LEAVE'  => [
                 'menu'      => 'PAYROLL', // Leave empty if none
-                'name'      => get_modules('PAYROLL_MANAGE_LEAVES'),
-                'url'       => url_to('manage_leave.home'),
-                'class'     => (url_is('payroll/manage-leaves') ? 'active' : ''),
+                'name'      => get_modules('PAYROLL_LEAVE'),
+                'url'       => url_to('payroll.leave.home'),
+                'class'     => (url_is('payroll/leave') ? 'active' : ''),
                 'icon'      => 'fas fa-folder-open',
+            ],
+            'PAYROLL_OVERTIME'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_OVERTIME'),
+                'url'       => url_to('payroll.overtime.home'),
+                'class'     => (url_is('payroll/overtime') ? 'active' : ''),
+                'icon'      => 'fas fa-stopwatch',
             ],
             'PAYROLL_SETTINGS'  => [
                 'menu'      => 'PAYROLL', // Leave empty if none

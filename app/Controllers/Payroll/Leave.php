@@ -3,11 +3,12 @@
 namespace App\Controllers\Payroll;
 
 use App\Controllers\BaseController;
-use App\Models\ManageLeaveModel;
+use App\Models\EmployeeViewModel;
+use App\Models\LeaveModel;
 use App\Traits\CommonTrait;
 use monken\TablesIgniter;
 
-class ManageLeave extends BaseController
+class Leave extends BaseController
 {
     /* Declare trait here to use */
     use CommonTrait;
@@ -41,8 +42,8 @@ class ManageLeave extends BaseController
      */
     public function __construct()
     {
-        $this->_model           = new ManageLeaveModel(); // Current model
-        $this->_module_code     = MODULE_CODES['manage_leaves']; // Current module
+        $this->_model           = new LeaveModel(); // Current model
+        $this->_module_code     = MODULE_CODES['leave']; // Current module
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
@@ -57,25 +58,25 @@ class ManageLeave extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
-        $data['title']          = 'Manage Leaves';
-        $data['page_title']     = 'Manage Leaves';
-        $data['btn_add_lbl']    = 'Add New Leave';
+        $data['title']          = 'Manage Leave';
+        $data['page_title']     = 'Manage Leave';
+        $data['btn_add_lbl']    = 'File a Leave';
         $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['toastr']         = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['payroll/manage_leave/index.js', 'dt_filter.js'];
+        $data['custom_js']      = ['payroll/leave/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
-            'manage_leave' => [
-                'list'      => url_to('manage_leave.list'),
-                'fetch'     => url_to('manage_leave.fetch'),
-                'delete'    => url_to('manage_leave.delete'),
+            'leave' => [
+                'list'      => url_to('payroll.leave.list'),
+                'fetch'     => url_to('payroll.leave.fetch'),
+                'delete'    => url_to('payroll.leave.delete'),
             ],
         ]);
 
-        return view('payroll/manage_leave/index', $data);
+        return view('payroll/leave/index', $data);
     }
 
     /**
@@ -85,6 +86,7 @@ class ManageLeave extends BaseController
      */
     public function list()
     {
+        $empModel   = new EmployeeViewModel();
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request, $this->_permissions);
@@ -108,7 +110,7 @@ class ManageLeave extends BaseController
         $table->setTable($builder)
             ->setSearch([
                 "{$this->_model->table}.employee_id",
-                "{$this->_model->table}.employee_name",
+                "{$empModel->table}.employee_name",
             ])
             ->setOrder(array_merge([null, null, null], $fields))
             ->setOutput(

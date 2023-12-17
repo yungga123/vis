@@ -54,48 +54,26 @@ function edit(id) {
 	showLoading();
 	_isUpdate();
 
-	$.post(router.salary_rate.fetch, { id: id })
-		.then((res) => {
-			closeLoading();
+	fetchRecord(router.salary_rate.fetch, { id: id }, modal, (res) => {
+		if (res.status === STATUS.SUCCESS) {
+			if (inObject(res, "data") && !isEmpty(res.data)) {
+				setSelect2AjaxSelection(
+					"#employee_id",
+					res.data.employee_name,
+					res.data.employee_id
+				);
+				setOptionValue("#rate_type", res.data.rate_type);
 
-			if (res.status === STATUS.SUCCESS) {
-				if (inObject(res, "data") && !isEmpty(res.data)) {
-					setSelect2AjaxSelection(
-						"#employee_id",
-						res.data.employee_name,
-						res.data.employee_id
-					);
-					setOptionValue("#rate_type", res.data.rate_type);
-
-					$("#salary_rate").val(res.data.salary_rate);
-					$(`#${modal}`).modal("show");
-				}
-			} else {
-				$(`#${modal}`).modal("hide");
-				notifMsgSwal(res.status, res.message, res.status);
+				$("#salary_rate").val(res.data.salary_rate);
+				$(`#${modal}`).modal("show");
 			}
-		})
-		.catch((err) => catchErrMsg(err));
+		}
+	});
 }
 
 /* Delete record */
 function remove(id) {
-	const swalMsg = "delete";
-	swalNotifConfirm(
-		function () {
-			$.post(router.salary_rate.delete, { id: id })
-				.then((res) => {
-					const message = res.errors ?? res.message;
-
-					if (res.status === STATUS.SUCCESS) refreshDataTable($("#" + table));
-					notifMsgSwal(res.status, message, res.status);
-				})
-				.catch((err) => catchErrMsg(err));
-		},
-		TITLE.WARNING,
-		swalMsg,
-		STATUS.WARNING
-	);
+	deleteRecord(router.salary_rate.delete, { id: id }, table);
 }
 
 /* Employees select2 via ajax data source */

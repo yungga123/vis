@@ -361,11 +361,11 @@ $routes->group('reports', ['filter' => 'checkauth'], static function ($routes) {
 $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
     // SALARY RATES
     $routes->group('salary-rates', static function ($routes) {
-        $routes->get('/', 'Payroll\SalaryRate::index', ['as' => 'salary_rate.home']);
-        $routes->post('list', 'Payroll\SalaryRate::list', ['as' => 'salary_rate.list']);
-        $routes->post('save', 'Payroll\SalaryRate::save', ['as' => 'salary_rate.save']);
-        $routes->post('fetch', 'Payroll\SalaryRate::fetch', ['as' => 'salary_rate.fetch']);
-        $routes->post('delete', 'Payroll\SalaryRate::delete', ['as' => 'salary_rate.delete']);
+        $routes->get('/', 'Payroll\SalaryRate::index', ['as' => 'payroll.salary_rate.home']);
+        $routes->post('list', 'Payroll\SalaryRate::list', ['as' => 'payroll.salary_rate.list']);
+        $routes->post('save', 'Payroll\SalaryRate::save', ['as' => 'payroll.salary_rate.save']);
+        $routes->post('fetch', 'Payroll\SalaryRate::fetch', ['as' => 'payroll.salary_rate.fetch']);
+        $routes->post('delete', 'Payroll\SalaryRate::delete', ['as' => 'payroll.salary_rate.delete']);
     });
 
     // COMPUTATION
@@ -376,21 +376,31 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
 
     // PAYSLIP
     $routes->group('payslip', static function ($routes) {
-        $routes->get('/', 'Payroll\Payslip::index', ['as' => 'payslip.home']);
-        $routes->post('list', 'Payroll\Payslip::list', ['as' => 'payslip.list']);
-        $routes->post('save', 'Payroll\Payslip::save', ['as' => 'payslip.save']);
-        $routes->post('fetch', 'Payroll\Payslip::fetch', ['as' => 'payslip.fetch']);
-        $routes->post('delete', 'Payroll\Payslip::delete', ['as' => 'payslip.delete']);
+        $routes->get('/', 'Payroll\Payslip::index', ['as' => 'payroll.payslip.home']);
+        $routes->post('list', 'Payroll\Payslip::list', ['as' => 'payroll.payslip.list']);
+        $routes->post('save', 'Payroll\Payslip::save', ['as' => 'payroll.payslip.save']);
+        $routes->post('fetch', 'Payroll\Payslip::fetch', ['as' => 'payroll.payslip.fetch']);
+        $routes->post('delete', 'Payroll\Payslip::delete', ['as' => 'payroll.payslip.delete']);
     });
 
-    // MANAGE LEAVE
-    $routes->group('manage-leaves', static function ($routes) {
-        $routes->get('/', 'Payroll\ManageLeave::index', ['as' => 'manage_leave.home']);
-        $routes->post('list', 'Payroll\ManageLeave::list', ['as' => 'manage_leave.list']);
-        $routes->post('save', 'Payroll\ManageLeave::save', ['as' => 'manage_leave.save']);
-        $routes->post('fetch', 'Payroll\ManageLeave::fetch', ['as' => 'manage_leave.fetch']);
-        $routes->post('delete', 'Payroll\ManageLeave::delete', ['as' => 'manage_leave.delete']);
-        $routes->post('change', 'Payroll\ManageLeave::change', ['as' => 'manage_leave.change']);
+    // LEAVE
+    $routes->group('leave', static function ($routes) {
+        $routes->get('/', 'Payroll\Leave::index', ['as' => 'payroll.leave.home']);
+        $routes->post('list', 'Payroll\Leave::list', ['as' => 'payroll.leave.list']);
+        $routes->post('save', 'Payroll\Leave::save', ['as' => 'payroll.leave.save']);
+        $routes->post('fetch', 'Payroll\Leave::fetch', ['as' => 'payroll.leave.fetch']);
+        $routes->post('delete', 'Payroll\Leave::delete', ['as' => 'payroll.leave.delete']);
+        $routes->post('change', 'Payroll\Leave::change', ['as' => 'payroll.leave.change']);
+    });
+
+    // OVERTIME
+    $routes->group('overtime', static function ($routes) {
+        $routes->get('/', 'Payroll\Overtime::index', ['as' => 'payroll.overtime.home']);
+        $routes->post('list', 'Payroll\Overtime::list', ['as' => 'payroll.overtime.list']);
+        $routes->post('save', 'Payroll\Overtime::save', ['as' => 'payroll.overtime.save']);
+        $routes->post('fetch', 'Payroll\Overtime::fetch', ['as' => 'payroll.overtime.fetch']);
+        $routes->post('delete', 'Payroll\Overtime::delete', ['as' => 'payroll.overtime.delete']);
+        $routes->post('change', 'Payroll\Overtime::change', ['as' => 'payroll.overtime.change']);
     });
 
     // SETTINGS

@@ -2,7 +2,7 @@
 <div class="modal fade" id="status_modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="status_form" class="with-label-indicator" action="<?= url_to('manage_leave.change'); ?>" method="post" autocomplete="off">
+            <form id="status_form" class="with-label-indicator" action="<?= url_to('payroll.leave.change'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="_id" name="id" readonly>
                 <input type="hidden" id="status" name="status" readonly>

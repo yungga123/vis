@@ -17,7 +17,7 @@ class PayrollEarningsTable extends Migration
             ],
             'working_days_off' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'working_days_off_amt' => [
                 'type' => 'DECIMAL',
@@ -25,7 +25,7 @@ class PayrollEarningsTable extends Migration
             ],
             'over_time' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'over_time_amt' => [
                 'type' => 'DECIMAL',
@@ -33,7 +33,7 @@ class PayrollEarningsTable extends Migration
             ],
             'night_diff' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'night_diff_amt' => [
                 'type' => 'DECIMAL',
@@ -41,7 +41,7 @@ class PayrollEarningsTable extends Migration
             ],
             'regular_holiday' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'regular_holiday_amt' => [
                 'type' => 'DECIMAL',
@@ -49,7 +49,7 @@ class PayrollEarningsTable extends Migration
             ],
             'special_holiday' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'special_holiday_amt' => [
                 'type' => 'DECIMAL',
@@ -57,11 +57,11 @@ class PayrollEarningsTable extends Migration
             ],
             'vacation_leave' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'sick_leave' => [
                 'type' => 'DECIMAL',
-                'constraint' => [2,1],
+                'constraint' => [2,2],
             ],
             'incentives' => [
                 'type' => 'DECIMAL',

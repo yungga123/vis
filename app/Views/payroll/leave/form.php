@@ -1,8 +1,8 @@
 <!-- Employment Status Modal -->
-<div class="modal fade" id="manage_leave_modal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="leave_modal" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <form id="manage_leave_form" class="with-label-indicator" action="<?= url_to('manage_leave.save'); ?>" method="post" autocomplete="off">
+            <form id="leave_form" class="with-label-indicator" action="<?= url_to('payroll.leave.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="id" name="id" readonly>
                 <div class="modal-header">
@@ -42,7 +42,7 @@
                     </div>
                     <div class="form-group">
                         <label class="required" for="leave_reason">Leave Reason</label>
-                        <textarea name="leave_reason" id="leave_reason" class="form-control" cols="3" rows="3" placeholder="Enter a valid leave reason"></textarea>
+                        <textarea name="leave_reason" id="leave_reason" class="form-control" cols="3" rows="3" placeholder="Enter a valid reason"></textarea>
                         <small id="alert_leave_reason" class="text-danger"></small>
                     </div>
                 </div>

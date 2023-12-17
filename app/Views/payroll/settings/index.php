@@ -18,7 +18,7 @@
                         <input type="hidden" name="rules" value="working_days" class="form-control" readonly>
                         <div class="form-group">
                             <label class="required" for="working_days">Days</label>
-                            <select type="text" class="form-control" name="working_days[]" id="working_days" data-placeholder="Select working days" multiple>
+                            <select type="text" class="form-control" name="working_days[]" id="working_days" data-placeholder="Select working days" style="width: 100%;" multiple>
                                 <?php foreach (get_days() as $val => $text): ?>
                                     <option value="<?= $val ?>"><?= $text ?></option>
                                 <?php endforeach; ?>

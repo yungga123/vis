@@ -6,13 +6,13 @@ use CodeIgniter\Model;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
 
-class ManageLeaveModel extends Model
+class OvertimeModel extends Model
 {
     /* Declare trait here to use */
     use HRTrait, FilterParamTrait;
 
     protected $DBGroup          = 'default';
-    protected $table            = 'manage_leaves';
+    protected $table            = 'overtime';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -22,12 +22,13 @@ class ManageLeaveModel extends Model
     protected $allowedFields    = [
         'employee_id',
         'status',
-        'leave_type',
-        'start_date',
-        'end_date',
+        'date',
+        'time_start',
+        'time_end',
+        'total_hours',
         'with_pay',
-        'leave_reason',
-        'leave_remark',
+        'reason',
+        'remark',
     ];
 
     // Dates
@@ -47,25 +48,25 @@ class ManageLeaveModel extends Model
             'rules' => 'permit_empty',
             'label' => 'status',
         ],
-        'leave_type'   => [
+        'date'   => [
             'rules' => 'required',
-            'label' => 'leave type',
+            'label' => 'date',
         ],
-        'start_date'   => [
+        'time_start'   => [
             'rules' => 'required',
-            'label' => 'start date',
+            'label' => 'time start',
         ],
-        'end_date'   => [
+        'time_end'   => [
             'rules' => 'required',
-            'label' => 'end date',
+            'label' => 'time end',
         ],
-        'leave_reason'   => [
+        'reason'   => [
             'rules' => 'required|max_length[500]',
-            'label' => 'leave reason',
+            'label' => 'reason',
         ],
-        'leave_remark'   => [
+        'remark'   => [
             'rules' => 'permit_empty|max_length[500]',
-            'label' => 'leave remark',
+            'label' => 'remark',
         ],
     ];
     protected $validationMessages   = [];
@@ -92,15 +93,16 @@ class ManageLeaveModel extends Model
      */
     protected function checkDatesAndSetCreatedBy(array $data)
     {
-        // Check dates to whether user
-        // has already a leave request within that date range.
+        // Check date and time range whether user
+        // has already an overtime request within that date and time.
         // Then if there's any, throw an exception
-        $start_date     = $data['data']['start_date'];
-        $end_date       = $data['data']['end_date'];
-        $check_dates    = $this->checkLeaveDates($start_date, $end_date);
+        $date       = $data['data']['date'];
+        $time_start = $data['data']['time_start'];
+        $time_end   = $data['data']['time_end'];
+        $check      = $this->checkDateTimes($date, $time_start, $time_end);
                 
-        if (! empty($check_dates)) {
-            throw new \Exception('Selected leave dates are overlapping with another leave request.', 1);
+        if (! empty($check)) {
+            throw new \Exception('Selected date and times are overlapping with another overtime request.', 1);
         }
 
         // Set the value for created_by
@@ -136,7 +138,7 @@ class ManageLeaveModel extends Model
         $record = $this->fetch($id, 'employee_id');
 
         if (empty($record)) {
-            throw new \Exception("You can't <strong>{$action}</strong> other's leave request!", 1);
+            throw new \Exception("You can't <strong>{$action}</strong> other's overtime request!", 1);
         }
 
         return $data;
@@ -182,17 +184,20 @@ class ManageLeaveModel extends Model
     }
 
     /**
-     * Check whether selected leave date range were already filed
+     * Check whether selected date and time range were already filed
      * 
      * @param string|null $employee_id
+     * 
+     * @return array|null
      */
-    public function checkLeaveDates(string $startDate, string $endDate, $employee_id = null): array|null
+    public function checkDateTimes(string $date, string $time_start, string $time_end, $employee_id = null)
     {
-        $between    = "('%s' BETWEEN start_date AND end_date OR '%s' BETWEEN start_date AND end_date)";
+        $between    = "('%s' BETWEEN time_start AND time_end OR '%s' BETWEEN time_start AND time_end)";
 
-        $this->select('id, start_date, end_date');
-        $this->where(sprintf($between, format_date($startDate, 'Y-m-d'), format_date($endDate, 'Y-m-d')));
+        $this->select('id, date, time_start, time_end');
+        $this->where(sprintf($between, format_time($time_start, 'H:i'), format_time($time_end, 'H:i')));
         $this->where('employee_id', $employee_id ?? session('employee_id'));
+        $this->where('date', $date);
         $this->where('status !=', 'discarded');
         $this->where('deleted_at IS NULL');
 
@@ -210,12 +215,13 @@ class ManageLeaveModel extends Model
             {$this->table}.status,
             {$this->table}.employee_id,
             {$model->table}.employee_name,
-            {$this->table}.leave_type,
+            ".dt_sql_date_format("{$this->table}.date")." AS date,
+            ".dt_sql_time_format("{$this->table}.time_start")." AS time_start,
+            ".dt_sql_time_format("{$this->table}.time_end")." AS time_end,
+            {$this->table}.total_hours,
             {$this->table}.with_pay,
-            ".dt_sql_date_format("{$this->table}.start_date")." AS start_date,
-            ".dt_sql_date_format("{$this->table}.end_date")." AS end_date,
-            {$this->table}.leave_reason,
-            {$this->table}.leave_remark,
+            {$this->table}.reason,
+            {$this->table}.remark,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at,
             pb.employee_name AS processed_by,
             ".dt_sql_datetime_format("{$this->table}.processed_at")." AS processed_at,
@@ -243,7 +249,6 @@ class ManageLeaveModel extends Model
         }
         
         $this->filterParam($request, $builder);
-        $this->filterParam($request, $builder, 'leave_type', 'leave_type');
 
         $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy("{$this->table}.id", 'DESC');
@@ -289,7 +294,7 @@ class ManageLeaveModel extends Model
 
             if (
                 check_permissions($permissions, 'DISCARD') 
-                && ! in_array($status, $this->restrictedStatuses)
+                && ! in_array($status, ['approved', 'discarded'])
             ) {
                 // Discard Leave
                 $changeTo = 'discard';
@@ -326,7 +331,7 @@ class ManageLeaveModel extends Model
      */
     private function _statusDTOnchange($id, $changeTo, $status, $with_pay)
     {
-        $title  = ucfirst($changeTo) .' Leave';
+        $title  = ucfirst($changeTo) .' Overtime';
 
         return <<<EOF
             onclick="change({$id}, '{$changeTo}', '{$status}', {$with_pay})" title="{$title}"

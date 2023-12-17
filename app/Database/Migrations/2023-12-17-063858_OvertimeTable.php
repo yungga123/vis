@@ -4,9 +4,9 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class ManageLeavesTable extends Migration
+class OvertimeTable extends Migration
 {
-    private CONST TABLE = 'manage_leaves';
+    private CONST TABLE = 'overtime';
 
     public function up()
     {
@@ -25,26 +25,28 @@ class ManageLeavesTable extends Migration
                 'constraint' => 50,
                 'default' => 'pending',
             ],
-            'leave_type' => [
-                'type' => 'VARCHAR',
-                'constraint' => 50,
-            ],
-            'start_date' => [
+            'date' => [
                 'type' => 'DATE',
             ],
-            'end_date' => [
-                'type' => 'DATE',
+            'time_start' => [
+                'type' => 'TIME',
+            ],
+            'time_end' => [
+                'type' => 'TIME',
+            ],
+            'total_hours' => [
+                'type' => 'DOUBLE',
             ],
             'with_pay' => [
                 'type' => 'BOOLEAN',
                 'default' => false,
             ],
-            'leave_reason' => [
+            'reason' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500,
                 'null' => true,
             ],
-            'leave_remark' => [
+            'remark' => [
                 'type' => 'VARCHAR',
                 'constraint' => 500,
                 'null' => true,
