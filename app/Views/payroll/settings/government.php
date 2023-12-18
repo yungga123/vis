@@ -12,6 +12,9 @@
             <?= csrf_field(); ?>
             <input type="hidden" name="rules" value="government" class="form-control" readonly>
             <div class="row">
+                <div class="col-12">
+                    <p><strong>Please make sure to enter the accurate data.</strong></p>
+                </div>
                 <div class="col-sm-12 col-md-4">
                     <div class="card">
                         <div class="card-header">

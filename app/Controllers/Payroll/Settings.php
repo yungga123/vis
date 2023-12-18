@@ -65,6 +65,10 @@ class Settings extends BaseController
                 'settings' => [
                     'save'  => url_to('payroll.settings.save'),
                     'fetch' => url_to('payroll.settings.fetch'),
+                    'tax'   => [
+                        'fetch'     => url_to('payroll.settings.tax.fetch'),
+                        'delete'    => url_to('payroll.settings.tax.delete'),
+                    ]
                 ],
             ],
         ]);

@@ -408,6 +408,13 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
         $routes->get('/', 'Payroll\Settings::index', ['as' => 'payroll.settings.home']);
         $routes->post('save', 'Payroll\Settings::save', ['as' => 'payroll.settings.save']);
         $routes->post('fetch', 'Payroll\Settings::fetch', ['as' => 'payroll.settings.fetch']);
+
+        // BIR TAX
+        $routes->group('tax', static function ($routes) {
+            $routes->post('save', 'Payroll\BirTaxSetup::save', ['as' => 'payroll.settings.tax.save']);
+            $routes->post('fetch', 'Payroll\BirTaxSetup::fetch', ['as' => 'payroll.settings.tax.fetch']);
+            $routes->post('delete', 'Payroll\BirTaxSetup::delete', ['as' => 'payroll.settings.tax.delete']);
+        });
     });
 });
 /* PAYROLL */

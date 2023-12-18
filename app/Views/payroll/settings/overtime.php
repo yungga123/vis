@@ -11,9 +11,8 @@
         <form id="form_overtime" class="with-label-indicator" action="<?= url_to('payroll.settings.save') ?>">
             <?= csrf_field(); ?>            
             <input type="hidden" name="rules" value="overtime" class="form-control" readonly>
-            <div class="callout callout-info">
-                <strong>Note:</strong>
-                <span>Please input data/numbers by percentage (%)! </span>
+            <div>
+                <p><strong>Please input data/numbers by percentage (%)!</strong></p>
             </div>
             <div class="table-responsive">
                 <table class="table mb-0">
