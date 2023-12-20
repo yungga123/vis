@@ -99,19 +99,21 @@ trait AdminTrait
                             <td>{$schedule['description']}</td>
                             <td>{$start}</td>
                             <td>{$end}</td>
+                            <td>{$type}</td>
                         </tr>
                     EOF;
                 }
-            } else $tbody = '<tr><td colspan="4"><h3>NO SCHEDULES FOR TODAY</h3></td></tr>';
+            } else $tbody = '<tr><td colspan="5"><h5>NO SCHEDULES FOR TODAY</h5></td></tr>';
     
             return <<<EOF
-                <table class="table table-bordered">
+                <table class="table table-hover table-striped">
                     <thead>
                         <tr>
                             <th>Title</th>
                             <th>Description</th>
                             <th>Start Date & Time</th>
                             <th>End Date & Time</th>
+                            <th>Type</th>
                         </tr>
                     </thead>
                     <tbody>{$tbody}</tbody>

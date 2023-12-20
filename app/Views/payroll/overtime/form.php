@@ -22,12 +22,14 @@
                             <div class="form-group">
                                 <label class="required" for="time_start">Time Start</label>
                                 <input type="time" class="form-control" name="time_start" id="time_start" placeholder="Time Start">
+                                <small id="alert_time_start" class="text-danger"></small>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="required" for="time_end">Time End</label>
                                 <input type="time" class="form-control" name="time_end" id="time_end" placeholder="ETime End">
+                                <small id="alert_time_end" class="text-danger"></small>
                             </div>
                         </div>
                     </div>

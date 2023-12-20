@@ -244,7 +244,7 @@ class OvertimeModel extends Model
             $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
         }
 
-        if (! in_array('VIEW_ALL', $permissions)) {
+        if (! in_array(ACTION_VIEW_ALL, $permissions)) {
             $builder->where("{$this->table}.employee_id", session('employee_id'));
         }
         

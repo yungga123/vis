@@ -23,7 +23,7 @@ class Logs extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
 
     private $_permissions;

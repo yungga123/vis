@@ -149,6 +149,8 @@ if (! function_exists('clean_param'))
      */
 	function clean_param(string|array $input, $func_name = '', $trim_chars = ''): string|array
 	{
+        if (empty($input)) return $input;
+        
         if (is_array($input)) {
             $arr = [];
             foreach ($input as $key => $val) {
@@ -407,5 +409,167 @@ if (! function_exists('get_array_duplicate'))
         $duplicates = array_diff_assoc($array, $unique);
 
         return $duplicates;
+	}
+}
+
+if (! function_exists('get_time_diff'))
+{
+    /**
+     * Get time difference from two different times
+     */
+	function get_time_diff(string $time_start, string $time_end, $format = ''): int|object|string
+	{
+        $time_diff = 0;
+
+        if (! empty($time_start) && ! empty($time_end)) {
+            // Create DateTime objects for start and end times
+            $time_start = new DateTime(format_time($time_start, 'H:i:s'));
+            $time_end   = new DateTime(format_time($time_end, 'H:i:s'));
+
+            // Calculate the difference in hours and minutes
+            $time_diff  = $time_start->diff($time_end);
+
+            if (! empty($format)) {
+                return $time_diff->format($format);
+            }
+        }
+
+        return $time_diff;
+	}
+}
+
+if (! function_exists('get_total_hours'))
+{
+    /**
+     * Get total hours from two different times
+     * 
+     * @param float $break  To less the total hours
+     */
+	function get_total_hours(string $time_start, string $time_end, float $break = 0, $format = ''): int|string
+	{
+        $total_hours    = 0;
+        $time_diff      = get_time_diff($time_start, $time_end);
+
+        if (! empty($time_diff)) {
+            // Calculate total hours
+            if (! empty($format)) {
+                $time_diff->h = $time_diff->h - $break;
+
+                return $time_diff->format($format);
+            }
+
+            // Get hours plus fraction of an hour (mins / 60) 
+            $total_hours = $time_diff->h + ($time_diff->i / 60);
+            // Minus hr_break time
+            $total_hours = $total_hours - $break;
+            // Format to decimal with 2 places
+            $total_hours = number_format($total_hours, 2);
+        }
+
+        return $total_hours;
+	}
+}
+
+if (! function_exists('get_hours'))
+{
+    /**
+     * Get hours from time
+     */
+	function get_hours(string|float $time): int|float
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                return floor($time < 60 ? $time : $time / 60);
+            }
+
+            $time = time_to_mins($time);
+
+            return floor($time / 60);
+        }
+        
+        return $time;
+	}
+}
+
+if (! function_exists('get_minutes'))
+{
+    /**
+     * Get minutes from time
+     */
+	function get_minutes(string|float $time): int|float
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                $time   = (float) $time;
+                $hours  = floor($time);
+                
+                return round(($time - $hours) * 60);
+            }
+
+            $time = time_to_mins($time);
+
+            return get_minutes($time);
+        }
+
+        return $time;
+	}
+}
+
+if (! function_exists('time_to_mins'))
+{
+    /**
+     * Get total hours from two different times
+     */
+	function time_to_mins(float|string $time): int|float|string
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                return number_format(($time * 60), 2);
+            }
+
+            // Convert the time string to a DateTime object
+            $time_obj = new DateTime(format_time($time, 'H:i'));
+
+            // Get the total minutes from midnight
+            $total_mins = $time_obj->format('H') * 60 + $time_obj->format('i');
+
+            return number_format($total_mins, 2);
+        }
+
+        return $time;
+	}
+}
+
+if (! function_exists('compare_times'))
+{
+    /**
+     * Compare two different times based on the pass third param
+     */
+	function compare_times(string $time, string $time2, string $operator = '='): bool
+	{
+        // Convert time strings to DateTime objects
+        $date_time  = new DateTime(format_time($time, 'H:i'));
+        $date_time2 = new DateTime(format_time($time2, 'H:i'));
+
+        // Check if both DateTime objects are valid
+        if (!$date_time || !$date_time2) {
+            return false; // Invalid time format
+        }
+
+        // Perform the comparison based on the specified operator
+        switch ($operator) {
+            case '=':
+                return $date_time == $date_time2;
+            case '<':
+                return $date_time < $date_time2;
+            case '>':
+                return $date_time > $date_time2;
+            case '>=':
+                return $date_time >= $date_time2;
+            case '<=':
+                return $date_time <= $date_time2;
+            default:
+                return false; // Invalid operator
+        }
 	}
 }

@@ -24,7 +24,7 @@ class Suppliers extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
     private $_permissions;
 
@@ -193,7 +193,7 @@ class Suppliers extends BaseController
     public function edit() 
     {
         $data = [
-            'status'    => res_lang('status.error'),
+            'status'    => res_lang('status.success'),
             'message'   => res_lang('success.retrieved', 'Supplier')
         ];
 

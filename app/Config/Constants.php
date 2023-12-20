@@ -199,6 +199,10 @@ define('ACTIONS', [
             'APPROVE'       => 'Approve',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'PAYROLL_TIMESHEETS' => [
+            'VIEW_ALL'      => 'View All',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
@@ -210,6 +214,7 @@ define('ACTION_DELETE', 'DELETE');
 define('ACTION_PRINT', 'PRINT');
 define('ACTION_UPLOAD', 'UPLOAD');
 define('ACTION_CHANGE', 'CHANGE');
+define('ACTION_VIEW_ALL', 'VIEW_ALL');
 
 // Roles - No need to add new roles here
 // Adding new roles will be on the dashboard
@@ -262,6 +267,7 @@ define('MODULES', [
     'PAYROLL_LEAVE'         => 'Leave',
     'PAYROLL_OVERTIME'      => 'Overtime',
     'PAYROLL_SETTINGS'      => 'Settings',
+    'PAYROLL_TIMESHEETS'    => 'Timesheets',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -295,6 +301,7 @@ define('MODULE_CODES', [
     'leave'                 => 'PAYROLL_LEAVE',
     'overtime'              => 'PAYROLL_OVERTIME',
     'payroll_settings'      => 'PAYROLL_SETTINGS',
+    'timesheets'            => 'PAYROLL_TIMESHEETS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
@@ -304,6 +311,7 @@ define('MODULE_CODES', [
 define('MODULES_WITH_GENERIC_ACCESS', [
     'PAYROLL_LEAVE',
     'PAYROLL_OVERTIME',
+    'PAYROLL_TIMESHEETS'
 ]);
 
 // Developer Account

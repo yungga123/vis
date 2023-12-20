@@ -60,7 +60,8 @@ if (! function_exists('get_nav_menus'))
             url_is('payroll/payslip') || 
             url_is('payroll/leave') ||
             url_is('payroll/settings') ||
-            url_is('payroll/overtime')
+            url_is('payroll/overtime') ||
+            url_is('payroll/timesheets')
         );
         
 		$menu           = [
@@ -300,6 +301,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('payroll.settings.home'),
                 'class'     => (url_is('payroll/settings') ? 'active' : ''),
                 'icon'      => 'fas fa-tools',
+            ],
+            'PAYROLL_TIMESHEETS'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_TIMESHEETS'),
+                'url'       => url_to('payroll.timesheet.home'),
+                'class'     => (url_is('payroll/timesheets') ? 'active' : ''),
+                'icon'      => 'fas fa-user-clock',
             ],
         ];
 

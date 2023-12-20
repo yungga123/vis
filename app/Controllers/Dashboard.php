@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Traits\AdminTrait;
 use App\Models\AccountModel;
 use App\Models\EmployeeModel;
 use App\Models\CustomerModel;
@@ -19,11 +18,13 @@ use App\Models\RequestPurchaseFormModel;
 use App\Models\PurchaseOrderModel;
 use App\Models\RolesModel;
 use App\Models\PermissionModel;
+use App\Traits\AdminTrait;
+use App\Traits\PayrollSettingTrait;
 
 class Dashboard extends BaseController
 {
     /* Declare trait here to use */
-    use AdminTrait;
+    use AdminTrait, PayrollSettingTrait;
 
     /**
      * Display the index view
@@ -38,7 +39,19 @@ class Dashboard extends BaseController
         $data['modules']        = $this->_moduleBoxMenu();
         $data['type_legend']    = $this->scheduleTypeLegend();
         $data['schedules']      = $this->getSchedulesForToday(true);
-        $data['custom_js']      = 'dashboard/index.js';
+        $data['office_hours']   = $this->getOfficeHours(true);
+        $data['custom_js']      = [
+            'dashboard/index.js',
+            'payroll/timesheet/common.js',
+        ];
+        $data['routes']         = json_encode([
+            'payroll' => [
+                'timesheet' => [
+                    'fetch' => url_to('payroll.timesheet.fetch'),
+                    'clock' => url_to('payroll.timesheet.clock'),
+                ],
+            ],
+        ]);
 
         return view('dashboard/index', $data);
     }

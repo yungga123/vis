@@ -3,16 +3,15 @@
 namespace App\Controllers\Payroll;
 
 use App\Controllers\BaseController;
+use App\Models\TimesheetModel;
 use App\Models\EmployeeViewModel;
-use App\Models\OvertimeModel;
-use App\Traits\CommonTrait;
-use DateTime;
+use App\Traits\PayrollSettingTrait;
 use monken\TablesIgniter;
 
-class Overtime extends BaseController
+class Timesheet extends BaseController
 {
     /* Declare trait here to use */
-    use CommonTrait;
+    use PayrollSettingTrait;
 
     /**
      * Use to initialize model class
@@ -43,8 +42,8 @@ class Overtime extends BaseController
      */
     public function __construct()
     {
-        $this->_model           = new OvertimeModel(); // Current model
-        $this->_module_code     = MODULE_CODES['overtime']; // Current module
+        $this->_model           = new TimesheetModel(); // Current model
+        $this->_module_code     = MODULE_CODES['timesheets']; // Current module
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
@@ -59,25 +58,34 @@ class Overtime extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
 
-        $data['title']          = 'Manage Overtime';
-        $data['page_title']     = 'Manage Overtime';
-        $data['btn_add_lbl']    = 'File an Overtime';
+        $data['title']          = 'Manage Timesheets / Attendace';
+        $data['page_title']     = 'Manage Timesheets / Attendace';
+        $data['btn_add_lbl']    = 'Add Timesheet';
         $data['can_add']        = $this->_can_add;
+        $data['can_view_all']   = check_permissions($this->_permissions, ACTION_VIEW_ALL);
+        $data['office_hours']   = $this->getOfficeHours(true);
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['toastr']         = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['payroll/overtime/index.js', 'dt_filter.js'];
+        $data['custom_js']      = [
+            'payroll/timesheet/index.js',
+            'payroll/timesheet/common.js',
+            'dt_filter.js'
+        ];
         $data['routes']         = json_encode([
-            'overtime' => [
-                'list'      => url_to('payroll.overtime.list'),
-                'fetch'     => url_to('payroll.overtime.fetch'),
-                'delete'    => url_to('payroll.overtime.delete'),
+            'payroll' => [
+                'timesheet' => [
+                    'list'      => url_to('payroll.timesheet.list'),
+                    'fetch'     => url_to('payroll.timesheet.fetch'),
+                    'delete'    => url_to('payroll.timesheet.delete'),
+                    'clock'     => url_to('payroll.timesheet.clock'),
+                ],
             ],
         ]);
 
-        return view('payroll/overtime/index', $data);
+        return view('payroll/timesheet/index', $data);
     }
 
     /**
@@ -94,19 +102,17 @@ class Overtime extends BaseController
         $fields     = [
             'employee_id',
             'employee_name',
-            'date',
-            'time_start',
-            'time_end',
+            'clock_date',
+            'clock_in',
+            'clock_out',
             'total_hours',
-            'reason',
+            'early_in',
+            'late',
+            'early_out',
+            'overtime',
+            'clock_type',
             'remark',
             'created_at',
-            'processed_by',
-            'processed_at',
-            'approved_by',
-            'approved_at',
-            'discarded_by',
-            'discarded_at',
         ];
 
         $table->setTable($builder)
@@ -114,13 +120,12 @@ class Overtime extends BaseController
                 "{$this->_model->table}.employee_id",
                 "{$empModel->table}.employee_name",
             ])
-            ->setOrder(array_merge([null, null, null], $fields))
+            ->setOrder(array_merge([null, null], $fields))
             ->setOutput(
                 array_merge(
                     [
                         dt_empty_col(), 
                         $this->_model->buttons($this->_permissions),
-                        $this->_model->dtStatusFormat(),
                     ], 
                     $fields
                 )
@@ -139,7 +144,7 @@ class Overtime extends BaseController
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.added', 'Overtime')
+            'message'   => res_lang('success.added', 'Timesheet')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -149,20 +154,17 @@ class Overtime extends BaseController
                 $inputs         = [
                     'id'            => $id,
                     'employee_id'   => session('employee_id'),
-                    'date'          => $request['date'],
-                    'time_start'    => $request['time_start'],
-                    'time_end'      => $request['time_end'],
-                    'total_hours'   => get_total_hours($request['time_start'], $request['time_end']),
-                    'reason'        => $request['reason'],
+                    'clock_date'    => $request['clock_date'],
+                    'clock_in'      => $request['clock_in'],
+                    'clock_out'     => $request['clock_out'],
+                    'remark'        => clean_param($request['remark'] ?? ''),
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
-                log_msg($inputs);
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
-                $this->checkRecordRestrictionViaStatus($id, $this->_model);
     
                 if ($id) {
-                    $data['message']    = res_lang('success.updated', 'Overtime');
+                    $data['message']    = res_lang('success.updated', 'Timesheet');
                 }
 
                 if (! $this->_model->save($inputs)) {
@@ -183,19 +185,34 @@ class Overtime extends BaseController
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.retrieved', 'Overtime')
+            'message'   => res_lang('success.retrieved', 'Timesheet')
         ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id         = $this->request->getVar('id');
-                $record     = $this->_model->fetch($id);
+                $id = $this->request->getVar('id');
 
-                $data['data'] = $record;
+                if ($this->request->getVar('current')) {
+                    $model  = $this->_model;
+                    // Add where clause
+                    $model->where("{$model->table}.clock_date", current_date());
+                    $model->where('employee_id', session('employee_id'));
+
+                    $record = $this->_model->fetch(0);
+
+                    if (! empty($record)) {
+                        $record['_clock_in'] = $record['clock_in'] ? format_time($record['clock_in']) : $record['clock_in'];
+                        $record['_clock_out'] = $record['clock_out'] ? format_time($record['clock_out']) : $record['clock_out'];
+                    }
+                } else {
+                    $record = $this->_model->fetch($id);
+                }
+
+                $data['data']   = $record;
                 return $data;
             },
             false
@@ -213,7 +230,7 @@ class Overtime extends BaseController
     {
         $data = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.deleted', 'Overtime')
+            'message'   => res_lang('success.deleted', 'Timesheet')
         ];
         $response   = $this->customTryCatch(
             $data,
@@ -221,7 +238,6 @@ class Overtime extends BaseController
                 $id = $this->request->getVar('id');
 
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-                $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
@@ -236,49 +252,50 @@ class Overtime extends BaseController
     }
 
     /**
-     * Changing status of the record
+     * For getting the item data using the id
      *
      * @return json
      */
-    public function change() 
+    public function clock()
     {
-        $data       = [];
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Timesheet')
+        ];
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $request    = $this->request->getVar();
-                $id         = $request['id'];
-                $_status    = $request['status'];
+                $action = $this->request->getVar('action');
+                $model  = $this->_model;
+                // Add where clause
+                $model->where("{$model->table}.clock_date", current_date());
+                $model->where('employee_id', session('employee_id'));
 
-                $this->checkRoleActionPermissions($this->_module_code, $_status, true);
-
-                $status     = set_leave_status($_status);
-                $inputs     = [
-                    'status' => $status,
-                    'remark' => $request['remark'],
+                $record = $this->_model->fetch(0);
+                $_model = $this->_model;
+                $inputs = [
+                    'id'            => $this->request->getVar('id') ?? null,
+                    'clock_date'    => current_date(),
+                    $action         => current_date('H:i'),
                 ];
-                $check      = $this->_model->fetch($id, 'employee_id');
+                
+                if (! empty($record)) {
+                    $_model->where('clock_date', current_date());
+                    $_model->where('employee_id', session('employee_id'));
 
-                if ($_status === 'approve' && $check['employee_id'] === session('employee_id')) {
-                    throw new \Exception("You can't <strong>APPROVE</strong> your own overtime request!", 1);
+                    $inputs['clock_in']     = $record['clock_in'];
+                } else {
+                    $inputs['employee_id']  = session('employee_id');
                 }
 
-                // Is overtime with pay
-                if ($request['with_pay'] ?? null) {
-                    $inputs['with_pay'] = true;
-                }
-
-                if (! $this->_model->update($id, $inputs)) {
-                    $data['errors']     = $this->_model->errors();
+                if (! $_model->save($inputs)) {
+                    $data['errors']     = $_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
-                } else {
-                    $data['status']     = res_lang('status.success');
-                    $data['message']    = res_lang('success.changed', ['Overtime', strtoupper($status)]);
                 }
 
                 return $data;
-            }
+            },
         );
 
         return $response;

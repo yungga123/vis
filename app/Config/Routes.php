@@ -416,6 +416,16 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
             $routes->post('delete', 'Payroll\BirTaxSetup::delete', ['as' => 'payroll.settings.tax.delete']);
         });
     });
+
+    // TIMESHEETS
+    $routes->group('timesheets', static function ($routes) {
+        $routes->get('/', 'Payroll\Timesheet::index', ['as' => 'payroll.timesheet.home']);
+        $routes->post('list', 'Payroll\Timesheet::list', ['as' => 'payroll.timesheet.list']);
+        $routes->post('save', 'Payroll\Timesheet::save', ['as' => 'payroll.timesheet.save']);
+        $routes->post('fetch', 'Payroll\Timesheet::fetch', ['as' => 'payroll.timesheet.fetch']);
+        $routes->post('delete', 'Payroll\Timesheet::delete', ['as' => 'payroll.timesheet.delete']);
+        $routes->post('clock', 'Payroll\Timesheet::clock', ['as' => 'payroll.timesheet.clock']);
+    });
 });
 /* PAYROLL */
 
