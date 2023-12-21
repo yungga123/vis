@@ -568,6 +568,74 @@ if (! function_exists('compare_times'))
                 return $date_time >= $date_time2;
             case '<=':
                 return $date_time <= $date_time2;
+            case '!=':
+                return $date_time != $date_time2;
+            default:
+                return false; // Invalid operator
+        }
+	}
+}
+
+if (! function_exists('get_date_diff'))
+{
+    /**
+     * Get date difference from two different date
+     */
+	function get_date_diff(string $start_date, string $end_date, $days = false): int|object|string
+	{
+        $interval = 0;
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            // Create DateTime objects for start and end dates
+            $start_date = new DateTime(format_date($start_date, 'Y-m-d'));
+            $end_date   = new DateTime(format_date($end_date, 'Y-m-d'));
+
+            // Calculate the difference between the two dates
+            $interval  = $start_date->diff($end_date);
+
+            if ($days) {
+                // Access the difference in days
+                $days =  $interval->days;
+
+                // Include the end date in the count
+                return $days += 1;
+            }
+        }
+
+        return $interval;
+	}
+}
+
+if (! function_exists('compare_dates'))
+{
+    /**
+     * Compare two different dates based on the pass third param
+     */
+	function compare_dates(string $date, string $date2, string $operator = '='): bool
+	{
+        // Convert date strings to Datedate objects
+        $date_time  = new DateTime(format_date($date, 'Y-m-d'));
+        $date_time2 = new DateTime(format_date($date2, 'Y-m-d'));
+
+        // Check if both DateTime objects are valid
+        if (!$date_time || !$date_time2) {
+            return false; // Invalid date format
+        }
+
+        // Perform the comparison based on the specified operator
+        switch ($operator) {
+            case '=':
+                return $date_time == $date_time2;
+            case '<':
+                return $date_time < $date_time2;
+            case '>':
+                return $date_time > $date_time2;
+            case '>=':
+                return $date_time >= $date_time2;
+            case '<=':
+                return $date_time <= $date_time2;
+            case '!=':
+                return $date_time != $date_time2;
             default:
                 return false; // Invalid operator
         }

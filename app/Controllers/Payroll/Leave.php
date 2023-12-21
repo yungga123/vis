@@ -96,6 +96,7 @@ class Leave extends BaseController
             'leave_type',
             'start_date',
             'end_date',
+            'total_days',
             'leave_reason',
             'leave_remark',
             'created_at',
@@ -150,6 +151,7 @@ class Leave extends BaseController
                     'leave_type'    => $request['leave_type'],
                     'start_date'    => $request['start_date'],
                     'end_date'      => $request['end_date'],
+                    'total_days'    => get_date_diff($request['start_date'], $request['end_date'], true),
                     'leave_reason'  => $request['leave_reason'],
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;

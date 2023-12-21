@@ -152,11 +152,10 @@ class Overtime extends BaseController
                     'date'          => $request['date'],
                     'time_start'    => $request['time_start'],
                     'time_end'      => $request['time_end'],
-                    'total_hours'   => get_total_hours($request['time_start'], $request['time_end']),
+                    'total_hours'   => get_time_diff($request['time_start'], $request['time_end'], '%H:%i'),
                     'reason'        => $request['reason'],
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
-                log_msg($inputs);
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
                 $this->checkRecordRestrictionViaStatus($id, $this->_model);

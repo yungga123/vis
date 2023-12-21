@@ -123,7 +123,7 @@ class TimesheetModel extends Model
         $format     = '%H:%i';
 
         // Get office hours
-        $office_hours   = $this->getOfficeHours(true);
+        $office_hours   = $this->getOfficeHours();
         $oh_time_in     = $office_hours['working_time_in'] ?? null;
         $oh_time_out    = $office_hours['working_time_out'] ?? null;
 
@@ -139,7 +139,10 @@ class TimesheetModel extends Model
                 $break = 1; 
                 // If clock out time is less than 1:00 PM,
                 // no more 1hr break time to less
-                if ($oh_time_in && compare_times($_clock_out, '1:00 PM', '<')) {
+                if (
+                    $oh_time_in && 
+                    (compare_times($_clock_out, '1:00 PM', '<') || compare_times($_clock_in, '12:00 PM', '>'))
+                ) {
                     $break = 0; 
                 }
 

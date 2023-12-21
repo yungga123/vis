@@ -25,6 +25,7 @@ class LeaveModel extends Model
         'leave_type',
         'start_date',
         'end_date',
+        'total_days',
         'with_pay',
         'leave_reason',
         'leave_remark',
@@ -58,6 +59,10 @@ class LeaveModel extends Model
         'end_date'   => [
             'rules' => 'required',
             'label' => 'end date',
+        ],
+        'total_days'   => [
+            'rules' => 'if_exist|required',
+            'label' => 'total days',
         ],
         'leave_reason'   => [
             'rules' => 'required|max_length[500]',
@@ -214,6 +219,7 @@ class LeaveModel extends Model
             {$this->table}.with_pay,
             ".dt_sql_date_format("{$this->table}.start_date")." AS start_date,
             ".dt_sql_date_format("{$this->table}.end_date")." AS end_date,
+            {$this->table}.total_days,
             {$this->table}.leave_reason,
             {$this->table}.leave_remark,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at,

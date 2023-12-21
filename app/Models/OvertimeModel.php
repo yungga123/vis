@@ -218,7 +218,7 @@ class OvertimeModel extends Model
             ".dt_sql_date_format("{$this->table}.date")." AS date,
             ".dt_sql_time_format("{$this->table}.time_start")." AS time_start,
             ".dt_sql_time_format("{$this->table}.time_end")." AS time_end,
-            {$this->table}.total_hours,
+            ".dt_sql_time_format("{$this->table}.total_hours", '%H:%i')." AS total_hours,
             {$this->table}.with_pay,
             {$this->table}.reason,
             {$this->table}.remark,

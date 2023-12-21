@@ -41,6 +41,7 @@
                                 <th>Leave Type</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
+                                <th>Total Days</th>
                                 <th>Leave Reason</th>
                                 <th>Leave Remark</th>
                                 <th>File At</th>

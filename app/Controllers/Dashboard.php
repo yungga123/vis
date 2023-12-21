@@ -35,7 +35,8 @@ class Dashboard extends BaseController
     {
         $data['title']          = 'Dashboard';
         $data['page_title']     = 'Dashboard';
-        $data['exclude_toastr'] = true;
+        $data['sweetalert2']    = true;
+        $data['toastr']         = true;
         $data['modules']        = $this->_moduleBoxMenu();
         $data['type_legend']    = $this->scheduleTypeLegend();
         $data['schedules']      = $this->getSchedulesForToday(true);
