@@ -234,9 +234,9 @@ abstract class BaseController extends Controller
 	}
 
     /**
-     * Redirect to access denied view
+     * Redirect to access denied page
      * 
-     * @return view
+     * @return string|view
      */
     public function redirectToAccessDenied()
 	{
@@ -244,6 +244,20 @@ abstract class BaseController extends Controller
         $data['page_title']     = 'Access Denied!';
 
         echo view('errors/custom/denied', $data);
+        exit;
+	}
+
+    /**
+     * Redirect to 404 page
+     * 
+     * @return string|view
+     */
+    public function redirectTo404Page()
+	{
+		$data['title']          = '404 Page Not Found';
+        $data['page_title']     = '404 Page Not Found!';
+
+        echo view('errors/custom/404', $data);
         exit;
 	}
 

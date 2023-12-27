@@ -203,6 +203,12 @@ define('ACTIONS', [
             'VIEW_ALL'      => 'View All',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'PAYROLL_PAYSLIP' => [
+            'EDIT'          => 'Edit',
+            'DELETE'        => 'Delete',
+            'VIEW_ALL'      => 'View All',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
@@ -309,9 +315,12 @@ define('MODULE_CODES', [
 // without setting a permissions
 // Add them here
 define('MODULES_WITH_GENERIC_ACCESS', [
+    'PAYROLL_PAYSLIP' => [
+        'EXCEPT' => ['ADD', 'EDIT', 'DELETE']
+    ],
     'PAYROLL_LEAVE',
     'PAYROLL_OVERTIME',
-    'PAYROLL_TIMESHEETS'
+    'PAYROLL_TIMESHEETS',
 ]);
 
 // Developer Account

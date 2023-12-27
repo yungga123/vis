@@ -1,10 +1,6 @@
 <?=$this->extend('templates/print');?>
 <?=$this->section('content');?>
 <?php
-$company_name 		= isset($general_info['company_name']) && !empty($general_info['company_name'])
-	? $general_info['company_name'] : COMPANY_NAME;
-$company_address 	= isset($general_info['company_address']) && !empty($general_info['company_address'])
-	? $general_info['company_address'] : COMPANY_ADDRESS;
 $form_code 			= isset($general_info['purchase_order_form_code']) && !empty($general_info['purchase_order_form_code'])
 	? $general_info['purchase_order_form_code'] : COMPANY_PO_FORM_CODE;
 $total_amount		= 0;
@@ -65,10 +61,10 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
             <table class="table table-bordered table-sm" style="font-size: 15px">
                 <tbody>
                     <tr class="text-center text-uppercase text-bold">
-                        <td><?= $company_name ?></td>
+                        <td><?= $general_info['company_name'] ?></td>
                     </tr>
                     <tr class="text-center">
-                        <td><?= $company_address ?></td>
+                        <td><?= $general_info['company_address'] ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -178,7 +174,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                 <strong class="text-underline">Terms and Conditions: </strong>
                 <span class="text-italic">
 					This Purchase Order (PO) becomes the exclusive agreement between
-					<strong><?= $company_name ?></strong>
+					<strong><?= $general_info['company_name'] ?></strong>
 					and Supplier/s for the good subject to the standard Terms and Conditions contained herein.
 				</span>
             </h6>
@@ -190,7 +186,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 					<li>All Delivered or purchased items will be checked based on the stated information above.</li>
 					<li>Testing and commisioning must be conducted by unit supplier unless otherwise the defective items must replaced.</li>
 					<li>Supplier must deliver all purchased items based on the committed delivery schedule</li>
-					<li><strong><?= $company_name ?></strong> will penalize supplier without prior notice in terms of problem deliver such as late delivery, move delivery date, etc.</li>
+					<li><strong><?= $general_info['company_name'] ?></strong> will penalize supplier without prior notice in terms of problem deliver such as late delivery, move delivery date, etc.</li>
 					<li>Incase of purchased item(s) / unit(s) is/are under warranty and subject for repair, Supplier must provide Service Unit upon acceptance of the returned item(s) / unit(s).</li>
 					<li>
 						Mode of Payment: 

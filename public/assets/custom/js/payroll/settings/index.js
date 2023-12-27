@@ -102,16 +102,22 @@ $(document).ready(function () {
 
 		showAlertInForm(
 			[
-				"sss_contri_rate_employeer",
 				"sss_contri_rate_employee",
+				"sss_contri_rate_employeer",
 				"sss_salary_range_min",
 				"sss_salary_range_max",
+				"sss_next_diff_range_start_amount",
 				"sss_starting_msc",
 				"sss_last_msc",
-				"sss_next_diff_amount",
-				"pagibig_contri_rate_employeer",
+				"sss_next_diff_msc_total_amount",
 				"pagibig_contri_rate_employee",
+				"pagibig_contri_rate_employeer",
+				"pagibig_max_monthly_contri",
 				"philhealth_contri_rate",
+				"philhealth_income_floor",
+				"philhealth_if_monthly_premium",
+				"philhealth_income_ceiling",
+				"philhealth_ic_monthly_premium",
 			],
 			message,
 			res.status

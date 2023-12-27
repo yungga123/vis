@@ -289,6 +289,11 @@ class Dispatch extends BaseController
 
         $dispatch = $this->_model->getDispatch($id, false, true);
 
+        // For restriction
+        if (empty($dispatch)) {
+            return $this->redirectTo404Page();
+        }
+
         // Get client details
         $joModel    = new JobOrderModel();
         $client     = $joModel->getClientInfo($dispatch['job_order_id']);

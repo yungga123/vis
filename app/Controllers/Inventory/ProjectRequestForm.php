@@ -362,14 +362,21 @@ class ProjectRequestForm extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
         
-        $columns = $this->_model->columns(true, true);
-        $columns .= ','. $this->_model->jobOrderColumns(false, true);
-        $builder = $this->_model->select($columns);
+        $columns    = $this->_model->columns(true, true);
+        $columns    .= ','. $this->_model->jobOrderColumns(false, true);
+        $builder    = $this->_model->select($columns);
         
         $this->_model->joinView($builder);
         $this->_model->joinJobOrder($builder);
+
+        $prf        = $builder->find($id);
+
+        // For restriction
+        if (empty($prf)) {
+            return $this->redirectTo404Page();
+        }
         
-        $data['prf']            = $builder->find($id);
+        $data['prf']            = $prf;
         $data['prf_items']      = $builder->traitFetchPrfItems($id, true, true);
         $data['title']          = 'Print Project Request Form';
         $data['company_logo']   = $this->getCompanyLogo();

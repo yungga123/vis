@@ -3,12 +3,19 @@
 namespace App\Controllers\Payroll;
 
 use App\Controllers\BaseController;
+use App\Models\EmployeeViewModel;
 use App\Models\PayrollModel;
 use App\Models\PayrollEarningModel;
 use App\Models\PayrollDeductionModel;
+use App\Traits\PayrollGovtRateCalculateTrait;
+use App\Traits\PayrollSettingTrait;
+use App\Traits\HRTrait;
 
 class Computation extends BaseController
 {
+    /* Declare trait here to use */
+    use PayrollSettingTrait, PayrollGovtRateCalculateTrait, HRTrait;
+
     /**
      * Use to initialize model class
      * @var object
@@ -53,19 +60,68 @@ class Computation extends BaseController
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code);
+
+        $title      = 'Payroll Computation';
+        $id         = $this->request->getVar('id');
+        $payroll    = [];
+        $earnings   = [];
+        $deductions = [];
+
+        if ($id) {
+            $model      = $this->_model;
+            $empVModel  = new EmployeeViewModel();
+            $columns    = "
+                {$model->table}.id,
+                {$model->table}.employee_id,
+                {$empVModel->table}.employee_name,
+                {$empVModel->table}.position,
+                {$empVModel->table}.employment_status,
+                {$model->table}.cutoff_start,
+                {$model->table}.cutoff_end,
+                {$model->table}.gross_pay,
+                {$model->table}.net_pay,
+                {$model->table}.cutoff_pay,
+                {$model->table}.salary_type,
+                {$model->table}.basic_salary,
+                {$model->table}.daily_rate,
+                {$model->table}.hourly_rate,
+                {$model->table}.working_days,
+                {$model->table}.notes
+            ";
+
+            // Join with employees_view
+            $this->traitJoinEmployees($model, 'employee_id', "{$model->table}.employee_id", '', 'left', true);
+
+            $payroll    = $model->fetch($id, $columns);
+
+            if (empty($payroll)) {
+                return $this->redirectTo404Page();
+            }
+
+            $title          = $title . ' | Edit';
+            $earnModel      = new PayrollEarningModel();
+            $deductModel    = new PayrollDeductionModel();
+
+            $earnings       = $earnModel->fetch($id);
+            $deductions     = $deductModel->fetch($id);
+
+            $data['payroll']    = $payroll;
+            $data['earnings']   = $earnings;
+            $data['deductions'] = $deductions;
+        }
         
-        $data['title']          = 'Payroll Computation';
-        $data['page_title']     = 'Payroll Computation';
+        $data['title']          = $title;
+        $data['page_title']     = $title;
         $data['can_submit']     = $this->_can_add;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['moment']         = true;
         $data['custom_js']      = ['payroll/computation/index.js', 'moment.js'];
-        $data['custom_css']     = 'payroll/computation/index.css';
         $data['routes']         = json_encode([
             'payroll'    => [
                 'computation' => [
-                    'save'      => url_to('payroll.computation.save'),
+                    'save'              => url_to('payroll.computation.save'),
+                    'govt_deductions'   => url_to('payroll.computation.govt_deductions'),
                 ],
             ],
             'hr' => [
@@ -73,6 +129,16 @@ class Computation extends BaseController
                     'employees' => url_to('hr.common.employees'),
                 ],
             ],
+        ]);
+        $data['php_to_js_options'] = json_encode([
+            'payroll_settings'  => [
+                'ots_holidays'  => $this->getOvertimeHolidayRates(true),
+                'govt'          => $this->getGovtRates(true),
+                'bir_taxes'     => $this->getBirTaxTable(),
+            ],
+            'payroll'       => $payroll,
+            'earnings'      => $earnings,
+            'deductions'    => $deductions,
         ]);
 
         return view('payroll/computation/index', $data);
@@ -94,15 +160,24 @@ class Computation extends BaseController
             function($data) {
                 $request        = $this->request->getVar();
                 $payroll_id     = $request['employee_info']['id'];
-                $action         = empty($payroll_id) ? ACTION_ADD : ACTION_EDIT;
+                $employee_id    = $request['employee_info']['employee_id'];
 
-                $this->checkRoleActionPermissions($this->_module_code, $action, true);
+                $this->checkRoleActionPermissions($this->_module_code, 'SUBMIT', true);
+
+                $cutoff_start   = $request['cut_off']['start_date'];
+                $cutoff_end     = $request['cut_off']['end_date'];
+                $payroll_exists = $this->_model->checkPayroll($employee_id, $cutoff_start, $cutoff_end);
+
+                if ($payroll_exists && empty($payroll_id)) {
+                    $message = "Selected employee has already a payroll for this cut-off date range!";
+                    throw new \Exception($message, 1);                    
+                }
 
                 $payroll            = [
                     'id'            => $payroll_id,
-                    'employee_id'   => $request['employee_info']['employee_id'],
-                    'cutoff_start'  => $request['cut_off']['start_date'],
-                    'cutoff_end'    => $request['cut_off']['end_date'],
+                    'employee_id'   => $employee_id,
+                    'cutoff_start'  => $cutoff_start,
+                    'cutoff_end'    => $cutoff_end,
                     'gross_pay'     => $request['employee_info']['gross_pay'],
                     'net_pay'       => $request['employee_info']['net_pay'],
                     'salary_type'   => $request['employee_info']['rate_type'],
@@ -134,6 +209,7 @@ class Computation extends BaseController
                         'regular_holiday_amt'   => $request['payroll_earnings']['regular_holiday_amt'],
                         'special_holiday'       => $request['payroll_earnings']['special_holiday'],
                         'special_holiday_amt'   => $request['payroll_earnings']['special_holiday_amt'],
+                        'vacation_leave'        => $request['payroll_earnings']['vacation_leave'],
                         'vacation_leave_amt'    => $request['payroll_earnings']['vacation_leave_amt'],
                         'sick_leave'            => $request['payroll_earnings']['sick_leave'],
                         'sick_leave_amt'        => $request['payroll_earnings']['sick_leave_amt'],
@@ -144,19 +220,19 @@ class Computation extends BaseController
                     ];
 
                     $payroll_deductions   = [
-                        'payroll_id'        => $payroll_id,
-                        'days_absent'       => $request['payroll_deductions']['absent'],
-                        'days_absent_amt'   => $request['payroll_deductions']['absent_amt'],
-                        'hours_late'        => $request['payroll_deductions']['tardiness'],
-                        'hours_late_amt'    => $request['payroll_deductions']['tardiness_amt'],
-                        'addt_rest_days'    => $request['payroll_deductions']['additional_rest_day'],
-                        'night_diff_amt'    => $request['payroll_deductions']['additional_rest_day_amt'],
-                        'govt_sss'          => $request['payroll_deductions']['sss'],
-                        'govt_pagibig'      => $request['payroll_deductions']['pagibig'],
-                        'govt_philhealth'   => $request['payroll_deductions']['philhealth'],
-                        'withholding_tax'   => $request['payroll_deductions']['withholding_tax'],
-                        'cash_advance'      => $request['payroll_deductions']['cash_advance'],
-                        'others'            => $request['payroll_deductions']['other_deductions'],
+                        'payroll_id'            => $payroll_id,
+                        'days_absent'           => $request['payroll_deductions']['absent'],
+                        'days_absent_amt'       => $request['payroll_deductions']['absent_amt'],
+                        'hours_late'            => $request['payroll_deductions']['tardiness'],
+                        'hours_late_amt'        => $request['payroll_deductions']['tardiness_amt'],
+                        'addt_rest_days'        => $request['payroll_deductions']['additional_rest_day'],
+                        'addt_rest_days_amt'    => $request['payroll_deductions']['additional_rest_day_amt'],
+                        'govt_sss'              => $request['payroll_deductions']['sss'],
+                        'govt_pagibig'          => $request['payroll_deductions']['pagibig'],
+                        'govt_philhealth'       => $request['payroll_deductions']['philhealth'],
+                        'withholding_tax'       => $request['payroll_deductions']['withholding_tax'],
+                        'cash_advance'          => $request['payroll_deductions']['cash_advance'],
+                        'others'                => $request['payroll_deductions']['other_deductions'],
                     ];
 
                     $earningModel   = new PayrollEarningModel();
@@ -166,14 +242,45 @@ class Computation extends BaseController
                     $earningModel->save($payroll_earnings);
                     $deductionModel->save($payroll_deductions);
                 }
-    
-                if ($payroll_id) {
-                    $data['message']    = res_lang('success.updated', 'Payroll Computation');
-                }
 
                 $data['data']['id'] = $payroll_id;
                 return $data;
             }
+        );
+
+        return $response;
+    }
+
+    /**
+     * Government deductions
+     *
+     * @return json
+     */
+    public function govtDeductions() 
+    {
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.retrieved')
+        ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $rates          = $this->getGovtRates(true);
+                $request        = $this->request->getVar();
+                $cut_off_pay    = $request['cut_off_pay'];
+                $monthly_salary = $request['monthly_salary'];
+
+                $data['data'] = [
+                    'deductions' => [
+                        'sss'           => $this->calculateSSSContri($cut_off_pay, $rates),
+                        'pagibig'       => $this->calculatePagibigContri($cut_off_pay, $rates),
+                        'philhealth'    => $this->calculatePhilhealthContri($cut_off_pay, $rates),
+                    ]
+                ];
+
+                return $data;
+            },
+            false
         );
 
         return $response;

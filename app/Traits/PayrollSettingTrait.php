@@ -20,7 +20,7 @@ trait PayrollSettingTrait
 
         if(is_array($param)) {            
             return $format ? 
-                $this->formatResult($model->fetchAll($param)) 
+                format_results($model->fetchAll($param)) 
                 : $model->fetchAll($param);
         }
         
@@ -86,11 +86,14 @@ trait PayrollSettingTrait
     /**
      * Get overtimes, night diff and holiday's percentage rate
      * 
+     * @param bool $convert     Whether to convert percent to decimal
+     * 
      * @return array|null
      */
-    public function getOvertimeRates()
+    public function getOvertimeHolidayRates($convert = false)
     {
-        $params = [
+        $arr        = [];
+        $params     = [
             'overtime',
             'night_diff',
             'rest_day',
@@ -102,59 +105,183 @@ trait PayrollSettingTrait
         ];
         $overtimes = $this->getPayrollSettings($params, true);
 
-        return $overtimes;
+        foreach ($params as $key => $val) {
+            $param      = floatval($overtimes[$val] ?? 0);
+            $arr[$val]  = floatval($convert ? $param / 100 : $param);
+            // $arr[$val]  = floatval(number_format($convert ? $param / 100 : $param, 2));
+        }
+
+        return $arr;
     }
 
     /**
      * Get government's percentage rate
      * 
+     * @param bool $convert     Whether to convert percent to decimal
+     * 
      * @return array|null
      */
-    public function getGovtRates()
+    public function getGovtRates($convert = false)
+    {
+        $params     = [
+            'sss_contri_rate_employee',
+            'sss_contri_rate_employeer',
+            'sss_salary_range_min',
+            'sss_salary_range_max',
+            'sss_next_diff_range_start_amount',
+            'sss_starting_msc',
+            'sss_last_msc',
+            'sss_next_diff_msc_total_amount',
+            'pagibig_contri_rate_employee',
+            'pagibig_contri_rate_employeer',
+            'pagibig_max_monthly_contri',
+            'philhealth_contri_rate',
+            'philhealth_income_floor',
+            'philhealth_if_monthly_premium',
+            'philhealth_income_ceiling',
+            'philhealth_ic_monthly_premium',
+        ];
+        $rates  = $this->getPayrollSettings($params, true);
+
+        if (! $convert) return $rates;
+
+        $params     = [
+            'sss_contri_rate_employee'      => floatval(floatval($rates['sss_contri_rate_employee'] ?? 0) / 100),
+            'sss_contri_rate_employeer'     => floatval(floatval($rates['sss_contri_rate_employeer'] ?? 0) / 100),
+            'sss_salary_range_min'          => floatval($rates['sss_salary_range_min'] ?? 0),
+            'sss_salary_range_max'          => floatval($rates['sss_salary_range_max'] ?? 0),
+            'sss_next_diff_range_start_amount' => floatval($rates['sss_next_diff_range_start_amount'] ?? 0),
+            'sss_starting_msc'              => floatval($rates['sss_starting_msc'] ?? 0),
+            'sss_last_msc'                  => floatval($rates['sss_last_msc'] ?? 0),
+            'sss_next_diff_msc_total_amount' => floatval($rates['sss_next_diff_msc_total_amount'] ?? 0),
+            'pagibig_contri_rate_employee'  => floatval(floatval($rates['pagibig_contri_rate_employee'] ?? 0) / 100),
+            'pagibig_contri_rate_employeer' => floatval(floatval($rates['pagibig_contri_rate_employeer'] ?? 0) / 100),
+            'pagibig_max_monthly_contri'    => floatval($rates['pagibig_max_monthly_contri'] ?? 200),
+            'philhealth_contri_rate'        => floatval(floatval($rates['philhealth_contri_rate'] ?? 0) / 100),
+            'philhealth_income_floor'       => floatval($rates['philhealth_income_floor'] ?? 0),
+            'philhealth_if_monthly_premium' => floatval($rates['philhealth_if_monthly_premium'] ?? 0),
+            'philhealth_income_ceiling'     => floatval($rates['philhealth_income_ceiling'] ?? 0),
+            'philhealth_ic_monthly_premium' => floatval($rates['philhealth_ic_monthly_premium'] ?? 0),
+        ];
+
+        return $params;
+    }
+
+    /**
+     * Get government's SSS percentage rate
+     * 
+     * @param bool $convert     Whether to convert percent to decimal
+     * 
+     * @return array|null
+     */
+    public function getGovtSSSRates($convert = false)
     {
         $params = [
             'sss_contri_rate_employee',
             'sss_contri_rate_employeer',
             'sss_salary_range_min',
             'sss_salary_range_max',
+            'sss_next_diff_range_start_amount',
             'sss_starting_msc',
             'sss_last_msc',
-            'sss_next_diff_amount',
+            'sss_next_diff_msc_total_amount',
+        ];
+        $rates  = $this->getPayrollSettings($params, true);
+
+        if (! $convert) return $rates;
+
+        $params     = [
+            'sss_contri_rate_employee'      => floatval(floatval($rates['sss_contri_rate_employee'] ?? 0) / 100),
+            'sss_contri_rate_employeer'     => floatval(floatval($rates['sss_contri_rate_employeer'] ?? 0) / 100),
+            'sss_salary_range_min'          => floatval($rates['sss_salary_range_min'] ?? 0),
+            'sss_salary_range_max'          => floatval($rates['sss_salary_range_max'] ?? 0),
+            'sss_next_diff_range_start_amount' => floatval($rates['sss_next_diff_range_start_amount'] ?? 0),
+            'sss_starting_msc'              => floatval($rates['sss_starting_msc'] ?? 0),
+            'sss_last_msc'                  => floatval($rates['sss_last_msc'] ?? 0),
+            'sss_next_diff_msc_total_amount' => floatval($rates['sss_next_diff_msc_total_amount'] ?? 0),
+        ];
+
+        return $params;
+    }
+
+    /**
+     * Get government's PAG-IBIG percentage rate
+     * 
+     * @param bool $convert     Whether to convert percent to decimal
+     * 
+     * @return array|null
+     */
+    public function getGovtPagibigRates($convert = false)
+    {
+        $params = [
             'pagibig_contri_rate_employee',
             'pagibig_contri_rate_employeer',
-            'philhealth_contri_rate',
+            'pagibig_max_monthly_contri',
         ];
-        $govtRates = $this->getPayrollSettings($params, true);
+        $rates  = $this->getPayrollSettings($params, true);
 
-        return $govtRates;
+        if (! $convert) return $rates;
+
+        $params     = [
+            'pagibig_contri_rate_employee'  => floatval(floatval($rates['pagibig_contri_rate_employee'] ?? 0) / 100),
+            'pagibig_contri_rate_employeer' => floatval(floatval($rates['pagibig_contri_rate_employeer'] ?? 0) / 100),
+            'pagibig_max_monthly_contri'    => floatval($rates['pagibig_max_monthly_contri'] ?? 200),
+        ];
+
+        return $params;
+    }
+
+    /**
+     * Get government's percentage rate
+     * 
+     * @param bool $convert     Whether to convert percent to decimal
+     * 
+     * @return array|null
+     */
+    public function getGovtPhilhealthRates($convert = false)
+    {
+        $params = [
+            'philhealth_contri_rate',
+            'philhealth_income_floor',
+            'philhealth_if_monthly_premium',
+            'philhealth_income_ceiling',
+            'philhealth_ic_monthly_premium',
+        ];
+        $rates  = $this->getPayrollSettings($params, true);
+
+        if (! $convert) return $rates;
+
+        $params     = [
+            'philhealth_contri_rate'        => floatval(floatval($rates['philhealth_contri_rate'] ?? 0) / 100),
+            'philhealth_income_floor'       => floatval($rates['philhealth_income_floor'] ?? 0),
+            'philhealth_if_monthly_premium' => floatval($rates['philhealth_if_monthly_premium'] ?? 0),
+            'philhealth_income_ceiling'     => floatval($rates['philhealth_income_ceiling'] ?? 0),
+            'philhealth_ic_monthly_premium' => floatval($rates['philhealth_ic_monthly_premium'] ?? 0),
+        ];
+
+        return $params;
     }
 
     /**
      * Get BIR tax rate table
      * 
+     * @param bool $format     Whether to format results
+     * 
      * @return array|null
      */
-    public function getBirTaxTable()
+    public function getBirTaxTable($format = false)
     {
+        $arr    = [];
         $model  = new BirTaxModel;
         $result = $model->fetchAll();
 
-        return $result;
-    }
-
-    /**
-     * Formatting the result into one assoc array
-     *
-     * @param array $result     The array/result to format
-     * @return array            The formatted array
-     */
-    public function formatResult($result) 
-    {
-        $arr = [];
+        if (! $format) return $result;
 
         if (! empty($result)) {
-            foreach ($result as $key => $value) {
-                $arr[$value['key']] = $value['value'];
+            foreach ($result as $key => $val) {
+                $connector  = $val['below_or_above'] ? '_and_'. $val['below_or_above'] : '_to_' . $val['compensation_range_end'];
+                $_key       = $val['compensation_range_start'] . $connector;
+                $arr[$_key] = $val;
             }
         }
 

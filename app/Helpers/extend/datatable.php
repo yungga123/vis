@@ -6,11 +6,13 @@ if (! function_exists('dt_button_html'))
      */
 	function dt_button_html(array $options, bool $dropdown = false): string
 	{     
-        $wfull  = $dropdown ? 'w-100' : '';  
+        $wfull  = $dropdown ? 'w-100' : '';
+        $btn    = isset($options['link']) ? 'a' : 'button';
+        $link   = isset($options['link']) ? 'href="'.$options['link'].'" target="_blank"' : '';
         $html   = <<<EOF
-            <button class="btn btn-sm {$options['button']} {$wfull}" {$options['condition']}>
+            <{$btn} class="btn btn-sm {$options['button']} {$wfull}" {$options['condition']} {$link}>
                 <i class="{$options['icon']}"></i> {$options['text']}
-            </button>
+            </{$btn}>
         EOF;
 
         return $dropdown 

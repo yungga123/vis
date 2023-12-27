@@ -116,7 +116,9 @@ class Settings extends BaseController
                     ];
                 }
 
-                if (! $this->_model->singleSave($inputs)) {
+                $save = $this->_model->singleSave($inputs);
+
+                if (! $save && $save != 0) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
@@ -233,6 +235,10 @@ class Settings extends BaseController
                     'label' => 'maximum salaray range',
                     'rules' => 'required|numeric'
                 ],
+                'sss_next_diff_range_start_amount' => [
+                    'label' => 'next diff range start amount',
+                    'rules' => 'required|numeric'
+                ],
                 'sss_starting_msc' => [
                     'label' => 'starting MSC',
                     'rules' => 'required|numeric'
@@ -241,8 +247,8 @@ class Settings extends BaseController
                     'label' => 'last MSC',
                     'rules' => 'required|numeric'
                 ],
-                'sss_next_diff_amount' => [
-                    'label' => 'next diff amount',
+                'sss_next_diff_msc_total_amount' => [
+                    'label' => 'next diff MSC total amount',
                     'rules' => 'required|numeric'
                 ],
                 'pagibig_contri_rate_employeer' => [
@@ -253,8 +259,28 @@ class Settings extends BaseController
                     'label' => 'contri rate employee',
                     'rules' => 'required|numeric'
                 ],
+                'pagibig_max_monthly_contri' => [
+                    'label' => 'max monthly contri',
+                    'rules' => 'required|numeric'
+                ],
                 'philhealth_contri_rate' => [
-                    'label' => 'contriution rate',
+                    'label' => 'contribution rate',
+                    'rules' => 'required|numeric'
+                ],
+                'philhealth_income_floor' => [
+                    'label' => 'income floor',
+                    'rules' => 'required|numeric'
+                ],
+                'philhealth_if_monthly_premium' => [
+                    'label' => 'monthly premium',
+                    'rules' => 'required|numeric'
+                ],
+                'philhealth_income_ceiling' => [
+                    'label' => 'income ceiling',
+                    'rules' => 'required|numeric'
+                ],
+                'philhealth_ic_monthly_premium' => [
+                    'label' => 'monthly premium',
                     'rules' => 'required|numeric'
                 ],
             ],

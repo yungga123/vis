@@ -99,7 +99,7 @@ trait AdminTrait
                             <td>{$schedule['description']}</td>
                             <td>{$start}</td>
                             <td>{$end}</td>
-                            <td>{$type}</td>
+                            <td>{$type['text']}</td>
                         </tr>
                     EOF;
                 }

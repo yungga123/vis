@@ -378,6 +378,12 @@ class PurchaseOrder extends BaseController
         $this->joinAccountView($builder, "{$this->_model->table}.approved_by", 'ab');
 
         $purchase_order         = $builder->where("{$this->_model->table}.id", $id)->find()[0];
+
+        // For restriction
+        if (empty($purchase_order)) {
+            return $this->redirectTo404Page();
+        }
+        
         $items                  = $this->_model->getPOItems($id, "{$inventoryModel->view}.size");
         $supplier               = $supplierModel->getSuppliers(
             $purchase_order['supplier_id'], 
@@ -388,17 +394,19 @@ class PurchaseOrder extends BaseController
             DATE_FORMAT(created_at, '".dt_sql_datetime_format()."') AS requested_at,
             {$rpfModel->view}.created_by_name  AS requested_by
         ";
-        $general_info           = $this->getGeneralInfo(['company_logo', 'company_name', 'company_address'], true);
-        $general_info['company_logo'] = $this->getCompanyLogo($general_info['company_logo'] ?? '');
 
         $data['purchase_order'] = $purchase_order;
         $data['supplier']       = $supplier;
         $data['items']          = $items;
         $data['rpf']            = $rpfModel->getRequestPurchaseForms($purchase_order['rpf_id'], true, $rpfColumns);
-        $data['general_info']   = $general_info;
+        $data['general_info']   = $this->getCompanyInfo();
         $data['title']          = 'Generate Purchase Order';
         $data['disable_auto_print'] = true;
-        $data['custom_js']      = ['functions.js', 'purchasing/purchase_order/print.js'];
+        $data['custom_js']      = [
+            'initialize.js',
+            'functions.js',
+            'purchasing/purchase_order/print.js'
+        ];
 
         return view('purchasing/purchase_order/print', $data);
     }

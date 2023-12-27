@@ -17,75 +17,38 @@ $(document).ready(function () {
 	});
 
 	/* Load dataTable */
-	// loadDataTable(table, router.payslip.list, METHOD.POST);
-
-	/* Form for saving employee */
-	formSubmit($("#" + form), "continue", function (res, self) {
-		const message = res.errors ?? res.message;
-
-		if (res.status !== STATUS.ERROR) {
-			$("#id").val("");
-			self[0].reset();
-			refreshDataTable($("#" + table));
-			notifMsgSwal(res.status, message, res.status);
-
-			if ($(`#${modal}`).hasClass("edit")) {
-				$(`#${modal}`).modal("hide");
-			}
-		}
-
-		if (inObject(res, "errors")) {
-			notifMsgSwal(res.status, res.message, res.status);
-		}
-
-		showAlertInForm(elems, message, res.status);
-	});
+	loadDataTable(table, router.payroll.payslip.list, METHOD.POST);
 });
 
-/* Get employee details */
-function edit(id) {
-	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Employee");
-	$("#id").val(id);
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const start_date = $("#filter_start_date").val();
+	const end_date = $("#filter_end_date").val();
+	const params = {
+		start_date: start_date,
+		end_date: end_date,
+	};
+	const condition = !isEmpty(start_date) || !isEmpty(end_date);
 
-	clearAlertInForm(elems);
-	showLoading();
-
-	$.post(router.payslip.fetch, { id: id })
-		.then((res) => {
-			closeLoading();
-
-			if (res.status === STATUS.SUCCESS) {
-				if (inObject(res, "data") && !isEmpty(res.data)) {
-					$.each(res.data, (key, value) => {
-						$(`input[name="${key}"]`).val(value);
-					});
-					$(`#${modal}`).modal("show");
-				}
-			} else {
-				$(`#${modal}`).modal("hide");
-				notifMsgSwal(res.status, res.message, res.status);
-			}
-		})
-		.catch((err) => catchErrMsg(err));
+	filterParam(
+		router.payroll.payslip.list,
+		table,
+		params,
+		condition,
+		() => {
+			$("#filter_start_date").val("");
+			$("#filter_end_date").val("");
+		},
+		reset
+	);
 }
 
-/* Delete employee */
-function remove(id) {
-	const swalMsg = "delete";
-	swalNotifConfirm(
-		function () {
-			$.post(router.payslip.delete, { id: id })
-				.then((res) => {
-					const message = res.errors ?? res.message;
+/* Delete record */
+function edit(id) {
+	window.ri;
+}
 
-					if (res.status === STATUS.SUCCESS) refreshDataTable($("#" + table));
-					notifMsgSwal(res.status, message, res.status);
-				})
-				.catch((err) => catchErrMsg(err));
-		},
-		TITLE.WARNING,
-		swalMsg,
-		STATUS.WARNING
-	);
+/* Delete record */
+function remove(id) {
+	deleteRecord(router.payroll.payslip.delete, { id: id }, table);
 }

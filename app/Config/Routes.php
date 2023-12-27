@@ -372,6 +372,7 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
     $routes->group('computation', static function ($routes) {
         $routes->get('/', 'Payroll\Computation::index', ['as' => 'payroll.computation.home']);
         $routes->post('save', 'Payroll\Computation::save', ['as' => 'payroll.computation.save']);
+        $routes->post('govt-deductions', 'Payroll\Computation::govtDeductions', ['as' => 'payroll.computation.govt_deductions']);
     });
 
     // PAYSLIP
@@ -381,6 +382,7 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('save', 'Payroll\Payslip::save', ['as' => 'payroll.payslip.save']);
         $routes->post('fetch', 'Payroll\Payslip::fetch', ['as' => 'payroll.payslip.fetch']);
         $routes->post('delete', 'Payroll\Payslip::delete', ['as' => 'payroll.payslip.delete']);
+        $routes->get('print/(:num)', 'Payroll\Payslip::print/$1', ['as' => 'payroll.payslip.print']);
     });
 
     // LEAVE

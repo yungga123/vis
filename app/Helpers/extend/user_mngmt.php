@@ -260,8 +260,25 @@ if (! function_exists('get_generic_modules_actions'))
 	{
 		$modules = MODULES_WITH_GENERIC_ACCESS;
 
-		if (in_array($param, $modules)) {
-			return array_keys(get_actions());
+		if (in_array($param, $modules) || isset($modules[$param])) {
+			$module 	= $modules[$param] ?? $param;
+			$generic 	= array_keys(get_actions());
+			
+			if (is_array($module)) {
+				$generic = array_diff($generic, $module['EXCEPT']);
+			}
+			
+			return $generic;
+		}
+
+		if (! empty($modules) && ! $param) {
+			$_modules = [];
+
+			foreach ($modules as $key => $val) {
+				$_modules[] = is_array($val) ? $key : $val;
+			}
+
+			return $_modules;
 		}
 
 		return $param ? [] : $modules;

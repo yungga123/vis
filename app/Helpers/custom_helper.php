@@ -641,3 +641,27 @@ if (! function_exists('compare_dates'))
         }
 	}
 }
+
+if (! function_exists('format_results'))
+{
+    /**
+     * Format query result into one assoc array.
+     * This will be mostly use in a table with two columns (key, value)
+     * 
+     * @param array $result     The array/result to format
+     * @param string $key       The key name of the key - eg. $value['key']
+     * @param string $val       The key name of the value - eg. $value['value']
+     */
+	function format_results(array $result, string $key = 'key', string $val = 'value'): array
+	{
+        $arr = [];
+
+        if (! empty($result)) {
+            foreach ($result as $_key => $value) {
+                $arr[$value[$key]] = $value[$val];
+            }
+        }
+
+        return $arr;
+	}
+}
