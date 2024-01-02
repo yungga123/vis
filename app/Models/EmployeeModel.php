@@ -326,28 +326,6 @@ class EmployeeModel extends Model
         return $this;
     }
 
-    // If employee record is deleted or marked as resigned
-    // delete their corresponding account(s)
-    public function deleteEmployeeAccounts($employee_id)
-    {
-        if ($employee_id) {
-            // If the pass param is numberic or 
-            // the primary id, the get the employee_id
-            if (is_numeric($employee_id)) {
-                $record         = $this->getEmployees($employee_id, null, 'employee_id');
-                $employee_id    = $record['employee_id'];
-            }
-
-            // Delete corresponding accounts - if exist
-            // Used query builder since can't delete using model (encountered error)
-            // Totally delete it in db
-            $accountModel = new AccountModel();
-            $this->db->table($accountModel->table)
-                ->where('employee_id', $employee_id)
-                ->delete();
-        }
-    }
-
     // Get employees
     public function getEmployees($id = null, $employee_id = null, $columns = null, $without_resign = false) 
     {

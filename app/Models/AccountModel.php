@@ -14,7 +14,7 @@ class AccountModel extends Model
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'employee_id',
@@ -78,11 +78,14 @@ class AccountModel extends Model
     // Check user trying to delete own account
     protected function checkRecordIfOneself($data) 
     {
-        $id     = $data['id'];
-        $result = $this->getAccounts($id);
+        $id = $data['id'][0];
 
-        if ($result[0]['username'] === session('username'))  {
-            throw new \Exception("You can't delete your own record!", 2);
+        if (is_numeric($id)) {
+            $result = $this->getAccounts($id);
+    
+            if (! empty($result) && $result[0]['username'] === session('username'))  {
+                throw new \Exception("You can't delete your own record!", 2);
+            }
         }
     }
 
@@ -130,6 +133,15 @@ class AccountModel extends Model
         $builder->where('username', $username);
 
         return ! empty($builder->first());
+    }
+
+    // Remove account using employee_id - not the primary id
+    public function removeUsingEmployeeId($employee_id) 
+    {
+        $this->primaryKey = 'employee_id';
+        $this->where('employee_id', $employee_id);
+
+        return $this->delete($employee_id);
     }
 
     // For dataTables
