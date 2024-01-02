@@ -95,7 +95,7 @@ class InventoryDropdownModel extends Model
     {
         $dropdowns = explode(',', $inputs['dropdown']);
         if (! empty($inputs['is_category']) || count($dropdowns) <= 1) {
-            return $this->save(clean_input($inputs));
+            return $this->save(clean_param($inputs));
         } else {
             if (count($dropdowns) > 1) {
                 $data = [];

@@ -142,12 +142,12 @@ if (! function_exists('is_array_multi_dimen'))
 	}
 }
 
-if (! function_exists('clean_input'))
+if (! function_exists('clean_param'))
 {
     /**
      * Clean input using trim default function
      */
-	function clean_input(string|array $input, $func_name = ''): string|array
+	function clean_param(string|array $input, $func_name = ''): string|array
 	{
         if (is_array($input)) {
             $arr = [];

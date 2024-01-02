@@ -22,7 +22,7 @@ trait FilterParamTrait
             
             if (isset($params[$fieldName]) && !empty($params[$fieldName])) {
                 $field  = "UPPER(TRIM({$columnName}))";
-                $search = $this->_convertValue(clean_input($params[$fieldName], 'strtoupper'));
+                $search = $this->_convertValue(clean_param($params[$fieldName], 'strtoupper'));
 
                 if (is_array($search))
                     $builder->whereIn($field, $search);

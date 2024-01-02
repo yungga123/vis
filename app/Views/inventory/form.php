@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="callout callout-info">
-                                <p>Want to add new record for Category and Sub-Category? Go to <a href="<?= url_to('inventory.dropdown.home') ?>"><strong>Inventory Dropdowns</strong></a>!</p>
+                                <p>Want to add new record for <strong>Category and Sub-Category</strong>? Go to <a href="<?= url_to('inventory.dropdown.home') ?>"><strong>Inventory Dropdowns</strong></a>!</p>
                             </div>
                         </div>
                         <div class="col-sm-6 mt-2">

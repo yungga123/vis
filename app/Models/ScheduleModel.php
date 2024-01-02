@@ -26,7 +26,6 @@ class ScheduleModel extends Model
         'type',
         'start',
         'end',
-        'created_by',
     ];
 
     // Dates
@@ -38,6 +37,10 @@ class ScheduleModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'job_order_id' => [
+            'rules' => 'permit_empty',
+            'label' => 'job order'
+        ],
         'date_range' => [
             'rules' => 'required',
             'label' => 'date & time range'
@@ -61,7 +64,7 @@ class ScheduleModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
@@ -69,6 +72,13 @@ class ScheduleModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Set the value for created_by before inserting
+    protected function setCreatedBy(array $data)
+    {
+        $data['data']['created_by'] = session('username');
+        return $data;
+    }
 
     // Mail notif after Schedule created
     protected function mailNotif(array $data)
@@ -94,13 +104,26 @@ class ScheduleModel extends Model
         return $data;
     }
 
+    // Join schedules with ob_orders_view
+    public function joinJobOrders($builder = null, $model = null, $view = true)
+    {
+        $model ??= new JobOrderModel();
+        $table = $view ? $model->view : $model->table;
+        $field = $view ? 'job_order_id' : $model->primaryKey;
+
+        ($builder ?? $this)
+            ->join($table, "{$table}.{$field} = {$this->table}.job_order_id", 'left');
+
+        return $this;
+    }
+
     // For fetching schedules
     public function getSchedules($id = null, $columns = '*')
     {
-        $builder = $this->select($columns);
-        $builder->where("{$this->table}.deleted_at IS NULL");
+        $this->select($columns);
+        $this->where("{$this->table}.deleted_at IS NULL");
         
-        return $id ? $builder->find($id) : $builder->findAll();
+        return $id ? $this->find($id) : $this->findAll();
     }
 
     // Get the current schedules
@@ -114,5 +137,20 @@ class ScheduleModel extends Model
         if ($count) return $builder->countAllResults();
 
         return $builder->findAll();
+    }
+
+    // Where between dates
+    public function whereBetween($start, $end, $builder = null)
+    {
+        $start      = format_date($start, 'Y-m-d');
+        $end        = format_date($end, 'Y-m-d');
+        $between    = "(
+            {$this->table}.start BETWEEN '{$start}' AND '{$end}' OR 
+            {$this->table}.end BETWEEN '{$start}' AND '{$end}'
+        )";
+
+        ($builder ?? $this)->where($between);
+
+        return $this;
     }
 }

@@ -26,5 +26,6 @@ class AllViews extends Seeder
         $this->call('CustomersVTBranchToCustomerBranchessDataTransfer');
         $this->call('DropViews');
         $this->call('DeleteClientsPermissions');
+        $this->call('JobOrdersView');
     }
 }

@@ -556,6 +556,7 @@ if (! function_exists('get_employment_status'))
             'Contractual'   => 'Contractual',
             'Temporary'     => 'Temporary',
             'Project-based' => 'Project-Based',
+            'Resigned'      => 'Resigned',
         ];
 
         return $param ? $options[$param] : $options;
