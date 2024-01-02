@@ -233,7 +233,8 @@ class Employee extends BaseController
                     $data['message']    = res_lang('error.validation');
                 } else {
                     // Delete also their accounts
-                    $this->_model->deleteEmployeeAccounts($record['employee_id']);
+                    $accountModel   = new AccountModel();
+                    $accountModel->removeUsingEmployeeId($record['employee_id']);
                 }
 
                 return $data;
@@ -297,8 +298,9 @@ class Employee extends BaseController
                 } else {
                     // If resigned, delete their accounts
                     if ($resigned) {
-                        $employee_id = $this->request->getVar('employee_id');
-                        $this->_model->deleteEmployeeAccounts($employee_id);
+                        $employee_id    = $this->request->getVar('employee_id');
+                        $accountModel   = new AccountModel();
+                        $accountModel->removeUsingEmployeeId($employee_id);
                     }
                 }
 
