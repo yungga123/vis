@@ -46,6 +46,8 @@
                                 <th>Gross Pay</th>
                                 <th>Net Pay</th>
                                 <th>Salary Type</th>
+                                <th>Working Days</th>
+                                <th>Notes</th>
                                 <th>Processed By</th>
                                 <th>Processed At</th>
                             </tr>

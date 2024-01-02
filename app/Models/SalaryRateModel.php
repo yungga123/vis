@@ -19,7 +19,7 @@ class SalaryRateModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['employee_id', 'rate_type', 'salary_rate', 'is_current'];
+    protected $allowedFields    = ['employee_id', 'rate_type', 'salary_rate', 'is_current', 'created_by'];
 
     // Dates
     protected $useTimestamps = true;
@@ -65,6 +65,17 @@ class SalaryRateModel extends Model
     {
         $data['data']['created_by'] = session('username');
         return $data;
+    }
+
+    /**
+     * For counting records
+     */
+    public function countRecords()
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        return $builder->countAllResults();
+        
     }
 
     /**

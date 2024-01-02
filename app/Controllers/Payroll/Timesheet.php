@@ -158,6 +158,7 @@ class Timesheet extends BaseController
                     'clock_in'      => $request['clock_in'],
                     'clock_out'     => $request['clock_out'],
                     'remark'        => clean_param($request['remark'] ?? ''),
+                    'is_manual'     => 1,
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
 
@@ -199,6 +200,7 @@ class Timesheet extends BaseController
                 if ($this->request->getVar('current')) {
                     $model  = $this->_model;
                     // Add where clause
+                    $model->where('is_manual = 0');
                     $model->where("{$model->table}.clock_date", current_date());
                     $model->where('employee_id', session('employee_id'));
 
@@ -271,7 +273,7 @@ class Timesheet extends BaseController
                 $model->where("{$model->table}.clock_date", current_date());
                 $model->where('employee_id', session('employee_id'));
 
-                $record = $this->_model->fetch(0);
+                $record = $model->fetch('');
                 $_model = $this->_model;
                 $inputs = [
                     'id'            => $this->request->getVar('id') ?? null,
@@ -280,6 +282,10 @@ class Timesheet extends BaseController
                 ];
                 
                 if (! empty($record)) {
+                    if (! empty($record['clock_out']) && $record['is_manual'] != 0) {
+                        throw new \Exception("You can't CLOCK IN/OUT - already have a manual added timesheet!", 1);                        
+                    }
+
                     $_model->where('clock_date', current_date());
                     $_model->where('employee_id', session('employee_id'));
 

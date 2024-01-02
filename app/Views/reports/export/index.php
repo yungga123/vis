@@ -79,7 +79,9 @@
                             </div>
                             <div class="col-12">
                                 <div class="d-flex justify-content-lg-end justify-content-sm-center">
-                                    <button type="submit" class="btn btn-success px-5">Generate</button>
+                                    <?php if ($can_generate): ?>
+                                        <button type="submit" class="btn btn-success px-5">Generate</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

@@ -4,7 +4,7 @@ if (! function_exists('get_user_modules'))
     /**
      * Get the modules of the current logged user
      */
-	function get_user_modules(array|null $permissions = null): array 
+	function get_user_modules(?array $permissions = null): array 
 	{
         if (session('access_level') === AAL_ADMIN) {
             return array_keys(MODULES);
@@ -20,7 +20,9 @@ if (! function_exists('get_user_modules'))
         $modules = array_column($permissions, 'module_code');
 
         // Merge them with the generic
-        return array_unique(array_merge($modules, $generic));
+        $_modules = array_unique(array_merge($modules, $generic));
+
+        return $_modules;
 	}
 }
 
@@ -326,12 +328,23 @@ if (! function_exists('get_sidebar_menus'))
         $items          = [];
         $menus          = [];
         $modules        = setup_modules();
-        $user_modules   = get_user_modules();
+        $permissions    = get_permissions();
+        $user_modules   = get_user_modules($permissions);
+        $permissions    = format_results($permissions, 'module_code', 'permissions');
 
 		if (! empty($modules)) {
             ksort($modules);
+            
             foreach ($modules as $key => $module) {
                 if (in_array($key, $user_modules) && !empty($module)) {
+                    $_perms = isset($permissions[$key]) ? $permissions[$key] : get_generic_modules_actions($key);
+                    $_perms = is_array($_perms) ? $_perms : explode(',', $_perms);
+    
+                    // If user is not an admin and has VIEW permission
+                    // for this module, then continue to the next loop
+                    if (! is_admin() && ! in_array(ACTION_VIEW, $_perms)) {
+                        continue;
+                    }
 
                     if (! empty($module['menu'])) {                        
                         $_menu = $module['menu'];

@@ -97,10 +97,10 @@ class TimesheetModel extends Model
             // Check if from clock in and out
             // In short not manually inserted
             $_model = clone $this;
-            $_model->where('is_manual = 0 AND clock_out IS NOT NULL');
-            $_fetch = $_model->fetchAll($id);
+            $_model->where('is_manual = 0');
+            $_fetch = $_model->fetch($id[0]);
 
-            if (! empty($_fetch)) {
+            if (! empty($_fetch) && ! empty($_fetch['clock_out'])) {
                 helper('custom_helper');
                 throw new \Exception(res_lang('restrict.action.change') . " It's from CLOCK IN/OUT.", 1);
             }
@@ -200,6 +200,21 @@ class TimesheetModel extends Model
         }
 
         return $data;
+    }
+
+    /**
+     * For counting records
+     */
+    public function countRecords($is_own = false)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if ($is_own) {
+            $builder->where('employee_id', session('employee_id'));
+        }
+        
+        return $builder->countAllResults();
+        
     }
 
     /**

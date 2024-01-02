@@ -8,6 +8,7 @@ use App\Services\Export\ClientExportService;
 use App\Services\Export\HRExportService;
 use App\Services\Export\AdminExportService;
 use App\Services\Export\InventoryExportService;
+use App\Services\Export\PayrollExportService;
 use App\Services\Export\SalesExportService;
 use App\Services\Export\PurchasingExportService;
 
@@ -24,14 +25,27 @@ class ExportData extends BaseController
      * @var array
      */
     private $_permissions;
+    
+    /**
+     * Use to get current permissions
+     * @var bool
+     */
+    private $_can_generate;
+    
+    /**
+     * Use to get all permissions
+     * @var array
+     */
+    private $_perms;
 
     /**
      * Class constructor
      */
     public function __construct()
     {
-        $this->_module_code = MODULE_CODES['export_data']; // Current module
-        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
+        $this->_module_code     = MODULE_CODES['export_data']; // Current module
+        $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_generate    = $this->checkPermissions($this->_permissions, 'GENERATE');
     }
 
     /**
@@ -42,7 +56,7 @@ class ExportData extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
         $module_name            = get_modules($this->_module_code);
         $data['title']          = $module_name;
@@ -51,6 +65,7 @@ class ExportData extends BaseController
         $data['select2']        = true;
         $data['custom_js']      = ['reports/export/index.js'];
         $data['modules']        = $this->_get_modules();
+        $data['can_generate']   = $this->_can_generate;
         $data['php_to_js_options']  = json_encode($this->_get_modules_options());
 
         return view('reports/export/index', $data);
@@ -63,6 +78,8 @@ class ExportData extends BaseController
      */
     public function export() 
     {
+        $this->_get_modules();
+
         try {
             $rules = $this->_validationRules();
     
@@ -86,6 +103,8 @@ class ExportData extends BaseController
                     // Call the export function
                     $class->$method($request, true);
                 }
+
+                $request['permissions'] = $this->_perms[$module] ?? [];
                 
                 // Call the export function
                 $class->$method($request);
@@ -105,9 +124,9 @@ class ExportData extends BaseController
      */
     private function _get_modules()
     {
-        $modules    = [];
+        $modules        = [];
         // Add here the no need exporting modules
-        $excludes   = [
+        $excludes       = [
             'DASHBOARD',
             'MANAGER_OF_SALES',
             'MANAGER_OF_SALES_INDV',
@@ -115,14 +134,28 @@ class ExportData extends BaseController
             'SETTINGS_MAILCONFIG',
             'SETTINGS_PERMISSIONS',
             'SETTINGS_ROLES',
-            'EXPORT_DATA'
+            'EXPORT_DATA',
+            'PAYROLL_COMPUTATION',
+            'PAYROLL_SETTINGS',
         ];
+        $permissions    = format_results($this->permissions, 'module_code', 'permissions');
 
         // Modules to be displayed will be based
         // on if user has an access to that said module
         if (! empty($this->modules)) {
             foreach ($this->modules as $module) {
                 if (! in_array($module, $excludes)) {
+                    $_perms = isset($permissions[$module]) ? $permissions[$module] : get_generic_modules_actions($module);
+                    $_perms = is_array($_perms) ? $_perms : explode(',', $_perms);
+    
+                    // If user is not an admin and has no VIEW permission
+                    // for this module, then continue to the next loop
+                    if (! is_admin() && ! in_array(ACTION_VIEW, $_perms)) {
+                        continue;
+                    }
+    
+                    $this->_perms[$module] = $_perms;
+
                     $module_name        = get_modules($module);
                     $modules[$module]   = $module_name;
 
@@ -180,68 +213,144 @@ class ExportData extends BaseController
         $supplier_options   = get_supplier_type();
 
         // Add here if module has filter like status
-        return [
+        $options = [
             'EMPLOYEES'             => [
+                'type'      => 'multiple',
                 'name'      => 'Employment Status',
                 'options'   => get_employment_status(),
             ],
             'CUSTOMERS'             => [
+                'type'      => 'multiple',
                 'name'      => 'Client Type',
                 'options'   => get_client_types(),
             ],
             'TASK_LEAD'             => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => get_tasklead_status(),
             ],
             'TASK_LEAD_BOOKED'      => [
+                'type'      => 'multiple',
                 'name'      => 'Quarter',
                 'options'   => get_quarters(),
             ],
             'INVENTORY'             => [
+                'type'      => 'multiple',
                 'name'      => 'Category',
                 'options'   => $dropdowns,
             ],
             'ADMIN_JOB_ORDER'       => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => get_jo_status('', true),
             ],
             'ADMIN_SCHEDULES'       => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => get_schedule_type('', true),
             ],
             'INVENTORY_PRF'         => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => $prf_options,
             ],
             'INVENTORY_PRF_ITEMS'   => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => $prf_options,
             ],
             'PURCHASING_PO'         => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => $po_options,
             ],
             'PURCHASING_PO_ITEMS'   => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => $po_options,
             ],
             'PURCHASING_SUPPLIERS'  => [
+                'type'      => 'multiple',
                 'name'      => 'Supplier Type',
                 'options'   => $supplier_options,
             ],
             'SUPPLIER_BRANCHES'     => [
+                'type'      => 'multiple',
                 'name'      => 'Supplier Type',
                 'options'   => $supplier_options,
             ],
             'PURCHASING_RPF'        => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => $rpf_options,
             ],
             'PURCHASING_RPF_ITEMS'  => [
+                'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => $rpf_options,
             ],
+            'PAYROLL_LEAVE'         => [
+                'type'      => 'single',
+                'name'      => 'Status',
+                'options'   => get_leave_status('', true),
+            ],
+            'PAYROLL_OVERTIME'      => [
+                'type'      => 'single',
+                'name'      => 'Status',
+                'options'   => get_leave_status('', true),
+            ],
+            'PAYROLL_SALARY_RATES'  => [
+                'type'      => 'multiple',
+                'name'      => 'Rate Type',
+                'options'   => get_salary_rate_type(),
+            ],
         ];
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_LEAVE'] ?? []))) {
+            $options['PAYROLL_LEAVE'] = [
+                'type'      => 'single',
+                'name'      => 'Options',
+                'options'   => [
+                    'all'   => 'All Leave',
+                    'mine'  => 'My Leave',
+                ],
+            ];
+        }
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_OVERTIME'] ?? []))) {
+            $options['PAYROLL_OVERTIME'] = [
+                'type'      => 'single',
+                'name'      => 'Options',
+                'options'   => [
+                    'all'   => 'All Overtime',
+                    'mine'  => 'My Overtime',
+                ],
+            ];
+        }
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_PAYSLIP'] ?? []))) {
+            $options['PAYROLL_PAYSLIP'] = [
+                'type'      => 'single',
+                'name'      => 'Options',
+                'options'   => [
+                    'all'   => 'All Payslip',
+                    'mine'  => 'My Payslip',
+                ],
+            ];
+        }
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_TIMESHEETS'] ?? []))) {
+            $options['PAYROLL_TIMESHEETS'] = [
+                'type'      => 'single',
+                'name'      => 'Options',
+                'options'   => [
+                    'all'   => 'All Timesheets',
+                    'mine'  => 'My Timesheets',
+                ],
+            ];
+        }
+
+        return $options;
     }
     
     /**
@@ -273,6 +382,11 @@ class ExportData extends BaseController
             'SUPPLIER_BRANCHES'     => [new PurchasingExportService(), 'supplierBranches'],
             'PURCHASING_RPF'        => [new PurchasingExportService(), 'rpf'],
             'PURCHASING_RPF_ITEMS'  => [new PurchasingExportService(), 'rpfItems'],
+            'PAYROLL_LEAVE'         => [new PayrollExportService(), 'leave'],
+            'PAYROLL_OVERTIME'      => [new PayrollExportService(), 'overtime'],
+            'PAYROLL_PAYSLIP'       => [new PayrollExportService(), 'payslip'],
+            'PAYROLL_TIMESHEETS'    => [new PayrollExportService(), 'timesheets'],
+            'PAYROLL_SALARY_RATES'  => [new PayrollExportService(), 'salaryRates'],
         ];
 
         // Return the initailized service class and the method name

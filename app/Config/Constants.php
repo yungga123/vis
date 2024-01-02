@@ -209,6 +209,11 @@ define('ACTIONS', [
             'VIEW_ALL'      => 'View All',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'EXPORT_DATA' => [
+            'VIEW'          => 'View',
+            'GENERATE'      => 'Generate',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 

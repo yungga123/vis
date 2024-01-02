@@ -163,6 +163,7 @@ class SalaryRate extends BaseController
                                 'rate_type'     => $request['rate_type'],
                                 'salary_rate'   => $request['salary_rate'],
                                 'is_current'    => 1,
+                                'created_by'    => session('username'),
                             ];
                         }
                     }

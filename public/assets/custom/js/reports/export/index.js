@@ -20,7 +20,12 @@ $(document).ready(function () {
 					? params.options
 					: formatOptionsForSelect2(params.options);
 
+			_multipleOrSingle(params.type);
 			_setStatusParams(params.name, _options);
+
+			if (inObject(params.options, "mine")) {
+				setSelect2Selection("#status", "mine");
+			}
 		}
 	});
 });
@@ -35,4 +40,14 @@ function _setStatusParams(label, options) {
 	$("#wrapper_status label").text(label || "Status");
 	select2Reinit("#status", "", options);
 	$("#status").removeAttr("disabled");
+}
+
+function _multipleOrSingle(type) {
+	$("#status").removeAttr("multiple");
+	$("#status").attr("name", "status");
+
+	if (type === "multiple") {
+		$("#status").attr("multiple", "true");
+		$("#status").attr("name", "status[]");
+	}
 }

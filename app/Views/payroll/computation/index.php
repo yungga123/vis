@@ -9,7 +9,7 @@
                         <div class="col-md-6 <?= isset($payroll) ? '' : 'd-none' ?>" id="employee">
                             <div class="form-group">
                                 <label class="required" for="employee_id">Employee Name</label>
-                                <select class="custom-select <?= isset($payroll) ? 'd-none' : '' ?>" name="employee_id" id="employee_id" style="width: 100%;" disabled>
+                                <select class="custom-select <?= isset($payroll) ? 'd-none' : '' ?>" name="employee_id" id="employee_id" style="width: 100%;">
                                 </select>
                                 <input type="<?= isset($payroll) ? 'text' : 'hidden' ?>" name="employee_name" id="employee_name" readonly class="form-control" value="<?= $payroll['employee_name'] ?? '' ?>"/>
                             </div>

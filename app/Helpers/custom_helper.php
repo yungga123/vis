@@ -658,7 +658,7 @@ if (! function_exists('format_results'))
 
         if (! empty($result)) {
             foreach ($result as $_key => $value) {
-                $arr[$value[$key]] = $value[$val];
+                $arr[$value[$key]] = empty($val) ? $value : $value[$val];
             }
         }
 

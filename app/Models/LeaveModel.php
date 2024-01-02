@@ -148,6 +148,21 @@ class LeaveModel extends Model
     }
 
     /**
+     * For counting records
+     */
+    public function countRecords($is_own = false)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if ($is_own) {
+            $builder->where('employee_id', session('employee_id'));
+        }
+        
+        return $builder->countAllResults();
+        
+    }
+
+    /**
      * For fetching single data
      * 
      * @param bool $byPKId  Fetch by primary id - default true

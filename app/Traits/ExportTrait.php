@@ -111,7 +111,7 @@ trait ExportTrait
                 $builder->where(new RawSql($between));
             }
 
-            if (isset($filters['status'])) {
+            if (isset($filters['status']) && ! empty(isset($filters['status']))) {
                 $status     = is_array($filters['status']) ? $filters['status'] : [$filters['status']];
                 
                 // Additional filter/where clause on status

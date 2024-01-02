@@ -59,7 +59,7 @@ class Computation extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
         $title      = 'Payroll Computation';
         $id         = $this->request->getVar('id');

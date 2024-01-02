@@ -145,6 +145,21 @@ class OvertimeModel extends Model
     }
 
     /**
+     * For counting records
+     */
+    public function countRecords($is_own = false)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if ($is_own) {
+            $builder->where('employee_id', session('employee_id'));
+        }
+        
+        return $builder->countAllResults();
+        
+    }
+
+    /**
      * For fetching single data
      * 
      * @param bool $byPKId  Fetch by primary id - default true
@@ -249,6 +264,14 @@ class OvertimeModel extends Model
         }
         
         $this->filterParam($request, $builder);
+        
+        $start_date = $request['params']['start_date'] ?? '';
+        $end_date   = $request['params']['end_date'] ?? '';
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $between = "{$this->table}.date BETWEEN '%s' AND '%s'";
+            $builder->where(sprintf($between, format_date($start_date, 'Y-m-d'), format_date($end_date, 'Y-m-d')));
+        }
 
         $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy("{$this->table}.id", 'DESC');
