@@ -193,7 +193,7 @@ class Suppliers extends BaseController
     public function edit() 
     {
         $data = [
-            'status'    => res_lang('status.error'),
+            'status'    => res_lang('status.success'),
             'message'   => res_lang('success.retrieved', 'Supplier')
         ];
 
@@ -220,7 +220,7 @@ class Suppliers extends BaseController
     public function delete() 
     {
         $data = [
-            'status'    => res_lang('status.error'),
+            'status'    => res_lang('status.success'),
             'message'   => res_lang('success.deleted', 'Supplier')
         ];
 
