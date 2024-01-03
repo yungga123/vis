@@ -12,7 +12,7 @@
                     </button>
                 </div>
                 <div class="modal-body">                    
-                    <div class="alert alert-info" role="alert">
+                    <div class="callout callout-info">
                         <strong>Note:</strong> 
                         If not empty, initial dropdowns of <strong>Schedule & Client</strong> are by 10. Type the title (Schedule) & Client Name to search if not in the options and then, click to select.
                     </div>

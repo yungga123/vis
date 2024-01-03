@@ -81,6 +81,7 @@ $routes->group('employees', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('save', 'HR\Employee::save', ['as' => 'employee.save']);
     $routes->post('fetch', 'HR\Employee::fetch', ['as' => 'employee.fetch']);
     $routes->post('delete', 'HR\Employee::delete', ['as' => 'employee.delete']);
+    $routes->post('change', 'HR\Employee::change', ['as' => 'employee.change']);
 });
 /* HUMAN RESOURCE */
 
@@ -255,6 +256,7 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
     $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
     $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
+    $routes->post('job-orders', 'Admin\Common::searchJobOrders', ['as' => 'admin.common.job_orders']);
     $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
     $routes->post('customer-branches', 'Admin\Common::searchCustomerBranches', ['as' => 'admin.common.customer.branches']);
 });

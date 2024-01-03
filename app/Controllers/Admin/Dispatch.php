@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\DispatchModel;
 use App\Models\DispatchedTechniciansModel;
 use App\Models\ScheduleModel;
+use App\Models\JobOrderModel;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\HRTrait;
 use monken\TablesIgniter;
@@ -285,8 +286,15 @@ class Dispatch extends BaseController
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
+
+        $dispatch = $this->_model->getDispatch($id, false, true);
+
+        // Get client details
+        $joModel    = new JobOrderModel();
+        $client     = $joModel->getClientInfo($dispatch['job_order_id']);
         
-        $data['dispatch']       = $this->_model->getDispatch($id, false, false, true);
+        $data['dispatch']       = $dispatch;
+        $data['client']         = $client;
         $data['title']          = 'Print Dispatch';
         $data['company_logo']   = $this->getCompanyLogo();
 

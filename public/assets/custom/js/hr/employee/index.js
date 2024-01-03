@@ -39,6 +39,8 @@ $(document).ready(function () {
 		"date_resigned",
 	];
 
+	select2Init("#filter_status");
+
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
@@ -75,7 +77,45 @@ $(document).ready(function () {
 
 		showAlertInForm(elems, message, res.status);
 	});
+
+	/* Form for changing employment status */
+	formSubmit($("#employment_status_form"), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+
+		if (res.status !== STATUS.ERROR) {
+			self[0].reset();
+			refreshDataTable($("#" + table));
+			$(`#employment_status_modal`).modal("hide");
+		}
+
+		notifMsgSwal(res.status, message, res.status);
+	});
+
+	$("#employment_status_modal #_employment_status").on("change", function () {
+		$("#label_date_resigned").removeClass("required");
+
+		if ($(this).val() === "Resigned")
+			$("#label_date_resigned").addClass("required");
+	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const status = getSelect2Selection("#filter_status");
+	const params = {
+		employment_status: status,
+	};
+	const condition = !isEmpty(status);
+
+	filterParam(
+		router.employee.list,
+		table,
+		params,
+		condition,
+		() => clearSelect2Selection("#filter_status"),
+		reset
+	);
+}
 
 /* Get employee details */
 function edit(id) {
@@ -122,7 +162,7 @@ function remove(id) {
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					refreshDataTable($("#" + table));
+					if (res.status === STATUS.SUCCESS) refreshDataTable($("#" + table));
 					notifMsgSwal(res.status, message, res.status);
 				})
 				.catch((err) => catchErrMsg(err));
@@ -131,4 +171,16 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+/* Change employment status */
+function change(id, employee_id, status) {
+	const modal = "employment_status_modal";
+	$(`#${modal}`).modal("show");
+
+	// Set value
+	$(`#${modal} #_id`).val(id);
+	$(`#${modal} #_employee_id`).val(employee_id);
+	$(`#${modal} #_date_resigned`).val("");
+	setOptionValue(`#${modal} #_employment_status`, status);
 }

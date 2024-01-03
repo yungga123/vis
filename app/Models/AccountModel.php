@@ -78,11 +78,14 @@ class AccountModel extends Model
     // Check user trying to delete own account
     protected function checkRecordIfOneself($data) 
     {
-        $id     = $data['id'];
-        $result = $this->getAccounts($id, session('username'));
+        $id = $data['id'][0];
 
-        if (! empty($result)) {
-            throw new \Exception("You can't delete your own account!", 2);
+        if (is_numeric($id)) {
+            $result = $this->getAccounts($id);
+    
+            if (! empty($result) && $result[0]['username'] === session('username'))  {
+                throw new \Exception("You can't delete your own record!", 2);
+            }
         }
     }
 
@@ -122,53 +125,23 @@ class AccountModel extends Model
         return $builder->findAll();
     }
 
-    /**
-     * Get accounts via view - either by employee_id or username
-     */
-    public function getAccountsView($id = null, $username = null, $columns = '') 
+    // Check if account still exist
+    public function exists($username) 
     {
-        $columns = $columns ? $columns : '
-            id, 
-            employee_id, 
-            employee_name, 
-            username, 
-            access_level, 
-            profile_img,
-            created_by_name,
-            created_at
-        ';
-        $builder = $this->db->table($this->view)->select($columns);
+        $builder = $this->select('account_id');
+        $builder->where('deleted_at IS NULL');
+        $builder->where('username', $username);
 
-        if ($username) {
-            if (
-                is_array($username) ||
-                (is_string($username) && strpos(',', $username) !== false)
-            ) {
-                $username = is_array($username) ? $username : explode(',', $username);
-                $builder->whereIn('username', clean_param($username));
-            } else
-                $builder->where('username', $username);
-        }
+        return ! empty($builder->first());
+    }
 
-        if ($id) {
-            if (is_array($id)) {
-                $builder->whereIn('employee_id', $id);
-                return $builder->get()->getResultArray();
-            }
-           
-            if (strpos(',', $id) !== false) {
-                $builder->whereIn('employee_id', clean_param(explode(',', $id)));
-                return $builder->get()->getResultArray();
-            } 
-            
-            return $builder->where('employee_id', $id)->get()->getRowArray();
+    // Remove account using employee_id - not the primary id
+    public function removeUsingEmployeeId($employee_id) 
+    {
+        $this->primaryKey = 'employee_id';
+        $this->where('employee_id', $employee_id);
 
-        } else {
-            if (is_string($username) && strpos(',', $username) === false)
-                return $builder->get()->getRowArray();
-        }
-
-        return $builder->get()->getResultArray();
+        return $this->delete($employee_id);
     }
 
     // For dataTables

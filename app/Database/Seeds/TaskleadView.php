@@ -19,6 +19,7 @@ class TaskleadView extends Seeder
                 tasklead.quarter,
                 CONCAT(tasklead.status,'%') AS status,
                 tasklead_status.status_percent,
+                tasklead.customer_id,
                 tasklead.customer_type,
                 tasklead.existing_customer,
                 customers.name AS customer_name,

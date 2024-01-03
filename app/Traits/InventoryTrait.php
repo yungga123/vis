@@ -21,7 +21,6 @@ trait InventoryTrait
     {
         $model      = new JobOrderModel();
         $table      = $model->table;
-        $join       = $model->tableJoined;
         $fields     = $fields ? $fields : $model->selectedColumns(true);
         $builder    = $model->select($fields);
 
@@ -34,8 +33,7 @@ trait InventoryTrait
                 return $builder->find();
             }
 
-            $builder->like("{$join}.quotation_num", $q);
-            $builder->like("IF({$table}.is_manual = 0, {$join}.quotation_num, {$table}.manual_quotation)", $q);
+            $builder->like("{$model->view}.quotation)", $q);
         }
 
         $builder->orderBy("{$table}.id", 'DESC');

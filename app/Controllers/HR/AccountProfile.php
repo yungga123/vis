@@ -156,9 +156,9 @@ class AccountProfile extends BaseController
                 $rules      = $this->validationFileRules($name, $allowed, 5, 'Profile Image');
             
                 if (! $this->validate($rules)) {
+                    $data['errors']     = $this->validator->getErrors();
                     $data['status']     = res_lang('status.error');
-                    $data ['errors']    = $this->validator->getErrors();
-                    $data ['message']   = res_lang('error.validation');
+                    $data['message']    = res_lang('error.validation');
 
                     return $data;
                 }
