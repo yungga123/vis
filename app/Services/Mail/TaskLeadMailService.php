@@ -2,17 +2,19 @@
 
 namespace App\Services\Mail;
 
-class SalesMailService extends BaseService
+class TaskLeadMailService extends BaseMailService implements MailServiceInterface
 {
     /**
-     * Send the Tasklead mail notification
+     * Send the mail notification
      *
      * @param   array $data
+     * @param   string|null $module_code
+     * 
      * @return  void
      */
-    public function sendTaskleadMailNotif($data, $module_code = null)
+    public function send(array $data, ?string $module_code = null): void
     {
-        $module_code = $module_code ? $module_code : get_module_codes('purchasing_rpf');
+        $module_code = $module_code ? $module_code : get_module_codes('task_lead');
         if (! $this->isMailNotifEnabled($module_code)) return;
 
         $module     = 'Task Lead';
@@ -44,6 +46,6 @@ class SalesMailService extends BaseService
         ];
 
         // Send the mail
-        $this->sendMail($info, $title);
+        $this->sendMail($info, $title, $module_code);
     }
 }

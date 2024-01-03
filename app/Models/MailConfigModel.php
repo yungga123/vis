@@ -37,17 +37,17 @@ class MailConfigModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'email_name'            => 'required|string|min_length[2]',
-        'email'                 => 'required|valid_email',
-        'password'              => 'required|min_length[10]',
+        'email_name'            => 'if_exist|string|min_length[2]',
+        'email'                 => 'if_exist|valid_email',
+        'password'              => 'if_exist|min_length[10]',
         'oauth_client_id'       => 'permit_empty|min_length[10]',
         'oauth_client_secret'   => 'permit_empty|min_length[10]',
         'oauth_scope'           => 'permit_empty|valid_url',
         'redirect_uri'          => 'permit_empty|valid_url',
-        'hostname'              => 'required',
+        'hostname'              => 'if_exist',
         'access_type'           => 'permit_empty|string',
         'recepients'            => 'permit_empty|valid_emails',
-        'is_enable'             => 'required',
+        'is_enable'             => 'if_exist',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;

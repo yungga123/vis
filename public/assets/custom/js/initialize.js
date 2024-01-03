@@ -82,6 +82,9 @@ $(document).ready(function () {
 		const fileName = e.target.files[0].name;
 		$(this).next(".custom-file-label").text(fileName);
 	});
+
+	// Collapsible accordion
+	if ($(".collapse").length > 0) $(".collapse").collapse();
 });
 
 /* Check if is toastr is loaded */
@@ -542,5 +545,5 @@ function initBootstrapSwitch(selector, options, state) {
 			}
 			$(this).bootstrapSwitch("state", $(this).prop("checked"));
 		});
-	} else elem.bootstrapSwitch("state", state || true);
+	} else elem.bootstrapSwitch("state", state || false);
 }

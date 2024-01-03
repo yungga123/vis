@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
 use App\Services\Mail\HRMailService;
@@ -295,11 +296,10 @@ class EmployeeModel extends Model
             $builder    = $this->select($columns);
             $builder->where("{$this->table}.id", $id);
             $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
-            $record     = $builder->first();
+            $employee   = $builder->first();
 
             // Send mail notification
-            $service = new HRMailService();
-            $service->sendEmployeeMailNotif($record);
+            Events::trigger('send_mail_notif_employee', $employee);
         }
         
         return $data;

@@ -6,8 +6,6 @@ use App\Controllers\BaseController;
 use App\Models\ProjectRequestFormModel;
 use App\Models\PRFItemModel;
 use App\Models\JobOrderModel;
-use App\Models\CustomerModel;
-use App\Models\TaskLeadView;
 use App\Traits\InventoryTrait;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\CommonTrait;
@@ -104,8 +102,6 @@ class ProjectRequestForm extends BaseController
     public function list()
     {
         $joModel        = new JobOrderModel();
-        $customerModel  = new CustomerModel();
-        $tlBookedModel  = new TaskLeadView();
         $table          = new TablesIgniter();
         $request        = $this->request->getVar();
         $builder        = $this->_model->noticeTable($request);
@@ -134,11 +130,10 @@ class ProjectRequestForm extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
+                "{$this->_model->table}.id",
                 "{$joModel->table}.work_type",
-                "{$joModel->table}.manual_quotation",
-                "{$tlBookedModel->table}.quotation_num",
-                "{$tlBookedModel->table}.customer_name",
-                "{$customerModel->table}.name",
+                "{$joModel->view}.quotation",
+                "{$joModel->view}.client_name",
             ])
             ->setOrder(
                 array_merge(

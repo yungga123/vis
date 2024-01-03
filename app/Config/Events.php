@@ -46,3 +46,8 @@ Events::on('pre_system', static function () {
         Services::toolbar()->respond();
     }
 });
+
+/**
+ * Include custom events file created in the app/Events (custom folder structure) folder 
+ */
+require APPPATH.'Events/CustomEvents.php';

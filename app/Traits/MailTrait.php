@@ -34,6 +34,11 @@ trait MailTrait
         $message        = 'Mail could not be sent! ';
 
         try {
+            // Check if there's an internet connection
+            if (! has_internet_connection()) {
+                throw new \Exception($message .'There is no internet connection.', 1);
+            }
+            
             if (empty($mailConfig)) {
                 throw new \Exception($message .'There is no mail config data.', 1);
             }
@@ -42,7 +47,7 @@ trait MailTrait
                 throw new \Exception($message .'Mail sending has been <strong>disabled</strong>.', 1);
             }
 
-            $cc += explode(',', $mailConfig['recepients']);
+            // $cc += explode(',', $mailConfig['recepients']);
             $mailService->authenticate($mailConfig['email'], $mailConfig['password']);
             $mailService
                 ->from($mailConfig['email'], $mailConfig['email_name'])
@@ -53,14 +58,15 @@ trait MailTrait
             
             $message = 'Mail has been sent.';
         } catch (\Exception $e) {
-            $message = 'Mail could not be sent! Please contact your system administrator.';
+            $message = ($e->getCode() > 0)
+                ? $e->getMessage()
+                : 'Mail could not be sent! Please contact your system administrator.';
+
             log_message(
                 'error',
-                "Mail could not be sent. \n Mailer Error: {mail_error}! \n[ERROR] {exception}! \nError code: {code}",
+                "Mail could not be sent. \nMailer Error: {mail_error}! \nException {exception}! \nError code: {code}",
                 ['mail_error' => $mailService->ErrorInfo, 'exception' => $e, 'code' => $e->getCode()]
             );
-
-            if ($e->getCode() == 1) $message = $e->getMessage();
         }
 
         return ' '. $message;

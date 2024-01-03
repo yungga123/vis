@@ -147,7 +147,7 @@ class Logs extends BaseController
                 'brand',
                 'item_model',
                 'item_description',
-                'encoder',
+                'created_by_name',
             ])
             ->setOrder([
                 'action',
@@ -164,7 +164,7 @@ class Logs extends BaseController
                 'unit',
                 'cap_status',
                 'status_date_formatted',
-                'encoder',
+                'created_by_name',
                 'created_at_formatted',
             ])
             ->setOutput([
@@ -182,7 +182,7 @@ class Logs extends BaseController
                 'unit',
                 'cap_status',
                 'status_date_formatted',
-                'encoder',
+                'created_by_name',
                 'created_at_formatted',
             ]);
 

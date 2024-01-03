@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\InventoryTrait;
 use App\Traits\FilterParamTrait;
 use App\Traits\HRTrait;
-use App\Services\Mail\InventoryMailService;
 
 class ProjectRequestFormModel extends Model
 {
@@ -122,8 +122,7 @@ class ProjectRequestFormModel extends Model
             $record     = $builder->first();
 
             // Send mail notification
-            $service = new InventoryMailService();
-            $service->sendPrfMailNotif($record);
+            Events::trigger('send_mail_notif_prf', $record);
         }
         
         return $data;

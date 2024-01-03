@@ -15,7 +15,8 @@ return [
     ],
     'error' => [
         'validation'    => 'Validation error!',
-        'process'       => 'Error while processing data! Please contact your system administrator.',
+        'process'       => 'Error while processing data! Please contact your system administrator!',
+        'email'         => 'Field must contain a valid email!',
     ],
     'status' => [
         'success'   => 'success',

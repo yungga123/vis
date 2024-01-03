@@ -184,7 +184,7 @@ define('ACTION_UPLOAD', 'UPLOAD');
 define('ACTION_CHANGE', 'CHANGE');
 
 // Roles - No need to add new roles here
-// Adding new roles will be on the dashboard
+// Deprecated - Adding new roles will be on the dashboard
 define('ROLES', [
     'ADMIN'                 => 'Administrator',
     'EXECUTIVE'             => 'Executive',

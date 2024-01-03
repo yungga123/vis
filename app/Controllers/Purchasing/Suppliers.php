@@ -117,19 +117,14 @@ class Suppliers extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'supplier_name',
-                'supplier_type',
-                'address',
-                'contact_person',
-                'contact_number',
-                'viber',
-                'payment_mode',
-                'product',
-                'email_address',
-                'bank_name',
-                'bank_account_name',
-                'bank_number',
-                'remarks',
+                "{$this->_model->table}.supplier_name",
+                "{$this->_model->table}.supplier_type",
+                "{$this->_model->table}.address",
+                "{$this->_model->table}.contact_person",
+                "{$this->_model->table}.contact_number",
+                "{$this->_model->table}.viber",
+                "{$this->_model->table}.product",
+                "{$this->_model->table}.email_address",
             ])
             ->setDefaultOrder('id','desc')
             ->setOrder(array_merge([null, null], $fields))

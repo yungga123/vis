@@ -2,15 +2,17 @@
 
 namespace App\Services\Mail;
 
-class InventoryMailService extends BaseService
+class PrfMailService extends BaseMailService implements MailServiceInterface
 {
     /**
-     * Send the PRF mail notification
+     * Send the mail notification
      *
      * @param   array $data
+     * @param   string|null $module_code
+     * 
      * @return  void
      */
-    public function sendPrfMailNotif($data, $module_code = null)
+    public function send(array $data, ?string $module_code = null): void
     {
         $module_code = $module_code ? $module_code : get_module_codes('inventory_prf');
         if (! $this->isMailNotifEnabled($module_code)) return;
@@ -34,6 +36,6 @@ class InventoryMailService extends BaseService
         ];
 
         // Send the mail
-        $this->sendMail($info, $title);
+        $this->sendMail($info, $title, $module_code);
     }
 }

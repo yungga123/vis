@@ -2,15 +2,17 @@
 
 namespace App\Services\Mail;
 
-class HRMailService extends BaseService
+class EmployeeMailService extends BaseMailService implements MailServiceInterface
 {
     /**
-     * Send the Employee mail notification
+     * Send the mail notification
      *
      * @param   array $data
+     * @param   string|null $module_code
+     * 
      * @return  void
      */
-    public function sendEmployeeMailNotif($data, $module_code = null)
+    public function send(array $data, ?string $module_code = null): void
     {
         $module_code = $module_code ? $module_code : get_module_codes('employees');
         if (! $this->isMailNotifEnabled($module_code)) return;
@@ -36,6 +38,6 @@ class HRMailService extends BaseService
         ];
 
         // Send the mail
-        $this->sendMail($info, $title);
+        $this->sendMail($info, $title, $module_code);
     }
 }

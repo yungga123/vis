@@ -152,9 +152,11 @@ if (! function_exists('clean_param'))
         if (is_array($input)) {
             $arr = [];
             foreach ($input as $key => $val) {
-                $val = trim($val);
-                if ($func_name) $val = $func_name($val);
-                $arr[$key] = $val;
+                $val = is_string($val) ? trim($val) : array_filter($val);
+                if (! empty($val)) {
+                    if ($func_name) $val = $func_name($val);
+                    $arr[$key] = $val;
+                }
             }
 
             return $arr;
@@ -403,5 +405,21 @@ if (! function_exists('get_array_duplicate'))
         $duplicates = array_diff_assoc($array, $unique);
 
         return $duplicates;
+	}
+}
+
+if (! function_exists('has_internet_connection'))
+{
+    /**
+     * Check if server has internet connection
+     */
+	function has_internet_connection(): bool
+	{
+        $url = "http://www.google.com"; // Use a reliable and accessible URL
+
+        $headers = @get_headers($url);
+
+        // Check if there is a response and the response code is 200 OK
+        return $headers && strpos($headers[0], '200') !== false;
 	}
 }

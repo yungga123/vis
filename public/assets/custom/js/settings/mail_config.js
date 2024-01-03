@@ -12,54 +12,25 @@ $(document).ready(function () {
 		"switchChange.bootstrapSwitch",
 		function (event, state) {
 			const value = state ? "YES" : "NO";
-			$(this).val(value);
-		}
-	);
-
-	$("input[name='has_mail_notif'], input[name='is_mail_notif_enabled']").on(
-		"switchChange.bootstrapSwitch",
-		function (event, state) {
-			event.preventDefault();
-
-			const name = event.target.name;
-			const module_code = event.target.dataset.module_code;
-			const has_mail_notif = event.target.dataset.has_mail_notif;
-
-			if (
-				name === "is_mail_notif_enabled" &&
-				(has_mail_notif == 0 || isEmpty(has_mail_notif))
-			) {
-				const message =
-					"You need to set the <strong>Has Mail Notif?</strong> to YES first!";
-				notifMsgSwal(TITLE.ERROR, message, STATUS.WARNING);
-				$(this).bootstrapSwitch("state", false);
-				return;
-			}
-
+			const currValue = $(this).val();
+			const mail_config_id = event.target.dataset.mail_config_id;
 			const data = {
-				module_code: module_code,
-				column: name,
-				value: state ? 1 : 0,
+				mail_config_id: mail_config_id,
+				is_enable: value,
 			};
 
-			$.post(router.mail_config.save, data)
-				.then((res) => {
-					const message = res.errors ?? res.message;
+			if (currValue !== value) {
+				$.post(router.mail_config.save, data)
+					.then((res) => {
+						const message = res.errors ?? res.message;
 
-					if (!isEmpty(message)) notifMsg(message, res.status);
-
-					if (res.status === STATUS.SUCCESS) {
-						if (name === "has_mail_notif") {
-							const elem = $("#IS_" + module_code);
-
-							if (!state) elem.bootstrapSwitch("state", false);
-
-							// Set the data-has_mail_notif to state (1 or 0)
-							elem[0].dataset.has_mail_notif = state ? 1 : 0;
-						}
-					}
-				})
-				.catch((err) => catchErrMsg(err));
+						if (!isEmpty(res.message)) notifMsg(message, res.status);
+						if (res.status === STATUS.ERROR) {
+							$(this).bootstrapSwitch("state", !state);
+						} else $(this).val(value);
+					})
+					.catch((err) => catchErrMsg(err));
+			}
 		}
 	);
 
@@ -118,3 +89,48 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 });
+
+function save(module_code, has_mail, is_enabled) {
+	const row = "#ROW_" + module_code;
+	const recipients = $(row + ' textarea[name="recipients"]');
+	const hasMailElem = $(row + ' input[name="has_mail_notif"]');
+	const isEnabledElem = $(row + ' input[name="is_mail_notif_enabled"]');
+	const recipAlertElem = $(row + " small.alert-recipients");
+
+	if (hasMailElem.length) has_mail = hasMailElem.is(":checked");
+	if (isEnabledElem.length) is_enabled = isEnabledElem.is(":checked");
+
+	has_mail = has_mail ? 1 : 0;
+	is_enabled = is_enabled ? 1 : 0;
+
+	if (has_mail == 0 && isEnabledElem.is(":checked")) {
+		const message =
+			"You need to set the <strong>Has Mail Notif?</strong> to YES first!";
+		notifMsgSwal(TITLE.ERROR, message, STATUS.WARNING);
+		isEnabledElem.bootstrapSwitch("state", false);
+		return;
+	}
+
+	hasMailElem.val(has_mail);
+	isEnabledElem.val(is_enabled);
+	recipAlertElem.text("");
+
+	const data = {
+		module_code: module_code,
+		has_mail_notif: has_mail,
+		is_mail_notif_enabled: is_enabled,
+		cc_recipients: recipients.val(),
+	};
+
+	$.post(router.mail_config.save, data)
+		.then((res) => {
+			const message = res.errors ?? res.message;
+
+			if (!isEmpty(res.message)) notifMsg(res.message, res.status);
+			if (res.errors) {
+				$(row + " small.alert-recipients").text(res.errors.recipients);
+			}
+			if (res.recipients) recipients.val(res.recipients);
+		})
+		.catch((err) => catchErrMsg(err));
+}
