@@ -545,5 +545,5 @@ function initBootstrapSwitch(selector, options, state) {
 			}
 			$(this).bootstrapSwitch("state", $(this).prop("checked"));
 		});
-	} else elem.bootstrapSwitch("state", state || true);
+	} else elem.bootstrapSwitch("state", state || false);
 }

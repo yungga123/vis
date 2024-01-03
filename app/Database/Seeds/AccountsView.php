@@ -25,7 +25,8 @@ class AccountsView extends Seeder
                 accounts.profile_img,
                 employees.email_address,
                 CONCAT(emp.firstname,' ',emp.lastname) AS created_by_name,
-                DATE_FORMAT(accounts.created_at, '%b %e, %Y at %h:%i %p') AS created_at
+                DATE_FORMAT(accounts.created_at, '%b %e, %Y at %h:%i %p') AS created_at,
+                accounts.deleted_at
             FROM
                 accounts
             LEFT JOIN
@@ -36,8 +37,6 @@ class AccountsView extends Seeder
                 employees AS emp
             ON
                 accounts.created_by = emp.employee_id
-            WHERE
-                accounts.deleted_at IS NULL
             "
         );
     }

@@ -25,7 +25,7 @@ class JobOrderMailService extends BaseMailService implements MailServiceInterfac
             'details'   => [
                 'Job Order #'       => $data['id'],
                 'Tasklead #'        => $data['tasklead_id'] ? $data['tasklead_id'] : 'N/A',
-                'Manual Quotation?' => $data['is_manual'],
+                'Manual Quotation?' => $data['is_manual'] == 0 ? 'NO' : 'YES',
                 'Quotation #'       => $data['quotation'],
                 'Quotation Type'    => empty($data['tasklead_type']) ? 'Project' : ucwords($data['tasklead_type']),
                 'Client'            => $data['client'],

@@ -53,7 +53,7 @@ class EmployeesView extends Seeder
             LEFT JOIN accounts_view av
                 ON av.username = emp.created_by
             WHERE
-                deleted_at IS NULL
+                emp.deleted_at IS NULL
             "
         );
     }

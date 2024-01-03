@@ -156,7 +156,8 @@ class SuppliersModel extends Model
         $this->filterParam($request, $builder, 'payment_terms', 'payment_terms');
         $this->filterParam($request, $builder, 'payment_mode', 'payment_mode');
 
-        $builder->where('deleted_at IS NULL');
+        $builder->where("{$this->table}.deleted_at IS NULL");
+
         return $builder;
     }
 

@@ -187,8 +187,8 @@ class JobOrder extends BaseController
                     'status'            => 'pending',
                     'is_manual'         => isset($is_manual),
                     'manual_quotation'  => isset($is_manual) ? $this->request->getVar('manual_quotation') : null,
-                    'customer_id'       => $is_manual ? $this->request->getVar('customer_id') : null,
-                    'customer_branch_id' => $is_manual ?$this->request->getVar('customer_branch_id') : null,
+                    'customer_id'       => isset($is_manual) ? $this->request->getVar('customer_id') : null,
+                    'customer_branch_id' => isset($is_manual) ? $this->request->getVar('customer_branch_id') : null,
                     'created_by'        => session('username'),
                 ];
     

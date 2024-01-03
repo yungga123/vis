@@ -168,6 +168,7 @@ if (! function_exists('get_actions'))
 
 		if ($param && !array_key_exists($param, $actions)) {
 			$others = array_values($actions['OTHERS']);
+			
 			for ($i=0; $i <= count($others); $i++) { 
 				if (isset($others[$i][$param])) return $others[$i][$param];
 			}
@@ -175,7 +176,15 @@ if (! function_exists('get_actions'))
 
         if (! $withOthers) unset($actions['OTHERS']);
 
-		return $param ? $actions[strtoupper($param)] : $actions;
+		if ($param) {
+			$param = strtoupper($param);
+
+			return isset($actions[$param]) || in_array($param, $actions)
+				? $actions[$param]
+				: ucwords(strtolower(str_replace('_', ' ', $param)));
+		}
+
+		return $actions;
 	}
 }
 

@@ -44,6 +44,7 @@ class AccountMailService extends BaseMailService implements MailServiceInterface
             'send_to'   => $record['email_address'],
             'send_name' => $record['employee_name'],
         ];
+        
         $this->sendMail($info, $title, $module_code, $options);
     }
 }
