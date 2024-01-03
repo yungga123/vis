@@ -246,7 +246,7 @@ define('ACTION_VIEW_ALL', 'VIEW_ALL');
 define('ACTION_SAVE', 'SAVE');
 
 // Roles - No need to add new roles here
-// Adding new roles will be on the dashboard
+// Deprecated - Adding new roles will be on the dashboard
 define('ROLES', [
     'ADMIN'                 => 'Administrator',
     'EXECUTIVE'             => 'Executive',

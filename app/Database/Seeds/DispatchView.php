@@ -10,14 +10,13 @@ class DispatchView extends Seeder
     {
         $view   = 'dispatch_view';
         $span   = '<span class="td-technicians">';
-        $db     = \Config\Database::connect();
 
         // Drop if exists
-        $db->query("DROP VIEW IF EXISTS {$view}");
-        $db->query("DROP TABLE IF EXISTS {$view}");
+        $this->db->query("DROP VIEW IF EXISTS {$view}");
+        $this->db->query("DROP TABLE IF EXISTS {$view}");
 
         // Create
-        $db->query("
+        $this->db->query("
             CREATE VIEW {$view}
             AS 
             (SELECT

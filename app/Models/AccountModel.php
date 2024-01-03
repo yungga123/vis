@@ -14,7 +14,7 @@ class AccountModel extends Model
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'employee_id',
@@ -78,11 +78,14 @@ class AccountModel extends Model
     // Check user trying to delete own account
     protected function checkRecordIfOneself($data) 
     {
-        $id     = $data['id'];
-        $result = $this->getAccounts($id);
+        $id = $data['id'][0];
 
-        if ($result[0]['username'] === session('username'))  {
-            throw new \Exception("You can't delete your own record!", 2);
+        if (is_numeric($id)) {
+            $result = $this->getAccounts($id);
+    
+            if (! empty($result) && $result[0]['username'] === session('username'))  {
+                throw new \Exception("You can't delete your own record!", 2);
+            }
         }
     }
 
@@ -122,6 +125,58 @@ class AccountModel extends Model
         return $builder->findAll();
     }
 
+    /**
+     * Get accounts via view - either by employee_id or username
+     */
+    public function getAccountsView($id = null, $username = null, $columns = '') 
+    {
+        $columns = $columns ? $columns : '
+            id, 
+            employee_id, 
+            employee_name,  
+            username, 
+            access_level, 
+            profile_img,
+            email_address, 
+            created_by_name,
+            created_at
+        ';
+        $builder = $this->db->table($this->view)->select($columns);
+
+        $builder->where('deleted_at IS NULL');
+
+        if ($username) {
+            if (
+                is_array($username) ||
+                (is_string($username) && strpos(',', $username) !== false)
+            ) {
+                $username = is_array($username) ? $username : explode(',', $username);
+                $builder->whereIn('username', clean_param($username));
+            } else
+                $builder->where('username', $username);
+        }
+
+        if ($id) {
+            if (is_array($id)) {
+                $builder->whereIn('employee_id', $id);
+                return $builder->get()->getResultArray();
+            }
+           
+            if (strpos(',', $id) !== false) {
+                $builder->whereIn('employee_id', clean_param(explode(',', $id)));
+                return $builder->get()->getResultArray();
+            } 
+            
+            return $builder->where('employee_id', $id)->get()->getRowArray();
+
+        } else {
+            if (is_string($username) && strpos(',', $username) === false)
+                return $builder->get()->getRowArray();
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
     // Check if account still exist
     public function exists($username) 
     {
@@ -130,6 +185,15 @@ class AccountModel extends Model
         $builder->where('username', $username);
 
         return ! empty($builder->first());
+    }
+
+    // Remove account using employee_id - not the primary id
+    public function removeUsingEmployeeId($employee_id) 
+    {
+        $this->primaryKey = 'employee_id';
+        $this->where('employee_id', $employee_id);
+
+        return $this->delete($employee_id);
     }
 
     // For dataTables
@@ -141,6 +205,8 @@ class AccountModel extends Model
         if (session('access_level') !== AAL_ADMIN) {
             $builder->whereNotIn('UPPER(access_level)', [strtoupper(AAL_ADMIN)]);
         }
+
+        $builder->where('deleted_at IS NULL');
         
         return $builder;
     }

@@ -412,6 +412,22 @@ if (! function_exists('get_array_duplicate'))
 	}
 }
 
+if (! function_exists('has_internet_connection'))
+{
+    /**
+     * Check if server has internet connection
+     */
+	function has_internet_connection(): bool
+	{
+        $url = "http://www.google.com"; // Use a reliable and accessible URL
+
+        $headers = @get_headers($url);
+
+        // Check if there is a response and the response code is 200 OK
+        return $headers && strpos($headers[0], '200') !== false;
+	}
+}
+
 if (! function_exists('get_time_diff'))
 {
     /**

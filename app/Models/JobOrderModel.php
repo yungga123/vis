@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
-use App\Services\Mail\AdminMailService;
 
 class JobOrderModel extends Model
 {
@@ -14,6 +14,7 @@ class JobOrderModel extends Model
 
     protected $DBGroup          = 'default';
     protected $table            = 'job_orders';
+    protected $view             = 'job_orders_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -109,20 +110,17 @@ class JobOrderModel extends Model
     // Common columns
     private function _columns($withRequestBy = false, $isDateFormatted = false)
     {
-        $tlViewModel    = new TaskLeadView();
-        $customerModel  = new CustomerModel();
-        $employeeModel  = new EmployeeModel();
-        $customerBranchModel  = new CustomerBranchModel();
         $columns = "
             {$this->table}.id,
             {$this->table}.tasklead_id,
             {$this->table}.employee_id,
             {$this->table}.status,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            UPPER(IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type)) AS tasklead_type,
-            CONCAT({$employeeModel->table}.firstname,' ',{$employeeModel->table}.lastname) AS manager,
-            {$employeeModel->table}.firstname,
-            {$employeeModel->table}.lastname,
+            {$this->view}.quotation,
+            UPPER({$this->view}.quotation_type) AS tasklead_type,
+            {$this->view}.manager,
+            {$this->view}.client_name AS client,
+            {$this->view}.client_type AS customer_type,
+            {$this->view}.client_branch_name AS customer_branch_name,
             {$this->table}.work_type,
             {$this->table}.comments,            
             {$this->table}.warranty,
@@ -131,9 +129,6 @@ class JobOrderModel extends Model
             {$this->table}.manual_quotation,
             {$this->table}.customer_id,
             {$this->table}.customer_branch_id,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_type, {$customerModel->table}.type) AS customer_type,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.branch_name, {$customerBranchModel->table}.branch_name) AS customer_branch_name,
             {$this->table}.created_by
         ";
         $dates = "
@@ -165,30 +160,29 @@ class JobOrderModel extends Model
     // Get JO details for mail notif
     private function _getJODetails($id)
     {
-        $tlViewModel    = new TaskLeadView();
-        $customerModel  = new CustomerModel();
-        $employeeModel  = new EmployeeModel();
         $columns        = "
             {$this->table}.id,
             {$this->table}.tasklead_id,
             {$this->table}.status,
-            IF({$this->table}.is_manual = 0, 'NO', 'YES') AS is_manual,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type) AS tasklead_type,
-            CONCAT({$employeeModel->table}.firstname,' ',{$employeeModel->table}.lastname) AS manager,
+            {$this->view}.client_name AS client,
+            {$this->view}.quotation,
+            UPPER({$this->view}.quotation_type) AS tasklead_type,
+            {$this->view}.manager,
             {$this->table}.work_type,
             {$this->table}.comments,
+            {$this->table}.is_manual,
             cb.employee_name AS requested_by,
             ".dt_sql_date_format("{$this->table}.date_requested")." AS date_requested,
             ".dt_sql_date_format("{$this->table}.date_committed")." AS date_committed,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
         ";
-        $builder        = $this->select($columns);  
-        $this->joinWithOtherTables($builder);
+        $builder        = $this->select($columns); 
+
+        $this->joinView($builder);
         $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
         
         $builder->where("{$this->table}.id", $id);
+
         return $builder->first();
     }
 
@@ -198,6 +192,7 @@ class JobOrderModel extends Model
         if (isset($data['data']['status'])) {
             $status = $data['data']['status'];
             $status = $status === 'pending' ? 'reverted' : $status;
+
             $data['data'][$status .'_by'] = session('username');
             $data['data'][$status .'_at'] = date('Y-m-d H:i:s');
         }
@@ -211,11 +206,9 @@ class JobOrderModel extends Model
         if ($data['result']) {
             $id             = $data['id'];
             $job_order      = $this->_getJODetails($id);
-            $module_code    = get_module_codes('job_orders');
 
             // Send mail notification
-            $service = new AdminMailService();
-            $service->sendJOMailNotif($job_order, $module_code);
+            Events::trigger('send_mail_notif_job_order', $job_order);
         }
         
         return $data;
@@ -249,9 +242,6 @@ class JobOrderModel extends Model
                             'end'           => $scheduleEnd,
                             'created_by'    => session('username'),
                         ]);
-                    
-                    // Initialize service
-                    $service    = new AdminMailService();
 
                     // If schedule successfully created, then send mail
                     if ($schedInsert && $schedId = $scheduleModel->insertID()) {
@@ -269,13 +259,11 @@ class JobOrderModel extends Model
                         ];
     
                         // Send Schedule mail notification
-                        $module_code = get_module_codes('schedules');
-                        $service->sendScheduleMailNotif($schedule, $module_code);
+                        Events::trigger('send_mail_notif_schedule', $schedule);
                     }
     
                     // Send JO mail notification
-                    $module_code = get_module_codes('job_orders');
-                    $service->sendJOMailNotif($job_order, $module_code);
+                    Events::trigger('send_mail_notif_job_order', $job_order);
                 }
             }
         } catch (\Exception $e) {
@@ -283,6 +271,14 @@ class JobOrderModel extends Model
         }
 
         return $data;
+    }
+
+    // Set useSoftDeletes
+    public function setUseSoftDeletes(bool $bool)
+    {
+        $this->useSoftDeletes = $bool;
+
+        return $this;
     }
 
     public function countRecords($param = null)
@@ -297,21 +293,17 @@ class JobOrderModel extends Model
     // DataTable default columns 
     public function dtColumns()
     {
-        $tlViewModel    = new TaskLeadView();
-        $customerModel  = new CustomerModel();
-        $employeeModel  = new EmployeeModel();
-        $customerBranchModel  = new CustomerBranchModel();
         $columns        = "
             UPPER({$this->table}.status) AS status,
             {$this->table}.id,
             {$this->table}.tasklead_id,
             IF({$this->table}.is_manual = 0, 'NO', 'YES') AS is_manual,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            UPPER(IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type)) AS tasklead_type,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_type, {$customerModel->table}.type) AS customer_type,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.branch_name, {$customerBranchModel->table}.branch_name) AS customer_branch_name,
-            CONCAT({$employeeModel->table}.firstname,' ',{$employeeModel->table}.lastname) AS manager,
+            {$this->view}.quotation,
+            UPPER({$this->view}.quotation_type) AS tasklead_type,
+            {$this->view}.client_name AS client,
+            {$this->view}.client_type AS customer_type,
+            {$this->view}.client_branch_name AS customer_branch_name,
+            {$this->view}.manager,
             {$this->table}.work_type,
             ".dt_sql_date_format("{$this->table}.date_requested")." AS date_requested,
             ".dt_sql_date_format("{$this->table}.date_committed")." AS date_committed,
@@ -337,23 +329,20 @@ class JobOrderModel extends Model
     // Common columns
     public function selectedColumns($with_text = false, $with_date = false)
     {
-        $tlViewModel    = new TaskLeadView();
-        $customerModel  = new CustomerModel();
-        $employeeModel  = new EmployeeModel();
         $columns        = "
-            {$this->table}.tasklead_id,
-            {$this->table}.status AS jo_status,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation) AS quotation,
-            UPPER(IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type)) AS tasklead_type,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client,
-            {$this->table}.work_type,
-            CONCAT({$employeeModel->table}.firstname,' ',{$employeeModel->table}.lastname) AS manager
+            {$this->view}.quotation,
+            UPPER({$this->view}.quotation_type) AS tasklead_type,
+            {$this->view}.client_name AS client,
+            {$this->view}.client_type AS customer_type,
+            {$this->view}.client_branch_name AS customer_branch_name,
+            {$this->view}.manager,
+            {$this->table}.work_type
         ";
 
         if ($with_text) {
             $columns .= ", 
                 {$this->table}.id,
-                CONCAT({$this->table}.id, ' | ', IF({$this->table}.is_manual = 0, {$tlViewModel->table}.quotation_num, {$this->table}.manual_quotation), ' | ', IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name)) AS option_text
+                CONCAT_WS(' | ', {$this->table}.id, {$this->view}.quotation, {$this->view}.client_name) AS option_text
             ";
         }
 
@@ -372,9 +361,9 @@ class JobOrderModel extends Model
     // Join job_orders with task_lead_booked , employees, customers and customer_branches
     public function joinWithOtherTables($builder, $withStatusByAndAt = false)
     {
-        $this->joinTaskleadBooked($builder);
-        $this->joinCustomers($builder, null, 'left', true);
-        $this->joinEmployees($builder);
+        // $this->joinTaskleadBooked($builder);
+        // $this->joinCustomers($builder, null, 'left', true);
+        $this->joinView($builder);
 
         if ($withStatusByAndAt) {
             $this->joinAccountView($builder, "{$this->table}.created_by", 'av1');
@@ -383,8 +372,15 @@ class JobOrderModel extends Model
             $this->joinAccountView($builder, "{$this->table}.discarded_by", 'av4');
             $this->joinAccountView($builder, "{$this->table}.reverted_by", 'av5');
         }
+    }
 
-        $builder->where("{$this->table}.deleted_at IS NULL");
+    // Join job_orders with job_orders_view
+    public function joinView($builder = null)
+    {
+        ($builder ?? $this)
+            ->join($this->view, "{$this->view}.job_order_id = {$this->table}.id", 'left');
+
+        return $this;
     }
 
     // Join job_orders with task_lead_booked
@@ -399,22 +395,18 @@ class JobOrderModel extends Model
     // Join job_orders with customers
     public function joinCustomers($builder, $model = null, $type = 'left', $branch = false)
     {      
-        $model ?? $model = new CustomerModel();
-        $builder->join($model->table, "{$this->table}.customer_id = {$model->table}.id", $type);
+        $model ??= new CustomerModel();
+        $table      = $builder->getTable();
+        $table      = in_array($table, [$this->table, $this->view]) ? $table : $this->table;
+        $client_id  = $table === $this->view ? 'client_id' : 'customer_id';
+
+        $builder->join($model->table, "{$table}.{$client_id} = {$model->table}.id", $type);
 
         if ($branch) {
-            $branchModel  = new CustomerBranchModel();
-            $builder->join($branchModel->table, "({$this->table}.customer_branch_id = {$branchModel->table}.id AND {$this->table}.customer_branch_id IS NOT NULL)", 'left');
+            $branchModel    = new CustomerBranchModel();
+            $branch_id      = $table === $this->view ? 'client_branch_id' : 'customer_branch_id';
+            $builder->join($branchModel->table, "({$table}.{$branch_id} = {$branchModel->table}.id AND {$table}.{$branch_id} IS NOT NULL)", 'left');
         }
-
-        return $this;
-    }
-
-    // Join job_orders with employees
-    public function joinEmployees($builder, $model = null, $type = 'left')
-    {      
-        $model ?? $model = new EmployeeModel();
-        $builder->join($model->table, "{$this->table}.employee_id = {$model->table}.employee_id", $type);
 
         return $this;
     }
@@ -426,58 +418,63 @@ class JobOrderModel extends Model
         $builder = $this->select($columns);
 
         if ($join) $this->joinWithOtherTables($builder);
-        else $builder->where("{$this->table}.deleted_at IS NULL");
 
-        return $id ? $builder->find($id) : $builder->findAll();
+        if (is_integer($id) || is_string($id)) {
+            $builder->where("{$this->table}.id", $id);
+            
+            return $builder->first();
+        }
+
+        if (is_array($id)) {
+            $builder->whereIn("{$this->table}.id", $id);
+        }
+
+        return $builder->findAll();
     }
 
     // Get clients details using job_order_id
     public function getClientInfo($job_order_id, $columns = '')
     {
         $customerModel  = new CustomerModel();
-        $tlViewModel    = new TaskLeadView();
-        $tlCustomer     = 'tl_customer';
         $columns        = $columns ? $columns : "
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_id, {$this->table}.customer_id) AS client_id,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_name, {$customerModel->table}.name) AS client_name,
-            IF({$this->table}.is_manual = 0, {$tlViewModel->table}.customer_type, {$customerModel->table}.type) AS client_type,
-            IF({$this->table}.is_manual = 0, {$tlCustomer}.contact_person, {$customerModel->table}.contact_person) AS client_contact_person,
-            IF({$this->table}.is_manual = 0, {$tlCustomer}.contact_number, {$customerModel->table}.contact_number) AS client_contact_number,
-            IF({$this->table}.is_manual = 0, {$tlCustomer}.telephone, {$customerModel->table}.telephone) AS client_telephone,
-            IF({$this->table}.is_manual = 0, {$tlCustomer}.email_address, {$customerModel->table}.email_address) AS client_email_address,
-            IF({$this->table}.is_manual = 0, ".dt_sql_concat_client_address($tlCustomer, '').", ".dt_sql_concat_client_address($customerModel->table, '').") AS client_address
+            {$this->view}.client_id,
+            {$this->view}.client_name,
+            {$this->view}.client_type,
+            {$this->view}.client_branch_id,
+            {$this->view}.client_branch_name,
+            {$customerModel->table}.contact_person AS client_contact_person,
+            {$customerModel->table}.contact_number AS client_contact_number,
+            {$customerModel->table}.telephone AS client_telephone,
+            ".dt_sql_concat_client_address($customerModel->table, '')." AS client_address
         ";
-        $builder = $this->select($columns);
+        $this->setUseSoftDeletes(false);
+        $this->setTable($this->view)->select($columns);
+        $this->joinCustomers($this, $customerModel);
 
-        $this->joinTaskleadBooked($builder, $tlViewModel);
-        $this->joinCustomers($builder, $customerModel);
-        $tlViewModel->joinCustomers($builder, $customerModel, 'left', $tlCustomer);
-        
-        $builder->where("{$this->table}.deleted_at IS NULL");
-
-        if (is_array($job_order_id) && count($job_order_id) > 1) {
-            $builder->whereIn("{$this->table}.id", $job_order_id);
-            return $builder->findAll();
+        if (is_array($job_order_id)) {
+            $this->whereIn("{$this->view}.job_order_id", $job_order_id);
+            return $this->findAll();
         }
 
-        $builder->where("{$this->table}.id", $job_order_id);
-        return $builder->first();
+        $this->where("{$this->view}.job_order_id", $job_order_id);
+        return $this->first();
     }
 
     // For dataTables
     public function noticeTable($request) 
     {
-        $tlViewModel    = new TaskLeadView();
-        $builder        = $this->db->table($this->table);
-        $builder->select($this->dtColumns());        
-        $this->joinWithOtherTables($builder, true);
+        $builder = $this->db->table($this->table);
+        
+        $builder->select($this->dtColumns());  
 
+        $this->joinWithOtherTables($builder, true);
         $this->filterParam($request, $builder, "{$this->table}.status");
-        $this->filterParam($request, $builder, "IF({$this->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->table}.manual_quotation_type)", 'type');
+        $this->filterParam($request, $builder, "{$this->view}.quotation_type", 'type');
         $this->filterParam($request, $builder, "{$this->table}.is_manual", 'is_manual');
         $this->filterParam($request, $builder, "{$this->table}.work_type", 'work_type');
 
         $builder->orderBy("{$this->table}.id", 'DESC');
+
         return $builder;
     }
 
@@ -559,6 +556,7 @@ class JobOrderModel extends Model
         $closureFun = function($row) {
             $text    = ucwords(set_jo_status($row['status']));
             $color   = dt_status_color($row['status']);
+
             return text_badge($color, $text);
         };
         

@@ -116,7 +116,6 @@ function dropdownInitLogs2(select, type) {
 					"dropdown"
 				);
 				select2Reinit(select, "", options);
-				setSelect2Selection(select, val);
 			} else {
 				console.log(res.message);
 			}

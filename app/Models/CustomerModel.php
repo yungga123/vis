@@ -177,7 +177,7 @@ class CustomerModel extends Model
         $builder = $this->db->table($this->table);
         $builder->select($this->columns(true));
         $this->joinAccountView($builder, "{$this->table}.created_by");
-        $builder->where("deleted_at IS NULL");
+        $builder->where("{$this->table}.deleted_at IS NULL");
 
         $this->filterParam($request, $builder, "{$this->table}.forecast", 'new_client');
         $this->filterParam($request, $builder, "{$this->table}.type", 'type');

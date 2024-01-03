@@ -3,6 +3,7 @@
 namespace App\Controllers\HR;
 
 use App\Controllers\BaseController;
+use CodeIgniter\Events\Events;
 use App\Models\AccountModel;
 use App\Traits\AccountMailTrait;
 use App\Traits\ExportTrait;
@@ -170,8 +171,13 @@ class Account extends BaseController
                         // Turn protection on
                         $this->_model->protect(true);
                         // Send mail
-                        $mailMsg            = $this->sendMailAccountNotif($employee_id, $this->request->getVar());
-                        $data['message']    = $data['message'] . $mailMsg;
+                        $details = [
+                            'employee_id'   => $employee_id,
+                            'username'      => $this->request->getVar('username'),
+                            'password'      => $this->request->getVar('password'),
+                            'action'        => 'Created',
+                        ];
+                        Events::trigger('send_mail_notif_account', $details);
                     } else {
                         $data['status']     = res_lang('status.error');
                         $data['message']    = 'Employee has already an account for the selected access level!';
@@ -297,10 +303,13 @@ class Account extends BaseController
                         // Turn protection on
                         $this->_model->protect(true);
                         // Send mail
-                        $employee_id        = $this->request->getVar('employee_id');
-                        $mailMsg            = $this->sendMailAccountNotif($employee_id, $this->request->getVar(), true);
-                        $data['message']    = $data['message'] . $mailMsg;
-    
+                        $details = [
+                            'employee_id'   => $this->request->getVar('employee_id'),
+                            'username'      => $this->request->getVar('username'),
+                            'password'      => $this->request->getVar('password'),
+                            'action'        => 'Changed',
+                        ];
+                        Events::trigger('send_mail_notif_account', $details);
                     } else {
                         $data['status']     = res_lang('status.error');
                         $data['message']    = 'Employee has already an account for the selected username or access level!';

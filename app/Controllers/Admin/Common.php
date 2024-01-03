@@ -42,6 +42,22 @@ class Common extends BaseController
         }
     }
 
+    /* Search job orders by id or client */
+    public function searchJobOrders()
+    {
+        try {
+            $options    = $this->request->getVar('options') ?? [];
+            $result     = $this->fetchJobOrders(
+                $this->request->getVar('q'),
+                $options
+            );
+    
+            return $this->response->setJSON($result);
+        } catch (\Exception $e) {
+            $this->logExceptionError($e, __METHOD__);
+        }
+    }
+
     /* Search customers by customer_name */
     public function searchCustomers()
     {

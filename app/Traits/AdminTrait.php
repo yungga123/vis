@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\TaskLeadView;
 use App\Models\ScheduleModel;
+use App\Models\JobOrderModel;
 use App\Models\CustomerModel;
 use App\Models\CustomerBranchModel;
 
@@ -85,46 +86,43 @@ trait AdminTrait
         $model      = new ScheduleModel();
         $schedules  = $model->getSchedulesForToday();
 
-        if ($inTableHtml) {
-            /* Format schedules and display in table html */
-            if (!empty($schedules)) {
-                $tbody = '';
-                foreach ($schedules as $schedule) {
-                    $type   = get_schedule_type($schedule['type']);
-                    $start  = format_datetime($schedule['start']);
-                    $end    = format_datetime($schedule['end']);
-                    $tbody .= <<<EOF
-                        <tr class="text-white text-bold" style="background-color: {$type['color']};">
-                            <td>{$schedule['title']}</td>
-                            <td>{$schedule['description']}</td>
-                            <td>{$start}</td>
-                            <td>{$end}</td>
-                            <td>{$type['text']}</td>
-                        </tr>
-                    EOF;
-                }
-            } else $tbody = '<tr><td colspan="5"><h5>NO SCHEDULES FOR TODAY</h5></td></tr>';
-    
-            return <<<EOF
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Start Date & Time</th>
-                            <th>End Date & Time</th>
-                            <th>Type</th>
-                        </tr>
-                    </thead>
-                    <tbody>{$tbody}</tbody>
-                </table>
-            EOF;
-        } 
-        else return $schedules; 
+        if (! $inTableHtml) return $schedules;
+
+        /* Format schedules and display in table html */
+        if (! empty($schedules)) {
+            $tbody = '';
+            foreach ($schedules as $schedule) {
+                $type   = get_schedule_type($schedule['type']);
+                $start  = format_datetime($schedule['start']);
+                $end    = format_datetime($schedule['end']);
+                $tbody .= <<<EOF
+                    <tr class="text-white text-bold" style="background-color: {$type['color']};">
+                        <td>{$schedule['title']}</td>
+                        <td>{$schedule['description']}</td>
+                        <td>{$start}</td>
+                        <td>{$end}</td>
+                    </tr>
+                EOF;
+            }
+        } else $tbody = '<tr><td colspan="4"><h3>NO SCHEDULES FOR TODAY</h3></td></tr>';
+
+        return <<<EOF
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Start Date & Time</th>
+                        <th>End Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>{$tbody}</tbody>
+            </table>
+        EOF;
     }
 
     /**
-     * Get the current schedules
+     * Get the schedules
      * 
      * @param string $q         The query to search for
      * @param string $options   Identifier for the options - pagination or not
@@ -153,6 +151,48 @@ trait AdminTrait
         $model->orderBy('id', 'DESC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total = $model->countAllResults();
+
+        return [
+            'data'  => $result,
+            'total'  => $total
+        ];
+    }
+
+    /**
+     * Get the job orders
+     * 
+     * @param string $q         The query to search for
+     * @param string $options   Identifier for the options - pagination or not
+     * @param string $fields    Columns or fields in the select
+     * @return array            The results of the search
+     */
+    public function fetchJobOrders($q, $options = [], $fields = '')
+    {
+        $model  = new JobOrderModel();
+        $fields = $fields ? $fields : "
+            {$model->view}.job_order_id AS id,
+            CONCAT({$model->view}.job_order_id, ' | ', {$model->view}.client_name) AS text,
+            {$model->view}.client_name,
+            {$model->view}.client_id,
+            {$model->view}.quotation,
+            {$model->view}.quotation_type,
+            {$model->view}.manager
+        ";
+
+        $model->setTable($model->view)->select($fields);
+        $model->setUseSoftDeletes(false);
+
+        if (! empty($q)) {
+            if (empty($options)) return $model->find($q);
+
+            $model->like("{$model->view}.job_order_id", $q);
+            $model->orLike("{$model->view}.client_name", $q);
+        }
+
+        $model->orderBy("{$model->view}.job_order_id", 'DESC');
+
+        $result = $model->paginate($options['perPage'] ?? 10, 'default', $options['page'] ?? 1);
+        $total  = $model->countAllResults();
 
         return [
             'data'  => $result,

@@ -62,13 +62,21 @@ class MailConfig extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $mail_notifs            = $this->_mailNotifModel->getMailNotifs();
+        $mail_notifs = $this->_mailNotifModel->getMailNotifs(
+            null, '',
+            function($builder) {
+                if (! is_developer()) 
+                    $builder->where('is_mail_notif_enabled != 0');
+            }
+        );
+        $mail_notifs = flatten_array($mail_notifs, 'module_code');
+
         $data['title']          = 'Settings | Mail Configuration';
         $data['page_title']     = 'Settings | Mail Configuration';
         $data['custom_js']      = 'settings/mail_config.js';
         $data['can_save']       = $this->_can_save;
         $data['mail']           = $this->_model->getMailConfig();
-        $data['mail_notifs']    = flatten_array($mail_notifs, 'module_code');
+        $data['mail_notifs']    = $mail_notifs;
         $data['modules']        = get_modules();
         $data['sweetalert2']    = true;
         $data['toastr']         = true;
@@ -103,26 +111,42 @@ class MailConfig extends BaseController
                 $param  = 'config';
 
                 if (isset($inputs['module_code'])) {
-                    $param  = 'notifs';
-                    $column = $inputs['column'];
-                    $inputs = [
-                        'module_code'   => $inputs['module_code'],
-                        "{$column}"     => $inputs['value'],
-                        'updated_by'    => session('username'),
+                    $_recipients    = trim(trim($inputs['cc_recipients']), ', ');
+                    $param          = 'notifs';
+                    $inputs         = [
+                        'module_code'           => $inputs['module_code'],
+                        'has_mail_notif'        => $inputs['has_mail_notif'],
+                        'is_mail_notif_enabled' => $inputs['is_mail_notif_enabled'],
+                        'cc_recipients'         => $_recipients,
+                        'updated_by'            => session('username'),
                     ];
+                    if (! empty($_recipients)) {
+                        $recipients = ['cc_recipients' => clean_param(explode(',', $_recipients))];
+                        $validate   = $this->validateData(
+                            $recipients,
+                            ['cc_recipients.*' => 'permit_empty|valid_email|max_length[500]']
+                        );
 
-                    if ($column === 'has_mail_notif' && empty($inputs['value'])) {
-                        $inputs['is_mail_notif_enabled'] = false;
+                        if (! $validate) {
+                            $data['errors']     = ['recipients' => res_lang('error.email')];
+                            $data['status']     = res_lang('status.error');
+                            $data['message']    = res_lang('error.validation');
+        
+                            return $data;
+                        }
+                        $data['recipients'] = $_recipients;
                     }
 
                     $model  = new MailNotifModel();
                     $save   = $model->upsert($inputs);
                 } else {
-                    $inputs['is_enable'] = isset($inputs['is_enable']) ? $inputs['is_enable'] : 'NO';
+                    $inputs['is_enable'] = (isset($inputs['is_enable']) && $inputs['is_enable']) ? $inputs['is_enable'] : 'NO';
                     $save   = $model->save($inputs);
                 }
 
                 if (! $save) {
+                    if (empty($model->errors())) return $data;
+
                     $data['errors']     = $model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');

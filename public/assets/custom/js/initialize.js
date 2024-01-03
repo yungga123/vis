@@ -58,6 +58,14 @@ $(document).ready(function () {
 		}
 	});
 
+	$(".modal").on("shown.bs.modal", function (event) {
+		if (!$("body").hasClass("modal-open")) {
+			$("body")
+				.addClass("modal-open")
+				.css({ height: "auto", "padding-right": "14px" });
+		}
+	});
+
 	// Initialize toastr
 	if (isToastrLoaded()) {
 		initToastr();
@@ -74,6 +82,9 @@ $(document).ready(function () {
 		const fileName = e.target.files[0].name;
 		$(this).next(".custom-file-label").text(fileName);
 	});
+
+	// Collapsible accordion
+	if ($(".collapse").length > 0) $(".collapse").collapse();
 });
 
 /* Check if is toastr is loaded */
@@ -332,7 +343,7 @@ function select2Init(selector, placeholder, data, container) {
  * @param {string} placeholder 	- placeholder
  * @param {string} route  		- the route or url to get data from
  * @param {string} text  		- the displayed text of selected item
- * @param {function} callaback  - the callback function after selecting an item
+ * @param {function} callback  	- the callback function after selecting an item
  * @param {object} options  	- the options (data) to be passed to the backend
  * @param {number} perPage  	- the length of options to display - default set to 10
  * @return void
@@ -342,7 +353,7 @@ function select2AjaxInit(
 	placeholder,
 	route,
 	text,
-	callaback,
+	callback,
 	options,
 	perPage
 ) {
@@ -385,7 +396,7 @@ function select2AjaxInit(
 			return data[text] || data.text;
 		},
 		templateSelection: function (data) {
-			if (isFunction(callaback)) callaback(data);
+			if (isFunction(callback)) callback(data);
 			return data[text] || data.text;
 		},
 	});
@@ -534,5 +545,5 @@ function initBootstrapSwitch(selector, options, state) {
 			}
 			$(this).bootstrapSwitch("state", $(this).prop("checked"));
 		});
-	} else elem.bootstrapSwitch("state", state || true);
+	} else elem.bootstrapSwitch("state", state || false);
 }

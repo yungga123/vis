@@ -243,45 +243,16 @@ if (! function_exists('get_actions'))
 		}
 
         if (! $with_others) unset($actions['OTHERS']);
-		if ($param && isset($actions[strtoupper($param)])) {
-			return $actions[strtoupper($param)];
+
+		if ($param) {
+			$param = strtoupper($param);
+
+			return isset($actions[$param]) || in_array($param, $actions)
+				? $actions[$param]
+				: ucwords(strtolower(str_replace('_', ' ', $param)));
 		}
 
 		return $actions;
-	}
-}
-
-if (! function_exists('get_generic_modules_actions'))
-{
-	/**
-	 * Get the actions of modules with generic acess
-	 */
-	function get_generic_modules_actions(string $param = null): string|array|bool
-	{
-		$modules = MODULES_WITH_GENERIC_ACCESS;
-
-		if (in_array($param, $modules) || isset($modules[$param])) {
-			$module 	= $modules[$param] ?? $param;
-			$generic 	= array_keys(get_actions());
-			
-			if (is_array($module)) {
-				$generic = array_diff($generic, $module['EXCEPT']);
-			}
-			
-			return $generic;
-		}
-
-		if (! empty($modules) && ! $param) {
-			$_modules = [];
-
-			foreach ($modules as $key => $val) {
-				$_modules[] = is_array($val) ? $key : $val;
-			}
-
-			return $_modules;
-		}
-
-		return $param ? [] : $modules;
 	}
 }
 

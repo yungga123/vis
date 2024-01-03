@@ -103,14 +103,10 @@ class JobOrder extends BaseController
      */
     public function list()
     {
-        $tlViewModel            = new TaskLeadView();
-        $customerModel          = new CustomerModel();
-        $employeeModel          = new EmployeeModel();
-        $customerBranchModel    = new CustomerBranchModel();
-        $table                  = new TablesIgniter();
-        $request                = $this->request->getVar();
-        $builder                = $this->_model->noticeTable($request);
-        $fields                 = [
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
+        $fields     = [
             'id',
             'tasklead_id',
             'is_manual',
@@ -140,14 +136,9 @@ class JobOrder extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                "{$employeeModel->table}.firstname",
-                "{$employeeModel->table}.lastname",
-                "{$tlViewModel->table}.customer_name",
-                "{$customerModel->table}.name",
-                "{$tlViewModel->table}.quotation_num",
-                "{$this->_model->table}.manual_quotation",
-                "{$customerBranchModel->table}.branch_name",
-                "{$tlViewModel->table}.branch_name",
+                "{$this->_model->view}.quotation",
+                "{$this->_model->view}.client_name",
+                "{$this->_model->view}.manager",
             ])
             ->setOrder(array_merge([null, null, null], $fields))
             ->setOutput(
@@ -196,8 +187,8 @@ class JobOrder extends BaseController
                     'status'            => 'pending',
                     'is_manual'         => isset($is_manual),
                     'manual_quotation'  => isset($is_manual) ? $this->request->getVar('manual_quotation') : null,
-                    'customer_id'       => $is_manual ? $this->request->getVar('customer_id') : null,
-                    'customer_branch_id' => $is_manual ?$this->request->getVar('customer_branch_id') : null,
+                    'customer_id'       => isset($is_manual) ? $this->request->getVar('customer_id') : null,
+                    'customer_branch_id' => isset($is_manual) ? $this->request->getVar('customer_branch_id') : null,
                     'created_by'        => session('username'),
                 ];
     
@@ -248,9 +239,12 @@ class JobOrder extends BaseController
                         {$this->_model->table}.remarks,
                         {$this->_model->table}.date_committed,
                         {$this->_model->table}.is_manual,
-                        IF({$this->_model->table}.is_manual = 0, {$tlViewModel->table}.tasklead_type, {$this->_model->table}.manual_quotation_type) AS type,
-                        {$tlViewModel->table}.employee_id,
-                    ";                
+                        {$this->_model->view}.quotation_type AS type,
+                        IF({$this->_model->table}.employee_id IS NOT NULL, {$this->_model->table}.employee_id,{$tlViewModel->table}.employee_id) AS employee_id
+                    ";
+
+                    $this->_model->joinTaskleadBooked($this->_model, $tlViewModel);
+                    
                     $record     = $this->_model->getJobOrders($id, $columns);
                 } else {
                     $record     = $this->_model->getJobOrders($id);

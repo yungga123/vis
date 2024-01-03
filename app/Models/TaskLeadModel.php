@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\FilterParamTrait;
-use App\Services\Mail\SalesMailService;
 
 class TaskLeadModel extends Model
 {
@@ -166,8 +166,7 @@ class TaskLeadModel extends Model
 
             if (! empty($record)) {
                 // Send mail notification
-                $service = new SalesMailService();
-                $service->sendTaskleadMailNotif($record);
+                Events::trigger('send_mail_notif_tasklead', $record);
             }
         }
         

@@ -10,12 +10,23 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body">                 
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> 
+                        If not empty, initial dropdowns of <strong>Job Order</strong> are by 10. Type the <strong>ID or Client Name</strong> to search if not in the options and then, click to select.
+                    </div>
                     <!-- Hidden start and end date inputs -->
                     <input type="hidden" name="id" id="schedule_id" class="form-control" readonly>
                     <input type="hidden" name="start" id="start" class="form-control" readonly>
                     <input type="hidden" name="end" id="end" class="form-control" readonly>
-
+                    <div class="form-group">
+                        <label for="job_order_id">Job Order</label>
+                        <div>Format: ID | Client Name</div>
+                        <select class="custom-select" name="job_order_id" id="job_order_id" style="width: 100%;">
+                        </select>
+                        <div class="d-none" id="orig_schedule"></div>
+                        <small id="alert_job_order_id" class="text-danger"></small>
+                    </div>
                     <div class="form-group">
                         <label class="required" for="date_range">Date & Time Range</label>
                         <input type="text" name="date_range" id="date_range" class="form-control" placeholder="Select date & time range">

@@ -5,7 +5,7 @@ namespace App\Services\Mail;
 use App\Models\MailNotifModel;
 use App\Traits\MailTrait;
 
-class BaseService
+class BaseMailService
 {
     /* Declare trait here to use */
     use MailTrait;
@@ -15,19 +15,30 @@ class BaseService
      *
      * @param   array $info     The details of the mail
      * @param   string $title   The subject of the mail
+     * @param   string|null $module_code
+     * @param   array|null $options To pass an email_address and name as new options
+     * - format: 
+     *          [
+     *              'send_to'   => 'john@doe.com'
+     *              'send_name' => 'John Doe'
+     *          ]
      * 
      * @return  void
      */
-    public function sendMail($info, $title)
+    public function sendMail($info, $title, $module_code = null, $options = null)
     {
         try {
-            $sendTo     = session('email_address');
-            $sendName   = session('name');
+            $model      = new MailNotifModel();
+            $sendTo     = ($options && isset($options['send_to'])) 
+                ? $options['send_to'] : session('email_address');
+            $sendName   = ($options && isset($options['send_name'])) 
+                ? $options['send_name'] : session('name');
             $subject    = 'User Notification - ' . $title;
             $body       = $this->mailTemplate($info);
+            $cc         = $module_code ? clean_param($model->getCCRecipients($module_code, true)) : [];
     
             // Send the mail via SMTP
-            $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body);
+            $mail = $this->sendSMTPMail($sendTo, $sendName, $subject, $body, $cc);
             $this->logInfo($mail, $title, $info, __METHOD__);
         } catch (\Exception $e) {
             throw $e;

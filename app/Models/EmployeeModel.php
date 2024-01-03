@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Events\Events;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
 use App\Services\Mail\HRMailService;
@@ -295,11 +296,10 @@ class EmployeeModel extends Model
             $builder    = $this->select($columns);
             $builder->where("{$this->table}.id", $id);
             $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
-            $record     = $builder->first();
+            $employee   = $builder->first();
 
             // Send mail notification
-            $service = new HRMailService();
-            $service->sendEmployeeMailNotif($record);
+            Events::trigger('send_mail_notif_employee', $employee);
         }
         
         return $data;
@@ -328,28 +328,6 @@ class EmployeeModel extends Model
             ->where("{$alias}employment_status !=", $this->resigned);
             
         return $this;
-    }
-
-    // If employee record is deleted or marked as resigned
-    // delete their corresponding account(s)
-    public function deleteEmployeeAccounts($employee_id)
-    {
-        if ($employee_id) {
-            // If the pass param is numberic or 
-            // the primary id, the get the employee_id
-            if (is_numeric($employee_id)) {
-                $record         = $this->getEmployees($employee_id, null, 'employee_id');
-                $employee_id    = $record['employee_id'];
-            }
-
-            // Delete corresponding accounts - if exist
-            // Used query builder since can't delete using model (encountered error)
-            // Totally delete it in db
-            $accountModel = new AccountModel();
-            $this->db->table($accountModel->table)
-                ->where('employee_id', $employee_id)
-                ->delete();
-        }
     }
 
     // Get employees

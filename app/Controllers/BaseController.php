@@ -202,7 +202,7 @@ abstract class BaseController extends Controller
      * and redirect to denied page if user don't have
      * 
      * @param string $module
-     * @param string $action
+     * @param string|array $action
      * @param bool $throwException  Whether to throw an exception or the default return
      * 
      * @return void|view|\Exception
