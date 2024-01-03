@@ -56,6 +56,8 @@ class BirTaxSetup extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
+
                 $id         = $this->request->getVar('id');
                 $request    = $this->request->getVar();
                 $rb_type    = strtoupper($request['rb_type']) === 'AMOUNT' ? NULL : $request['rb_type'];
@@ -129,6 +131,8 @@ class BirTaxSetup extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
+
                 $id = $this->request->getVar('id');
 
                 if (! $this->_model->delete($id)) {
@@ -136,6 +140,7 @@ class BirTaxSetup extends BaseController
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 }
+
                 return $data;
             }
         );

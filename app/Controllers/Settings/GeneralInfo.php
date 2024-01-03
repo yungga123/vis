@@ -32,10 +32,10 @@ class GeneralInfo extends BaseController
     private $_permissions;
 
     /**
-     * Use to check if can add
+     * Use to check if can save
      * @var bool
      */
-    private $_can_add;
+    private $_can_save;
 
     /**
      * Class constructor
@@ -45,7 +45,7 @@ class GeneralInfo extends BaseController
         $this->_model       = new GeneralInfoModel(); // Current model
         $this->_module_code = MODULE_CODES['general_info']; // Current module
         $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_save    = $this->checkPermissions($this->_permissions, ACTION_SAVE);
     }
 
     /**
@@ -56,10 +56,11 @@ class GeneralInfo extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
         
         $data['title']          = 'Settings | General Info';
         $data['page_title']     = 'Settings | General Info';
+        $data['can_save']       = $this->_can_save;
         $data['sweetalert2']    = true;
         $data['dropzone']       = true;
         $data['custom_js']      = ['settings/general_info.js', 'dropzone.js'];
@@ -86,7 +87,7 @@ class GeneralInfo extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $this->_canUserSave();
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
 
                 $inputs     = [];
                 $request    = $this->request->getVar();
@@ -103,8 +104,7 @@ class GeneralInfo extends BaseController
                 $this->_model->singleSave($inputs);
 
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;
@@ -124,7 +124,7 @@ class GeneralInfo extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $this->_canUserSave();
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
 
                 $fileName   = 'company_logo';
                 $allowed    = implode(',', $this->imgExtensions);
@@ -170,8 +170,7 @@ class GeneralInfo extends BaseController
                 
                 $data['files'] = $file;
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;
@@ -212,17 +211,5 @@ class GeneralInfo extends BaseController
         );
 
         return $response;
-    }
-
-    /**
-     * Check if user can save
-     *
-     * @return void|Exception
-     */
-    private function _canUserSave()
-    {
-        if (! $this->_can_add) {
-            throw new \Exception(res_lang('restrict.permission.change'), 2);
-        }
     }
 }

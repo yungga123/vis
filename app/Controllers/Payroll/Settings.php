@@ -29,7 +29,7 @@ class Settings extends BaseController
      * Use to check if can add
      * @var bool
      */
-    private $_can_add;
+    private $_can_save;
 
     /**
      * Class constructor
@@ -39,7 +39,7 @@ class Settings extends BaseController
         $this->_model           = new PayrollSettingModel(); // Current model
         $this->_module_code     = MODULE_CODES['payroll_settings']; // Current module
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_save         = $this->checkPermissions($this->_permissions, ACTION_SAVE);
     }
 
     /**
@@ -50,11 +50,11 @@ class Settings extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
         
         $data['title']          = 'Payroll Settings';
         $data['page_title']     = 'Payroll Settings';
-        $data['can_submit']     = $this->_can_add;
+        $data['can_save']       = $this->_can_save;
         $data['sweetalert2']    = true;
         $data['toastr']         = true;
         $data['inputmask']      = true;
@@ -90,6 +90,8 @@ class Settings extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
+
                 $inputs     = [];
                 $request    = $this->request->getVar();
                 $param      = $request['rules'];

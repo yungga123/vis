@@ -46,25 +46,32 @@ class ModifyFieldsInPayrollEarningsTable extends Migration
     {
         $this->forge->modifyColumn(self::TABLE, [
             'working_days_off' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'over_time' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'night_diff' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'regular_holiday' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'special_holiday' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'vacation_leave' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'sick_leave' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
         ]);
     }

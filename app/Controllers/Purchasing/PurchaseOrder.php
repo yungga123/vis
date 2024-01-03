@@ -62,7 +62,7 @@ class PurchaseOrder extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
         $module_name            = get_modules($this->_module_code);
         $data['title']          = $module_name;

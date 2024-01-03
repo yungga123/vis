@@ -75,6 +75,11 @@
                         </div>
                     </div>
                 </div>
+                <?php if (! $has_settings): ?>
+                    <div class="overlay">
+                        <h2>Please fill out the <strong>Payroll Settings</strong> first!</h2>
+                    </div>
+                <?php endif ?>
             </div>
         </div>
         <div class="col-sm-12 col-md-7">

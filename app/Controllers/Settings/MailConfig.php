@@ -35,10 +35,10 @@ class MailConfig extends BaseController
     private $_permissions;
 
     /**
-     * Use to check if can add
+     * Use to check if can save
      * @var bool
      */
-    private $_can_add;
+    private $_can_save;
 
     /**
      * Class constructor
@@ -49,7 +49,7 @@ class MailConfig extends BaseController
         $this->_mailNotifModel  = new MailNotifModel(); // Current model
         $this->_module_code     = MODULE_CODES['mail_config']; // Current module
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_can_save        = $this->checkPermissions($this->_permissions, ACTION_SAVE);
     }
 
     /**
@@ -60,13 +60,13 @@ class MailConfig extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
         $mail_notifs            = $this->_mailNotifModel->getMailNotifs();
         $data['title']          = 'Settings | Mail Configuration';
         $data['page_title']     = 'Settings | Mail Configuration';
         $data['custom_js']      = 'settings/mail_config.js';
-        $data['can_save']       = is_admin() ? true : $this->_can_add;
+        $data['can_save']       = $this->_can_save;
         $data['mail']           = $this->_model->getMailConfig();
         $data['mail_notifs']    = flatten_array($mail_notifs, 'module_code');
         $data['modules']        = get_modules();
@@ -96,6 +96,8 @@ class MailConfig extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
+
                 $inputs = $this->request->getVar();
                 $model  = $this->_model;
                 $param  = 'config';

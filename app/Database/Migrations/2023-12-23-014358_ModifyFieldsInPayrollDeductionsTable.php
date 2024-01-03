@@ -30,10 +30,12 @@ class ModifyFieldsInPayrollDeductionsTable extends Migration
     {
         $this->forge->modifyColumn(self::TABLE, [
             'days_absent' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'hours_late' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
             'addt_rest_days' => [
                 'type' => 'FLOAT',

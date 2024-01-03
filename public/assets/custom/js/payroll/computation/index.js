@@ -147,13 +147,16 @@ $(document).ready(function () {
 	});
 
 	$('input[type="number"').on("keyup", function () {
-		const value = parseFloat($(this).val());
-		const name = $(this).attr("name");
+		const wd = $("#working_days").val();
+		if (!isEmpty(wd) || wd != 0) {
+			const value = parseFloat($(this).val());
+			const name = $(this).attr("name");
 
-		if (earnings[name] !== undefined) earnings[name] = value;
-		if (deductions[name] !== undefined) deductions[name] = value;
+			if (earnings[name] !== undefined) earnings[name] = value;
+			if (deductions[name] !== undefined) deductions[name] = value;
 
-		_payrollCompute();
+			_payrollCompute();
+		}
 	});
 
 	$(".btn-submit").on("click", function () {
@@ -415,7 +418,7 @@ function _calculateTax() {
 	const taxable_income = parseFloat(taxable_earnings - non_taxable_deductions);
 
 	$("#withholding_tax").val("");
-	$("td.withholding_tax").text("00.00");
+	$("td.withholding_tax").text("0.00");
 
 	if (!isEmpty(settings.bir_taxes || null) && !isEmpty(taxable_income)) {
 		$.each(settings.bir_taxes, (key, val) => {

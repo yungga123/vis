@@ -58,7 +58,7 @@
                                         <label class="required" for="sss_next_diff_range_start_amount">Diff to Next Salary Range Start Amount</label>
                                         <input type="number" name="sss_next_diff_range_start_amount" id="sss_next_diff_range_start_amount" class="form-control" placeholder="Ex. 499.99" step="00.01">
                                         <small id="alert_sss_next_diff_range_start_amount" class="text-danger"></small>
-                                        <div class="text-sm mt-1">The amount difference to the next range of compensation (Ex. 499.99).</div>
+                                        <div class="text-sm mt-1">The amount difference before the next range of compensation (Ex. 4250 + 499.99 = 4749.99 - which is the 2nd half of the range).</div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
@@ -72,13 +72,13 @@
                                         <label class="required" for="sss_last_msc">Last MSC Total Amount</label>
                                         <input type="number" name="sss_last_msc" id="sss_last_msc" class="form-control" placeholder="Ex. 30,000" step="00.01">
                                         <small id="alert_sss_last_msc" class="text-danger"></small>
-                                        <div class="text-sm mt-1">The last Monthly Salary Credit (MSC) total amount (Ex. 20,000).</div>
+                                        <div class="text-sm mt-1">The last Monthly Salary Credit (MSC) total amount (Ex. 30,000).</div>
                                     </div>
                                     <div class="form-group">
                                         <label class="required" for="sss_next_diff_msc_total_amount">Diff to Next MSC Total Amount</label>
                                         <input type="number" name="sss_next_diff_msc_total_amount" id="sss_next_diff_msc_total_amount" class="form-control" placeholder="Ex. 500" step="00.01">
                                         <small id="alert_sss_next_diff_msc_total_amount" class="text-danger"></small>
-                                        <div class="text-sm mt-1">The amount difference to the next MSC (Ex. 500).</div>
+                                        <div class="text-sm mt-1">The amount difference to the next MSC total amount (Ex. 500).</div>
                                     </div>
                                 </div>
                             </div>

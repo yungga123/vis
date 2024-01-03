@@ -35,10 +35,10 @@ class Computation extends BaseController
     private $_permissions;
 
     /**
-     * Use to check if can add
+     * Use to check if can submit
      * @var bool
      */
-    private $_can_add;
+    private $_can_submit;
 
     /**
      * Class constructor
@@ -48,7 +48,7 @@ class Computation extends BaseController
         $this->_model           = new PayrollModel(); // Current model
         $this->_module_code     = MODULE_CODES['payroll_computation']; // Current module
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add         = $this->checkPermissions($this->_permissions, 'SUBMIT');
+        $this->_can_submit      = $this->checkPermissions($this->_permissions, 'SUBMIT');
     }
 
     /**
@@ -66,6 +66,8 @@ class Computation extends BaseController
         $payroll    = [];
         $earnings   = [];
         $deductions = [];
+        $settings   = $this->getPayrollSettings();
+        $bir_taxes  = $this->getBirTaxTable();
 
         if ($id) {
             $model      = $this->_model;
@@ -112,7 +114,8 @@ class Computation extends BaseController
         
         $data['title']          = $title;
         $data['page_title']     = $title;
-        $data['can_submit']     = $this->_can_add;
+        $data['can_submit']     = $this->_can_submit;
+        $data['has_settings']   = (! empty($this->getPayrollSettings()) && ! empty($bir_taxes));
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['moment']         = true;
@@ -134,7 +137,7 @@ class Computation extends BaseController
             'payroll_settings'  => [
                 'ots_holidays'  => $this->getOvertimeHolidayRates(true),
                 'govt'          => $this->getGovtRates(true),
-                'bir_taxes'     => $this->getBirTaxTable(),
+                'bir_taxes'     => $bir_taxes,
             ],
             'payroll'       => $payroll,
             'earnings'      => $earnings,

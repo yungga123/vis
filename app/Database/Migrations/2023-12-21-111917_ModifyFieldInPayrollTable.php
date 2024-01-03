@@ -22,7 +22,8 @@ class ModifyFieldInPayrollTable extends Migration
     {
         $this->forge->modifyColumn(self::TABLE, [
             'working_days' => [
-                'type' => 'DECIMAL[2,2]',
+                'type' => 'DECIMAL',
+                'constraint' => [2,2],
             ],
         ]);
     }

@@ -192,6 +192,13 @@ define('ACTIONS', [
             'SAVE'          => 'Save',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'PAYROLL_LEAVE' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            'OTHERS_ONLY'   => TRUE,
+        ],
         'PAYROLL_OVERTIME' => [
             'VIEW_ALL'      => 'View All',
             'DISCARD'       => 'Discard',
@@ -214,6 +221,16 @@ define('ACTIONS', [
             'GENERATE'      => 'Generate',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'SETTINGS_GENERAL_INFO' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'SETTINGS_MAILCONFIG' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
@@ -226,6 +243,7 @@ define('ACTION_PRINT', 'PRINT');
 define('ACTION_UPLOAD', 'UPLOAD');
 define('ACTION_CHANGE', 'CHANGE');
 define('ACTION_VIEW_ALL', 'VIEW_ALL');
+define('ACTION_SAVE', 'SAVE');
 
 // Roles - No need to add new roles here
 // Adding new roles will be on the dashboard

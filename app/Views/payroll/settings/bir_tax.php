@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Withholding Tax Table</h3>
+        <h3 class="card-title">Withholding Tax Table - Monthly</h3>
         <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                 <i class="fas fa-minus"></i>
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div>
-                    <p>You can check the reference here - from <a href="https://www.bir.gov.ph/index.php/tax-information/withholding-tax.html" target="_blank" rel="noopener noreferrer">BIR</a>.</p>
+                    <p>You can check the reference here - from <a href="https://www.bir.gov.ph/index.php/tax-information/withholding-tax.html" target="_blank" rel="noopener noreferrer">BIR</a> and <a href="https://www.omnicalculator.com/finance/income-tax-philippines#how-to-calculate-income-tax-in-the-philippines" target="_blank" rel="noopener noreferrer">this - for the list format</a>.</p>
                 </div>
             </div>
             <div class="col-sm-12 col-md-4">

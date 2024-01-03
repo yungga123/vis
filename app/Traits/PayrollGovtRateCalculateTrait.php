@@ -20,6 +20,8 @@ trait PayrollGovtRateCalculateTrait
         // Get SSS rates
         $rates = empty($rates) ? $this->getGovtSSSRates(true) : $rates;
 
+        if (empty($rates)) return 0;
+
         $starting_salary_range  = $rates['sss_salary_range_min'];
         $last_salary_range      = $rates['sss_salary_range_max'];
         $starting_msc_total     = $rates['sss_starting_msc'];
@@ -55,8 +57,8 @@ trait PayrollGovtRateCalculateTrait
                 break;
             }
 
-            $next_starting_salary_range += $next_diff_salary_range;
-            $opposite_salary_amount += $next_diff_salary_range;
+            $next_starting_salary_range += $next_diff_msc_amount;
+            $opposite_salary_amount += $next_diff_msc_amount;
             $next_msc_total_amount += $next_diff_msc_amount;
             $count++;
         }
@@ -78,6 +80,8 @@ trait PayrollGovtRateCalculateTrait
         // Get Pag-IBIG rates
         $result         = 0;
         $rates          = empty($rates) ? $this->getGovtPagibigRates(true) : $rates;
+
+        if (empty($rates)) return 0;
 
         $employee_rate  = $rates['pagibig_contri_rate_employee'];
         $employeer_rate = $rates['pagibig_contri_rate_employeer'];
@@ -107,6 +111,8 @@ trait PayrollGovtRateCalculateTrait
         // Get PhilHealth rates
         $result     = 0;
         $rates      = empty($rates) ? $this->getGovtPhilhealthRates(true) : $rates;
+
+        if (empty($rates)) return 0;
 
         $share_rate         = $rates['philhealth_contri_rate'];
         $income_floor       = $rates['philhealth_income_floor'];
