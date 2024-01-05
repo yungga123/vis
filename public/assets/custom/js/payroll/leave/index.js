@@ -22,6 +22,7 @@ $(document).ready(function () {
 		$(`#${modal} .modal-title`).text("File a Leave");
 		$(`#${form}`)[0].reset();
 		$("#id").val("");
+		$("#start_date").attr("min", $("#start_date").data("min_date"));
 
 		clearAlertInForm(elems);
 	});
@@ -103,6 +104,7 @@ function filterData(reset = false) {
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Leave");
+	$("#start_date").attr("min", "");
 	$("#id").val(id);
 
 	clearAlertInForm(elems);

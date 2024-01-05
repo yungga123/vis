@@ -140,8 +140,12 @@ class LeaveModel extends Model
         $action = isset($data['purge']) ? ACTION_DELETE : ACTION_EDIT;
         $record = $this->fetch($id, 'employee_id');
 
-        if (empty($record)) {
-            throw new \Exception("You can't <strong>{$action}</strong> other's leave request!", 1);
+        if (empty($record) || (! empty($record) && isset($data['data']['status']))) {
+            $status = $data['data']['status'] ?? null;
+            $action = $status ? strtoupper($status) : $action;
+            $phrase = $status ? 'your own' : "other's";
+
+            throw new \Exception("You can't <strong>{$action}</strong> {$phrase} leave request!", 1);
         }
 
         return $data;

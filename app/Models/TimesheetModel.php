@@ -198,7 +198,7 @@ class TimesheetModel extends Model
         $action = isset($data['purge']) ? ACTION_DELETE : ACTION_EDIT;
         $record = $this->fetch($id, 'employee_id');
 
-        if (! empty($record)) {
+        if (empty($record)) {
             throw new \Exception("You can't <strong>{$action}</strong> other's timesheet!", 1);
         }
 

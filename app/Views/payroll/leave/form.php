@@ -30,7 +30,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="required" for="start_date">Start Date</label>
-                                <input type="date" class="form-control" name="start_date" id="start_date" min="<?= date('Y-m-d', strtotime(current_date() . ' - 7 days')) ?>" placeholder="Start Date">
+                                <input type="date" class="form-control" name="start_date" id="start_date" data-min_date="<?= date('Y-m-d', strtotime(current_date() . ' - 7 days')) ?>" placeholder="Start Date">
                             </div>
                         </div>
                         <div class="col-md-6">
