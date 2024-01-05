@@ -234,7 +234,7 @@ function editTax(id) {
 					? res.data.below_or_above
 					: "amount";
 
-				$("#rb_" + rb_type).attr("checked", "false");
+				$("#rb_" + rb_type).prop("checked", "true");
 				$(".rb_type").trigger("change");
 			}
 		}

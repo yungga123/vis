@@ -94,15 +94,16 @@ class TimesheetModel extends Model
         if (isset($data['id'])) {
             $id = $data['id'];
 
-            // Check if from clock in and out
-            // In short not manually inserted
-            $_model = clone $this;
-            $_model->where('is_manual = 0');
-            $_fetch = $_model->fetch($id[0]);
+            if (! is_admin()) {
+                // Check if from clock in and out
+                // In short not manually inserted
+                $_model         = clone $this;
+                $_fetch         = $_model->where('is_manual = 0')->fetch($id[0]);
+                $_clock_date    = $_fetch['clock_date'];
 
-            if (! empty($_fetch) && ! empty($_fetch['clock_out'])) {
-                helper('custom_helper');
-                throw new \Exception(res_lang('restrict.action.change') . " It's from CLOCK IN/OUT.", 1);
+                if (! empty($_fetch) && (! empty($_fetch['clock_out'])) || compare_dates($_clock_date, current_date())) {
+                    throw new \Exception(res_lang('restrict.action.change') . " It's from CLOCK IN/OUT.", 1);
+                }
             }
 
             // Add the id in the where clause.
@@ -176,16 +177,18 @@ class TimesheetModel extends Model
     protected function checkIfUserOwnRecord(array $data)
     {
         $id     = $data['id'][0];
-        // Check if from clock in and out
-        // In short not manually inserted
-        // If yes, throw an error - no more changes allowed
-        $_model = clone $this;
-        $_model->where('is_manual = 0 AND clock_out IS NOT NULL');
-        $_fetch = $_model->fetch($id);
-
-        if (! empty($_fetch)) {
-            helper('custom_helper');
-            throw new \Exception(res_lang('restrict.action.change') . " It's from CLOCK IN/OUT.", 1);
+        
+        if (! is_admin()) {
+            // Check if from clock in and out
+            // In short not manually inserted
+            // If yes, throw an error - no more changes allowed
+            $_model = clone $this;
+            $_model->where('is_manual = 0');
+            $_fetch = $_model->fetch($id);
+    
+            if (! empty($_fetch)) {
+                throw new \Exception(res_lang('restrict.action.change') . " It's from CLOCK IN/OUT.", 1);
+            }
         }
 
         // Check if the to be deleted record is user's own
@@ -195,7 +198,7 @@ class TimesheetModel extends Model
         $action = isset($data['purge']) ? ACTION_DELETE : ACTION_EDIT;
         $record = $this->fetch($id, 'employee_id');
 
-        if (empty($record)) {
+        if (! empty($record)) {
             throw new \Exception("You can't <strong>{$action}</strong> other's timesheet!", 1);
         }
 

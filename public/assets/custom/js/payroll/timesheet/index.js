@@ -18,7 +18,7 @@ $(document).ready(function () {
 
 	$(".clock-attendance .card-header").addClass("d-none");
 
-	getCurrentClockAttendance();
+	getCurrentClockAttendance(table);
 
 	/* Load dataTable */
 	loadDataTable(table, router.payroll.timesheet.list, METHOD.POST);

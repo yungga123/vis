@@ -1,5 +1,9 @@
+let isTimesheetModule = null;
+
 /* Get current clock attendance */
-function getCurrentClockAttendance() {
+function getCurrentClockAttendance(timesheet = null) {
+	isTimesheetModule = timesheet;
+
 	if ($(".clock-attendance").length) {
 		_post(router.payroll.timesheet.fetch, { current: true }, (res) => {
 			if (res.status === STATUS.ERROR) {
@@ -28,6 +32,10 @@ function getCurrentClockAttendance() {
 					$("#btn_clock_in").attr("disabled", "true");
 					$("#btn_clock_out").attr("disabled", "true");
 				}
+
+				if (isTimesheetModule) {
+					refreshDataTable($("#" + timesheet));
+				}
 			}
 		});
 	}
@@ -40,7 +48,7 @@ function attendanceClockIn() {
 			if (res.status === STATUS.SUCCESS) {
 				$("#btn_clock_in").attr("disabled", "true");
 				notifMsg("You have CLOCKED IN!");
-				getCurrentClockAttendance();
+				getCurrentClockAttendance(isTimesheetModule);
 			}
 		});
 	}
@@ -58,7 +66,7 @@ function attendanceClockOut() {
 				$("#btn_clock_in").attr("disabled", "true");
 				$("#btn_clock_out").attr("disabled", "true");
 				notifMsg("You have CLOCKED OUT!");
-				getCurrentClockAttendance();
+				getCurrentClockAttendance(isTimesheetModule);
 			}
 		});
 	}

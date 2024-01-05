@@ -165,6 +165,7 @@ class Timesheet extends BaseController
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
     
                 if ($id) {
+                    unset($inputs['is_manual']);
                     $data['message']    = res_lang('success.updated', 'Timesheet');
                 }
 
@@ -279,6 +280,7 @@ class Timesheet extends BaseController
                     'id'            => $this->request->getVar('id') ?? null,
                     'clock_date'    => current_date(),
                     $action         => current_date('H:i'),
+                    'is_manual'     => 0,
                 ];
                 
                 if (! empty($record)) {
