@@ -62,10 +62,9 @@ $(document).ready(function () {
 		earnings.regular_holiday_amt = _earnings.regular_holiday_amt;
 		earnings.special_holiday = _earnings.special_holiday;
 		earnings.special_holiday_amt = _earnings.special_holiday_amt;
-		earnings.vacation_leave = _earnings.vacation_leave;
-		earnings.vacation_leave_amt = _earnings.vacation_leave_amt;
-		earnings.sick_leave = _earnings.sick_leave;
-		earnings.sick_leave_amt = _earnings.sick_leave_amt;
+		earnings.service_incentive_leave = _earnings.service_incentive_leave;
+		earnings.service_incentive_leave_amt =
+			_earnings.service_incentive_leave_amt;
 		earnings.incentives = _earnings.incentives;
 		earnings.commission = _earnings.commission;
 		earnings.thirteenth_month = _earnings.thirteenth_month;
@@ -119,43 +118,59 @@ $(document).ready(function () {
 				STATUS.WARNING
 			);
 		} else {
-			cutOff.start_date = cutOff.elems.start_date.val();
-			cutOff.end_date = cutOff.elems.end_date.val();
-			cutOff.sundays = [];
-			employeeInfo.working_days = 0;
-
-			if (moment(cutOff.start_date).isBefore(cutOff.end_date)) {
-				_toggleEmployee(true);
-
-				const sundays = getSundaysBetweenDates(
-					cutOff.start_date,
-					cutOff.end_date
-				);
-				const diffDays = getDateDiffCount(cutOff.start_date, cutOff.end_date);
-
-				cutOff.sundays = sundays;
-				employeeInfo.working_days = parseFloat(diffDays - sundays.length);
-			} else {
-				notifMsgSwal(
-					TITLE.ERROR,
-					"Start Date must be before the End Date!",
-					STATUS.WARNING
-				);
-			}
-			$("#working_days").val(employeeInfo.working_days);
+			_getWorkingDays();
 		}
 	});
 
 	$('input[type="number"').on("keyup", function () {
 		const wd = $("#working_days").val();
+		const name = $(this).attr("name");
+
 		if (!isEmpty(wd) || wd != 0) {
 			const value = parseFloat($(this).val());
-			const name = $(this).attr("name");
 
 			if (earnings[name] !== undefined) earnings[name] = value;
 			if (deductions[name] !== undefined) deductions[name] = value;
 
 			_payrollCompute();
+		}
+
+		if (name === "working_days") {
+			employeeInfo.working_days = parseFloat(wd);
+
+			switch (strLower(employeeInfo.rate_type)) {
+				case "monthly":
+					employeeInfo.daily_rate =
+						employeeInfo.working_days > 0
+							? employeeInfo.cut_off_pay / employeeInfo.working_days
+							: 0;
+					employeeInfo.hourly_rate = employeeInfo.daily_rate / 8;
+					break;
+				case "daily":
+					employeeInfo.daily_rate = employeeInfo.salary_rate;
+					employeeInfo.hourly_rate = employeeInfo.daily_rate / 8;
+					break;
+				case "hourly":
+					employeeInfo.hourly_rate = employeeInfo.salary_rate;
+					employeeInfo.daily_rate = employeeInfo.hourly_rate * 8;
+					break;
+			}
+			earnings.basic_pay = employeeInfo.daily_rate * employeeInfo.working_days;
+			employeeInfo.cut_off_pay = earnings.basic_pay;
+
+			$(".info-text.cut_off_pay span").text(
+				numberFormat(employeeInfo.cut_off_pay || 0)
+			);
+			$(".info-text.daily_rate span").text(
+				numberFormat(employeeInfo.daily_rate || 0)
+			);
+			$(".info-text.hourly_rate span").text(
+				numberFormat(employeeInfo.hourly_rate || 0)
+			);
+			$("#basic_pay").val(numberFormat(earnings.basic_pay || 0));
+			$("td.basic_pay").text(numberFormat(earnings.basic_pay || 0));
+
+			_getGovtDeductions(true);
 		}
 	});
 
@@ -233,6 +248,8 @@ function _populateEmployeeInfo(data) {
 
 			_getGovtDeductions();
 			_payrollCompute();
+			_getWorkingDays();
+
 			$(".btn-submit").removeAttr("disabled");
 		}
 	}
@@ -338,14 +355,10 @@ function _payrollCompute() {
 		earnings.special_holiday *
 		(employeeInfo.daily_rate * settings.ots_holidays.special_holiday);
 
-	// daily rate * vacation leave
+	// daily rate * service incentive leave
 	// 500 * 1
-	earnings.vacation_leave_amt =
-		employeeInfo.daily_rate * earnings.vacation_leave;
-
-	// daily rate * sick leave
-	// 500 * 1
-	earnings.sick_leave_amt = employeeInfo.daily_rate * earnings.sick_leave;
+	earnings.service_incentive_leave_amt =
+		employeeInfo.daily_rate * earnings.service_incentive_leave;
 
 	// Deductions
 	deductions.absent_amt = employeeInfo.daily_rate * deductions.absent;
@@ -372,8 +385,7 @@ function _payrollCompute() {
 			earnings.night_diff_amt +
 			earnings.regular_holiday_amt +
 			earnings.special_holiday_amt +
-			earnings.vacation_leave_amt +
-			earnings.sick_leave_amt +
+			earnings.service_incentive_leave +
 			_non_taxable;
 
 		const __deductions =
@@ -400,20 +412,9 @@ function _payrollCompute() {
 
 /* Calculate tax */
 function _calculateTax() {
-	const taxable_earnings =
-		earnings.basic_pay +
-		earnings.working_days_off_amt +
-		earnings.over_time_amt +
-		earnings.night_diff_amt +
-		earnings.regular_holiday_amt +
-		earnings.special_holiday_amt;
+	const taxable_earnings = earnings.basic_pay;
 	const non_taxable_deductions =
-		deductions.absent_amt +
-		deductions.tardiness_amt +
-		deductions.additional_rest_day_amt +
-		deductions.sss +
-		deductions.pagibig +
-		deductions.philhealth;
+		deductions.sss + deductions.pagibig + deductions.philhealth;
 
 	const taxable_income = parseFloat(taxable_earnings - non_taxable_deductions);
 
@@ -495,14 +496,14 @@ function _submit() {
 }
 
 /* Get gov't deductions */
-function _getGovtDeductions() {
+function _getGovtDeductions(isWorkingDays = false) {
 	const route = router.payroll.computation.govt_deductions;
 	const data = {
 		cut_off_pay: employeeInfo.cut_off_pay,
 		monthly_salary: employeeInfo.monthly_salary,
 	};
 
-	if (_employeeId != employeeInfo.employee_id) {
+	if (_employeeId != employeeInfo.employee_id || isWorkingDays) {
 		fetchRecord(route, data, null, (res) => {
 			if (res.status === STATUS.SUCCESS) {
 				if ((inObject(res), "data")) {
@@ -526,6 +527,31 @@ function _getGovtDeductions() {
 	}
 
 	_employeeId = employeeInfo.employee_id;
+}
+
+/* Get working days */
+function _getWorkingDays() {
+	cutOff.start_date = cutOff.elems.start_date.val();
+	cutOff.end_date = cutOff.elems.end_date.val();
+	cutOff.sundays = [];
+	employeeInfo.working_days = 0;
+
+	if (moment(cutOff.start_date).isBefore(cutOff.end_date)) {
+		_toggleEmployee(true);
+
+		const sundays = getSundaysBetweenDates(cutOff.start_date, cutOff.end_date);
+		const diffDays = getDateDiffCount(cutOff.start_date, cutOff.end_date);
+
+		cutOff.sundays = sundays;
+		employeeInfo.working_days = parseFloat(diffDays - sundays.length);
+	} else {
+		notifMsgSwal(
+			TITLE.ERROR,
+			"Start Date must be before the End Date!",
+			STATUS.WARNING
+		);
+	}
+	$("#working_days").val(employeeInfo.working_days);
 }
 
 /* Reset data */
@@ -588,10 +614,8 @@ function _resetEarnings() {
 	earnings.regular_holiday_amt = 0;
 	earnings.special_holiday = 0;
 	earnings.special_holiday_amt = 0;
-	earnings.vacation_leave = 0;
-	earnings.vacation_leave_amt = 0;
-	earnings.sick_leave = 0;
-	earnings.sick_leave_amt = 0;
+	earnings.service_incentive_leave = 0;
+	earnings.service_incentive_leave_amt = 0;
 	earnings.incentives = 0;
 	earnings.commission = 0;
 	earnings.thirteenth_month = 0;

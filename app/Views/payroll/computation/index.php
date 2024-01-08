@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="info-text salary_rate">
-                                        <strong>Basic Salary: </strong>
+                                        <strong>Salary Rate: </strong>
                                         <span><?= number_format($payroll['basic_salary'] ?? 0, 2) ?></span>
                                     </div>
                                     <div class="info-text cut_off_pay">

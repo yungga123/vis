@@ -13,12 +13,12 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="working_days">Working Days</label>
-                    <input type="number" class="form-control" name="working_days" id="working_days" placeholder="Days" step="00.5" readonly value="<?= $payroll['working_days'] ?? 0 ?>">
+                    <input type="number" class="form-control" name="working_days" id="working_days" placeholder="Days" step="00.5" value="<?= $payroll['working_days'] ?? 0 ?>">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="working_days_off">Working Day-Off</label>
+                    <label for="working_days_off">RD Working</label>
                     <input type="number" class="form-control" name="working_days_off" id="working_days_off" placeholder="Days" step="00.5" data-earnings value="<?= $earnings['working_days_off'] ?? '' ?>">
                 </div>
             </div>
@@ -58,16 +58,10 @@
             <div class="col-12">
                 <h5>Leave</h5>
             </div>
-            <div class="col-md-6">
+            <div class="col-12">
                 <div class="form-group">
-                    <label for="vacation_leave">VL</label>
-                    <input type="number" class="form-control" name="vacation_leave" id="vacation_leave" placeholder="Days" step="00.5" data-earnings value="<?= $earnings['vacation_leave'] ?? '' ?>">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="sick_leave">SL</label>
-                    <input type="number" class="form-control" name="sick_leave" id="sick_leave" placeholder="Days" step="00.5" data-earnings value="<?= $earnings['sick_leave'] ?? '' ?>">
+                    <label for="service_incentive_leave">Service Incentive Leave (SIL)</label>
+                    <input type="number" class="form-control" name="service_incentive_leave" id="service_incentive_leave" placeholder="Days" step="00.5" data-earnings value="<?= $earnings['service_incentive_leave'] ?? '' ?>">
                 </div>
             </div>
         </div>

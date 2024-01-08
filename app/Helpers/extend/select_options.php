@@ -607,8 +607,7 @@ if (! function_exists('get_leave_type'))
 	{
         $options = [
             'Leave of Absence'  => 'Leave of Absence',
-            'Vacation Leave'    => 'Vacation Leave',
-            'Sick Leave'        => 'Sick Leave',
+            'SIL'               => 'Service Incentive Leave (SIL)',
         ];
 
         return $param ? $options[$param] : $options;

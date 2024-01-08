@@ -53,7 +53,7 @@ $daily_rate     = floatval($payroll['daily_rate'] ?? 0);
                         <td><?= $payroll['salary_type'] ?? '' ?></td>
                     </tr>
                     <tr>                        
-                        <td><strong>Monthly Salary: </strong></td>
+                        <td><strong>Salary Rate: </strong></td>
                         <td><?= $payroll['basic_salary'] ?? 0 ?></td>
                     </tr>
                 </tbody>
@@ -158,29 +158,19 @@ $daily_rate     = floatval($payroll['daily_rate'] ?? 0);
                         </td>
                     </tr>
                     <tr>
-                        <?php $vacation_leave = floatval($earnings['vacation_leave'] ?? 0) ?>
-                        <td>Vacation Pay</td>
-                        <td><?= number_format(($vacation_leave * $daily_rate), 2) ?></td>
-                        <td><?= number_format($vacation_leave, 2) ?></td>
+                        <?php $service_incentive_leave = floatval($earnings['service_incentive_leave'] ?? 0) ?>
+                        <td>SIL Pay</td>
+                        <td><?= number_format(($service_incentive_leave * $daily_rate), 2) ?></td>
+                        <td><?= number_format($service_incentive_leave, 2) ?></td>
                         <td>
-                            <?php $vacation_leave_amt = $earnings['vacation_leave_amt'] ?? 0 ?>
-                            <?= number_format($vacation_leave_amt, 2) ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <?php $sick_leave = floatval($earnings['sick_leave'] ?? 0) ?>
-                        <td>Sick Pay</td>
-                        <td><?= number_format(($sick_leave * $daily_rate), 2) ?></td>
-                        <td><?= number_format($sick_leave, 2) ?></td>
-                        <td>
-                            <?php $sick_leave_amt = $earnings['sick_leave_amt'] ?? 0 ?>
-                            <?= number_format($sick_leave_amt, 2) ?>
+                            <?php $service_incentive_leave_amt = $earnings['service_incentive_leave_amt'] ?? 0 ?>
+                            <?= number_format($service_incentive_leave_amt, 2) ?>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">Subtotal</td>
                         <td>
-                            <?php $subtotal_earnings = $cutoff_pay + $working_days_off_amt + $night_diff_amt + $over_time_amt + $regular_holiday_amt + $special_holiday_amt + $vacation_leave_amt + $sick_leave_amt ?>
+                            <?php $subtotal_earnings = $cutoff_pay + $working_days_off_amt + $night_diff_amt + $over_time_amt + $regular_holiday_amt + $special_holiday_amt + $service_incentive_leave_amt ?>
                             <?= number_format($subtotal_earnings, 2) ?>
                         </td>
                     </tr>

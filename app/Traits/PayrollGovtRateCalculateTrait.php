@@ -11,11 +11,12 @@ trait PayrollGovtRateCalculateTrait
      *
      * @param int|float|string $income  The income/salary to calculate
      * @param array $rates              Optional - can pass the SSS rates
-     * @param bool $is_employeer        Whether to get employeer's contribution
+     * @param bool $monthly             Whether to calculate monthly income
+     * @param bool $is_employer         Whether to get employer's contribution
      * 
      * @return float
      */
-    public function calculateSSSContri($income, $rates = [], $is_employeer = false)
+    public function calculateSSSContri($income, $rates = [], $monthly = false, $is_employer = false)
     {
         // Get SSS rates
         $rates = empty($rates) ? $this->getGovtSSSRates(true) : $rates;
@@ -29,11 +30,12 @@ trait PayrollGovtRateCalculateTrait
         $next_diff_salary_range = $rates['sss_next_diff_range_start_amount'];
         $next_diff_msc_amount   = $rates['sss_next_diff_msc_total_amount'];
         $employee_share_rate    = $rates['sss_contri_rate_employee'];
-        $employeer_share_rate   = $rates['sss_contri_rate_employeer'];
+        $employer_share_rate   = $rates['sss_contri_rate_employer'];
 
         $count      = 0;
         $result     = 0;
-        $share_rate = $is_employeer ? $employeer_share_rate : $employee_share_rate;
+        $income     = $monthly ? $income : $income * 2;
+        $share_rate = $is_employer ? $employer_share_rate : $employee_share_rate;
         $next_starting_salary_range = $starting_salary_range;
         $opposite_salary_amount     = $starting_salary_range + $next_diff_salary_range;
         $next_msc_total_amount      = $starting_msc_total + $next_diff_msc_amount;
@@ -44,7 +46,7 @@ trait PayrollGovtRateCalculateTrait
                 break;
             }
 
-            if ($income > $last_salary_range) {
+            if ($income >= $last_salary_range) {
                 $result = $last_msc_total * $share_rate;
                 break;
             }
@@ -63,7 +65,8 @@ trait PayrollGovtRateCalculateTrait
             $count++;
         }
 
-        return $result;
+        // If semi-monthly divide by 2
+        return round($monthly ? $result : $result / 2, 2);
     }
 
     /**
@@ -71,11 +74,12 @@ trait PayrollGovtRateCalculateTrait
      *
      * @param int|float|string $income  The income/salary to calculate
      * @param array $rates              Optional - can pass the Pag-IBIG rates
-     * @param bool $is_employeer        Whether to get employeer's contribution
+     * @param bool $monthly             Whether to calculate monthly income
+     * @param bool $is_employer         Whether to get employer's contribution
      * 
      * @return float
      */
-    public function calculatePagibigContri($income, $rates = [], $is_employeer = false)
+    public function calculatePagibigContri($income, $rates = [], $monthly = false, $is_employer = false)
     {
         // Get Pag-IBIG rates
         $result         = 0;
@@ -84,15 +88,16 @@ trait PayrollGovtRateCalculateTrait
         if (empty($rates)) return 0;
 
         $employee_rate  = $rates['pagibig_contri_rate_employee'];
-        $employeer_rate = $rates['pagibig_contri_rate_employeer'];
+        $employer_rate  = $rates['pagibig_contri_rate_employer'];
         $max_monthly    = $rates['pagibig_max_monthly_contri'];
-        $share_rate     = $is_employeer ? $employeer_rate : $employee_rate;
+        $max_monthly    = $monthly ? $max_monthly : $max_monthly / 2;
+        $share_rate     = $is_employer ? $employer_rate : $employee_rate;
         // Income multiply by rate
         $result         = ($income * $share_rate);
         // If result is greater than max monthly, get it
         $result         = $result > $max_monthly ? $max_monthly : $result;
-         // Divided by 2 (employee and employeer)
-        $result         = $result / 2;
+         // Divide by 2 for semi-monthly
+        // $result         = $result / 2;
 
         return round($result, 2);
     }
@@ -118,7 +123,7 @@ trait PayrollGovtRateCalculateTrait
         $income_floor       = $rates['philhealth_income_floor'];
         $if_monthly_premium = $rates['philhealth_if_monthly_premium'];
         $income_ceiling     = $rates['philhealth_income_ceiling'];
-        $if_monthly_premium = $rates['philhealth_ic_monthly_premium'];
+        $ic_monthly_premium = $rates['philhealth_ic_monthly_premium'];
 
         // Multiply by 2 if semi-monthly
         $income     = $monthly ? $income : $income * 2;
@@ -132,13 +137,13 @@ trait PayrollGovtRateCalculateTrait
         
         // If greater than or equal to income ceiling
         if ($income >= $income_ceiling) {
-            $result = $if_monthly_premium;
+            $result = $ic_monthly_premium;
         }
 
-         // Divided by 2 (employee and employeer)
+        // Divide by 2 (employee and employer)
         $result     = $result / 2;
 
-        // If semi-monthly divided by 2
+        // If semi-monthly divide by 2
         return round($monthly ? $result : $result / 2, 2);
     }
 
@@ -161,7 +166,7 @@ trait PayrollGovtRateCalculateTrait
         // Loop through the list
         foreach (array_values($list) as $key => $val) {
             if (! $monthly) {
-                // If semi-monthly, divided by 2
+                // If semi-monthly, divide by 2
                 $val['compensation_range_start']    = round($val['compensation_range_start'] / 2);
                 $val['compensation_range_end']      = round($val['compensation_range_end'] / 2);
                 $val['fixed_tax_amount']            = $val['fixed_tax_amount'] / 2;

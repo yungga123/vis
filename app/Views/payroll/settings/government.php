@@ -28,15 +28,15 @@
                                         <div class="text-bold mb-2">Contribution Rate %</div>
                                         <div class="row">
                                             <div class="col-sm-12 col-md-6">
-                                                <label class="required" for="sss_contri_rate_employeer">Employeer</label>
-                                                <input type="text" name="sss_contri_rate_employeer" id="sss_contri_rate_employeer" class="form-control" placeholder="Ex. 9.5%" data-percentage>
+                                                <label class="required" for="sss_contri_rate_employer">Employer</label>
+                                                <input type="text" name="sss_contri_rate_employer" id="sss_contri_rate_employer" class="form-control" placeholder="Ex. 9.5%" data-percentage>
                                             </div>
                                             <div class="col-sm-12 col-md-6">
                                                 <label class="required" for="sss_contri_rate_employee">Employee</label>
                                                 <input type="text" name="sss_contri_rate_employee" id="sss_contri_rate_employee" class="form-control" placeholder="Ex. 4.5%" data-percentage>
                                             </div>
                                         </div>
-                                        <small id="alert_sss_contri_rate_employeer" class="text-danger"></small>
+                                        <small id="alert_sss_contri_rate_employer" class="text-danger"></small>
                                         <small id="alert_sss_contri_rate_employee" class="text-danger"></small>
                                     </div>
                                     <hr />
@@ -98,9 +98,9 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label class="required" for="pagibig_contri_rate_employeer">Employeer</label>
-                                        <input type="text" name="pagibig_contri_rate_employeer" id="pagibig_contri_rate_employeer" class="form-control" placeholder="Ex. 2%" step="00.01" data-percentage>
-                                        <small id="alert_pagibig_contri_rate_employeer" class="text-danger"></small>
+                                        <label class="required" for="pagibig_contri_rate_employer">Employer</label>
+                                        <input type="text" name="pagibig_contri_rate_employer" id="pagibig_contri_rate_employer" class="form-control" placeholder="Ex. 2%" step="00.01" data-percentage>
+                                        <small id="alert_pagibig_contri_rate_employer" class="text-danger"></small>
                                     </div>
                                 </div>
                                 <div class="col-6">

@@ -90,9 +90,12 @@ class Dashboard extends BaseController
                 $_perms = isset($permissions[$val]) ? $permissions[$val] : get_generic_modules_actions($val);
                 $_perms = is_array($_perms) ? $_perms : explode(',', $_perms);
 
+                // Check if actions VIEW OR VIEW_ALL are in the $_perms
+                $value  = array_intersect([ACTION_VIEW, ACTION_VIEW_ALL], $_perms);
+
                 // If user is not an admin and has no VIEW permission
                 // for this module, then continue to the next loop
-                if (! is_admin() && ! in_array(ACTION_VIEW, $_perms)) {
+                if (! is_admin() && empty($value)) {
                     continue;
                 }
 

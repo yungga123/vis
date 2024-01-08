@@ -139,9 +139,9 @@ class LeaveModel extends Model
         $id     = $data['id'][0];
         $action = isset($data['purge']) ? ACTION_DELETE : ACTION_EDIT;
         $record = $this->fetch($id, 'employee_id');
+        $status = $data['data']['status'] ?? null;
 
-        if (empty($record) || (! empty($record) && isset($data['data']['status']))) {
-            $status = $data['data']['status'] ?? null;
+        if ((empty($record) && ! $status) || (! empty($record) && $status)) {
             $action = $status ? strtoupper($status) : $action;
             $phrase = $status ? 'your own' : "other's";
 
@@ -260,7 +260,7 @@ class LeaveModel extends Model
 
         // Not include dev record
         if (! is_developer()) {
-            $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
+            // $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
         }
 
         if (! in_array(ACTION_VIEW_ALL, $permissions)) {

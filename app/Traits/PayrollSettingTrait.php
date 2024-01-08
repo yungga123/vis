@@ -73,8 +73,7 @@ trait PayrollSettingTrait
     public function getDefaultLeaveCounts()
     {
         $params = [
-            'default_vacation_leave',
-            'default_sick_leave',
+            'default_service_incentive_leave',
             'default_emergency_leave',
             'default_other_leave',
         ];
@@ -125,7 +124,7 @@ trait PayrollSettingTrait
     {
         $params     = [
             'sss_contri_rate_employee',
-            'sss_contri_rate_employeer',
+            'sss_contri_rate_employer',
             'sss_salary_range_min',
             'sss_salary_range_max',
             'sss_next_diff_range_start_amount',
@@ -133,7 +132,7 @@ trait PayrollSettingTrait
             'sss_last_msc',
             'sss_next_diff_msc_total_amount',
             'pagibig_contri_rate_employee',
-            'pagibig_contri_rate_employeer',
+            'pagibig_contri_rate_employer',
             'pagibig_max_monthly_contri',
             'philhealth_contri_rate',
             'philhealth_income_floor',
@@ -147,7 +146,7 @@ trait PayrollSettingTrait
 
         $params     = [
             'sss_contri_rate_employee'      => floatval(floatval($rates['sss_contri_rate_employee'] ?? 0) / 100),
-            'sss_contri_rate_employeer'     => floatval(floatval($rates['sss_contri_rate_employeer'] ?? 0) / 100),
+            'sss_contri_rate_employer'      => floatval(floatval($rates['sss_contri_rate_employer'] ?? 0) / 100),
             'sss_salary_range_min'          => floatval($rates['sss_salary_range_min'] ?? 0),
             'sss_salary_range_max'          => floatval($rates['sss_salary_range_max'] ?? 0),
             'sss_next_diff_range_start_amount' => floatval($rates['sss_next_diff_range_start_amount'] ?? 0),
@@ -155,7 +154,7 @@ trait PayrollSettingTrait
             'sss_last_msc'                  => floatval($rates['sss_last_msc'] ?? 0),
             'sss_next_diff_msc_total_amount' => floatval($rates['sss_next_diff_msc_total_amount'] ?? 0),
             'pagibig_contri_rate_employee'  => floatval(floatval($rates['pagibig_contri_rate_employee'] ?? 0) / 100),
-            'pagibig_contri_rate_employeer' => floatval(floatval($rates['pagibig_contri_rate_employeer'] ?? 0) / 100),
+            'pagibig_contri_rate_employer'  => floatval(floatval($rates['pagibig_contri_rate_employer'] ?? 0) / 100),
             'pagibig_max_monthly_contri'    => floatval($rates['pagibig_max_monthly_contri'] ?? 200),
             'philhealth_contri_rate'        => floatval(floatval($rates['philhealth_contri_rate'] ?? 0) / 100),
             'philhealth_income_floor'       => floatval($rates['philhealth_income_floor'] ?? 0),
@@ -178,7 +177,7 @@ trait PayrollSettingTrait
     {
         $params = [
             'sss_contri_rate_employee',
-            'sss_contri_rate_employeer',
+            'sss_contri_rate_employer',
             'sss_salary_range_min',
             'sss_salary_range_max',
             'sss_next_diff_range_start_amount',
@@ -192,7 +191,7 @@ trait PayrollSettingTrait
 
         $params     = [
             'sss_contri_rate_employee'      => floatval(floatval($rates['sss_contri_rate_employee'] ?? 0) / 100),
-            'sss_contri_rate_employeer'     => floatval(floatval($rates['sss_contri_rate_employeer'] ?? 0) / 100),
+            'sss_contri_rate_employer'      => floatval(floatval($rates['sss_contri_rate_employer'] ?? 0) / 100),
             'sss_salary_range_min'          => floatval($rates['sss_salary_range_min'] ?? 0),
             'sss_salary_range_max'          => floatval($rates['sss_salary_range_max'] ?? 0),
             'sss_next_diff_range_start_amount' => floatval($rates['sss_next_diff_range_start_amount'] ?? 0),
@@ -215,7 +214,7 @@ trait PayrollSettingTrait
     {
         $params = [
             'pagibig_contri_rate_employee',
-            'pagibig_contri_rate_employeer',
+            'pagibig_contri_rate_employer',
             'pagibig_max_monthly_contri',
         ];
         $rates  = $this->getPayrollSettings($params, true);
@@ -224,7 +223,7 @@ trait PayrollSettingTrait
 
         $params     = [
             'pagibig_contri_rate_employee'  => floatval(floatval($rates['pagibig_contri_rate_employee'] ?? 0) / 100),
-            'pagibig_contri_rate_employeer' => floatval(floatval($rates['pagibig_contri_rate_employeer'] ?? 0) / 100),
+            'pagibig_contri_rate_employer'  => floatval(floatval($rates['pagibig_contri_rate_employer'] ?? 0) / 100),
             'pagibig_max_monthly_contri'    => floatval($rates['pagibig_max_monthly_contri'] ?? 200),
         ];
 

@@ -105,7 +105,7 @@ trait AdminTrait
                     </tr>
                 EOF;
             }
-        } else $tbody = '<tr><td colspan="4"><h3>NO SCHEDULES FOR TODAY</h3></td></tr>';
+        } else $tbody = '<tr><td colspan="5"><h3>NO SCHEDULES FOR TODAY</h3></td></tr>';
 
         return <<<EOF
             <table class="table table-bordered">

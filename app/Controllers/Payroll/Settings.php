@@ -177,12 +177,8 @@ class Settings extends BaseController
                     'label' => 'working time out',
                     'rules' => 'required'
                 ],
-                'default_vacation_leave' => [
+                'default_service_incentive_leave' => [
                     'label' => 'vacation leave',
-                    'rules' => 'required|numeric'
-                ],
-                'default_sick_leave' => [
-                    'label' => 'sick leave',
                     'rules' => 'required|numeric'
                 ],
             ],
@@ -221,8 +217,8 @@ class Settings extends BaseController
                 ],
             ],
             'government' => [
-                'sss_contri_rate_employeer' => [
-                    'label' => 'contri rate employeer',
+                'sss_contri_rate_employer' => [
+                    'label' => 'contri rate employer',
                     'rules' => 'required|numeric'
                 ],
                 'sss_contri_rate_employee' => [
@@ -253,8 +249,8 @@ class Settings extends BaseController
                     'label' => 'next diff MSC total amount',
                     'rules' => 'required|numeric'
                 ],
-                'pagibig_contri_rate_employeer' => [
-                    'label' => 'contri rate employeer',
+                'pagibig_contri_rate_employer' => [
+                    'label' => 'contri rate employer',
                     'rules' => 'required|numeric'
                 ],
                 'pagibig_contri_rate_employee' => [
