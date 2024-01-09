@@ -58,21 +58,20 @@ trait InventoryTrait
     {
         $model  = new InventoryModel();
         $fields = $fields ? $fields : "
-            id,
-            CONCAT(item_model, ' | ',item_description, ' | ',supplier_name) AS text,
-            item_model,
-            item_description,
-            stocks,
-            category_name,
-            subcategory_name,
-            brand,
-            unit,
-            size,
-            supplier_name
+            {$model->table}.id,
+            CONCAT_WS(' | ', {$model->table}.item_model, {$model->table}.item_description, {$model->view}.supplier_name) AS text,
+            {$model->table}.item_model,
+            {$model->table}.item_description,
+            {$model->table}.stocks,
+            {$model->view}.category_name,
+            {$model->view}.subcategory_name,
+            {$model->view}.brand,
+            {$model->view}.unit,
+            {$model->view}.size,
+            {$model->view}.supplier_name
         ";
         $builder = $model->select($fields);
         $model->joinView($builder);
-        $builder->where('stocks !=', 0);
 
         if (! empty($q)) {
             if (empty($options)) {                
@@ -80,17 +79,18 @@ trait InventoryTrait
                 return $builder->find();
             }
 
-            $builder->like('item_model', $q);
-            $builder->like('item_description', $q);
+            $builder->like("{$model->table}.item_model", $q);
+            $builder->orLike("{$model->table}.item_description", $q);
+            $builder->orLike("{$model->view}.supplier_name", $q);
         }
 
-        $builder->orderBy('id', 'ASC');
+        $builder->orderBy("{$model->table}.id", 'ASC');
         $result = $builder->paginate($options['perPage'], 'default', $options['page']);
-        $total = $builder->countAllResults();
+        $total  = $builder->countAllResults();
 
         return [
             'data'  => $result,
-            'total'  => $total
+            'total' => $total
         ];     
     }
 
