@@ -60,7 +60,11 @@ $routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 
 /***************** PHASE 1 *****************/
 /* HUMAN RESOURCE */
-//ACCOUNTS
+// Common
+$routes->group('hr/common', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->post('employees', 'HR\Common::searchEmployees', ['as' => 'hr.common.employees']);
+});
+// ACCOUNTS
 $routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'HR\Account::index', ['as' => 'account.home']);
     $routes->post('list', 'HR\Account::list', ['as' => 'account.list']);
@@ -74,7 +78,7 @@ $routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) 
     $routes->post('change-profile-image','HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
 });
 
-//EMPLOYEES
+// EMPLOYEES
 $routes->group('employees', ['filter' => 'checkauth'], static function ($routes) {
     $routes->get('/', 'HR\Employee::index', ['as' => 'employee.home']);
     $routes->post('list', 'HR\Employee::list', ['as' => 'employee.list']);
@@ -350,8 +354,85 @@ $routes->group('reports', ['filter' => 'checkauth'], static function ($routes) {
 });
 /* REPORTS */
 
-
 /***************** PHASE 2 *****************/
+
+
+/***************** PHASE 3 *****************/
+/* PAYROLL */
+$routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
+    // SALARY RATES
+    $routes->group('salary-rates', static function ($routes) {
+        $routes->get('/', 'Payroll\SalaryRate::index', ['as' => 'payroll.salary_rate.home']);
+        $routes->post('list', 'Payroll\SalaryRate::list', ['as' => 'payroll.salary_rate.list']);
+        $routes->post('save', 'Payroll\SalaryRate::save', ['as' => 'payroll.salary_rate.save']);
+        $routes->post('fetch', 'Payroll\SalaryRate::fetch', ['as' => 'payroll.salary_rate.fetch']);
+        $routes->post('delete', 'Payroll\SalaryRate::delete', ['as' => 'payroll.salary_rate.delete']);
+    });
+
+    // COMPUTATION
+    $routes->group('computation', static function ($routes) {
+        $routes->get('/', 'Payroll\Computation::index', ['as' => 'payroll.computation.home']);
+        $routes->post('save', 'Payroll\Computation::save', ['as' => 'payroll.computation.save']);
+        $routes->post('govt-deductions', 'Payroll\Computation::govtDeductions', ['as' => 'payroll.computation.govt_deductions']);
+    });
+
+    // PAYSLIP
+    $routes->group('payslip', static function ($routes) {
+        $routes->get('/', 'Payroll\Payslip::index', ['as' => 'payroll.payslip.home']);
+        $routes->post('list', 'Payroll\Payslip::list', ['as' => 'payroll.payslip.list']);
+        $routes->post('save', 'Payroll\Payslip::save', ['as' => 'payroll.payslip.save']);
+        $routes->post('fetch', 'Payroll\Payslip::fetch', ['as' => 'payroll.payslip.fetch']);
+        $routes->post('delete', 'Payroll\Payslip::delete', ['as' => 'payroll.payslip.delete']);
+        $routes->get('print/(:num)', 'Payroll\Payslip::print/$1', ['as' => 'payroll.payslip.print']);
+    });
+
+    // LEAVE
+    $routes->group('leave', static function ($routes) {
+        $routes->get('/', 'Payroll\Leave::index', ['as' => 'payroll.leave.home']);
+        $routes->post('list', 'Payroll\Leave::list', ['as' => 'payroll.leave.list']);
+        $routes->post('save', 'Payroll\Leave::save', ['as' => 'payroll.leave.save']);
+        $routes->post('fetch', 'Payroll\Leave::fetch', ['as' => 'payroll.leave.fetch']);
+        $routes->post('delete', 'Payroll\Leave::delete', ['as' => 'payroll.leave.delete']);
+        $routes->post('change', 'Payroll\Leave::change', ['as' => 'payroll.leave.change']);
+    });
+
+    // OVERTIME
+    $routes->group('overtime', static function ($routes) {
+        $routes->get('/', 'Payroll\Overtime::index', ['as' => 'payroll.overtime.home']);
+        $routes->post('list', 'Payroll\Overtime::list', ['as' => 'payroll.overtime.list']);
+        $routes->post('save', 'Payroll\Overtime::save', ['as' => 'payroll.overtime.save']);
+        $routes->post('fetch', 'Payroll\Overtime::fetch', ['as' => 'payroll.overtime.fetch']);
+        $routes->post('delete', 'Payroll\Overtime::delete', ['as' => 'payroll.overtime.delete']);
+        $routes->post('change', 'Payroll\Overtime::change', ['as' => 'payroll.overtime.change']);
+    });
+
+    // SETTINGS
+    $routes->group('settings', static function ($routes) {
+        $routes->get('/', 'Payroll\Settings::index', ['as' => 'payroll.settings.home']);
+        $routes->post('save', 'Payroll\Settings::save', ['as' => 'payroll.settings.save']);
+        $routes->post('fetch', 'Payroll\Settings::fetch', ['as' => 'payroll.settings.fetch']);
+
+        // BIR TAX
+        $routes->group('tax', static function ($routes) {
+            $routes->post('save', 'Payroll\BirTaxSetup::save', ['as' => 'payroll.settings.tax.save']);
+            $routes->post('fetch', 'Payroll\BirTaxSetup::fetch', ['as' => 'payroll.settings.tax.fetch']);
+            $routes->post('delete', 'Payroll\BirTaxSetup::delete', ['as' => 'payroll.settings.tax.delete']);
+        });
+    });
+
+    // TIMESHEETS
+    $routes->group('timesheets', static function ($routes) {
+        $routes->get('/', 'Payroll\Timesheet::index', ['as' => 'payroll.timesheet.home']);
+        $routes->post('list', 'Payroll\Timesheet::list', ['as' => 'payroll.timesheet.list']);
+        $routes->post('save', 'Payroll\Timesheet::save', ['as' => 'payroll.timesheet.save']);
+        $routes->post('fetch', 'Payroll\Timesheet::fetch', ['as' => 'payroll.timesheet.fetch']);
+        $routes->post('delete', 'Payroll\Timesheet::delete', ['as' => 'payroll.timesheet.delete']);
+        $routes->post('clock', 'Payroll\Timesheet::clock', ['as' => 'payroll.timesheet.clock']);
+    });
+});
+/* PAYROLL */
+
+/***************** PHASE 3 *****************/
 
 /*
  * --------------------------------------------------------------------

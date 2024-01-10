@@ -4,6 +4,8 @@ namespace App\Traits;
 
 use App\Models\AccountModel;
 use App\Models\EmployeeModel;
+use App\Models\EmployeeViewModel;
+use App\Models\SalaryRateModel;
 
 trait HRTrait
 {
@@ -44,8 +46,10 @@ trait HRTrait
         $model  = $this->initAcountModel();
         $table  = empty($alias) ? $model->view : "{$model->view} AS $alias";
         $column = empty($alias) ? "{$model->view}.username" : "{$alias}.username";
+        $_table = $builder->getTable();
+        $_field = strpos($fieldName, '.') === false ? $_table .'.'. $fieldName : $fieldName;
 
-        $builder->join($table, "{$column} = {$fieldName}", $type);
+        $builder->join($table, "{$column} = {$_field}", $type);
         return $builder;
     }
 
@@ -61,10 +65,10 @@ trait HRTrait
      * 
      * @return $builder
      */
-    public function joinEmployee(
+    public function traitJoinEmployees(
         $builder, 
         $columnName, 
-        $fieldName, 
+        $fieldName = '', 
         $alias = '', 
         $type = 'left', 
         $is_view = false
@@ -74,8 +78,69 @@ trait HRTrait
         $table  = $is_view ? $model->view : $model->table;
         $table  = empty($alias) ? $table : "{$table} AS $alias";
         $column = empty($alias) ? "{$table}.{$columnName}" : "{$alias}.{$columnName}";
+        $_table = $builder->getTable();
+        $_field = empty($fieldName) ? $_table .'.'. $columnName : $fieldName;
 
-        $builder->join($table, "{$column} = {$fieldName}", $type);
+        $builder->join($table, "{$column} = {$_field}", $type);
         return $builder;
+    }
+
+    /**
+     * Fetch employees
+     * 
+     * @param string $q         The query to search for
+     * @param string $options   Identifier for the options - pagination or not
+     * @param string $fields    Columns or fields in the select
+     * @return array            The results of the search
+     */
+    public function fetchEmployees($q, $options = [], $fields = '')
+    {
+        $model  = new EmployeeModel();
+        $modelV = new EmployeeViewModel();
+        $fields = $fields ? $fields : "
+            {$modelV->table}.employee_id AS id, {$modelV->table}.employee_name AS text
+        ";
+
+        if (
+            ($salary = $options['is_salary_rate'] ?? null) || 
+            ($computation = $options['is_payroll_computation'] ?? null)
+        ) {
+            $srModel    = new SalaryRateModel();
+            $fields     .= ",
+                {$modelV->table}.employment_status,
+                {$modelV->table}.position,
+                {$srModel->table}.rate_type,
+                {$srModel->table}.salary_rate
+            ";
+            
+            $modelV->join($srModel->table, "{$srModel->table}.employee_id = {$modelV->table}.employee_id", 'left');
+
+            if ($salary) {
+                $modelV->where("({$srModel->table}.rate_type = '' OR {$srModel->table}.rate_type IS NULL)");
+            }
+        }
+
+        $modelV->select($fields);
+        $model->withOutResigned($modelV);
+
+        if (! empty($q)) {
+            if (empty($options)) {
+                $modelV->where("{$modelV->table}.employee_id", $q);
+                return $modelV->first();
+            }
+
+            $modelV->like("{$modelV->table}.employee_id", $q);
+            $modelV->orLike("{$modelV->table}.employee_name", $q);
+        }
+
+        $modelV->orderBy("{$modelV->table}.employee_name", 'ASC');
+
+        $result = $modelV->paginate($options['perPage'], 'default', $options['page']);
+        $total  = $modelV->countAllResults();
+
+        return [
+            'data'  => $result,
+            'total' => $total
+        ];
     }
 }

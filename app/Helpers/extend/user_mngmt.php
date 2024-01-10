@@ -141,6 +141,55 @@ if (! function_exists('get_modules'))
 	}
 }
 
+if (! function_exists('get_modules_options'))
+{
+	/**
+	 * Get modules for options selection
+	 */
+	function get_modules_options(): string
+	{
+		$html 	= '';
+        $modules 	= get_modules();
+        
+        if (! empty($modules)) {
+			$options 	= [];
+			$setups		= setup_modules();
+			$menus		= get_nav_menus();
+
+			// Exclude dashboard
+			unset($modules['DASHBOARD']);
+
+            foreach ($modules as $key => $module) {
+				$setup 		= $setups[$key];
+				$menu_code 	= $setup['menu'];
+				$menu_name 	= isset($menus[$menu_code]) ? $menus[$menu_code]['name'] : $module;
+
+				// Store option with menu/module name as key
+				$options[$menu_name][] = <<<EOF
+					<option value="{$key}">{$module}</option>
+				EOF;
+			}
+
+			if (! empty($options)) {
+				ksort($options);
+
+				foreach ($options as $key => $vals) {
+					// Make the key as opt group label
+					$html .= "<optgroup label='{$key}'>";
+
+					foreach ($vals as $val) {
+						$html .= $val;
+					}
+
+					$html .= "</optgroup>";
+				}
+			}
+        }
+        
+        return $html;
+	}
+}
+
 if (! function_exists('get_module_codes'))
 {
 	/**
@@ -162,29 +211,78 @@ if (! function_exists('get_actions'))
 	/**
 	 * Get the action list
 	 */
-	function get_actions(string $param = null, bool $withOthers = false): string|array
+	function get_actions(string $param = null, bool $with_others = false, bool $with_generic = false): string|array
 	{
 		$actions = ACTIONS;
 
 		if ($param && !array_key_exists($param, $actions)) {
-			$others = array_values($actions['OTHERS']);
+			$others 	= $actions['OTHERS'];
 			
-			for ($i=0; $i <= count($others); $i++) { 
-				if (isset($others[$i][$param])) return $others[$i][$param];
+			// Check if param is a module code
+			if (isset($others[$param])) {
+				$param 	= $others[$param];
+
+				if (isset($param['OTHERS_ONLY'])) {
+					unset($param['OTHERS_ONLY']);
+
+					if (! $with_generic) return $param;
+				}
+
+				unset($actions['OTHERS']);
+
+				return array_merge($actions, $param);
+			}
+
+			$others_val = array_values($actions['OTHERS']);
+
+			for ($i=0; $i <= count($others_val); $i++) { 
+				if (isset($others_val[$i][$param])) {
+					return $others_val[$i][$param];
+				}
 			}
 		}
 
-        if (! $withOthers) unset($actions['OTHERS']);
+        if (! $with_others) unset($actions['OTHERS']);
 
-		if ($param) {
-			$param = strtoupper($param);
-
-			return isset($actions[$param]) || in_array($param, $actions)
-				? $actions[$param]
-				: ucwords(strtolower(str_replace('_', ' ', $param)));
+		if ($param && isset($actions[strtoupper($param)])) {
+			return $actions[strtoupper($param)];
 		}
 
 		return $actions;
+	}
+}
+
+if (! function_exists('get_generic_modules_actions'))
+{
+	/**
+	 * Get the actions of modules with generic acess
+	 */
+	function get_generic_modules_actions(string $param = null): string|array|bool
+	{
+		$modules = MODULES_WITH_GENERIC_ACCESS;
+
+		if (in_array($param, $modules) || isset($modules[$param])) {
+			$module 	= $modules[$param] ?? $param;
+			$generic 	= array_keys(get_actions());
+			
+			if (is_array($module)) {
+				$generic = array_diff($generic, $module['EXCEPT']);
+			}
+			
+			return $generic;
+		}
+
+		if (! empty($modules) && ! $param) {
+			$_modules = [];
+
+			foreach ($modules as $key => $val) {
+				$_modules[] = is_array($val) ? $key : $val;
+			}
+
+			return $_modules;
+		}
+
+		return $param ? [] : $modules;
 	}
 }
 

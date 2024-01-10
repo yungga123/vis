@@ -2,7 +2,7 @@
 <?= $this->section('content'); ?>
 	<div class="container-fluid mb-3">
 		<div class="row">
-			<div class="col-12">
+			<div class="col-sm-12 col-md-8">
 				<div class="card card-outline card-info">
 					<div class="card-header">
 						<h3 class="card-title">Schedules Today</h3>
@@ -12,8 +12,11 @@
                             </button>
                         </div>
 					</div>
-					<div class="card-body">
-						<div class="row">
+					<div class="card-body p-0">
+						<div class="table-responsive">
+							<?= $schedules ?>
+						</div>
+						<!-- <div class="row">
 							<div class="col-md-3 col-sm-12">
 								<div class="card">
 									<div class="card-header">
@@ -31,9 +34,12 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						</div> -->
 					</div>
 				</div>
+			</div>
+			<div class="col-sm-12 col-md-4">
+				<?= $this->include('payroll/timesheet/attendance'); ?>
 			</div>
 			<div class="col-12">
 				<div class="card card-outline card-success">

@@ -27,7 +27,7 @@ class Schedule extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
 
     private $_permissions;
@@ -57,7 +57,7 @@ class Schedule extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
         
         $data['title']          = 'Schedules List';
         $data['page_title']     = 'Schedules List';

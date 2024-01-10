@@ -24,7 +24,7 @@ class Suppliers extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
     private $_permissions;
 
@@ -53,7 +53,7 @@ class Suppliers extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
         $data['title']          = 'Suppliers';
         $data['page_title']     = 'Suppliers | List';

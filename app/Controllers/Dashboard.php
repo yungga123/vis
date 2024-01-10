@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Traits\AdminTrait;
 use App\Models\AccountModel;
 use App\Models\EmployeeModel;
 use App\Models\CustomerModel;
@@ -11,6 +10,9 @@ use App\Models\DispatchModel;
 use App\Models\JobOrderModel;
 use App\Models\ScheduleModel;
 use App\Models\InventoryModel;
+use App\Models\LeaveModel;
+use App\Models\OvertimeModel;
+use App\Models\PayrollModel;
 use App\Models\ProjectRequestFormModel;
 use App\Models\TaskLeadModel;
 use App\Models\TaskLeadView;
@@ -19,11 +21,21 @@ use App\Models\RequestPurchaseFormModel;
 use App\Models\PurchaseOrderModel;
 use App\Models\RolesModel;
 use App\Models\PermissionModel;
+use App\Models\SalaryRateModel;
+use App\Models\TimesheetModel;
+use App\Traits\AdminTrait;
+use App\Traits\PayrollSettingTrait;
 
 class Dashboard extends BaseController
 {
     /* Declare trait here to use */
-    use AdminTrait;
+    use AdminTrait, PayrollSettingTrait;
+    
+    /**
+     * Use to get the permissions
+     * @var array
+     */
+    private $_permissions;
 
     /**
      * Display the index view
@@ -34,11 +46,24 @@ class Dashboard extends BaseController
     {
         $data['title']          = 'Dashboard';
         $data['page_title']     = 'Dashboard';
-        $data['exclude_toastr'] = true;
+        $data['sweetalert2']    = true;
+        $data['toastr']         = true;
         $data['modules']        = $this->_moduleBoxMenu();
         $data['type_legend']    = $this->scheduleTypeLegend();
         $data['schedules']      = $this->getSchedulesForToday(true);
-        $data['custom_js']      = 'dashboard/index.js';
+        $data['office_hours']   = $this->getOfficeHours(true);
+        $data['custom_js']      = [
+            'dashboard/index.js',
+            'payroll/timesheet/common.js',
+        ];
+        $data['routes']         = json_encode([
+            'payroll' => [
+                'timesheet' => [
+                    'fetch' => url_to('payroll.timesheet.fetch'),
+                    'clock' => url_to('payroll.timesheet.clock'),
+                ],
+            ],
+        ]);
 
         return view('dashboard/index', $data);
     }
@@ -50,8 +75,9 @@ class Dashboard extends BaseController
      */
     public function _moduleBoxMenu()
     {
-        $modules    = $this->modules;
-        $arr        = [];
+        $arr            = [];
+        $modules        = $this->modules;
+        $permissions    = format_results($this->permissions, 'module_code', 'permissions');
 
         if (! empty($modules) && is_array($modules)) {
             // Sort modules ascending
@@ -61,6 +87,20 @@ class Dashboard extends BaseController
             $record_counts = $this->_recordCounts();
 
             foreach ($modules as $val) {
+                $_perms = isset($permissions[$val]) ? $permissions[$val] : get_generic_modules_actions($val);
+                $_perms = is_array($_perms) ? $_perms : explode(',', $_perms);
+
+                // Check if actions VIEW OR VIEW_ALL are in the $_perms
+                $value  = array_intersect([ACTION_VIEW, ACTION_VIEW_ALL], $_perms);
+
+                // If user is not an admin and has no VIEW permission
+                // for this module, then continue to the next loop
+                if (! is_admin() && empty($value)) {
+                    continue;
+                }
+
+                $this->_permissions[$val] = is_admin() ? ['VIEW'] : $_perms;
+
                 // Not include DASHBOARD module                
                 if ($val !== 'DASHBOARD' && in_array($val, $setup_modules)) {
                     $module         = setup_modules($val);
@@ -196,6 +236,11 @@ class Dashboard extends BaseController
         $taskLeadView       = new TaskLeadView();
         $rolesModel         = new RolesModel();
         $permissionModel    = new PermissionModel();
+        $leaveModel         = new LeaveModel();
+        $overtimeModel      = new OvertimeModel();
+        $payrollModel       = new PayrollModel();
+        $timesheetModel     = new TimesheetModel();
+        $salaryRateModel    = new SalaryRateModel();
 
         // Count all queries
         $accountCount           = $accountModel->where('deleted_at IS NULL');
@@ -354,7 +399,56 @@ class Dashboard extends BaseController
             ],
             'SETTINGS_ROLES'        => $rolesCount,
             'SETTINGS_PERMISSIONS'  => $permissionCount,
+            'PAYROLL_LEAVE'         => $leaveModel->countRecords(true),
+            'PAYROLL_OVERTIME'      => $overtimeModel->countRecords(true),
+            'PAYROLL_PAYSLIP'       => $payrollModel->countRecords(true),
+            'PAYROLL_TIMESHEETS'    => $timesheetModel->countRecords(true),
+            'PAYROLL_SALARY_RATES'  => $salaryRateModel->countRecords(),
         ];
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_permissions['PAYROLL_LEAVE'] ?? []))) {
+            $recordCounts['PAYROLL_LEAVE'] = [
+                'count'     => $leaveModel->countRecords(),
+                'more_info' => [
+                    'my leave'  => [
+                        'count' => $leaveModel->countRecords(true),
+                    ],
+                ]
+            ];
+        }
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_permissions['PAYROLL_OVERTIME'] ?? []))) {
+            $recordCounts['PAYROLL_OVERTIME'] = [
+                'count'     => $overtimeModel->countRecords(),
+                'more_info' => [
+                    'my overtime'  => [
+                        'count' => $overtimeModel->countRecords(true),
+                    ],
+                ]
+            ];
+        }
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_permissions['PAYROLL_PAYSLIP'] ?? []))) {
+            $recordCounts['PAYROLL_PAYSLIP'] = [
+                'count'     => $payrollModel->countRecords(),
+                'more_info' => [
+                    'my payslip'  => [
+                        'count' => $payrollModel->countRecords(true),
+                    ],
+                ]
+            ];
+        }
+
+        if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_permissions['PAYROLL_TIMESHEETS'] ?? []))) {
+            $recordCounts['PAYROLL_TIMESHEETS'] = [
+                'count'     => $timesheetModel->countRecords(),
+                'more_info' => [
+                    'my timesheets'  => [
+                        'count' => $timesheetModel->countRecords(true),
+                    ],
+                ]
+            ];
+        }
 
         return $recordCounts;
     }

@@ -30,7 +30,7 @@ class Dispatch extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
 
     private $_permissions;
@@ -60,7 +60,7 @@ class Dispatch extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
         
         $data['title']          = 'Dispatch List';
         $data['page_title']     = 'Dispatch List';
@@ -288,6 +288,11 @@ class Dispatch extends BaseController
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
 
         $dispatch = $this->_model->getDispatch($id, false, true);
+
+        // For restriction
+        if (empty($dispatch)) {
+            return $this->redirectTo404Page();
+        }
 
         // Get client details
         $joModel    = new JobOrderModel();

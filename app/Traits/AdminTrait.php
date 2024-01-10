@@ -101,10 +101,11 @@ trait AdminTrait
                         <td>{$schedule['description']}</td>
                         <td>{$start}</td>
                         <td>{$end}</td>
+                        <td>{$type['text']}</td>
                     </tr>
                 EOF;
             }
-        } else $tbody = '<tr><td colspan="4"><h3>NO SCHEDULES FOR TODAY</h3></td></tr>';
+        } else $tbody = '<tr><td colspan="5"><h3>NO SCHEDULES FOR TODAY</h3></td></tr>';
 
         return <<<EOF
             <table class="table table-bordered">
@@ -114,6 +115,7 @@ trait AdminTrait
                         <th>Description</th>
                         <th>Start Date & Time</th>
                         <th>End Date & Time</th>
+                        <th>Type</th>
                     </tr>
                 </thead>
                 <tbody>{$tbody}</tbody>

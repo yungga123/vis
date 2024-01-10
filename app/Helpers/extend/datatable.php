@@ -6,11 +6,13 @@ if (! function_exists('dt_button_html'))
      */
 	function dt_button_html(array $options, bool $dropdown = false): string
 	{     
-        $wfull  = $dropdown ? 'w-100' : '';  
+        $wfull  = $dropdown ? 'w-100' : '';
+        $btn    = isset($options['link']) ? 'a' : 'button';
+        $link   = isset($options['link']) ? 'href="'.$options['link'].'" target="_blank"' : '';
         $html   = <<<EOF
-            <button class="btn btn-sm {$options['button']} {$wfull}" {$options['condition']}>
+            <{$btn} class="btn btn-sm {$options['button']} {$wfull}" {$options['condition']} {$link}>
                 <i class="{$options['icon']}"></i> {$options['text']}
-            </button>
+            </{$btn}>
         EOF;
 
         return $dropdown 
@@ -46,15 +48,17 @@ if (! function_exists('dt_button_actions'))
                 'condition' => 'title="User has no permission to delete record." disabled',
             ],
         ];
+
+        $row_id = is_string($id) ? "'{$row[$id]}'" : $id;
             
         if (check_permissions($permissions, ACTION_EDIT)) {
             $arr['edit']['text']        = $dropdown ? 'Edit' : '';
-            $arr['edit']['condition']   = 'onclick="edit('.$row["$id"].')" title="Edit"';
+            $arr['edit']['condition']   = 'onclick="edit('.$row_id.')" title="Edit"';
         }
             
         if (check_permissions($permissions, ACTION_DELETE)) {
             $arr['delete']['text']        = $dropdown ? 'Delete' : '';
-            $arr['delete']['condition']   = 'onclick="remove('.$row["$id"].')" title="Delete"';
+            $arr['delete']['condition']   = 'onclick="remove('.$row_id.')" title="Delete"';
         }
         
         $html = '';
@@ -107,16 +111,18 @@ if (! function_exists('dt_status_color'))
     {
         $color   = 'secondary';
         switch (strtolower($status)) {
-            case 'pending':
             case 'edit':
+            case 'pending':
                 $color = 'warning';                   
                 break;
+            case 'add':
             case 'accepted':
             case 'approved':
-            case 'add':
+            case 'processed':
                 $color = 'primary';
                 break;
             case 'rejected':
+            case 'discarded':
                 $color = 'secondary';
                 break;
             case 'item_out':

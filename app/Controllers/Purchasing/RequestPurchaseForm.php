@@ -29,7 +29,7 @@ class RequestPurchaseForm extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
     private $_permissions;
 
@@ -58,7 +58,7 @@ class RequestPurchaseForm extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
         $data['title']          = get_modules($this->_module_code);
         $data['page_title']     = get_modules($this->_module_code);
@@ -317,15 +317,21 @@ class RequestPurchaseForm extends BaseController
         // Check role & action if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
         
-        $columns = $this->_model->columns(true, true);
-        $columns = $columns .", {$this->_model->table}.created_at";
-        $builder = $this->_model->select($columns);
+        $columns    = $this->_model->columns(true, true);
+        $builder    = $this->_model->select($columns);
         
         $this->_model->joinView($builder);
 
+        $rpf        = $builder->find($id);
+
+        // For restriction
+        if (empty($rpf)) {
+            return $this->redirectTo404Page();
+        }
+
         $rpfItemModel           = new RPFItemModel(); 
         $items                  = $rpfItemModel->getRpfItemsByRpfId($id, true, true);
-        $data['rpf']            = $builder->find($id);
+        $data['rpf']            = $rpf;
         $data['rpf_items']      = $items;
         $data['title']          = 'Print Requisition Form';
         $data['company_logo']   = $this->getCompanyLogo();

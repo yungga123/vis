@@ -147,22 +147,26 @@ if (! function_exists('clean_param'))
     /**
      * Clean input using trim default function
      */
-	function clean_param(string|array $input, $func_name = ''): string|array
+	function clean_param(string|array $input, $func_name = '', $trim_chars = ''): string|array
 	{
+        if (empty($input)) return $input;
+        
         if (is_array($input)) {
             $arr = [];
             foreach ($input as $key => $val) {
-                $val = is_string($val) ? trim($val) : array_filter($val);
-                if (! empty($val)) {
-                    if ($func_name) $val = $func_name($val);
-                    $arr[$key] = $val;
+                if (! is_array($val)) {
+                    $val = $trim_chars ? trim($val, $trim_chars) : trim($val);
                 }
+                if ($func_name) $val = $func_name($val);
+
+                $arr[$key] = $val;
             }
 
             return $arr;
         }
 
-        $input = trim($input);
+        $input = $trim_chars ? trim($input, $trim_chars) : trim($input);
+        
         if ($func_name) $input = $func_name($input);
 
         return $input;
@@ -387,7 +391,7 @@ if (! function_exists('log_msg'))
         $level = ENVIRONMENT === 'development' ? 'info' : 'error';
 
         if (empty($context)) {
-            $message = json_encode($message);
+            $message = is_string($message) ? $message : json_encode($message);
         }
 
         return log_message($level, 'log_msg: '. $message, $context);
@@ -421,5 +425,259 @@ if (! function_exists('has_internet_connection'))
 
         // Check if there is a response and the response code is 200 OK
         return $headers && strpos($headers[0], '200') !== false;
+	}
+}
+
+if (! function_exists('get_time_diff'))
+{
+    /**
+     * Get time difference from two different times
+     */
+	function get_time_diff(string $time_start, string $time_end, $format = ''): int|object|string
+	{
+        $time_diff = 0;
+
+        if (! empty($time_start) && ! empty($time_end)) {
+            // Create DateTime objects for start and end times
+            $time_start = new DateTime(format_time($time_start, 'H:i:s'));
+            $time_end   = new DateTime(format_time($time_end, 'H:i:s'));
+
+            // Calculate the difference in hours and minutes
+            $time_diff  = $time_start->diff($time_end);
+
+            if (! empty($format)) {
+                return $time_diff->format($format);
+            }
+        }
+
+        return $time_diff;
+	}
+}
+
+if (! function_exists('get_total_hours'))
+{
+    /**
+     * Get total hours from two different times
+     * 
+     * @param float $break  To less the total hours
+     */
+	function get_total_hours(string $time_start, string $time_end, float $break = 0, $format = ''): int|string
+	{
+        $total_hours    = 0;
+        $time_diff      = get_time_diff($time_start, $time_end);
+
+        if (! empty($time_diff)) {
+            // Calculate total hours
+            if (! empty($format)) {
+                $time_diff->h = $time_diff->h - $break;
+
+                return $time_diff->format($format);
+            }
+
+            // Get hours plus fraction of an hour (mins / 60) 
+            $total_hours = $time_diff->h + ($time_diff->i / 60);
+            // Minus hr_break time
+            $total_hours = $total_hours - $break;
+            // Format to decimal with 2 places
+            $total_hours = number_format($total_hours, 2);
+        }
+
+        return $total_hours;
+	}
+}
+
+if (! function_exists('get_hours'))
+{
+    /**
+     * Get hours from time
+     */
+	function get_hours(string|float $time): int|float
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                return floor($time < 60 ? $time : $time / 60);
+            }
+
+            $time = time_to_mins($time);
+
+            return floor($time / 60);
+        }
+        
+        return $time;
+	}
+}
+
+if (! function_exists('get_minutes'))
+{
+    /**
+     * Get minutes from time
+     */
+	function get_minutes(string|float $time): int|float
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                $time   = (float) $time;
+                $hours  = floor($time);
+                
+                return round(($time - $hours) * 60);
+            }
+
+            $time = time_to_mins($time);
+
+            return get_minutes($time);
+        }
+
+        return $time;
+	}
+}
+
+if (! function_exists('time_to_mins'))
+{
+    /**
+     * Get total hours from two different times
+     */
+	function time_to_mins(float|string $time): int|float|string
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                return number_format(($time * 60), 2);
+            }
+
+            // Convert the time string to a DateTime object
+            $time_obj = new DateTime(format_time($time, 'H:i'));
+
+            // Get the total minutes from midnight
+            $total_mins = $time_obj->format('H') * 60 + $time_obj->format('i');
+
+            return number_format($total_mins, 2);
+        }
+
+        return $time;
+	}
+}
+
+if (! function_exists('compare_times'))
+{
+    /**
+     * Compare two different times based on the pass third param
+     */
+	function compare_times(string $time, string $time2, string $operator = '='): bool
+	{
+        // Convert time strings to DateTime objects
+        $date_time  = new DateTime(format_time($time, 'H:i'));
+        $date_time2 = new DateTime(format_time($time2, 'H:i'));
+
+        // Check if both DateTime objects are valid
+        if (!$date_time || !$date_time2) {
+            return false; // Invalid time format
+        }
+
+        // Perform the comparison based on the specified operator
+        switch ($operator) {
+            case '=':
+                return $date_time == $date_time2;
+            case '<':
+                return $date_time < $date_time2;
+            case '>':
+                return $date_time > $date_time2;
+            case '>=':
+                return $date_time >= $date_time2;
+            case '<=':
+                return $date_time <= $date_time2;
+            case '!=':
+                return $date_time != $date_time2;
+            default:
+                return false; // Invalid operator
+        }
+	}
+}
+
+if (! function_exists('get_date_diff'))
+{
+    /**
+     * Get date difference from two different date
+     */
+	function get_date_diff(string $start_date, string $end_date, $days = false): int|object|string
+	{
+        $interval = 0;
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            // Create DateTime objects for start and end dates
+            $start_date = new DateTime(format_date($start_date, 'Y-m-d'));
+            $end_date   = new DateTime(format_date($end_date, 'Y-m-d'));
+
+            // Calculate the difference between the two dates
+            $interval  = $start_date->diff($end_date);
+
+            if ($days) {
+                // Access the difference in days
+                $days =  $interval->days;
+
+                // Include the end date in the count
+                return $days += 1;
+            }
+        }
+
+        return $interval;
+	}
+}
+
+if (! function_exists('compare_dates'))
+{
+    /**
+     * Compare two different dates based on the pass third param
+     */
+	function compare_dates(string $date, string $date2, string $operator = '='): bool
+	{
+        // Convert date strings to Datedate objects
+        $date_time  = new DateTime(format_date($date, 'Y-m-d'));
+        $date_time2 = new DateTime(format_date($date2, 'Y-m-d'));
+
+        // Check if both DateTime objects are valid
+        if (!$date_time || !$date_time2) {
+            return false; // Invalid date format
+        }
+
+        // Perform the comparison based on the specified operator
+        switch ($operator) {
+            case '=':
+                return $date_time == $date_time2;
+            case '<':
+                return $date_time < $date_time2;
+            case '>':
+                return $date_time > $date_time2;
+            case '>=':
+                return $date_time >= $date_time2;
+            case '<=':
+                return $date_time <= $date_time2;
+            case '!=':
+                return $date_time != $date_time2;
+            default:
+                return false; // Invalid operator
+        }
+	}
+}
+
+if (! function_exists('format_results'))
+{
+    /**
+     * Format query result into one assoc array.
+     * This will be mostly use in a table with two columns (key, value)
+     * 
+     * @param array $result     The array/result to format
+     * @param string $key       The key name of the key - eg. $value['key']
+     * @param string $val       The key name of the value - eg. $value['value']
+     */
+	function format_results(array $result, string $key = 'key', string $val = 'value'): array
+	{
+        $arr = [];
+
+        if (! empty($result)) {
+            foreach ($result as $_key => $value) {
+                $arr[$value[$key]] = empty($val) ? $value : $value[$val];
+            }
+        }
+
+        return $arr;
 	}
 }

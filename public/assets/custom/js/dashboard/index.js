@@ -1,3 +1,7 @@
+$(document).ready(function () {
+	getCurrentClockAttendance();
+});
+
 function toggleMoreInfo(param) {
 	toggleElem($("#" + param + "_MORE_INFO"));
 	toggleElem($("#" + param + "_LINK"));

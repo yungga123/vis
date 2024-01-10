@@ -23,7 +23,7 @@ class Logs extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
 
     private $_permissions;
@@ -60,7 +60,7 @@ class Logs extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
         $data['title']          = 'Inventory Logs';
         $data['page_title']     = '<a href="'. url_to('inventory.home') .'" title="Click here to go to Inventory.">Inventory</a> Logs';

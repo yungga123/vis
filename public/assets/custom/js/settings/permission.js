@@ -123,11 +123,17 @@ function otherPermissions(val) {
 	let data = $initialPermissions;
 
 	if (val && inObject($actions.OTHERS, val)) {
-		const options = $.map($actions.OTHERS[val], (text, key) => {
+		const _actions = $actions.OTHERS[val];
+		const options = $.map(_actions, (text, key) => {
 			// Include the OTHERS options
-			return { id: key, text: text };
+			if (key !== "OTHERS_ONLY") return { id: key, text: text };
 		});
-		data = $initialPermissions.concat(options);
+
+		data = options;
+
+		if (!inObject(_actions, "OTHERS_ONLY")) {
+			data = $initialPermissions.concat(options);
+		}
 	}
 
 	select2Reinit($permission, "Select Permissions", data);

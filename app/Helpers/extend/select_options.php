@@ -372,7 +372,7 @@ if (! function_exists('set_rpf_status'))
         if (is_array($param)) {
             $arr = [];
             foreach ($param as $val) {
-                $arr[] = set_prf_status($val);
+                $arr[] = set_rpf_status($val);
             }
 
             return $arr;
@@ -460,7 +460,7 @@ if (! function_exists('set_po_status'))
         if (is_array($param)) {
             $arr = [];
             foreach ($param as $val) {
-                $arr[] = set_prf_status($val);
+                $arr[] = set_po_status($val);
             }
 
             return $arr;
@@ -575,6 +575,114 @@ if (! function_exists('get_quarters'))
             2 => '2nd Quarter',
             3 => '3rd Quarter',
             4 => '4th Quarter',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
+
+if (! function_exists('get_salary_rate_type'))
+{
+    /**
+     * Get salary rate type of Payroll/Salary Rate module
+     */
+	function get_salary_rate_type(string $param = ''): string|array
+	{
+        $options = [
+            'Hourly'    => 'Hourly Rate',
+            'Daily'     => 'Daily Rate',
+            'Monthly'   => 'Monthly Rate',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
+
+if (! function_exists('get_leave_type'))
+{
+    /**
+     * Get leave type of Payroll/Manage Leave module
+     */
+	function get_leave_type(string $param = ''): string|array
+	{
+        $options = [
+            'Leave of Absence'  => 'Leave of Absence',
+            'SIL'               => 'Service Incentive Leave (SIL)',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
+
+if (! function_exists('set_leave_status'))
+{
+    /**
+     * Setting status of Leave to its past tense
+     */
+	function set_leave_status(string|array $param): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'discard'   => 'discarded',
+            'process'   => 'processed',
+            'approve'   => 'approved',
+        ];
+
+        if (is_array($param)) {
+            $arr = [];
+            foreach ($param as $val) {
+                $arr[] = set_leave_status($val);
+            }
+
+            return $arr;
+        }
+
+        return $options[strtolower($param)];
+	}
+}
+
+if (! function_exists('get_leave_status'))
+{
+    /**
+     * Getting leave statuses
+     */
+	function get_leave_status(string $param = '', bool $pass_tense = false): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'discard'   => 'discard',
+            'process'   => 'process',
+            'approve'   => 'approve',
+        ];
+
+        $options_pt = [
+            'pending'   => 'pending',
+            'discarded' => 'discarded',
+            'processed' => 'processed',
+            'approved'  => 'approved',
+        ];
+
+        $arr = $pass_tense ? $options_pt : $options;
+
+        return $param ? $arr[strtolower($param)] : $arr;
+	}
+}
+
+if (! function_exists('get_days'))
+{
+    /**
+     * Get days for Payroll/Settings module
+     */
+	function get_days(string $param = ''): string|array
+	{
+        $options = [
+            'Monday'    => 'Monday',
+            'Tuesday'   => 'Tuesday',
+            'Wednesday' => 'Wednesday',
+            'Thursday'  => 'Thursday',
+            'Friday'    => 'Friday',
+            'Saturday'  => 'Saturday',
+            'Sunday'    => 'Sunday',
         ];
 
         return $param ? $options[$param] : $options;

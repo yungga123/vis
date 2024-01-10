@@ -172,16 +172,78 @@ define('ACTIONS', [
         'EMPLOYEES'         => [
             'CHANGE'        => 'Change Employment Status',
         ],
+        'PAYROLL_MANAGE_LEAVES' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            // Add this if you want the 4 above actions only
+            // not include the generic ones
+            // such as VIEW, ADD, EDIT, DELETE
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_COMPUTATION' => [
+            'VIEW'          => 'View',
+            'SUBMIT'        => 'Submit',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_SETTINGS' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_LEAVE' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_OVERTIME' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_TIMESHEETS' => [
+            'VIEW_ALL'      => 'View All',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_PAYSLIP' => [
+            'EDIT'          => 'Edit',
+            'DELETE'        => 'Delete',
+            'VIEW_ALL'      => 'View All',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'EXPORT_DATA' => [
+            'VIEW'          => 'View',
+            'GENERATE'      => 'Generate',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'SETTINGS_GENERAL_INFO' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'SETTINGS_MAILCONFIG' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
 // Individual actions constants
+define('ACTION_VIEW', 'VIEW');
 define('ACTION_ADD', 'ADD');
 define('ACTION_EDIT', 'EDIT');
 define('ACTION_DELETE', 'DELETE');
 define('ACTION_PRINT', 'PRINT');
 define('ACTION_UPLOAD', 'UPLOAD');
 define('ACTION_CHANGE', 'CHANGE');
+define('ACTION_VIEW_ALL', 'VIEW_ALL');
+define('ACTION_SAVE', 'SAVE');
 
 // Roles - No need to add new roles here
 // Deprecated - Adding new roles will be on the dashboard
@@ -228,6 +290,13 @@ define('MODULES', [
     'PURCHASING_PO'         => 'Purchase Orders',
     'SETTINGS_GENERAL_INFO' => 'General Info',
     'EXPORT_DATA'           => 'Export Data',
+    'PAYROLL_SALARY_RATES'  => 'Salary Rates',
+    'PAYROLL_PAYSLIP'       => 'Payslip',
+    'PAYROLL_COMPUTATION'   => 'Computation',
+    'PAYROLL_LEAVE'         => 'Leave',
+    'PAYROLL_OVERTIME'      => 'Overtime',
+    'PAYROLL_SETTINGS'      => 'Settings',
+    'PAYROLL_TIMESHEETS'    => 'Timesheets',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -255,6 +324,26 @@ define('MODULE_CODES', [
     'purchase_order'        => 'PURCHASING_PO',
     'general_info'          => 'SETTINGS_GENERAL_INFO',
     'export_data'           => 'EXPORT_DATA',
+    'salary_rates'          => 'PAYROLL_SALARY_RATES',
+    'payslip'               => 'PAYROLL_PAYSLIP',
+    'payroll_computation'   => 'PAYROLL_COMPUTATION',
+    'leave'                 => 'PAYROLL_LEAVE',
+    'overtime'              => 'PAYROLL_OVERTIME',
+    'payroll_settings'      => 'PAYROLL_SETTINGS',
+    'timesheets'            => 'PAYROLL_TIMESHEETS',
+]);
+
+// Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
+// It means user can access the said modules
+// without setting a permissions
+// Add them here
+define('MODULES_WITH_GENERIC_ACCESS', [
+    'PAYROLL_PAYSLIP' => [
+        'EXCEPT' => ['ADD', 'EDIT', 'DELETE']
+    ],
+    'PAYROLL_LEAVE',
+    'PAYROLL_OVERTIME',
+    'PAYROLL_TIMESHEETS',
 ]);
 
 // Developer Account

@@ -4,15 +4,25 @@ if (! function_exists('get_user_modules'))
     /**
      * Get the modules of the current logged user
      */
-	function get_user_modules(array|null $permissions = null): array 
+	function get_user_modules(?array $permissions = null): array 
 	{
         if (session('access_level') === AAL_ADMIN) {
             return array_keys(MODULES);
         }
 
-        $permissions = $permissions ?? get_permissions();
-		return !empty($permissions) 
-                ? array_column($permissions, 'module_code') : [];
+        $generic        = get_generic_modules_actions();
+        $permissions    = $permissions ?? get_permissions();
+
+        if (empty($permissions)) return $generic;
+        
+        // If $permissions is not empty
+        // get the module codes
+        $modules = array_column($permissions, 'module_code');
+
+        // Merge them with the generic
+        $_modules = array_unique(array_merge($modules, $generic));
+
+        return $_modules;
 	}
 }
 
@@ -21,7 +31,7 @@ if (! function_exists('get_nav_menus'))
     /**
      * Get the nav menus of some of the modules
      */
-	function get_nav_menus(string $param): array
+	function get_nav_menus(?string $param = null): array
 	{
         $is_sales       = (
             url_is('tasklead') || 
@@ -45,6 +55,15 @@ if (! function_exists('get_nav_menus'))
             url_is('settings/permissions') || 
             url_is('settings/roles') || 
             url_is('settings/general-info')
+        );
+        $is_payroll     = (
+            url_is('payroll/salary-rates') || 
+            url_is('payroll/computation') || 
+            url_is('payroll/payslip') || 
+            url_is('payroll/leave') ||
+            url_is('payroll/settings') ||
+            url_is('payroll/overtime') ||
+            url_is('payroll/timesheets')
         );
         
 		$menu           = [
@@ -90,9 +109,15 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => url_is('reports/export'),
                 'icon'      => 'fas fa-server',
             ],
+            'PAYROLL'         => [
+                'name'      => 'Payroll',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => $is_payroll,
+                'icon'      => 'fas fa-ruble-sign',
+            ],
         ];
 
-        return $menu[$param];
+        return $param ? $menu[$param] : $menu;
 	}
 }
 
@@ -237,6 +262,55 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('reports/export') ? 'active' : ''),
                 'icon'      => 'fas fa-file-export',
             ],
+            'PAYROLL_SALARY_RATES'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_SALARY_RATES'),
+                'url'       => url_to('payroll.salary_rate.home'),
+                'class'     => (url_is('payroll/salary-rates') ? 'active' : ''),
+                'icon'      => 'fas fa-dollar-sign',
+            ],
+            'PAYROLL_PAYSLIP'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_PAYSLIP'),
+                'url'       => url_to('payroll.payslip.home'),
+                'class'     => (url_is('payroll/payslip') ? 'active' : ''),
+                'icon'      => 'fas fa-receipt',
+            ],
+            'PAYROLL_COMPUTATION'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_COMPUTATION'),
+                'url'       => url_to('payroll.computation.home'),
+                'class'     => (url_is('payroll/computation') ? 'active' : ''),
+                'icon'      => 'fas fa-calculator',
+            ],
+            'PAYROLL_LEAVE'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_LEAVE'),
+                'url'       => url_to('payroll.leave.home'),
+                'class'     => (url_is('payroll/leave') ? 'active' : ''),
+                'icon'      => 'fas fa-folder-open',
+            ],
+            'PAYROLL_OVERTIME'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_OVERTIME'),
+                'url'       => url_to('payroll.overtime.home'),
+                'class'     => (url_is('payroll/overtime') ? 'active' : ''),
+                'icon'      => 'fas fa-stopwatch',
+            ],
+            'PAYROLL_SETTINGS'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_SETTINGS'),
+                'url'       => url_to('payroll.settings.home'),
+                'class'     => (url_is('payroll/settings') ? 'active' : ''),
+                'icon'      => 'fas fa-tools',
+            ],
+            'PAYROLL_TIMESHEETS'  => [
+                'menu'      => 'PAYROLL', // Leave empty if none
+                'name'      => get_modules('PAYROLL_TIMESHEETS'),
+                'url'       => url_to('payroll.timesheet.home'),
+                'class'     => (url_is('payroll/timesheets') ? 'active' : ''),
+                'icon'      => 'fas fa-user-clock',
+            ],
         ];
 
         return $param ? $modules[$param] : $modules;
@@ -254,12 +328,26 @@ if (! function_exists('get_sidebar_menus'))
         $items          = [];
         $menus          = [];
         $modules        = setup_modules();
-        $user_modules   = get_user_modules();
+        $permissions    = get_permissions();
+        $user_modules   = get_user_modules($permissions);
+        $permissions    = format_results($permissions, 'module_code', 'permissions');
 
 		if (! empty($modules)) {
             ksort($modules);
+            
             foreach ($modules as $key => $module) {
                 if (in_array($key, $user_modules) && !empty($module)) {
+                    $_perms = isset($permissions[$key]) ? $permissions[$key] : get_generic_modules_actions($key);
+                    $_perms = is_array($_perms) ? $_perms : explode(',', $_perms);
+
+                    // Check if actions VIEW OR VIEW_ALL are in the $_perms
+                    $value  = array_intersect([ACTION_VIEW, ACTION_VIEW_ALL], $_perms);
+    
+                    // If user is not an admin and has VIEW permission
+                    // for this module, then continue to the next loop
+                    if (! is_admin() && empty($value)) {
+                        continue;
+                    }
 
                     if (! empty($module['menu'])) {                        
                         $_menu = $module['menu'];
