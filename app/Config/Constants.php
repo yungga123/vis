@@ -158,6 +158,7 @@ define('ACTIONS', [
         'PURCHASING_RPF'    => [
             'ACCEPT'        => 'Accept',
             'REJECT'        => 'Reject',
+            'REVIEW'        => 'Review',
             'RECEIVE'       => 'Receive',
             'PRINT'         => 'Print',
         ],

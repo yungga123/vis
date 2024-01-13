@@ -250,7 +250,7 @@ class RequestPurchaseFormModel extends Model
        $this->filterParam($request, $builder, "{$this->table}.status");
 
        $builder->where("{$this->table}.deleted_at", null);
-       $builder->orderBy('id', 'DESC');
+       $builder->orderBy("{$this->table}.id", 'DESC');
 
        return $builder;
    }
@@ -260,7 +260,7 @@ class RequestPurchaseFormModel extends Model
    {
         $id         = $this->primaryKey;
         $dropdown   = false;
-        $title      = 'PRF';
+        $title      = 'RPF';
         $closureFun = function($row) use($id, $permissions, $dropdown, $title) {
             $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
 

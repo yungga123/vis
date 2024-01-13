@@ -1,6 +1,6 @@
 <div class="card card-outline card-info clock-attendance">
     <div class="card-header">
-        <h4 class="card-title">Attandance</h4>
+        <h4 class="card-title">Attendance</h4>
         <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                 <i class="fas fa-minus"></i>
