@@ -68,6 +68,10 @@ class SuppliersModel extends Model
             'label' => 'Contact Number',
             'rules' => 'required'
         ],
+        'email_address'      => [
+            'label' => 'Email Address',
+            'rules' => 'permit_empty|valid_email'
+        ],
         'payment_terms'      => [
             'label' => 'Payment Terms',
             'rules' => 'required'

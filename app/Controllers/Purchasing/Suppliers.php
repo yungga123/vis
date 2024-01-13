@@ -103,10 +103,10 @@ class Suppliers extends BaseController
             'contact_person',
             'contact_number',
             'viber',
+            'email_address',
             'payment_terms',
             'payment_mode',
             'product',
-            'email_address',
             'bank_name',
             'bank_account_name',
             'bank_number',
@@ -126,7 +126,7 @@ class Suppliers extends BaseController
                 "{$this->_model->table}.product",
                 "{$this->_model->table}.email_address",
             ])
-            ->setDefaultOrder('id','desc')
+            ->setDefaultOrder("{$this->_model->table}.id",'desc')
             ->setOrder(array_merge([null, null], $fields))
             ->setOutput(
                 array_merge(
