@@ -90,9 +90,9 @@ function filterData(reset = false) {
 /* Get PO items */
 function view(id, status) {
 	$(`#${poItemModal} .modal-footer #btn_mark`).remove();
-	if (inArray(["pending", "received"], status)) {
+	if (inArray(["pending", "approved"], status)) {
 		// Append button
-		const markAs = status === "pending" ? "approved" : "filed";
+		const markAs = status === "pending" ? "approve" : "file";
 		$(`#${poItemModal} .modal-footer`).append(`
 			<button type="submit" class="btn btn-success" id="btn_mark" onclick="change(${id}, '${markAs}', '${status}')">
 				Mark as ${strCapitalize(markAs)}

@@ -182,7 +182,8 @@ class RequestPurchaseFormModel extends Model
         $columns = "
             {$this->table}.id,
             {$this->table}.status,
-            {$this->table}.date_needed
+            {$this->table}.date_needed,
+            {$this->table}.created_at
         ";
 
         if ($date_format) {

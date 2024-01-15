@@ -268,6 +268,13 @@ class Timesheet extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
+                // Check if office hours in payroll setting is empty
+                // then, throw an exception
+                if (empty($this->getOfficeHours())) {
+                    $message = "You can't CLOCK IN/OUT - need to input the <strong>office hours (time in/out)</strong> in payroll settings!";
+                    throw new \Exception($message, 1);    
+                }
+
                 $action = $this->request->getVar('action');
                 $model  = $this->_model;
                 // Add where clause
