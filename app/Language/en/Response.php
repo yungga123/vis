@@ -29,7 +29,7 @@ return [
             'change'    => "You don't have permission to <strong>{action}</strong> a record. Kindly ask the permission first!",
         ],
         'action' => [
-            'change'    => "No more changes are not allowed for this record!",
+            'change'    => "No more changes are allowed for this record!",
         ],
     ],
 ];

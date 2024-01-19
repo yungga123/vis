@@ -59,6 +59,7 @@ class RPFItemModel extends Model
             {$this->table}.quantity_in,
             {$this->table}.received_q,
             {$this->table}.received_date,
+            {$this->table}.purpose,
             DATE_FORMAT({$this->table}.received_date, '%b %e, %Y') AS received_date_formatted
         ";
 
@@ -83,6 +84,7 @@ class RPFItemModel extends Model
                 TRIM({$inventoryModel->view}.subcategory_name) AS subcategory_name,
                 TRIM({$inventoryModel->view}.brand) AS brand,
                 TRIM({$inventoryModel->view}.unit) AS unit,
+                TRIM({$inventoryModel->view}.size) AS size,
                 {$inventoryModel->view}.supplier_name,
                 {$inventoryModel->view}.created_by_name
             ";

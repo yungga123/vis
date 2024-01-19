@@ -239,6 +239,13 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 				</h6>
 			</div>
         </div>
+		<div class="col-12">
+			<div class="mt-4">
+				<p class="text-center text-italic text-bold">
+					*It is computer generated valid documents and therefore does not require any signature in any commercial transaction*
+				</p>
+			</div>
+		</div>
     </div>
 </div>
 

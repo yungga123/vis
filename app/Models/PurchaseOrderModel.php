@@ -110,6 +110,7 @@ class PurchaseOrderModel extends Model
             {$this->table}.rpf_id,
             {$poItemModel->table}.inventory_id,
             {$rpfItemModel->table}.quantity_in,
+            {$rpfItemModel->table}.purpose,
         " . $rpfItemModel->inventoryColumns(true);
         $columns        = $additionalColumns ? $columns .', '. $additionalColumns : $columns;
         $builder        = $this->select($columns);
@@ -118,6 +119,7 @@ class PurchaseOrderModel extends Model
         $this->joinSupplier($builder, $supplierModel);
         $this->joinPOItem($builder, $poItemModel);
         $this->joinRpfItem($builder, $rpfItemModel);
+        
         $poItemModel->joinInventory($builder, $inventoryModel);
         $poItemModel->joinInventory($builder, $inventoryModel, true);
 
@@ -247,7 +249,6 @@ class PurchaseOrderModel extends Model
 
             if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['approved', 'filed'])) {
                 // Print PO
-                // $print_url  = site_url('purchase-orders/print/') . $row[$id];
                 $print_url  = url_to('purchase_order.print', $row[$id]);
                 $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
