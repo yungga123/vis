@@ -21,18 +21,21 @@
                                     <th>Item Model</th>
                                     <th>Item Description</th>
                                     <th>Supplier</th>
+                                    <th>Unit</th>
+                                    <th>Size</th>
                                     <th>Current Stocks</th>
                                     <th>Qty In</th>
-                                    <th>Unit</th>
                                     <th>Cost</th>
                                     <th>Total Cost</th>
                                     <th>Received Qty</th>
                                     <th>Received Date</th>
+                                    <th>Purpose</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
                             <tfoot>
                                 <tr>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -47,6 +50,7 @@
                                         <div id="total_amount_received"></div>
                                         <small class="text-danger" id="alert_received_q"></small>
                                     </td>
+                                    <td></td>
                                 </tr>
                             </tfoot>
                         </table>

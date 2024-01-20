@@ -145,6 +145,7 @@ function view(id, status) {
 					`;
 					let totalAmount = 0,
 						totalAmountReceived = 0;
+
 					$.each(res.data, (index, val) => {
 						const inventory_id = `
 							<input type="hidden" name="inventory_id[]" value="${val.inventory_id}" class="form-control" readonly>
@@ -158,10 +159,11 @@ function view(id, status) {
 						const onkeyEvent =
 							'onkeyup="validate(' + parseFloat(val.quantity_in) + ', event)"';
 						const received_q = `
-							<input type="number" name="received_q[]" id="received_q" class="form-control" placeholder="Qty" ${onkeyEvent} value="${val.quantity_in}" max="${val.quantity_in}">
+							<input type="number" name="received_q[]" id="received_q_${index}" class="form-control" placeholder="Qty" ${onkeyEvent} value="${val.quantity_in}" max="${val.quantity_in}" data-item_cost="${val.item_sdp}">
 						`;
 						const totalCost = Math.floor(val.quantity_in * val.item_sdp);
 						const totalCostReceived = Math.floor(val.received_q * val.item_sdp);
+
 						totalAmount = Math.floor(totalAmount + totalCost);
 						totalAmountReceived = Math.floor(
 							totalAmountReceived + totalCostReceived
@@ -176,6 +178,8 @@ function view(id, status) {
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
 								<td>${val.supplier_name || "N/A"}</td>
+								<td>${val.unit || "N/A"}</td>
+								<td>${val.size || "N/A"}</td>
 								<td>
 									${val.stocks}
 									${stocks}
@@ -184,7 +188,6 @@ function view(id, status) {
 									${val.quantity_in}
 									${quantity_in}
 								</td>
-								<td>${val.unit || "N/A"}</td>
 								<td>${numberFormat(val.item_sdp)}</td>
 								<td>${numberFormat(totalCost)}</td>
 								<td>${status === "receive" ? received_q : val.received_q || "0.00"}</td>
@@ -193,6 +196,7 @@ function view(id, status) {
 										? received_date
 										: val.received_date_formatted || "N/A"
 								}</td>
+								<td>${val.purpose || "N/A"}</td>
 							</tr>
 						`;
 					});
@@ -294,7 +298,7 @@ function change(id, changeTo, status, proceed) {
 		view(id, changeTo);
 		// Add note
 		const note = `
-			Please review the items details first! If good to go, click the <strong>Mark as Reviewed</strong> button to make this as <strong>REVIEWED</strong> and ready for purchase. Once marked as reviewed, record cannot be edited anymore.
+			Please review the items first! If good to go, click the <strong>Mark as Reviewed</strong> button to make this as <strong>REVIEWED</strong> and ready for purchase. Once marked as reviewed, record cannot be edited anymore.
 		`;
 		$("#item_note").html(note);
 
@@ -395,16 +399,17 @@ function toggleItemField(row) {
 
 /* Toggle item field */
 function validate(quantity_in, evt) {
-	const received = parseFloat(evt.target.value);
+	const value = parseFloat(evt.target.value);
 	let alertMsg = "";
 
 	if (
-		isNumber(received) &&
-		Math.floor(parseFloat(quantity_in) < parseFloat(received))
+		isNumber(value) &&
+		Math.floor(parseFloat(quantity_in) < parseFloat(value))
 	) {
 		alertMsg = "Received qty must not be greater than quantity in!";
 	}
-	$("#alert_received_q").text("");
+
+	$("#alert_received_q").text(alertMsg);
 }
 
 /* Masterlist select2 via ajax data source */

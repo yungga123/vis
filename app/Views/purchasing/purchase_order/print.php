@@ -192,9 +192,9 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 						Mode of Payment: 
 						<span class="text-bold text-uppercase text-underline">
 							<?php 
-								if ($supplier['payment_mode']) {
+								if (isset($supplier['payment_mode'])) {
 									echo $supplier['payment_mode'] === 'Others' 
-										? $supplier['others_payment_mode'] : $supplier['payment_mode'];
+										? $supplier['others_payment_mode'] : ($supplier['payment_mode'] ?? 'N/A');
 								}
 							?>
 						</span>
@@ -239,6 +239,13 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 				</h6>
 			</div>
         </div>
+		<div class="col-12">
+			<div class="mt-4">
+				<p class="text-center text-italic text-bold">
+					*It is computer generated valid documents and therefore does not require any signature in any commercial transaction*
+				</p>
+			</div>
+		</div>
     </div>
 </div>
 

@@ -252,11 +252,13 @@ function populateRpfItems(items, itemId) {
 					<td>${val.item_model}</td>
 					<td>${val.item_description}</td>
 					<td>${val.supplier_name || "N/A"}</td>
+					<td>${val.unit || "N/A"}</td>
+					<td>${val.size || "N/A"}</td>
 					<td>${val.stocks}</td>
 					<td>${val.quantity_in}</td>
-					<td>${val.unit || "N/A"}</td>
 					<td>${numberFormat(val.item_sdp)}</td>
 					<td>${numberFormat(totalCost)}</td>
+					<td>${val.purpose || "N/A"}</td>
 				</tr>
 			`;
 		});

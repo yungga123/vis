@@ -20,18 +20,21 @@
                                 <th>Item Model</th>
                                 <th>Item Description</th>
                                 <th>Supplier</th>
+                                <th>Unit</th>
+                                <th>Size</th>
                                 <th>Current Stocks</th>
                                 <th>Qty In</th>
-                                <th>Unit</th>
                                 <th>Cost</th>
                                 <th>Total Cost</th>
+                                <th>Purpose</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="10" class="text-right">Total Amount</th>
+                                <th colspan="11" class="text-right">Total Amount</th>
                                 <th class="text-danger total_amount"></th>
+                                <th></th>
                             </tr>
                         </tfoot>
                     </table>

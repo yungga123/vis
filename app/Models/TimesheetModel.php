@@ -101,7 +101,10 @@ class TimesheetModel extends Model
                 $_fetch         = $_model->where('is_manual = 0')->fetch($id[0]);
                 $_clock_date    = $_fetch['clock_date'];
 
-                if (! empty($_fetch) && (! empty($_fetch['clock_out'])) || compare_dates($_clock_date, current_date())) {
+                if (
+                    ! empty($_fetch) && (! empty($_fetch['clock_out'])) || 
+                    (compare_dates($_clock_date, current_date()) && ! empty($_fetch['clock_out']))
+                ) {
                     throw new \Exception(res_lang('restrict.action.change') . " It's from CLOCK IN/OUT.", 1);
                 }
             }
