@@ -152,6 +152,7 @@ define('ACTIONS', [
             'ACCEPT'        => 'Accept',
             'REJECT'        => 'Reject',
             'ITEM_OUT'      => 'Item Out',
+            'RECEIVE'       => 'Receive',
             'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],

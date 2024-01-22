@@ -272,6 +272,7 @@ if (! function_exists('get_prf_status'))
             'pending'   => 'pending',
             'accept'    => 'accept',
             'reject'    => 'reject',
+            'receive'   => 'receive',
             'item_out'  => 'item_out',
             'file'      => 'file',
         ];
@@ -281,6 +282,7 @@ if (! function_exists('get_prf_status'))
             'accepted'  => 'accepted',
             'rejected'  => 'rejected',
             'item_out'  => 'item_out',
+            'received'  => 'received',
             'filed'     => 'filed',
         ];
 
@@ -295,7 +297,7 @@ if (! function_exists('set_prf_status'))
     /**
      * Setting status of Project Request Form module to its past tense
      */
-	function set_prf_status(string|array $param): string|array
+	function set_prf_status(string|array $param = null): string|array
 	{
         $options = [
             'pending'   => 'pending',
@@ -304,9 +306,15 @@ if (! function_exists('set_prf_status'))
             'reject'    => 'rejected',
             'rejected'  => 'rejected',
             'item_out'  => 'item_out',
+            'receive'   => 'received',
+            'received'  => 'received',
             'file'      => 'filed',
             'filed'     => 'filed',
         ];
+
+        if (is_null($param)) {
+            return $options;
+        }
 
         if (is_array($param)) {
             $arr = [];

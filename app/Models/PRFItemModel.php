@@ -190,9 +190,11 @@ class PRFItemModel extends Model
 
             if (! empty($arr)) {
                 $constraint = ['prf_id', 'inventory_id', 'quantity_out'];
-                $this->db->table($this->table)->updateBatch($arr, $constraint);
+                return $this->db->table($this->table)->updateBatch($arr, $constraint);
             }
         }
+
+        return false;
     }
 
     // Delete prf items
