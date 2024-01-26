@@ -90,6 +90,9 @@ class PurchaseOrder extends BaseController
                 'fetch'     => url_to('rpf.fetch'),
             ],
         ]);
+        $data['php_to_js_options'] = json_encode([
+            'po_status'  => set_po_status()
+        ]);
 
         return view('purchasing/purchase_order/index', $data);
     }
@@ -116,8 +119,8 @@ class PurchaseOrder extends BaseController
             'created_at_formatted',
             'approved_by_name',
             'approved_at_formatted',
-            'filed_by_name',
-            'filed_at_formatted',
+            'received_by_name',
+            'received_at_formatted',
         ];
 
         $table->setTable($builder)
@@ -198,6 +201,7 @@ class PurchaseOrder extends BaseController
                     $rows       = [];
                     $sup_ids    = [];
                     $po_ids     = [];
+
                     foreach ($result as $val) {
                         $arr = [
                             'rpf_id'        => $rpf_id,
@@ -210,15 +214,18 @@ class PurchaseOrder extends BaseController
                             $po_ids[]       = $po_id;
                             $arr['po_id']   = $po_id;
                         }
+
                         $sup_ids[] = $val['supplier_id'];
                         $rows[$val['supplier_id']][] = $arr;
                     }
 
                     // Format $rows value for insertBatch in purchase_order_items table
                     $inputs = [];
+
                     foreach ($rows as $key => $val) {
                         if (count($val) > 1) {
                             $po_id = null;
+
                             for ($i=0; $i < count($val); $i++) {
                                 // Store first array's po_id in a variable
                                 if ($i === 0) $po_id = $val[$i]['po_id'];
@@ -236,6 +243,10 @@ class PurchaseOrder extends BaseController
                         $poItemModel->deletePOItems($po_ids, $rpf_id);
                         $poItemModel->insertBatch($inputs);
                     }
+                }
+
+                if ($this->request->getVar('discount')) {
+                    $rpfItemModel->updateRpfItems($this->request->getVar(), $rpf_id);
                 }
 
                 return $data;
@@ -261,12 +272,13 @@ class PurchaseOrder extends BaseController
             function($data) {
                 $id         = $this->request->getVar('id');
                 $results    = $this->_model->getPOItems($id);
+                $record     = $this->_model->getPurchaseOrders($id, 'id, rpf_id, attention_to');
 
                 if ($this->request->getVar('po_items')) {
-                    $data['data']       = $results;
-                    $data['message']    = res_lang('success.fetched', 'Purchase Order items');
+                    $data['data']           = $record;
+                    $data['data']['items']  = $results;
+                    $data['message']        = res_lang('success.fetched', 'Purchase Order items');
                 } else {
-                    $record                 = $this->_model->getPurchaseOrders($id, 'rpf_id, attention_to');
                     $rpfModel               = new RequestPurchaseFormModel();
                     $rpfColumns             = "
                         DATE_FORMAT(date_needed, '".dt_sql_date_format()."') AS date_needed,
@@ -330,6 +342,7 @@ class PurchaseOrder extends BaseController
             $data,
             function($data) {
                 $id         = $this->request->getVar('id');
+                $rpf_id     = $this->request->getVar('rpf_id');
                 $_status    = $this->request->getVar('status');
                 $status     = set_po_status($_status);
                 $inputs     = ['status' => $status];
@@ -343,7 +356,13 @@ class PurchaseOrder extends BaseController
                 } else {
                     $data['status']     = res_lang('status.success');
                     $data['message']    = res_lang('success.changed', ['Purchase Order', strtoupper($status)]);
+                    
+                    if ($status === 'received') {
+                        $rpfItemModel = new RPFItemModel();
+                        $rpfItemModel->updateRpfItems($this->request->getVar(), $rpf_id);
+                    }
                 }
+
                 return $data;
             }
         );

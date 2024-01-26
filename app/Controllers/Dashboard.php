@@ -338,11 +338,6 @@ class Dashboard extends BaseController
                     'reviewed' => [
                         'icon'  => 'fas fa-check-double',
                         'count' => $rpfModel->countRecords('reviewed'),
-                        'bg'    => 'info',
-                    ],
-                    'received' => [
-                        'icon'  => 'fas fa-file-import',
-                        'count' => $rpfModel->countRecords('received'),
                         'bg'    => 'success',
                     ],
                     'rejected' => [
@@ -365,7 +360,7 @@ class Dashboard extends BaseController
                         'count' => $poModel->countRecords('approved'),
                         'bg'    => 'primary',
                     ],
-                    'filed'     => [
+                    'received'  => [
                         'icon'  => 'fas fa-file-import',
                         'count' => $poModel->countRecords('received'),
                         'bg'    => 'success',

@@ -11,14 +11,13 @@ class RPFView extends Seeder
         $table  = 'request_purchase_forms';
         $view   = 'rpf_view';
         $join   = 'accounts_view';
-        $db     = \Config\Database::connect();
 
         // Drop if exists
-        $db->query("DROP VIEW IF EXISTS {$view}");
-        $db->query("DROP TABLE IF EXISTS {$view}");
+        $this->db->query("DROP VIEW IF EXISTS {$view}");
+        $this->db->query("DROP TABLE IF EXISTS {$view}");
 
         // Create
-        $db->query("
+        $this->db->query("
             CREATE VIEW {$view}
             AS 
             SELECT
@@ -26,8 +25,7 @@ class RPFView extends Seeder
                 created.employee_name AS created_by_name,
                 (CASE WHEN rpf.accepted_by IS NOT NULL THEN accepted.employee_name ELSE rpf.accepted_by END) AS accepted_by_name,
                 (CASE WHEN rpf.rejected_by IS NOT NULL THEN rejected.employee_name ELSE rpf.rejected_by END) AS rejected_by_name,
-                (CASE WHEN rpf.reviewed_by IS NOT NULL THEN reviewed.employee_name ELSE rpf.reviewed_by END) AS reviewed_by_name,
-                (CASE WHEN rpf.received_by IS NOT NULL THEN filed.employee_name ELSE rpf.received_by END) AS received_by_name
+                (CASE WHEN rpf.reviewed_by IS NOT NULL THEN reviewed.employee_name ELSE rpf.reviewed_by END) AS reviewed_by_name
             FROM {$table} AS rpf
             LEFT JOIN {$join} AS created
                 ON created.username = rpf.created_by
@@ -37,8 +35,6 @@ class RPFView extends Seeder
                 ON rejected.username = rpf.rejected_by
             LEFT JOIN {$join} AS reviewed
                 ON reviewed.username = rpf.reviewed_by
-            LEFT JOIN {$join} AS filed
-                ON filed.username = rpf.received_by
         ");
         
     }

@@ -71,7 +71,7 @@ class RequestPurchaseFormModel extends Model
     protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = ['setStatusByAndAt'];
-    protected $afterUpdate    = ['updateInventoryStock'];
+    protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
@@ -79,7 +79,7 @@ class RequestPurchaseFormModel extends Model
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses   = ['rejected', 'reviewed', 'received'];
+    protected $restrictedStatuses   = ['rejected', 'reviewed'];
     // Get inserted ID
     protected $insertedID           = 0;
 
@@ -138,44 +138,6 @@ class RequestPurchaseFormModel extends Model
         
     }
 
-    // Update inventory stock after item out
-    public function updateInventoryStock(array $data)
-    {
-        if ($data['result'] && isset($data['data']['status'])) {
-            if ($data['data']['status'] === 'received') {
-                $rpfItemModel   = new RPFItemModel();
-                $columns        = "
-                    {$rpfItemModel->table}.inventory_id, 
-                    {$rpfItemModel->table}.quantity_in,
-                    {$rpfItemModel->table}.received_date,
-                    inventory.stocks
-                ";
-                $record         = $rpfItemModel->getRpfItemsByRpfId($data['id'], true, false, $columns);
-                $action         = 'ITEM_IN';
-
-                if (! empty($record)) {
-                    $logs_data = [];
-                    foreach ($record as $val) {
-                        $this->traitUpdateInventoryStock($val['inventory_id'], $val['quantity_in'], $action);
-                        $logs_data[] = [
-                            'inventory_id'  => $val['inventory_id'],
-                            'stocks'        => $val['quantity_in'],
-                            'parent_stocks' => $val['stocks'],
-                            'status_date'   => $val['received_date'],
-                            'action'        => $action,
-                            'created_by'    => session('username'),
-                        ];
-                    }
-
-                    // Add inventory logs
-                    $this->saveInventoryLogs($logs_data);
-                }
-            }
-        }
-
-        return $data;
-    }
-
     // Set columns depending on arguments
     public function columns($date_format = false, $joinView = false)
     {
@@ -192,8 +154,7 @@ class RequestPurchaseFormModel extends Model
                 ".dt_sql_datetime_format("{$this->table}.created_at") ." AS created_at_formatted,
                 ".dt_sql_datetime_format("{$this->table}.accepted_at") ." AS accepted_at_formatted,
                 ".dt_sql_datetime_format("{$this->table}.rejected_at") ." AS rejected_at_formatted,
-                ".dt_sql_datetime_format("{$this->table}.reviewed_at") ." AS reviewed_at_formatted,
-                ".dt_sql_datetime_format("{$this->table}.received_at") ." AS received_at_formatted
+                ".dt_sql_datetime_format("{$this->table}.reviewed_at") ." AS reviewed_at_formatted
             ";
         }
 
@@ -202,8 +163,7 @@ class RequestPurchaseFormModel extends Model
                 {$this->view}.created_by_name,
                 {$this->view}.accepted_by_name,
                 {$this->view}.rejected_by_name,
-                {$this->view}.reviewed_by_name,
-                {$this->view}.received_by_name
+                {$this->view}.reviewed_by_name
             ";
         }
 
@@ -294,24 +254,13 @@ class RequestPurchaseFormModel extends Model
                 $changeTo = 'review';
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
-                    'button'    => 'btn-info',
+                    'button'    => 'btn-success',
                     'icon'      => 'fas fa-check-double',
                     'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'RECIEVE') && $row['status'] === 'reviewed') {
-                // Receive PRF
-                $changeTo = 'receive';
-                $buttons .= dt_button_html([
-                    'text'      => $dropdown ? ucfirst($changeTo) : '',
-                    'button'    => 'btn-success',
-                    'icon'      => 'fas fa-sign-in-alt',
-                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
-                ], $dropdown);
-            }
-
-            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed', 'received'])) {
+            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed'])) {
                 // Print PRF
                 $print_url  = site_url('rpf/print/') . $row[$id];
                 $buttons    .= <<<EOF
@@ -330,8 +279,20 @@ class RequestPurchaseFormModel extends Model
    {
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id) {
+            $status     = $row['status'];
+            $changeTo   = '';
+
+            switch ($status) {
+                case 'pending':
+                    $changeTo = 'accept';
+                    break;
+                case 'accepted':
+                    $changeTo = 'review';
+                    break;
+            }
+
             return <<<EOF
-                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]})"><i class="fas fa-eye"></i> View</button>
+                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]}, '{$changeTo}', '{$row['status']}')"><i class="fas fa-eye"></i> View</button>
             EOF;
        };
        
@@ -342,7 +303,7 @@ class RequestPurchaseFormModel extends Model
    public function dtRpfStatusFormat()
    {
        $closureFun = function($row) {
-           $text    = ucwords(set_rpf_status($row['status']));
+           $text    = ucwords($row['status']);
            $color   = dt_status_color($row['status']);
            return text_badge($color, $text);
        };

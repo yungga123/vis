@@ -83,13 +83,13 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                     <tr>
                         <td class="text-bold text-center" colspan="3">REQUESTOR</td>
                         <td class="text-bold text-center" colspan="4" rowspan="2"></td>
-                        <td class="text-bold text-center" colspan="3">REQUISITION NUMBER</td>
+                        <td class="text-bold text-center" colspan="4">REQUISITION NUMBER</td>
                     </tr>
                     <tr>
                         <td class="text-center" colspan="3">
 							<span><?= $rpf['requested_by'] ?? '' ?></span>
 						</td>
-                        <td class="text-bold text-center text-danger" colspan="3">
+                        <td class="text-bold text-center text-danger" colspan="4">
 							<?= 'RF No. '. $purchase_order['rpf_id'] ?? '' ?>
 						</td>
                     </tr>
@@ -100,18 +100,23 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                         <td class="text-bold text-center">BRAND</td>
                         <td class="text-bold text-center">DESCRIPTION</td>
                         <td class="text-bold text-center">SIZE</td>
-                        <td class="text-bold text-center">QTY</td>
                         <td class="text-bold text-center">UNIT</td>
+                        <td class="text-bold text-center">QTY</td>
                         <td class="text-bold text-center">UNIT PRICE</td>
+                        <td class="text-bold text-center">DISCOUNT</td>
                         <td class="text-bold text-center">TOTAL PRICE</td>
                         <td class="text-bold text-center">DELIVERY DATE</td>
                     </tr>
 					<?php 
 					$sub_total = 0;
+
 					if (! empty($items)) {
 						$count = 1;
+
 						foreach ($items as $val) {
-							$total_price = $val['quantity_in'] ? $val['quantity_in'] * $val['item_sdp'] : 0;
+							$discount 		= $val['discount'] ?? 0;
+							$total_price 	= ($val['quantity_in'] ?? 0) * $val['item_sdp'];
+							$total_price 	-= $discount;
 					?>
 							<tr>
 								<td class="text-center"><?= $count; ?></td>
@@ -119,9 +124,10 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 								<td class="text-center"><?= $val['brand'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['item_description'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['size'] ?? 'N/A' ?></td>
-								<td class="text-center"><?= $val['quantity_in'] ?></td>
 								<td class="text-center"><?= ($val['unit'] ?? 'N/A') ?></td>
+								<td class="text-center"><?= $val['quantity_in'] ?? 'N/A' ?></td>
 								<td class="text-right"><?= $val['item_sdp'] ?? 'N/A' ?></td>
+								<td class="text-right"><?= number_format($discount, 2) ?></td>
 								<td class="text-right"><?= number_format($total_price, 2) ?></td>
 								<td class="text-center"><?= $rpf['date_needed'] ?? 'N/A' ?></td>
 							</tr>
@@ -137,11 +143,11 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 					}
 					?>
 					<tr>
-                        <td class="text-bold text-center text-danger" colspan="10">***Nothing Follows***</td>
+                        <td class="text-bold text-center text-danger" colspan="11">***Nothing Follows***</td>
                     </tr>
                     <tr>
                         <td class="text-bold text-center" colspan="7" rowspan="2"></td>
-                        <td class="text-right">
+                        <td class="text-right" colspan="2">
 							<div>SUB TOTAL AMOUNT</div>
 							<div>NET OF VAT</div>
 							<div>PLUS 12% VAT</div>
@@ -155,9 +161,10 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 								<?= number_format($with_vat ? $vat_amount : 0, 2) ?>
 							</div>
                         </td>
+						<td rowspan="2"></td>
                     </tr>
                     <tr>
-                        <td class="text-bold text-right">
+                        <td class="text-bold text-right" colspan="2">
 							TOTAL AMOUNT<span id="vat_text"></span>
 						</td>
                         <td class="text-bold text-right">

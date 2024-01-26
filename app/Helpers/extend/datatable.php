@@ -123,9 +123,9 @@ if (! function_exists('dt_status_color'))
                 break;
             case 'item_out':
             case 'received':
+            case 'reviewed':
                 $color   = 'success';
                 break;
-            case 'reviewed':
             case 'view':
                 $color   = 'info';
                 break;

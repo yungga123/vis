@@ -350,7 +350,7 @@ class ProjectRequestFormModel extends Model
                 // Item Out PRF
                 $changeTo = 'receive';
                 $buttons .= dt_button_html([
-                    'text'      => $dropdown ? 'Receive' : '',
+                    'text'      => $dropdown ? ucfirst($changeTo) : '',
                     'button'    => 'btn-primary',
                     'icon'      => 'fas fa-calendar-check',
                     'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
@@ -363,7 +363,7 @@ class ProjectRequestFormModel extends Model
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
                     'button'    => 'btn-dark',
-                    'icon'      => 'fas fa-file-check',
+                    'icon'      => 'fas fa-archive',
                     'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }

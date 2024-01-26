@@ -341,7 +341,6 @@ if (! function_exists('get_rpf_status'))
             'accept'    => 'accept',
             'reject'    => 'reject',
             'review'    => 'review',
-            'receive'   => 'receive',
         ];
 
         $options_pt = [
@@ -349,7 +348,6 @@ if (! function_exists('get_rpf_status'))
             'accepted'  => 'accepted',
             'rejected'  => 'rejected',
             'reviewed'  => 'reviewed',
-            'received'  => 'received',
         ];
 
         $arr = $pass_tense ? $options_pt : $options;
@@ -363,7 +361,7 @@ if (! function_exists('set_rpf_status'))
     /**
      * Setting status of Request to Purchase Forms (RPF) to its past tense
      */
-	function set_rpf_status(string|array $param): string|array
+	function set_rpf_status(string|array $param = null): string|array
 	{
         $options = [
             'pending'   => 'pending',
@@ -373,9 +371,11 @@ if (! function_exists('set_rpf_status'))
             'rejected'  => 'rejected',
             'review'    => 'reviewed',
             'reviewed'  => 'reviewed',
-            'receive'   => 'received',
-            'received'  => 'received',
         ];
+
+        if (is_null($param)) {
+            return $options;
+        }
 
         if (is_array($param)) {
             $arr = [];
@@ -435,13 +435,13 @@ if (! function_exists('get_po_status'))
         $options = [
             'pending'   => 'pending',
             'approve'   => 'approve',
-            'file'      => 'file',
+            'receive'   => 'receive',
         ];
 
         $options_pt = [
             'pending'   => 'pending',
             'approved'  => 'approved',
-            'filed'     => 'filed',
+            'received'  => 'received',
         ];
 
         $arr = $pass_tense ? $options_pt : $options;
@@ -455,15 +455,19 @@ if (! function_exists('set_po_status'))
     /**
      * Setting status of Purchase Order (PO) to its past tense
      */
-	function set_po_status(string|array $param): string|array
+	function set_po_status(string|array $param = null): string|array
 	{
         $options = [
             'pending'   => 'pending',
             'approve'   => 'approved',
             'approved'  => 'approved',
-            'file'      => 'filed',
-            'filed'     => 'filed',
+            'receive'   => 'received',
+            'received'  => 'received',
         ];
+
+        if (is_null($param)) {
+            return $options;
+        }
 
         if (is_array($param)) {
             $arr = [];

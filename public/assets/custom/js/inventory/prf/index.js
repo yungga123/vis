@@ -121,19 +121,19 @@ function filterData(reset = false) {
 }
 
 /* Get prf items */
-function view(id, status, currStatus) {
+function view(id, changeTo, status) {
 	$(`#prf_items_modal .modal-title`).html("PRF Item Details");
 	$("#prf_items_modal .modal-footer .change-btn").html("");
 	$("#prf_items_modal #prf_id_text").text("PRF #: " + id);
 	$("#file_remarks").addClass("d-none");
 	$("#note_item_out").html("");
 
-	if (inArray(["accept", "item_out", "receive", "file"], status)) {
-		let markAs = strUpper(_status[status]);
+	if (inArray(["accept", "item_out", "receive", "file"], changeTo)) {
+		let markAs = strUpper(_status[changeTo]);
 		let onclick = "";
 		let btnType = "submit";
 
-		if (status === "item_out") {
+		if (changeTo === "item_out") {
 			const note = `
 				Please review the items details first before you proceed to <strong>${markAs}</strong>! 
 				Click the <button type="button" class="btn btn-sm btn-warning" onclick="edit(${id})" title="Edit"><i class="fas fa-edit"></i></button> button/icon to update details.
@@ -141,27 +141,27 @@ function view(id, status, currStatus) {
 			$("#note_item_out").html(note);
 		}
 
-		if (status === "file") {
+		if (changeTo === "file") {
 			$("#prf_id_file").val(id);
-			$("#status_file").val(status);
+			$("#status_file").val(changeTo);
 			$("#file_remarks").removeClass("d-none");
 			$("#note_item_out").html(
 				"If item quantity were all consumed, just put zero <strong>(0)</strong> in the input field. Returned item quantity will be added back to the Masterlist stocks."
 			);
 		}
 
-		if (status !== "file") {
-			onclick = `onclick="change(${id}, '${status}', '${currStatus}', ${true})"`;
+		if (changeTo !== "file") {
+			onclick = `onclick="change(${id}, '${changeTo}', '${status}', ${true})"`;
 			btnType = "button";
 		}
 
 		$(`#prf_items_modal .modal-title`).html(
-			`Change Status from ${strUpper(currStatus)} to ${strUpper(status)}`
+			`Change Status from ${strUpper(status)} to ${strUpper(changeTo)}`
 		);
 
 		// Append button
 		$("#prf_items_modal .modal-footer .change-btn").append(`
-			<button type="${btnType}" class="btn btn-success" id="btn_${status}" ${onclick}>
+			<button type="${btnType}" class="btn btn-success" id="btn_${changeTo}" ${onclick}>
 				Mark as ${markAs}
 			</button>	
 		`);
