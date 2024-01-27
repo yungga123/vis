@@ -210,6 +210,7 @@ function view(id, changeTo, status) {
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
 								<td>${val.unit || "N/A"}</td>
+								<td>${val.size || "N/A"}</td>
 								<td>
 									${val.stocks}
 									${stocks}
@@ -218,10 +219,10 @@ function view(id, changeTo, status) {
 									${val.quantity_out}
 									${quantity_out}
 								</td>
-								<td>${status === "file" ? returned_q : val.returned_q || "0.00"}</td>
+								<td>${changeTo === "file" ? returned_q : val.returned_q || "0.00"}</td>
 								<td>${val.consumed}</td>
 								<td>${
-									status === "file"
+									changeTo === "file"
 										? returned_date
 										: val.returned_date_formatted || "N/A"
 								}</td>
@@ -346,7 +347,9 @@ function remove(id) {
 
 /* Change status record */
 function change(id, changeTo, status, proceed) {
-	if (inArray(["accepted", "item_out", "received"], status) && !proceed) {
+	const allowedInView = ["accept", "item_out", "receive", "file"];
+
+	if (inArray(allowedInView, changeTo) && !proceed) {
 		$("#prf_id_file").val(id);
 		$("#status_file").val(changeTo);
 

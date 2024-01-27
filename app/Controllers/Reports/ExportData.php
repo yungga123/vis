@@ -167,6 +167,11 @@ class ExportData extends BaseController
                         $modules['CUSTOMER_BRANCHES'] = 'Client Branches';
                     }
 
+                    if ($module === 'INVENTORY') {
+                        // Include inventory logs
+                        $modules['INVENTORY_LOGS'] = 'Inventory Logs';
+                    }
+
                     if ($module === 'INVENTORY_PRF') {
                         // Include the prf items
                         $modules['INVENTORY_PRF_ITEMS'] = 'Project Request Items';
@@ -251,6 +256,14 @@ class ExportData extends BaseController
                 'type'      => 'multiple',
                 'name'      => 'Status',
                 'options'   => get_schedule_type('', true),
+            ],
+            'INVENTORY_LOGS'        => [
+                'type'      => 'multiple',
+                'name'      => 'Logs Type',
+                'options'   => [
+                    'ITEM_IN'   => 'Item In',
+                    'ITEM_OUT'  => 'Item Out',
+                ],
             ],
             'INVENTORY_PRF'         => [
                 'type'      => 'multiple',
@@ -375,6 +388,7 @@ class ExportData extends BaseController
             'ADMIN_SCHEDULES'       => [new AdminExportService(), 'schedules'],
             'ADMIN_DISPATCH'        => [new AdminExportService(), 'dispatch'],
             'INVENTORY'             => [new InventoryExportService(), 'items'],
+            'INVENTORY_LOGS'        => [new InventoryExportService(), 'itemLogs'],
             'INVENTORY_PRF'         => [new InventoryExportService(), 'prf'],
             'INVENTORY_PRF_ITEMS'   => [new InventoryExportService(), 'prfItems'],
             'TASK_LEAD'             => [new SalesExportService(), 'taskleads'],

@@ -105,7 +105,7 @@ if (! function_exists('set_jo_status'))
             return $arr;
         }
 
-        return $options[strtolower($param)];
+        return $options[strtolower($param)] ?? strtolower($param);
 	}
 }
 
@@ -325,7 +325,7 @@ if (! function_exists('set_prf_status'))
             return $arr;
         }
 
-        return $options[strtolower($param)];
+        return $options[strtolower($param)] ?? strtolower($param);
 	}
 }
 
@@ -386,7 +386,7 @@ if (! function_exists('set_rpf_status'))
             return $arr;
         }
 
-        return $options[strtolower($param)];
+        return $options[strtolower($param)] ?? strtolower($param);
 	}
 }
 
@@ -478,7 +478,7 @@ if (! function_exists('set_po_status'))
             return $arr;
         }
 
-        return $options[strtolower($param)];
+        return $options[strtolower($param)] ?? strtolower($param);
 	}
 }
 
@@ -649,7 +649,7 @@ if (! function_exists('set_leave_status'))
             return $arr;
         }
 
-        return $options[strtolower($param)];
+        return $options[strtolower($param)] ?? strtolower($param);
 	}
 }
 

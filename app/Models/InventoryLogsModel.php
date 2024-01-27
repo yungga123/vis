@@ -4,11 +4,12 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Traits\InventoryTrait;
+use App\Traits\HRTrait;
 
 class InventoryLogsModel extends Model
 {
     /* Declare trait here to use */
-    use InventoryTrait;
+    use InventoryTrait, HRTrait;
 
     protected $DBGroup          = 'default';
     protected $inventoryTable   = 'inventory';
@@ -95,15 +96,18 @@ class InventoryLogsModel extends Model
     }
 
     // Join to main table inventory
-    protected function joinInventory($builder)
+    public function joinInventory(object $bui)
     {
-        $builder->join($this->inventoryTable, "{$this->inventoryTable}.id = {$this->table}.inventory_id", 'left');
-        $builder->join($this->inventoryView, "{$this->inventoryView}.inventory_id = {$this->table}.inventory_id", 'left');
+        $inventoryModel = new InventoryModel();
+
+        $bui->join($inventoryModel->table, "{$inventoryModel->table}.id = {$this->table}.inventory_id", 'left');
+        $bui->join($inventoryModel->view, "{$inventoryModel->view}.inventory_id = {$this->table}.inventory_id", 'left');
     }
 
     // Set/format columns to include in select
     public function columns()
     {
+        $inventoryModel = new InventoryModel();
         $columns        = "
             {$this->table}.inventory_logs_id,
             {$this->table}.inventory_id,
@@ -112,18 +116,19 @@ class InventoryLogsModel extends Model
             {$this->table}.action,
             {$this->table}.stocks,
             {$this->table}.parent_stocks,
-            {$this->inventoryTable}.item_model,
-            {$this->inventoryTable}.item_description,
-            {$this->inventoryTable}.stocks AS current_stocks,
-            {$this->inventoryView}.category_name,
-            {$this->inventoryView}.subcategory_name,
-            {$this->inventoryView}.brand,
-            {$this->inventoryView}.size,
-            {$this->inventoryView}.unit,
-            {$this->inventoryView}.created_by_name,
-            DATE_FORMAT({$this->table}.status_date, '%b %e, %Y') AS status_date_formatted,
-            DATE_FORMAT({$this->table}.created_at, '%b %e, %Y at %h:%i %p') AS created_at_formatted,
-            (SELECT employee_name FROM accounts_view AS av WHERE {$this->table}.created_by = av.username) AS encoder
+            {$inventoryModel->table}.item_model,
+            {$inventoryModel->table}.item_description,
+            {$inventoryModel->table}.stocks AS current_stocks,
+            {$inventoryModel->view}.supplier_name,
+            {$inventoryModel->view}.category_name,
+            {$inventoryModel->view}.subcategory_name,
+            {$inventoryModel->view}.brand,
+            {$inventoryModel->view}.size,
+            {$inventoryModel->view}.unit,
+            {$inventoryModel->view}.created_by_name,
+            ".dt_sql_date_format("{$this->table}.status_date")." AS status_date_formatted,
+            ".dt_sql_date_format("{$this->table}.created_at")." AS created_at_formatted,
+            cb.employee_name AS encoder
         ";
 
         return $columns;
@@ -133,8 +138,10 @@ class InventoryLogsModel extends Model
     public function noticeTable($request) 
     {
         $builder = $this->db->table($this->table);
+
         $builder->select($this->columns());
-        $this->joinInventory($builder);        
+        $this->joinInventory($builder);
+        $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
 
         if (isset($request['params'])) {
             $params = $request['params'];
@@ -159,8 +166,9 @@ class InventoryLogsModel extends Model
             }
         }
 
-        $builder->where('inventory_logs.deleted_at', null);
-        $builder->orderBy('inventory_logs.'. $this->primaryKey, 'DESC');
+        $builder->where("{$this->table}.deleted_at", null);
+        $builder->orderBy("{$this->table}.". $this->primaryKey, 'DESC');
+
         return $builder;
     }
 
@@ -169,6 +177,7 @@ class InventoryLogsModel extends Model
         $closureFun = function($row) {
             $text   = get_actions($row['action'], true);
             $color  = $row['action'] === 'ITEM_IN' ? 'primary' : 'success';
+
             return text_badge($color, $text);
         };
         
