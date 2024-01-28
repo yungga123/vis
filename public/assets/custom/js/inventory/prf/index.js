@@ -5,7 +5,8 @@ var table,
 	joSelector,
 	invSelector,
 	itemFieldTable,
-	_fetchItems;
+	_fetchItems,
+	_status;
 
 $(document).ready(function () {
 	table = "prf_table";
@@ -16,6 +17,9 @@ $(document).ready(function () {
 	invSelector = ".inventory_id";
 	itemFieldTable = $("#item_field_table tbody");
 	_fetchItems = [];
+	_status = $pjOptions.prf_status;
+
+	console.log(_status);
 
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
@@ -117,39 +121,56 @@ function filterData(reset = false) {
 }
 
 /* Get prf items */
-function view(id, status) {
+function view(id, changeTo, status) {
 	$(`#prf_items_modal .modal-title`).html("PRF Item Details");
+	$("#prf_items_modal .modal-footer .change-btn").html("");
+	$("#prf_items_modal #prf_id_text").text("PRF #: " + id);
 	$("#file_remarks").addClass("d-none");
-	if (!status) $("#note_item_out").html("");
-	$("#prf_items_modal .modal-footer #btn_item_out").remove();
-	$("#prf_items_modal .modal-footer #btn_file").remove();
+	$("#note_item_out").html("");
 
-	if (status === "item_out") {
-		$("#file_remarks").addClass("d-none");
-		$("#prf_items_modal .modal-footer #btn_file").remove();
-	}
-	if (status === "file") {
+	if (inArray(["accept", "item_out", "receive", "file"], changeTo)) {
+		let markAs = strUpper(_status[changeTo]);
+		let onclick = "";
+		let btnType = "submit";
+
+		if (changeTo === "item_out") {
+			const note = `
+				Please review the items details first before you proceed to <strong>${markAs}</strong>! 
+				Click the <button type="button" class="btn btn-sm btn-warning" onclick="edit(${id})" title="Edit"><i class="fas fa-edit"></i></button> button/icon to update details.
+			`;
+			$("#note_item_out").html(note);
+		}
+
+		if (changeTo === "file") {
+			$("#prf_id_file").val(id);
+			$("#status_file").val(changeTo);
+			$("#file_remarks").removeClass("d-none");
+			$("#note_item_out").html(
+				"If item quantity were all consumed, just put zero <strong>(0)</strong> in the input field. Returned item quantity will be added back to the Masterlist stocks."
+			);
+		}
+
+		if (changeTo !== "file") {
+			onclick = `onclick="change(${id}, '${changeTo}', '${status}', ${true})"`;
+			btnType = "button";
+		}
+
 		$(`#prf_items_modal .modal-title`).html(
-			`Change Status from ITEM OUT to FILED`
-		);
-		$("#file_remarks").removeClass("d-none");
-		$("#prf_items_modal .modal-footer #btn_item_out").remove();
-		$("#note_item_out").html(
-			"If item quantity were all consumed, just put zero <strong>(0)</strong> in the input field. Returned item quantity will be added back to the Masterlist stocks."
+			`Change Status from ${strUpper(status)} to ${strUpper(changeTo)}`
 		);
 
-		// Remove and append button
-		$("#prf_items_modal .modal-footer #btn_file").remove();
-		$("#prf_items_modal .modal-footer #btn_item_out").remove();
-		$("#prf_items_modal .modal-footer").append(`
-			<button type="submit" class="btn btn-success" id="btn_file">Save Changes</button>	
+		// Append button
+		$("#prf_items_modal .modal-footer .change-btn").append(`
+			<button type="${btnType}" class="btn btn-success" id="btn_${changeTo}" ${onclick}>
+				Mark as ${markAs}
+			</button>	
 		`);
 	}
 
-	$("#prf_items_modal #prf_id_text").text("PRF #: " + id);
 	showLoading();
 
 	const data = { id: id, prf_items: true };
+
 	$.post(router.prf.fetch, data)
 		.then((res) => {
 			closeLoading();
@@ -174,7 +195,9 @@ function view(id, status) {
 						const onkeyEvent =
 							'onkeyup="compute(' + parseFloat(val.quantity_out) + ', event)"';
 						const returned_q = `
-							<input type="number" name="returned_q[]" id="returned_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${val.quantity_out}">
+							<input type="number" name="returned_q[]" id="returned_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${
+							val.quantity_out
+						}" value="${parseFloat(val.returned_q || 0)}">
 						`;
 						html += `
 							<tr>
@@ -187,6 +210,7 @@ function view(id, status) {
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
 								<td>${val.unit || "N/A"}</td>
+								<td>${val.size || "N/A"}</td>
 								<td>
 									${val.stocks}
 									${stocks}
@@ -195,10 +219,10 @@ function view(id, status) {
 									${val.quantity_out}
 									${quantity_out}
 								</td>
-								<td>${status === "file" ? returned_q : val.returned_q || "0.00"}</td>
+								<td>${changeTo === "file" ? returned_q : val.returned_q || "0.00"}</td>
 								<td>${val.consumed}</td>
 								<td>${
-									status === "file"
+									changeTo === "file"
 										? returned_date
 										: val.returned_date_formatted || "N/A"
 								}</td>
@@ -323,43 +347,14 @@ function remove(id) {
 
 /* Change status record */
 function change(id, changeTo, status, proceed) {
-	if (status === "accepted" && !proceed) {
-		// For item out, dispaly the prf_items_modal
-		// to review the item first
-		view(id, changeTo);
-		// Add note
-		const onclick = 'onclick="edit(' + id + ')"';
-		const note = `
-			Please review the items details first before you proceed to <strong>ITEM OUT</strong>! 
-			Click the <button type="button" class="btn btn-sm btn-warning" ${onclick} title="Edit"><i class="fas fa-edit"></i></button> button/icon to update details.
-		`;
-		$("#note_item_out").html(note);
+	const allowedInView = ["accept", "item_out", "receive", "file"];
 
-		// Remove and append the button
-		const changeClick =
-			'onclick="change(' +
-			id +
-			",'" +
-			changeTo +
-			"','" +
-			status +
-			"'," +
-			true +
-			')"';
-		$("#prf_items_modal .modal-footer #btn_item_out").remove();
-		$("#prf_items_modal .modal-footer #btn_file").remove();
-		$("#prf_items_modal .modal-footer").append(`
-			<button type="button" class="btn btn-success" id="btn_item_out" ${changeClick}">Item Out</button>	
-		`);
-		return;
-	}
-
-	if (status === "item_out") {
+	if (inArray(allowedInView, changeTo) && !proceed) {
 		$("#prf_id_file").val(id);
 		$("#status_file").val(changeTo);
 
 		// Display the items details
-		view(id, changeTo);
+		view(id, changeTo, status);
 		return;
 	}
 
@@ -472,10 +467,6 @@ function _loadJobOrderDetails(data) {
                     <tr>
                         <th class="text-right" width="50%">Work Type</th>
 						<td class="text-left" width="50%">${data.work_type}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right" width="50%">Status</th>
-						<td class="text-left" width="50%">${strUpper(data.jo_status)}</td>
                     </tr>
 				</tbody>
 			</table>

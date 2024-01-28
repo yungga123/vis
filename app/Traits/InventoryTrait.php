@@ -25,18 +25,19 @@ trait InventoryTrait
         $builder    = $model->select($fields);
 
         $builder->joinWithOtherTables($builder);
-        $builder->whereIn("{$table}.status", ['accepted', 'filed']);
 
         if (! empty($q)) {
             if (empty($options)) {                
                 $builder->where("{$table}.id", $q);
-                return $builder->find();
+                return $builder->first();
             }
 
             $builder->like("{$model->view}.quotation)", $q);
         }
 
+        $builder->whereIn("{$table}.status", ['accepted', 'filed']);
         $builder->orderBy("{$table}.id", 'DESC');
+
         $result = $builder->paginate($options['perPage'], 'default', $options['page']);
         $total  = $builder->countAllResults();
 
@@ -127,12 +128,14 @@ trait InventoryTrait
      */
     public function traitUpdateInventoryStock($id, $stock, $action)
     {
-        $model      = new InventoryModel();
-        $sign       = $action === 'ITEM_OUT' ? '-' : '+';
-        $builder    = $model->db->table($model->table);
-
-        $builder->set('stocks', "stocks {$sign} ". $stock, false);
-        $builder->where('id', $id)->update();
+        if ($id && ! empty($stock)) {
+            $model      = new InventoryModel();
+            $sign       = $action === 'ITEM_OUT' ? '-' : '+';
+            $builder    = $model->db->table($model->table);
+    
+            $builder->set('stocks', "stocks {$sign} ". $stock, false);
+            $builder->where('id', $id)->update();
+        }
     }
 
     /**

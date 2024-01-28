@@ -90,6 +90,9 @@ class ProjectRequestForm extends BaseController
                 ]
             ]
         ]);
+        $data['php_to_js_options'] = json_encode([
+            'prf_status'  => set_prf_status()
+        ]);
 
         return view('inventory/prf/index', $data);
     }
@@ -120,12 +123,14 @@ class ProjectRequestForm extends BaseController
             'created_at_formatted',
             'accepted_by_name',
             'accepted_at_formatted',
-            'rejected_by_name',
-            'rejected_at_formatted',
             'item_out_by_name',
             'item_out_at_formatted',
+            'received_by_name',
+            'received_at_formatted',
             'filed_by_name',
             'filed_at_formatted',
+            'rejected_by_name',
+            'rejected_at_formatted',
         ];
 
         $table->setTable($builder)
@@ -256,7 +261,7 @@ class ProjectRequestForm extends BaseController
                     $items          = $this->traitFetchPrfItems($id, true, true);
 
                     $data['data']               = $record;
-                    $data['data']['job_order']  = $job_order[0];
+                    $data['data']['job_order']  = $job_order;
                     $data['data']['items']      = $items;
                 }
                 return $data;
@@ -334,14 +339,18 @@ class ProjectRequestForm extends BaseController
                     $data['status']     = res_lang('status.success');
                     $data['message']    = res_lang('success.changed', ['PRF', strtoupper($status)]);
                     
-                    if ($status === 'filed') {
-                        $prfItemModel = new PRFItemModel();
-                        $prfItemModel->updatePrfItems($this->request->getVar(), $id);
+                    if (in_array($status, ['item_out', 'filed'])) {
+                        if ($status === 'filed') {
+                            $prfItemModel = new PRFItemModel();
+                            $prfItemModel->updatePrfItems($this->request->getVar(), $id);
+                        }
+
+                        $this->_model->updateInventoryStock($id, $status);
                     }
                 }
+
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;

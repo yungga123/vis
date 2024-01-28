@@ -156,25 +156,56 @@ class RPFItemModel extends Model
     {
         $inventory_id   = $data['inventory_id'];
         $quantity_in    = $data['quantity_in'];
-        $received_q     = $data['received_q'];
-        $received_date  = $data['received_date'];
+        $received_q     = $data['received_q'] ?? [];
+        $received_date  = $data['received_date'] ?? [];
+        $stocks         = $data['stocks'] ?? [];
+        $discount       = $data['discount'] ?? [];
 
         if (! empty($data) && count($inventory_id)) {
-            $arr        = [];
-            for ($i=0; $i < count($inventory_id); $i++) { 
-                $arr[] = [
-                    'rpf_id'        => (int)$rpf_id,
-                    'inventory_id'  => $inventory_id[$i],
-                    'quantity_in'   => $quantity_in[$i],
-                    'received_q'    => $received_q[$i],
-                    'received_date' => $received_date[$i],
-                ];
+            $rpf_data       = [];
+            $logs_data      = [];
+            $action         = 'ITEM_IN';
+            $is_receive     = ($data['status'] ?? '') === 'receive';
+
+            for ($i=0; $i < count($inventory_id); $i++) {
+                if (! empty($discount)) {
+                    $rpf_data[] = [
+                        'rpf_id'        => (int)$rpf_id,
+                        'inventory_id'  => $inventory_id[$i],
+                        'quantity_in'   => $quantity_in[$i],
+                        'discount'      => $discount[$i],
+                    ];
+                } else {
+                    $rpf_data[] = [
+                        'rpf_id'        => (int)$rpf_id,
+                        'inventory_id'  => $inventory_id[$i],
+                        'quantity_in'   => $quantity_in[$i],
+                        'received_q'    => $received_q[$i],
+                        'received_date' => $received_date[$i],
+                    ];
+    
+                    if ($is_receive) {
+                        $this->traitUpdateInventoryStock($inventory_id[$i], $quantity_in[$i], $action);
+    
+                        $logs_data[] = [
+                            'inventory_id'  => $inventory_id[$i],
+                            'stocks'        => $quantity_in[$i],
+                            'parent_stocks' => $stocks[$i],
+                            'status_date'   => $received_date[$i],
+                            'action'        => $action,
+                            'created_by'    => session('username'),
+                        ];
+                    }
+                }
             }
 
-            if (! empty($arr)) {
+            if (! empty($rpf_data)) {
                 $constraint = ['rpf_id', 'inventory_id', 'quantity_in'];
-                $this->db->table($this->table)->updateBatch($arr, $constraint);
+                $this->db->table($this->table)->updateBatch($rpf_data, $constraint);
             }
+
+            // Add inventory logs
+            $this->saveInventoryLogs($logs_data);
         }
     }
 

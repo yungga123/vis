@@ -113,7 +113,7 @@
 						</td>
 						<td width="50%">
 							<div class="text-bold">Received by: (Person In-Charge)</div>
-							<div class="text-center"></div>
+							<div class="text-center"><?= $prf['received_by_name'] ?? '' ?></div>
 						</td>
 					</tr>
 					<tr>

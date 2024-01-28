@@ -38,8 +38,8 @@
                                 <th>Generated At</th>
                                 <th>Approved By</th>
                                 <th>Approved At</th>
-                                <th>Filed By</th>
-                                <th>Filed At</th>
+                                <th>Received By</th>
+                                <th>Received At</th>
                             </tr>
                         </thead>
                     </table>

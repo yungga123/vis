@@ -47,7 +47,7 @@
                                 <thead>
                                     <tr>
                                         <th>Item #</th>
-                                        <th>Brand</th>
+                                        <th>Category</th>
                                         <th>Item Model</th>
                                         <th>Item Description</th>
                                         <th>Supplier</th>
@@ -56,16 +56,19 @@
                                         <th>Current Stocks</th>
                                         <th>Qty In</th>
                                         <th>Cost</th>
+                                        <th>Discount</th>
                                         <th>Total Cost</th>
                                         <th>Purpose</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                                 <tfoot>
-                                    <tr>
-                                        <th colspan="10" class="text-right">Total Amount</th>
-                                        <th class="text-danger total_amount"></th>
-                                        <th></th>
+                                    <tr class="text-bold">
+                                        <td colspan="9" class="text-right">Total Amount:</td>
+                                        <td class="text-danger total_cost"></td>
+                                        <td class="text-danger total_discount"></td>
+                                        <td class="text-danger total_amount"></td>
+                                        <td></td>
                                     </tr>
                                 </tfoot>
                             </table>

@@ -110,7 +110,11 @@ class PurchaseOrderModel extends Model
             {$this->table}.rpf_id,
             {$poItemModel->table}.inventory_id,
             {$rpfItemModel->table}.quantity_in,
+            {$rpfItemModel->table}.received_q,
+            {$rpfItemModel->table}.received_date,
             {$rpfItemModel->table}.purpose,
+            {$rpfItemModel->table}.discount,
+            ".dt_sql_date_format("{$rpfItemModel->table}.received_date")." AS received_date_formatted,
         " . $rpfItemModel->inventoryColumns(true);
         $columns        = $additionalColumns ? $columns .', '. $additionalColumns : $columns;
         $builder        = $this->select($columns);
@@ -192,10 +196,10 @@ class PurchaseOrderModel extends Model
             ".dt_sql_datetime_format("{$rpfModel->table}.created_at")." AS requested_at_formatted,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at_formatted,
             ".dt_sql_datetime_format("{$this->table}.approved_at")." AS approved_at_formatted,
-            ".dt_sql_datetime_format("{$this->table}.filed_at")." AS filed_at_formatted,
+            ".dt_sql_datetime_format("{$this->table}.received_at")." AS received_at_formatted,
             cb.employee_name AS created_by_name,
             ab.employee_name AS approved_by_name,
-            fb.employee_name AS filed_by_name
+            rb.employee_name AS received_by_name
         ";
 
         $builder->select($columns);
@@ -204,7 +208,7 @@ class PurchaseOrderModel extends Model
         $this->joinRpf($builder, $rpfModel, true);
         $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
         $this->joinAccountView($builder, "{$this->table}.approved_by", 'ab');
-        $this->joinAccountView($builder, "{$this->table}.filed_by", 'fb');
+        $this->joinAccountView($builder, "{$this->table}.received_by", 'rb');
 
         $this->filterParam($request, $builder, "{$this->table}.status");
 
@@ -238,7 +242,7 @@ class PurchaseOrderModel extends Model
 
             if (check_permissions($permissions, 'APPROVED') && $row['status'] === 'approved') {
                 // File PO
-                $changeTo = 'file';
+                $changeTo = 'receive';
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
                     'button'    => 'btn-success',
@@ -247,7 +251,7 @@ class PurchaseOrderModel extends Model
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['approved', 'filed'])) {
+            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['approved', 'received'])) {
                 // Print PO
                 $print_url  = url_to('purchase_order.print', $row[$id]);
                 $buttons    .= <<<EOF
@@ -266,8 +270,20 @@ class PurchaseOrderModel extends Model
    {
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id) {
+            $changeTo   = '';
+            $status     = $row['status'];
+
+            switch ($status) {
+                case 'pending':
+                    $changeTo = 'approve';
+                    break;
+                case 'approved':
+                    $changeTo = 'receive';
+                    break;
+            }
+
             return <<<EOF
-                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]}, '{$row['status']}')"><i class="fas fa-eye"></i> View</button>
+                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]}, '{$changeTo}', '{$row['status']}')"><i class="fas fa-eye"></i> View</button>
             EOF;
        };
        

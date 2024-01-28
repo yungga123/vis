@@ -5,6 +5,7 @@ namespace App\Controllers\Inventory;
 use App\Controllers\BaseController;
 use App\Models\InventoryLogsModel;
 use App\Models\InventoryDropdownModel;
+use App\Models\InventoryModel;
 use monken\TablesIgniter;
 
 class Logs extends BaseController
@@ -80,7 +81,7 @@ class Logs extends BaseController
         ]);
 
         $dropdownModel = new InventoryDropdownModel();
-        $data['categories']     = inventory_categories_options($dropdownModel);
+        $data['categories']     = inventory_categories_options($dropdownModel, true);
 
         return view('inventory/logs/index', $data);
     }
@@ -137,54 +138,37 @@ class Logs extends BaseController
      */
     public function list()
     {
-        $table = new TablesIgniter();
-        $request = $this->request->getVar();
+        $model      = new InventoryModel();
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
+        $fields     = [
+            'inventory_id',
+            'supplier_name',
+            'category_name',
+            'subcategory_name',
+            'brand',
+            'item_model',
+            'item_description',
+            'stocks',
+            'parent_stocks',
+            'current_stocks',
+            'size',
+            'unit',
+            'cap_status',
+            'status_date_formatted',
+            'created_by_name',
+            'created_at_formatted',
+        ];
 
-        $table->setTable($this->_model->noticeTable($request))
+        $table->setTable($builder)
             ->setSearch([
-                'category_name',
-                'subcategory_name',
-                'brand',
-                'item_model',
-                'item_description',
-                'created_by_name',
+                "{$model->view}.supplier_name",
+                "{$model->table}.item_model",
+                "{$model->table}.item_description",
             ])
-            ->setOrder([
-                'action',
-                'inventory_id',
-                'category_name',
-                'subcategory_name',
-                'brand',
-                'item_model',
-                'item_description',
-                'stocks',
-                'parent_stocks',
-                'current_stocks',
-                'size',
-                'unit',
-                'cap_status',
-                'status_date_formatted',
-                'created_by_name',
-                'created_at_formatted',
-            ])
-            ->setOutput([
-                $this->_model->actionLogs(),
-                'inventory_id',
-                'category_name',
-                'subcategory_name',
-                'brand',
-                'item_model',
-                'item_description',
-                'stocks',
-                'parent_stocks',
-                'current_stocks',
-                'size',
-                'unit',
-                'cap_status',
-                'status_date_formatted',
-                'created_by_name',
-                'created_at_formatted',
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(array_merge([$this->_model->actionLogs()], $fields));
 
         return $table->getDatatable();
     }

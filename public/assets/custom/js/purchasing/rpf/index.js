@@ -1,4 +1,11 @@
-var table, modal, form, elems, invSelector, supSelector, itemFieldTable;
+var table,
+	modal,
+	form,
+	elems,
+	invSelector,
+	supSelector,
+	itemFieldTable,
+	_status;
 
 $(document).ready(function () {
 	table = "rpf_table";
@@ -15,6 +22,7 @@ $(document).ready(function () {
 	invSelector = ".inventory_id";
 	supSelector = ".supplier_id";
 	itemFieldTable = $("#item_field_table tbody");
+	_status = $pjOptions.rpf_status;
 
 	/* Load dataTable */
 	loadDataTable(table, router.rpf.list, METHOD.POST);
@@ -72,23 +80,6 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 
-	/* Form for status filed */
-	formSubmit($("#rpf_items_form"), "continue", function (res, self) {
-		const message = res.errors ?? res.message;
-
-		if (res.status !== STATUS.ERROR) {
-			self[0].reset();
-			refreshDataTable($("#" + table));
-			notifMsgSwal(res.status, message, res.status);
-			$("#rpf_id").val("");
-			$("#inventory_id_file").val("");
-			$("#status_receive").val("");
-			$(`#rpf_items_modal`).modal("hide");
-		}
-
-		showAlertInForm(["remarks"], message, res.status);
-	});
-
 	showItemsIfRedirectedFromMail();
 });
 
@@ -107,31 +98,38 @@ function filterData(reset = false) {
 }
 
 /* Get rpf items */
-function view(id, status) {
+function view(id, changeTo, status) {
 	$(`#rpf_items_modal .modal-title`).html("RPF Item Details");
-	$("#received_remarks").addClass("d-none");
-	if (!status) {
-		$("#item_note").html("");
-		$("#rpf_items_modal .modal-footer #btn_review").remove();
-		$("#rpf_items_modal .modal-footer #btn_receive").remove();
-	}
-	if (status === "receive") {
+	$(`#rpf_items_modal .modal-footer #btn_mark`).remove();
+	$("#rpf_items_modal #rpf_id_text").text("RPF #: " + id);
+	$("#item_note").html("");
+
+	if (inArray(["accept", "review"], changeTo)) {
+		let markAs = strUpper(_status[changeTo]);
+		let onclick = `onclick="change(${id}, '${changeTo}', '${status}', ${true})"`;
+
 		$(`#rpf_items_modal .modal-title`).html(
-			`Change Status from REVIEWED to RECEIVE`
+			`Change Status from ${strUpper(status)} to ${strUpper(changeTo)}`
 		);
 
-		// Remove and append button
-		$("#rpf_items_modal .modal-footer #btn_review").remove();
-		$("#rpf_items_modal .modal-footer #btn_receive").remove();
+		// Append button
 		$("#rpf_items_modal .modal-footer").append(`
-			<button type="submit" class="btn btn-success" id="btn_receive">Mark as Received</button>	
+			<button type="button" class="btn btn-success" id="btn_mark" ${onclick}>Mark as ${markAs}</button>	
 		`);
+
+		if (changeTo === "review") {
+			// Add note
+			const note = `
+				Please review the items first! If good to go, click the <strong>Mark as ${markAs}</strong> button to make this as <strong>REVIEWED</strong> and ready for purchase. Once marked as ${markAs}, record cannot be edited anymore.
+			`;
+			$("#item_note").html(note);
+		}
 	}
 
-	$("#rpf_items_modal #rpf_id_text").text("RPF #: " + id);
 	showLoading();
 
 	const data = { id: id, rpf_items: true };
+
 	$.post(router.rpf.fetch, data)
 		.then((res) => {
 			closeLoading();
@@ -140,27 +138,10 @@ function view(id, status) {
 				let html = "";
 
 				if (!isEmpty(res.data)) {
-					const received_date = `
-						<input type="date" name="received_date[]" id="received_date" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
-					`;
 					let totalAmount = 0,
 						totalAmountReceived = 0;
 
 					$.each(res.data, (index, val) => {
-						const inventory_id = `
-							<input type="hidden" name="inventory_id[]" value="${val.inventory_id}" class="form-control" readonly>
-						`;
-						const stocks = `
-							<input type="hidden" name="stocks[]" value="${val.stocks}" class="form-control" readonly>
-						`;
-						const quantity_in = `
-							<input type="hidden" name="quantity_in[]" value="${val.quantity_in}" class="form-control" readonly>
-						`;
-						const onkeyEvent =
-							'onkeyup="validate(' + parseFloat(val.quantity_in) + ', event)"';
-						const received_q = `
-							<input type="number" name="received_q[]" id="received_q_${index}" class="form-control" placeholder="Qty" ${onkeyEvent} value="${val.quantity_in}" max="${val.quantity_in}" data-item_cost="${val.item_sdp}">
-						`;
 						const totalCost = Math.floor(val.quantity_in * val.item_sdp);
 						const totalCostReceived = Math.floor(val.received_q * val.item_sdp);
 
@@ -170,32 +151,17 @@ function view(id, status) {
 						);
 						html += `
 							<tr>
-								<td>
-									${val.inventory_id}
-									${inventory_id}
-								</td>
+								<td>${val.inventory_id}</td>
 								<td>${val.category_name}</td>
 								<td>${val.item_model}</td>
 								<td>${val.item_description}</td>
 								<td>${val.supplier_name || "N/A"}</td>
 								<td>${val.unit || "N/A"}</td>
 								<td>${val.size || "N/A"}</td>
-								<td>
-									${val.stocks}
-									${stocks}
-								</td>
-								<td>
-									${val.quantity_in}
-									${quantity_in}
-								</td>
+								<td>${val.stocks}</td>
+								<td>${val.quantity_in}</td>
 								<td>${numberFormat(val.item_sdp)}</td>
 								<td>${numberFormat(totalCost)}</td>
-								<td>${status === "receive" ? received_q : val.received_q || "0.00"}</td>
-								<td>${
-									status === "receive"
-										? received_date
-										: val.received_date_formatted || "N/A"
-								}</td>
 								<td>${val.purpose || "N/A"}</td>
 							</tr>
 						`;
@@ -292,41 +258,12 @@ function remove(id) {
 
 /* Change status record */
 function change(id, changeTo, status, proceed) {
-	if (status === "accepted" && !proceed) {
-		// For item out, dispaly the rpf_items_modal
-		// to review the item first
-		view(id, changeTo);
-		// Add note
-		const note = `
-			Please review the items first! If good to go, click the <strong>Mark as Reviewed</strong> button to make this as <strong>REVIEWED</strong> and ready for purchase. Once marked as reviewed, record cannot be edited anymore.
-		`;
-		$("#item_note").html(note);
-
-		// Remove and append the button
-		const changeClick =
-			'onclick="change(' +
-			id +
-			",'" +
-			changeTo +
-			"','" +
-			status +
-			"'," +
-			true +
-			')"';
-		$("#rpf_items_modal .modal-footer #btn_review").remove();
-		$("#rpf_items_modal .modal-footer").append(`
-			<button type="button" class="btn btn-success" id="btn_review" ${changeClick}">Mark as Reviewed</button>	
-		`);
-		return;
-	}
-
-	if (status === "reviewed") {
-		$("#rpf_id_received").val(id);
-		$("#status_received").val(changeTo);
-		$("#item_note").html("");
+	if (inArray(["pending", "accepted"], status) && !proceed) {
+		$("#prf_id_file").val(id);
+		$("#status_file").val(changeTo);
 
 		// Display the items details
-		view(id, changeTo);
+		view(id, changeTo, status);
 		return;
 	}
 
@@ -368,9 +305,6 @@ function toggleItemField(row) {
 		return;
 	}
 
-	// <td>
-	// 	<select class="custom-select supplier_id" name="supplier_id[]" style="width: 100%;"></select>
-	// </td>
 	const html = `
 		<tr class="item-row" id="row_${itemFieldCount}">
 			<td>

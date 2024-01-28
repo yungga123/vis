@@ -50,6 +50,7 @@ trait PurchasingTrait
      */
     public function fetchRpf($q, $options = [], $fields = '')
     {
+        $status     = ['reviewed'];
         $model      = new RequestPurchaseFormModel();
         $fields     = $fields ? $fields : "
             {$model->table}.id AS id, 
@@ -57,13 +58,15 @@ trait PurchasingTrait
         ";
         $builder    = $model->select($fields);
 
-        $model->join($model->view, "{$model->view}.rpf_id = {$model->table}.id");
+        $model->join($model->view, "{$model->view}.rpf_id = {$model->table}.id", 'left');
 
         if (! empty($q)) {
-            $builder->like('rpf_id', $q);
+            $builder->like("{$model->table}.id", $q);
         }
 
-        $builder->orderBy('rpf_id', 'DESC');
+        $builder->whereIn("{$model->table}.status", $status);
+        $builder->orderBy("{$model->table}.id", 'DESC');
+
         $result = $builder->paginate($options['perPage'], 'default', $options['page']);
         $total  = $builder->countAllResults();
 

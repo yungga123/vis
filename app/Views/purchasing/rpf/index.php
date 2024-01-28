@@ -36,8 +36,6 @@
                                 <th>Accepted At</th>
                                 <th>Reviewed By</th>
                                 <th>Reviewed At</th>
-                                <th>Received By</th>
-                                <th>Received At</th>
                                 <th>Rejected By</th>
                                 <th>Rejected At</th>
                             </tr>

@@ -152,6 +152,7 @@ define('ACTIONS', [
             'ACCEPT'        => 'Accept',
             'REJECT'        => 'Reject',
             'ITEM_OUT'      => 'Item Out',
+            'RECEIVE'       => 'Receive',
             'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],
@@ -159,12 +160,11 @@ define('ACTIONS', [
             'ACCEPT'        => 'Accept',
             'REJECT'        => 'Reject',
             'REVIEW'        => 'Review',
-            'RECEIVE'       => 'Receive',
             'PRINT'         => 'Print',
         ],
         'PURCHASING_PO'     => [
             'APPROVE'       => 'Approve',
-            'FILE'          => 'File',
+            'RECEIVE'       => 'Receive',
             'PRINT'         => 'Print',
         ],
         'CUSTOMERS'         => [

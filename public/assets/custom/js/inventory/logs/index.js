@@ -67,6 +67,7 @@ function filterDataLogs(reset = false) {
 			clearSelect2Selection("#filter_category_logs");
 			clearSelect2Selection("#filter_sub_category_logs");
 			$("#filter_sub_category_logs").html("");
+			setOptionValue("#filter_action", "all");
 		}
 
 		loadDataTable(tableLogs, router.logs.list, METHOD.POST, options, true);

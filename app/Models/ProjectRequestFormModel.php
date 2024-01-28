@@ -69,7 +69,7 @@ class ProjectRequestFormModel extends Model
     protected $beforeInsert   = ['setCreatedBy'];
     protected $afterInsert    = ['mailNotif'];
     protected $beforeUpdate   = ['setStatusByAndAt'];
-    protected $afterUpdate    = ['updateInventoryStock'];
+    protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
@@ -77,7 +77,7 @@ class ProjectRequestFormModel extends Model
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses   = ['rejected', 'item_out', 'filed'];
+    protected $restrictedStatuses   = ['rejected', 'item_out', 'received', 'filed'];
     // Get inserted ID
     protected $insertedID           = 0;
 
@@ -147,43 +147,59 @@ class ProjectRequestFormModel extends Model
     }
 
     // Update inventory stock after item out
-    public function updateInventoryStock(array $data)
+    public function updateInventoryStock($prf_id, $status)
     {
-        if ($data['result'] && isset($data['data']['status'])) {
-            $status = $data['data']['status'];
-            if (in_array($status, ['item_out', 'filed'])) {
-                $prfItemModel   = new PRFItemModel();
-                $columns        = "
-                    {$prfItemModel->table}.inventory_id, 
-                    {$prfItemModel->table}.quantity_out,
-                    {$prfItemModel->table}.returned_q,
-                    inventory.stocks
-                ";
-                $record         = $prfItemModel->getPrfItemsByPrfId($data['id'], $columns, false, true);
-                $action         = strtoupper($status);
-                $item_out       = $action === 'ITEM_OUT';
+        $prfItemModel   = new PRFItemModel();
+        $columns        = "
+            {$prfItemModel->table}.inventory_id, 
+            {$prfItemModel->table}.quantity_out,
+            {$prfItemModel->table}.returned_q,
+            inventory.stocks
+        ";
+        $record         = $prfItemModel->getPrfItemsByPrfId($prf_id, $columns, false, true);
+        $action         = strtoupper($status);
+        $item_out       = $action === 'ITEM_OUT';
 
-                if (! empty($record)) {
-                    $logs_data = [];
-                    foreach ($record as $val) {
-                        $quantity       = $item_out ? $val['quantity_out'] : $val['returned_q'];
-                        $this->traitUpdateInventoryStock($val['inventory_id'], $quantity, $action);
-                        $logs_data[]    = [
-                            'inventory_id'  => $val['inventory_id'],
-                            'stocks'        => $quantity,
-                            'parent_stocks' => $val['stocks'],
-                            'action'        => $item_out ? $action : 'ITEM_IN',
-                            'created_by'    => session('username'),
-                        ];
-                    }
+        if (! empty($record)) {
+            $logs_data = [];
+            foreach ($record as $val) {
+                $quantity = $val['quantity_out'];
+                $return_q = $val['returned_q'] ?? 0;
 
-                    // Add inventory logs
-                    $this->saveInventoryLogs($logs_data);
+                if (! empty($val['returned_q']) && $return_q > 0) {
+                    $quantity       = $quantity - $return_q;
+                    $action         = 'ITEM_IN';
+                    $logs_data[]    = [
+                        'inventory_id'  => $val['inventory_id'],
+                        'stocks'        => $return_q,
+                        'parent_stocks' => $val['stocks'],
+                        'action'        => $action,
+                        'status'        => 'return',
+                        'status_date'   => current_date(),
+                        'created_by'    => session('username'),
+                    ];
+
+                    $this->traitUpdateInventoryStock($val['inventory_id'], $return_q, $action);
+                }
+
+                if ($item_out && $val['quantity_out'] > $return_q) {
+                    $action         = 'ITEM_OUT';
+                    $logs_data[]    = [
+                        'inventory_id'  => $val['inventory_id'],
+                        'stocks'        => $quantity,
+                        'parent_stocks' => $val['stocks'],
+                        'action'        => $action,
+                        'status'        => '',
+                        'created_by'    => session('username'),
+                    ];
+    
+                    $this->traitUpdateInventoryStock($val['inventory_id'], $quantity, $action);
                 }
             }
-        }
 
-        return $data;
+            // Add inventory logs
+            $this->saveInventoryLogs($logs_data);
+        }
     }
 
     // Set columns depending on arguments
@@ -205,6 +221,7 @@ class ProjectRequestFormModel extends Model
                 DATE_FORMAT({$this->table}.accepted_at, '%b %e, %Y at %h:%i %p') AS accepted_at_formatted,
                 DATE_FORMAT({$this->table}.rejected_at, '%b %e, %Y at %h:%i %p') AS rejected_at_formatted,
                 DATE_FORMAT({$this->table}.item_out_at, '%b %e, %Y at %h:%i %p') AS item_out_at_formatted,
+                DATE_FORMAT({$this->table}.received_at, '%b %e, %Y at %h:%i %p') AS received_at_formatted,
                 DATE_FORMAT({$this->table}.filed_at, '%b %e, %Y at %h:%i %p') AS filed_at_formatted
             ";
         }
@@ -215,6 +232,7 @@ class ProjectRequestFormModel extends Model
                 {$this->view}.accepted_by_name,
                 {$this->view}.rejected_by_name,
                 {$this->view}.item_out_by_name,
+                {$this->view}.received_by_name,
                 {$this->view}.filed_by_name
             ";
         }
@@ -328,18 +346,32 @@ class ProjectRequestFormModel extends Model
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'FILE') && $row['status'] === 'item_out') {
-                // File PRF
-                $changeTo = 'file';
+            if (check_permissions($permissions, 'RECEIVE') && $row['status'] === 'item_out') {
+                // Item Out PRF
+                $changeTo = 'receive';
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? ucfirst($changeTo) : '',
                     'button'    => 'btn-primary',
-                    'icon'      => 'fas fa-file-alt',
+                    'icon'      => 'fas fa-calendar-check',
                     'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['item_out', 'filed'])) {
+            if (check_permissions($permissions, 'FILE') && $row['status'] === 'received') {
+                // File PRF
+                $changeTo = 'file';
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? ucfirst($changeTo) : '',
+                    'button'    => 'btn-dark',
+                    'icon'      => 'fas fa-archive',
+                    'condition' => dt_status_onchange($row[$id], $changeTo, $row['status'], $title),
+                ], $dropdown);
+            }
+
+            if (
+                check_permissions($permissions, 'PRINT') && 
+                in_array($row['status'], ['item_out', 'received', 'filed'])
+            ) {
                 // Print PRF
                 $print_url = site_url('prf/print/') . $row[$id];
                 $buttons .= <<<EOF
@@ -358,8 +390,26 @@ class ProjectRequestFormModel extends Model
    {
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id) {
+            $changeTo   = '';
+            $status     = $row['status'];
+
+            switch ($status) {
+                case 'pending':
+                    $changeTo = 'accept';
+                    break;
+                case 'accepted':
+                    $changeTo = 'item_out';
+                    break;
+                case 'item_out':
+                    $changeTo = 'receive';
+                    break;
+                case 'received':
+                    $changeTo = 'file';
+                    break;
+            }
+
             return <<<EOF
-                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]})"><i class="fas fa-eye"></i> View</button>
+                <button class="btn btn-sm btn-primary" onclick="view({$row[$id]}, '{$changeTo}', '{$status}', true)"><i class="fas fa-eye"></i> View</button>
             EOF;
        };
        
@@ -371,7 +421,8 @@ class ProjectRequestFormModel extends Model
    {
        $closureFun = function($row) {
            $text    = $row['status'] === 'item_out' ? 'Item Out' : ucwords(set_prf_status($row['status']));
-           $color   = dt_status_color($row['status']);
+           $color   = $row['status'] === 'received' ? 'info' : dt_status_color($row['status']);
+           
            return text_badge($color, $text);
        };
        

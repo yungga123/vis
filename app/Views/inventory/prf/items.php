@@ -22,6 +22,7 @@
                                     <th>Item Model</th>
                                     <th>Item Description</th>
                                     <th>Item Unit</th>
+                                    <th>Item Size</th>
                                     <th>Current Stocks</th>
                                     <th>Quantity Out</th>
                                     <th>Returned</th>
@@ -43,7 +44,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>                
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <div class="change-btn"></div>        
                 </div>
             </div>
         </form>

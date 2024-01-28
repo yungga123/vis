@@ -42,12 +42,14 @@
                                 <th>Created At</th>
                                 <th>Accepted By</th>
                                 <th>Accepted At</th>
-                                <th>Rejected By</th>
-                                <th>Rejected At</th>
                                 <th>Item Out By</th>
                                 <th>Item Out At</th>
+                                <th>Received By</th>
+                                <th>Received At</th>
                                 <th>Filed By</th>
                                 <th>Filed At</th>
+                                <th>Rejected By</th>
+                                <th>Rejected At</th>
                             </tr>
                         </thead>
                     </table>

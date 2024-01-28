@@ -121,19 +121,17 @@ if (! function_exists('dt_status_color'))
             case 'processed':
                 $color = 'primary';
                 break;
-            case 'rejected':
-            case 'discarded':
-                $color = 'secondary';
-                break;
             case 'item_out':
             case 'received':
+            case 'reviewed':
                 $color   = 'success';
                 break;
-            case 'reviewed':
             case 'view':
                 $color   = 'info';
                 break;
             case 'delete':
+            case 'rejected':
+            case 'discarded':
                 $color   = 'danger';
                 break;
             case 'filed':

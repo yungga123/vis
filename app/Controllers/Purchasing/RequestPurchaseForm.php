@@ -88,6 +88,9 @@ class RequestPurchaseForm extends BaseController
                 ]
             ],
         ]);
+        $data['php_to_js_options'] = json_encode([
+            'rpf_status'  => set_rpf_status()
+        ]);
 
         return view('purchasing/rpf/index', $data);
     }
@@ -111,8 +114,6 @@ class RequestPurchaseForm extends BaseController
             'accepted_at_formatted',
             'reviewed_by_name',
             'reviewed_at_formatted',
-            'received_by_name',
-            'received_at_formatted',
             'rejected_by_name',
             'rejected_at_formatted',
         ];
@@ -294,12 +295,8 @@ class RequestPurchaseForm extends BaseController
                 } else {
                     $data['status']     = res_lang('status.success');
                     $data['message']    = res_lang('success.changed', ['RFP', strtoupper($status)]);
-                    
-                    if ($status === 'received') {
-                        $prfItemModel = new RPFItemModel();
-                        $prfItemModel->updateRpfItems($this->request->getVar(), $id);
-                    }
                 }
+
                 return $data;
             }
         );

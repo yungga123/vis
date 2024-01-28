@@ -27,5 +27,7 @@ class AllViews extends Seeder
         $this->call('DropViews');
         $this->call('DeleteClientsPermissions');
         $this->call('JobOrdersView');
+        $this->call('ChangeRPFStatus');
+        $this->call('ChangePOStatus');
     }
 }
