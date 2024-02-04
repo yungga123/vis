@@ -42,15 +42,16 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label class="required text-center">Masterlist Items</label>
-                                <div>Format: Model | Description | Supplier</div>
+                                <div>Format: Item # | Model | Description | Size</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table" id="item_field_table">
                                     <thead>
                                         <tr>
-                                            <th width="55%">Item Details</th>
+                                            <th width="40%">Item Details</th>
                                             <th width="15%" class="text-center">Item Unit</th>
                                             <th width="20%">Quantity Out</th>
+                                            <th width="20%">Remarks</th>
                                             <th width="5%">Button</th>
                                         </tr>
                                     </thead>
@@ -68,6 +69,14 @@
                                                 <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
                                             </td>
                                             <td>
+                                                <select type="text" class="form-control remarks" name="remarks[]">
+                                                    <option value="">Select a remarks</option>
+                                                    <?php foreach (get_prf_item_remarks() as $val => $text): ?>
+                                                        <option value="<?= $val ?>"><?= $text ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </td>
+                                            <td>
                                                 <button type="button" class="btn btn-sm btn-success" onclick="toggleItemField()" title="Add new item field">
                                                     <i class="fas fa-plus"></i>
                                                 </button>
@@ -82,6 +91,8 @@
                                             <td>
                                                 <small id="alert_quantity_out" class="text-danger"></small>
                                             </td>
+                                            <td></td>
+                                            <td></td>
                                             <td></td>
                                         </tr>
                                     </tfoot>

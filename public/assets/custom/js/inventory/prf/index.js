@@ -6,7 +6,8 @@ var table,
 	invSelector,
 	itemFieldTable,
 	_fetchItems,
-	_status;
+	_status,
+	_remarks;
 
 $(document).ready(function () {
 	table = "prf_table";
@@ -18,8 +19,7 @@ $(document).ready(function () {
 	itemFieldTable = $("#item_field_table tbody");
 	_fetchItems = [];
 	_status = $pjOptions.prf_status;
-
-	console.log(_status);
+	_remarks = $pjOptions.prf_remarks;
 
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
@@ -192,6 +192,9 @@ function view(id, changeTo, status) {
 						const quantity_out = `
 							<input type="hidden" name="quantity_out[]" value="${val.quantity_out}" class="form-control" readonly>
 						`;
+						const remarks = `
+							<input type="hidden" name="remarks[]" value="${val.remarks}" class="form-control" readonly>
+						`;
 						const onkeyEvent =
 							'onkeyup="compute(' + parseFloat(val.quantity_out) + ', event)"';
 						const returned_q = `
@@ -226,6 +229,10 @@ function view(id, changeTo, status) {
 										? returned_date
 										: val.returned_date_formatted || "N/A"
 								}</td>
+								<td>
+									${val.remarks || "N/A"}
+									${remarks}
+								</td>
 							</tr>
 						`;
 					});
@@ -238,6 +245,7 @@ function view(id, changeTo, status) {
 				$(`#prf_items_modal`).modal("show");
 			} else {
 				$(`#prf_items_modal`).modal("hide");
+
 				notifMsgSwal(res.status, res.message, res.status);
 			}
 		})
@@ -282,11 +290,16 @@ function edit(id) {
 					// Populate data
 					const itemFields = $(".inventory_id");
 					const quantity_out = $(".quantity_out");
+					const remarks = $(".remarks");
+
 					for (let x = 0; x < itemFields.length; x++) {
 						const elem = itemFields[x];
 						const qelem = quantity_out[x];
+						const remarksElem = remarks[x];
 						const item = items[x];
-						const text = `${item.item_model} | ${item.item_description} | ${item.supplier_name}`;
+						const text = `${item.inventory_id} | ${item.item_model} | ${
+							item.item_description
+						} | ${item.size || "N/A"}`;
 
 						// Store items in a variable with inventory_id as key
 						_fetchItems[item.inventory_id] = item;
@@ -306,6 +319,8 @@ function edit(id) {
 						_populateAvailableItemStocks(parentSiblingElem[0], item.stocks);
 						// Display the item unit in each item
 						$(elem).parent().children(".item-unit").text(item.unit);
+						// Display the remarks in each item
+						$(remarksElem).val(item.remarks).change();
 					}
 				}
 
@@ -315,10 +330,10 @@ function edit(id) {
 					.html(
 						`Original JO: <strong>${res.data.job_order.option_text}</strong>`
 					);
-
 				$(`#${modal}`).modal("show");
 			} else {
 				$(`#${modal}`).modal("hide");
+
 				notifMsgSwal(res.status, res.message, res.status);
 			}
 		})
@@ -410,6 +425,7 @@ function toggleItemField(row) {
 			<td>
 				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
 			</td>
+			<td>${_prfItemRemarks()}</td>
 			<td>
 				<button type="button" class="btn btn-sm btn-danger" onclick="toggleItemField(${itemFieldCount})" title="Add new item field">
 					<i class="fas fa-minus"></i>
@@ -512,4 +528,24 @@ function _populateAvailableItemStocks(
 			.children(".item-unit")
 			.text(item_unit || "N/A");
 	}
+}
+
+/* PRF item remarks select */
+function _prfItemRemarks(val) {
+	let html = "";
+
+	$.each(_remarks, (key, value) => {
+		html += `
+			<option value="${key}" ${val === key ? "selected" : ""}>${value}</option>
+		`;
+	});
+
+	html = `
+		<select type="text" class="form-control remarks" name="remarks[]">
+			<option value="">Select a remarks</option>
+			${html}
+		</select>
+	`;
+
+	return html;
 }

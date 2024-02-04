@@ -32,7 +32,11 @@ trait InventoryTrait
                 return $builder->first();
             }
 
-            $builder->like("{$model->view}.quotation)", $q);
+            if (is_numeric($q)) {
+                $builder->like("{$table}.id", $q);
+            } else {
+                $builder->orLike("{$model->view}.quotation", $q);
+            }            
         }
 
         $builder->whereIn("{$table}.status", ['accepted', 'filed']);
@@ -60,7 +64,7 @@ trait InventoryTrait
         $model  = new InventoryModel();
         $fields = $fields ? $fields : "
             {$model->table}.id,
-            CONCAT_WS(' | ', {$model->table}.item_model, {$model->table}.item_description, {$model->view}.supplier_name) AS text,
+            CONCAT_WS(' | ', {$model->table}.id, {$model->table}.item_model, {$model->table}.item_description, IF({$model->view}.size IS NULL, 'N/A', {$model->view}.size)) AS text,
             {$model->table}.item_model,
             {$model->table}.item_description,
             {$model->table}.stocks,
@@ -72,6 +76,7 @@ trait InventoryTrait
             {$model->view}.supplier_name
         ";
         $builder = $model->select($fields);
+        
         $model->joinView($builder);
 
         if (! empty($q)) {
@@ -80,12 +85,17 @@ trait InventoryTrait
                 return $builder->find();
             }
 
-            $builder->like("{$model->table}.item_model", $q);
-            $builder->orLike("{$model->table}.item_description", $q);
-            $builder->orLike("{$model->view}.supplier_name", $q);
+            if (is_numeric($q)) {
+                $builder->like("{$model->table}.id", $q);
+            } else {
+                $builder->like("{$model->table}.item_model", $q);
+                $builder->orLike("{$model->table}.item_description", $q);
+                $builder->orLike("{$model->view}.supplier_name", $q);
+            }
         }
 
         $builder->orderBy("{$model->table}.id", 'ASC');
+
         $result = $builder->paginate($options['perPage'], 'default', $options['page']);
         $total  = $builder->countAllResults();
 

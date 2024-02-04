@@ -91,7 +91,8 @@ class ProjectRequestForm extends BaseController
             ]
         ]);
         $data['php_to_js_options'] = json_encode([
-            'prf_status'  => set_prf_status()
+            'prf_status'    => set_prf_status(),
+            'prf_remarks'   => get_prf_item_remarks(),
         ]);
 
         return view('inventory/prf/index', $data);
@@ -218,9 +219,11 @@ class ProjectRequestForm extends BaseController
                     } else {
                         $prfItemModel   = new PRFItemModel();
                         $prf_id         = $id ? $id : $this->_model->insertedID;
+                        
                         $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
                     }
                 }
+
                 return $data;
             }
         );

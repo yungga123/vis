@@ -700,3 +700,21 @@ if (! function_exists('get_days'))
         return $param ? $options[$param] : $options;
 	}
 }
+
+if (! function_exists('get_prf_item_remarks'))
+{
+    /**
+     * Get remarks for PRF Item module
+     */
+	function get_prf_item_remarks(string $param = ''): string|array
+	{
+        $options = [
+            'Testing'       => 'Testing',
+            'Transmittal'   => 'Transmittal',
+            'Service unit'  => 'Service unit',
+            'Installation'  => 'Installation',
+        ];
+
+        return $param ? $options[$param] : $options;
+	}
+}
