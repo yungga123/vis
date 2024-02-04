@@ -58,8 +58,8 @@ class Timesheet extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $data['title']          = 'Manage Timesheets / Attendace';
-        $data['page_title']     = 'Manage Timesheets / Attendace';
+        $data['title']          = 'Payroll | Manage Timesheets / Attendace';
+        $data['page_title']     = 'Payroll | Manage Timesheets / Attendace';
         $data['btn_add_lbl']    = 'Add Timesheet';
         $data['can_add']        = $this->_can_add;
         $data['can_view_all']   = check_permissions($this->_permissions, ACTION_VIEW_ALL);

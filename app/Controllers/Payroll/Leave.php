@@ -58,8 +58,8 @@ class Leave extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $data['title']          = 'Manage Leave';
-        $data['page_title']     = 'Manage Leave';
+        $data['title']          = 'Payroll | Manage Leave';
+        $data['page_title']     = 'Payroll | Manage Leave';
         $data['btn_add_lbl']    = 'File a Leave';
         $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;

@@ -59,8 +59,8 @@ class Overtime extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $data['title']          = 'Manage Overtime';
-        $data['page_title']     = 'Manage Overtime';
+        $data['title']          = 'Payroll | Manage Overtime';
+        $data['page_title']     = 'Payroll | Manage Overtime';
         $data['btn_add_lbl']    = 'File an Overtime';
         $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;
