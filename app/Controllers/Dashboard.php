@@ -83,8 +83,9 @@ class Dashboard extends BaseController
             // Sort modules ascending
             sort($modules);
 
-            $setup_modules = array_keys(setup_modules());
-            $record_counts = $this->_recordCounts();
+            $setup_modules  = array_keys(setup_modules());
+            $record_counts  = $this->_recordCounts();
+            $headers        = [];
 
             foreach ($modules as $val) {
                 $_perms = isset($permissions[$val]) ? $permissions[$val] : get_generic_modules_actions($val);
@@ -108,10 +109,18 @@ class Dashboard extends BaseController
                     $menu           = empty($module['menu']) ? $val : $module['menu'];
                     $count          = '';
                     $more_info      = '';
+                    $header         = $module['header'] ?? '';
+                    $_header        = '';
+
+                    if (! empty($header) && ! in_array($header, $headers)) {
+                        $headers[$header]   = $header;
+                        $_header            = '<h5 class="mt-3">'.strtoupper($header).'</h5>';
+                    }
 
                     if (isset($record_counts[$val])) {
                         $param = $record_counts[$val];
                         $count = $param;
+
                         if (is_array($param)) {
                             $count          = $param['count'];
                             $module_name    = isset($param['name']) ? $param['name'] : $module_name;
@@ -157,6 +166,7 @@ class Dashboard extends BaseController
 
                     // Add module card menu
                     $card = <<<EOF
+                        {$_header}
                         <div class="small-box bg-success">
                             <div class="inner">
                                 {$count}
