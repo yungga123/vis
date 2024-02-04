@@ -28,6 +28,7 @@
                                     <th>Returned</th>
                                     <th>Consumed</th>
                                     <th>Returned Date</th>
+                                    <th>Remarks</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

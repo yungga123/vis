@@ -74,11 +74,13 @@
 						<td class="text-bold">Item #</td>
 						<td class="text-bold">Category</td>
 						<td class="text-bold">Description</td>
+						<td class="text-bold">Size</td>
 						<td class="text-bold">Quantity</td>
 						<td class="text-bold">Available</td>
 						<td class="text-bold">Consumed</td>
 						<td class="text-bold">Returned</td>
 						<td class="text-bold">Returned Date</td>
+						<td class="text-bold">Remarks</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -86,14 +88,16 @@
 					if (! empty($prf_items)): 
 						foreach ($prf_items as $item): ?>
 							<tr>
-								<td><?= $item['inventory_id'] ?? '' ?></td>
-								<td><?= $item['category_name'] ?? '' ?></td>
-								<td><?= $item['item_description'] ?? '' ?></td>
-								<td><?= $item['quantity_out'] ? number_format($item['quantity_out'], 2) : '' ?></td>
-								<td><?= $item['stocks'] ? number_format($item['stocks'], 2) : '' ?></td>
-								<td><?= $item['consumed'] ? number_format($item['consumed'], 2) : '' ?></td>
-								<td><?= $item['returned_q'] ? number_format($item['returned_q'], 2) : $item['returned_q'] ?></td>
-								<td><?= $item['returned_date_formatted'] ?? '' ?></td>
+								<td><?= $item['inventory_id'] ?? 'N/A' ?></td>
+								<td><?= $item['category_name'] ?? 'N/A' ?></td>
+								<td><?= $item['item_description'] ?? 'N/A' ?></td>
+								<td><?= $item['size'] ?? 'N/A' ?></td>
+								<td><?= number_format($item['quantity_out'] ?? 0, 2) ?></td>
+								<td><?= number_format($item['stocks'] ?? 0, 2) ?></td>
+								<td><?= number_format($item['consumed'] ?? 0, 2) ?></td>
+								<td><?= number_format($item['returned_q'] ?? 0, 2) ?></td>
+								<td><?= $item['returned_date_formatted'] ?? 'N/A' ?></td>
+								<td><?= $item['remarks'] ?? 'N/A' ?></td>
 							</tr>
 					<?php
 						endforeach;
