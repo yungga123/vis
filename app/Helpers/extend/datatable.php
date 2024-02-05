@@ -124,6 +124,7 @@ if (! function_exists('dt_status_color'))
             case 'item_out':
             case 'received':
             case 'reviewed':
+            case 'paid':
                 $color   = 'success';
                 break;
             case 'view':
@@ -132,6 +133,7 @@ if (! function_exists('dt_status_color'))
             case 'delete':
             case 'rejected':
             case 'discarded':
+            case 'overdue':
                 $color   = 'danger';
                 break;
             case 'filed':

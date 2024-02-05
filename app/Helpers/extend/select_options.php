@@ -710,7 +710,7 @@ if (! function_exists('get_bill_types'))
 	{
         $options = [
             'Down Payment'      => 'Down Payment',
-            'Online Payment'    => 'Online Payment',
+            'Progress Billing'  => 'Progress Billing',
             'Final Payment'     => 'Final Payment',
         ];
 

@@ -435,7 +435,7 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
 /* FINANCE */
 $routes->group('finance', ['filter' => 'checkauth'], static function ($routes) {
     // BILLING INVOICE
-    $routes->group('export', static function ($routes) {
+    $routes->group('billing-invoice', static function ($routes) {
         $routes->get('/', 'Finance\BillingInvoice::index', ['as' => 'finance.billing_invoice.home']);
         $routes->post('list', 'Finance\BillingInvoice::list', ['as' => 'finance.billing_invoice.list']);
         $routes->post('save', 'Finance\BillingInvoice::save', ['as' => 'finance.billing_invoice.save']);

@@ -260,7 +260,7 @@ class OvertimeModel extends Model
 
         // Not include dev record
         if (! is_developer()) {
-            // $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
+            $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
         }
 
         if (! in_array(ACTION_VIEW_ALL, $permissions)) {

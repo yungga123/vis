@@ -79,6 +79,10 @@ class BillingInvoiceModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Custom variables
+    // Restrict edit/delete action for this statuses
+    protected $restrictedStatuses = ['paid'];
+
     /**
      * Set the value for created_by before inserting
      */
@@ -97,6 +101,38 @@ class BillingInvoiceModel extends Model
     }
 
     /**
+     * Default columns for fetching records
+     */
+    public function columns(bool $joinTlV = false)
+    {
+        $columns = "
+            {$this->table}.id,
+            {$this->table}.tasklead_id,
+            {$this->table}.status,
+            {$this->table}.due_date,
+            {$this->table}.bill_type,
+            {$this->table}.billing_amount,
+            {$this->table}.payment_method,
+            {$this->table}.amount_paid,
+            {$this->table}.paid_at,
+            {$this->table}.created_by,
+            {$this->table}.created_at
+        ";
+
+        if ($joinTlV) {
+            $tlVModel   = new TaskLeadView();
+            $columns    .= ",
+                {$tlVModel->table}.quotation_num AS quotation,
+                {$tlVModel->table}.customer_name AS client,
+                {$tlVModel->table}.employee_name AS manager,
+                {$tlVModel->table}.tasklead_type AS quotation_type,
+            ";
+        }
+
+        return $columns;
+    }
+
+    /**
      * Join task_lead_booked
      */
     public function joinBookedTasklead($builder = null, $model = null, $type = 'left')
@@ -108,30 +144,77 @@ class BillingInvoiceModel extends Model
     }
 
     /**
+     * For fetching single data
+     */
+    public function fetch(string|int $id, bool $joinTlV = false): array|null
+    {
+        $columns = $this->columns($joinTlV);
+        
+        $this->select($columns);
+
+        if ($joinTlV) $this->joinBookedTasklead();
+
+        $this->where("{$this->table}.id", $id);
+        $this->where("{$this->table}.deleted_at IS NULL");
+
+        return $this->first();
+    }
+
+    /**
+     * For fetching multiple data
+     */
+    public function fetchAll(array $id = [], bool $joinTlV = false, int $limit = 0, int $offset = 0): array|null
+    {
+        $columns = $this->columns($joinTlV);
+        
+        $this->select($columns);
+
+        if ($joinTlV) $this->joinBookedTasklead();
+
+        if (! empty($id)) {
+            $this->whereIn("{$this->table}.id", $id);
+        }
+
+        $this->where("{$this->table}.deleted_at IS NULL");
+
+        return $this->findAll($limit, $offset);
+    }
+
+    /**
      * For dataTables
      */
     public function noticeTable($request) 
     {
-        $builder = $this->db->table($this->table);
-        $columns = "
+        $tlVModel   = new TaskLeadView();
+        $builder    = $this->db->table($this->table);
+        $columns    = "
+            {$this->table}.status,
             {$this->table}.id,
             {$this->table}.tasklead_id,
-            {$this->table}.status,
+            {$tlVModel->table}.quotation_num AS quotation,
+            {$tlVModel->table}.customer_name AS client,
+            {$tlVModel->table}.employee_name AS manager,
+            {$tlVModel->table}.tasklead_type AS quotation_type,
             ".dt_sql_date_format("{$this->table}.due_date")." AS due_date,
             {$this->table}.bill_type,
-            {$this->table}.billing_amount,
+            ".dt_sql_number_format("{$this->table}.billing_amount")." AS billing_amount,
             {$this->table}.payment_method,
-            {$this->table}.amount_paid,
+            ".dt_sql_number_format("{$this->table}.amount_paid")." AS amount_paid,
             ".dt_sql_datetime_format("{$this->table}.paid_at")." AS paid_at,
-            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
         ";
 
-        $builder->select($this->_columns(true, true, true));
+        $builder->select($columns);
 
         // Join with other tables
-        $this->joinView($builder);
-        $this->joinSchedule($builder);
+        $this->joinBookedTasklead($builder, $tlVModel);
         $this->joinAccountView($builder, 'created_by', 'cb');
+
+        // Filters
+        $this->filterParam($request, $builder);
+        $this->filterParam($request, $builder, 'bill_type', 'bill_type');
+        $this->filterParam($request, $builder, 'payment_method', 'payment_method');
 
         $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy("{$this->table}.id", 'DESC');
@@ -156,6 +239,21 @@ class BillingInvoiceModel extends Model
             }
 
             return $buttons;
+        };
+        
+        return $closureFun;
+    }
+
+    /**
+     * DataTable status formatter
+     */
+    public function dtStatusFormat()
+    {
+        $closureFun = function($row) {
+            $text    = ucwords($row['status']);
+            $color   = dt_status_color($row['status']);
+
+            return text_badge($color, $text);
         };
         
         return $closureFun;

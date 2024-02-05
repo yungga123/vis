@@ -4,10 +4,15 @@ namespace App\Controllers\Finance;
 
 use App\Controllers\BaseController;
 use App\Models\BillingInvoiceModel;
+use App\Models\TaskLeadView;
+use App\Traits\CommonTrait;
 use monken\TablesIgniter;
 
 class BillingInvoice extends BaseController
 {
+    /* Declare trait here to use */
+    use CommonTrait;
+
     /**
      * Use to initialize model class
      * @var object
@@ -86,31 +91,33 @@ class BillingInvoice extends BaseController
      */
     public function list()
     {
+        $tlVModel   = new TaskLeadView();
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request, $this->_permissions);
         $fields     = [
-            'employee_id',
-            'employee_name',
-            'leave_type',
-            'start_date',
-            'end_date',
-            'total_days',
-            'leave_reason',
-            'leave_remark',
+            'id',
+            'tasklead_id',
+            'quotation',
+            'client',
+            'manager',
+            'quotation_type',
+            'due_date',
+            'bill_type',
+            'billing_amount',
+            'payment_method',
+            'amount_paid',
+            'paid_at',
+            'created_by',
             'created_at',
-            'processed_by',
-            'processed_at',
-            'approved_by',
-            'approved_at',
-            'discarded_by',
-            'discarded_at',
         ];
 
         $table->setTable($builder)
             ->setSearch([
-                "{$this->_model->table}.employee_id",
-                // "{$empModel->table}.employee_name",
+                "{$this->_model->table}.id",
+                "{$tlVModel->table}.quotation",
+                "{$tlVModel->table}.client",
+                "{$tlVModel->table}.manager",
             ])
             ->setOrder(array_merge([null, null, null], $fields))
             ->setOutput(
@@ -157,6 +164,7 @@ class BillingInvoice extends BaseController
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                 if (($request['status'] ?? '') === 'paid') {
                     $inputs['paid_at']  = current_datetime();
@@ -196,7 +204,7 @@ class BillingInvoice extends BaseController
             $data,
             function($data) {
                 $id         = $this->request->getVar('id');
-                $record     = $this->_model->fetch($id);
+                $record     = $this->_model->fetch($id, true);
 
                 $data['data'] = $record;
                 return $data;
@@ -224,6 +232,7 @@ class BillingInvoice extends BaseController
                 $id = $this->request->getVar('id');
 
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();

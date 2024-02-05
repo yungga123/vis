@@ -14,11 +14,12 @@ $(document).ready(function () {
 		"amount_paid",
 	];
 
-	// select2Init("#filter_status");
-	// select2Init("#filter_leave_type");
+	select2Init("#filter_status");
+	select2Init("#filter_bill_type");
+	select2Init("#filter_payment_method");
 
 	/* Load dataTable */
-	// loadDataTable(table, router.billing_invoice.list, METHOD.POST);
+	loadDataTable(table, router.billing_invoice.list, METHOD.POST);
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -26,8 +27,9 @@ $(document).ready(function () {
 		$(`#${modal} .modal-title`).text("Create Billing Invoice");
 		$(`#${form}`)[0].reset();
 		$("#id").val("");
+		$("#orig_tasklead").html("");
 
-		clearSelect2Selection("#status");
+		clearSelect2Selection("#tasklead_id");
 		clearAlertInForm(elems);
 	});
 
@@ -59,8 +61,8 @@ $(document).ready(function () {
 			$("#id").val("");
 			self[0].reset();
 
-			clearSelect2Selection("#status");
-			// refreshDataTable($("#" + table));
+			clearSelect2Selection("#tasklead_id");
+			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, res.message, res.status);
 
 			if ($(`#${modal}`).hasClass("edit")) {
@@ -77,12 +79,15 @@ $(document).ready(function () {
 /* For filtering and reseting */
 function filterData(reset = false) {
 	const status = getSelect2Selection("#filter_status");
-	const leave_type = getSelect2Selection("#filter_leave_type");
+	const bill_type = getSelect2Selection("#filter_bill_type");
+	const payment_method = getSelect2Selection("#filter_payment_method");
 	const params = {
 		status: status,
-		leave_type: leave_type,
+		bill_type: bill_type,
+		payment_method: payment_method,
 	};
-	const condition = !isEmpty(status) || !isEmpty(leave_type);
+	const condition =
+		!isEmpty(status) || !isEmpty(bill_type) || !isEmpty(payment_method);
 
 	filterParam(
 		router.billing_invoice.list,
@@ -91,7 +96,8 @@ function filterData(reset = false) {
 		condition,
 		() => {
 			clearSelect2Selection("#filter_status");
-			clearSelect2Selection("#filter_leave_type");
+			clearSelect2Selection("#filter_bill_type");
+			clearSelect2Selection("#filter_payment_method");
 		},
 		reset
 	);
@@ -100,21 +106,31 @@ function filterData(reset = false) {
 /* Get record details */
 function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
-	$(`#${modal} .modal-title`).text("Edit Leave");
-	$("#start_date").attr("min", "");
+	$(`#${modal} .modal-title`).text("Edit Billing Invoice");
 	$("#id").val(id);
+	$("#orig_tasklead").html("");
 
 	clearAlertInForm(elems);
+	clearSelect2Selection("#tasklead_id");
 
 	fetchRecord(router.billing_invoice.fetch, { id: id }, modal, (res) => {
 		if (res.status === STATUS.SUCCESS) {
 			if (inObject(res, "data") && !isEmpty(res.data)) {
-				setOptionValue("#leave_type", res.data.leave_type);
+				const text = `${res.data.tasklead_id} | ${res.data.quotation} | ${
+					res.data.client
+				} | ${res.data.manager} | ${res.data.quotation_type || "N/A"}`;
 
-				$("#start_date").val(res.data.start_date);
-				$("#end_date").val(res.data.end_date);
-				$("#leave_reason").val(res.data.leave_reason);
-				$("#end_date").removeAttr("readonly");
+				setSelect2AjaxSelection("#tasklead_id", text, res.data.tasklead_id);
+				setOptionValue("#bill_type", res.data.bill_type);
+				setOptionValue("#payment_method", res.data.payment_method);
+				setOptionValue("#status", res.data.status);
+
+				$("#orig_tasklead").html(
+					`Original Task/Lead: <strong>${text}</strong>`
+				);
+				$("#due_date").val(res.data.due_date);
+				$("#billing_amount").val(res.data.billing_amount);
+				$("#amount_paid").val(res.data.amount_paid);
 				$(`#${modal}`).modal("show");
 			}
 		}

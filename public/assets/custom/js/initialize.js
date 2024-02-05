@@ -376,7 +376,7 @@ function select2AjaxInit(
 	}
 
 	function returnText(data) {
-		if (!isArray(text) || isEmpty(data.id)) {
+		if (!isArray(text) || isEmpty(data.id) || data.selected) {
 			return data[text] || data.text;
 		}
 

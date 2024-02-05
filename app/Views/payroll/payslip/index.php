@@ -21,8 +21,8 @@
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
                             <input type="date" class="form-control" name="filter_end_date" id="filter_end_date" placeholder="Cut-Off Date">
                         </div>
-                        <div class="align-items-center justify-content-center d-flex d-md-block">
-                            <button class="btn btn-outline-primary mr-1 mr-md-0" title="Filter" onclick="filterData()">
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
                                 <i class="fas fa-search"></i>
                             </button>
                             <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">

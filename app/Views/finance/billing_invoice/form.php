@@ -19,8 +19,8 @@
                     <div class="form-group">
                         <label class="required mb-0" for="tasklead_id">Task/Leads</label>
                         <div>Format: TASKLEAD ID | QUOTATION # | CLIENT | MANAGER | QUOTATION TYPE</div>
-                        <select class="custom-select" name="tasklead_id" id="tasklead_id" style="width: 100%;"></select>
-                        <div class="d-none" id="orig_tasklead"></div>
+                        <select class="custom-select" name="tasklead_id" id="tasklead_id" style="width: 100%;"></select required>
+                        <div id="orig_tasklead"></div>
                         <small id="alert_tasklead_id" class="text-danger"></small>
                     </div>
                     <div class="row">
