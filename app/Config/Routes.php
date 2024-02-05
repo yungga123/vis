@@ -432,6 +432,19 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
 });
 /* PAYROLL */
 
+/* FINANCE */
+$routes->group('finance', ['filter' => 'checkauth'], static function ($routes) {
+    // BILLING INVOICE
+    $routes->group('export', static function ($routes) {
+        $routes->get('/', 'Finance\BillingInvoice::index', ['as' => 'finance.billing_invoice.home']);
+        $routes->post('list', 'Finance\BillingInvoice::list', ['as' => 'finance.billing_invoice.list']);
+        $routes->post('save', 'Finance\BillingInvoice::save', ['as' => 'finance.billing_invoice.save']);
+        $routes->post('fetch', 'Finance\BillingInvoice::fetch', ['as' => 'finance.billing_invoice.fetch']);
+        $routes->post('delete', 'Finance\BillingInvoice::delete', ['as' => 'finance.billing_invoice.delete']);
+    });
+});
+/* FINANCE */
+
 /***************** PHASE 3 *****************/
 
 /*

@@ -298,6 +298,7 @@ define('MODULES', [
     'PAYROLL_OVERTIME'      => 'Overtime',
     'PAYROLL_SETTINGS'      => 'Settings',
     'PAYROLL_TIMESHEETS'    => 'Timesheets',
+    'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -332,6 +333,7 @@ define('MODULE_CODES', [
     'overtime'              => 'PAYROLL_OVERTIME',
     'payroll_settings'      => 'PAYROLL_SETTINGS',
     'timesheets'            => 'PAYROLL_TIMESHEETS',
+    'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)

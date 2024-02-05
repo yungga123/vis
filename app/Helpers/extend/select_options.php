@@ -700,3 +700,37 @@ if (! function_exists('get_days'))
         return $param ? $options[$param] : $options;
 	}
 }
+
+if (! function_exists('get_bill_types'))
+{
+    /**
+     * Get bill types for Finance/Billing Invoice module
+     */
+	function get_bill_types(string $param = ''): string|array
+	{
+        $options = [
+            'Down Payment'      => 'Down Payment',
+            'Online Payment'    => 'Online Payment',
+            'Final Payment'     => 'Final Payment',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
+if (! function_exists('get_billing_status'))
+{
+    /**
+     * Get billing status for Finance/Billing Invoice module
+     */
+	function get_billing_status(string $param = ''): string|array
+	{
+        $options = [
+            'pending'   => 'Pending',
+            'overdue'   => 'Overdue',
+            'paid'      => 'Paid',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}

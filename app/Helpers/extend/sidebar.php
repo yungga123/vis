@@ -67,6 +67,9 @@ if (! function_exists('get_nav_menus'))
             url_is('settings/roles') || 
             url_is('settings/general-info')
         );
+        $is_finance     = (
+            url_is('finance/billing-invoice')
+        );
         
 		$menu           = [
             'SALES'          => [
@@ -110,6 +113,12 @@ if (! function_exists('get_nav_menus'))
                 // Level two urls (modules) - need to add ||/OR in every new module
                 'urls'      => url_is('reports/export'),
                 'icon'      => 'fas fa-server',
+            ],
+            'FINANCE'         => [
+                'name'      => 'Finance',
+                // Level two urls (modules) - need to add ||/OR in every new module
+                'urls'      => $is_finance,
+                'icon'      => 'fas fa-wallet',
             ],
         ];
 
@@ -312,6 +321,13 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('payroll/timesheets') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
                 'header'    => 'PAYROLL',
+            ],
+            'FINANCE_BILLING_INVOICE'  => [
+                'menu'      => 'FINANCE', // Leave empty if none
+                'name'      => get_modules('FINANCE_BILLING_INVOICE'),
+                'url'       => url_to('finance.billing_invoice.home'),
+                'class'     => (url_is('finance/billing-invoice') ? 'active' : ''),
+                'icon'      => 'fas fa-file-invoice',
             ],
         ];
 
