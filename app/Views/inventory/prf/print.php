@@ -73,6 +73,7 @@
 					<tr>
 						<td class="text-bold">Item #</td>
 						<td class="text-bold">Category</td>
+						<td class="text-bold">Model</td>
 						<td class="text-bold">Description</td>
 						<td class="text-bold">Size</td>
 						<td class="text-bold">Quantity</td>
@@ -90,6 +91,7 @@
 							<tr>
 								<td><?= $item['inventory_id'] ?? 'N/A' ?></td>
 								<td><?= $item['category_name'] ?? 'N/A' ?></td>
+								<td><?= $item['item_model'] ?? 'N/A' ?></td>
 								<td><?= $item['item_description'] ?? 'N/A' ?></td>
 								<td><?= $item['size'] ?? 'N/A' ?></td>
 								<td><?= number_format($item['quantity_out'] ?? 0, 2) ?></td>

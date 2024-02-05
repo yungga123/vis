@@ -7,6 +7,7 @@ $total_amount		= 0;
 $net_of_vat_amount	= 0;
 $vat_amount			= 0;
 $with_vat 			= $purchase_order['with_vat'] != '0';
+$approved_at 		= $purchase_order['approved_at'];
 ?>
 <div class="container-fluid">
 	<div class="row">		
@@ -23,7 +24,15 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                             <br>
 							<span class="text-danger">
 								<?php 
-									$code_format 	= "{$form_code}-{$purchase_order['supplier_id']}-". date('y') .'-'. date('md') .'-'. $purchase_order['id'];
+									$year 			= date('y');
+									$month_day 		= date('md');
+
+									if (! empty($approved_at)) {
+										$year 		= format_date($approved_at, 'y');
+										$month_day	= format_date($approved_at, 'md');
+									}
+
+									$code_format 	= "{$form_code}-{$purchase_order['supplier_id']}-{$year}-{$month_day}-{$purchase_order['id']}";
 									echo $code_format;
 								?>
 							</span>
@@ -33,7 +42,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
                         <td>
 							<span class="text-bold">PURCHASE ORDER DATE</span>
                             <br>
-                            <?php echo date('F d, Y'); ?>
+                            <?= $approved_at ? format_date($approved_at, 'F d, Y') : 'N/A' ?>
                         </td>
                     </tr>
                     <br>
@@ -152,7 +161,7 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 							<div>NET OF VAT</div>
 							<div>PLUS 12% VAT</div>
                         </td>
-                        <td class="text-right">
+                        <td class="text-right" colspan="2">
 							<div>PHP <?= number_format($sub_total, 2) ?></div>
 							<div id="net_of_vat_amount">
 								<?= number_format($with_vat ? $net_of_vat_amount : 0, 2) ?>
@@ -161,13 +170,12 @@ $with_vat 			= $purchase_order['with_vat'] != '0';
 								<?= number_format($with_vat ? $vat_amount : 0, 2) ?>
 							</div>
                         </td>
-						<td rowspan="2"></td>
                     </tr>
                     <tr>
                         <td class="text-bold text-right" colspan="2">
 							TOTAL AMOUNT<span id="vat_text"></span>
 						</td>
-                        <td class="text-bold text-right">
+                        <td class="text-bold text-right" colspan="2">
 							PHP <span id="total_amount"><?= number_format($total_amount, 2) ?></span>
 						</td>
                     </tr>
