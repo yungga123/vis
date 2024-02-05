@@ -133,9 +133,9 @@ $approved_at 		= $purchase_order['approved_at'];
 								<td class="text-center"><?= $val['brand'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['item_description'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['size'] ?? 'N/A' ?></td>
-								<td class="text-center"><?= ($val['unit'] ?? 'N/A') ?></td>
+								<td class="text-center"><?= $val['unit'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['quantity_in'] ?? 'N/A' ?></td>
-								<td class="text-right"><?= $val['item_sdp'] ?? 'N/A' ?></td>
+								<td class="text-right"><?= number_format($val['item_sdp'] ?? 0) ?></td>
 								<td class="text-right"><?= number_format($discount, 2) ?></td>
 								<td class="text-right"><?= number_format($total_price, 2) ?></td>
 								<td class="text-center"><?= $rpf['date_needed'] ?? 'N/A' ?></td>
