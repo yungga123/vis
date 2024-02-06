@@ -46,7 +46,7 @@
                             <tr>
                                 <th></th>
                                 <th>Actions</th>
-                                <th>Status</th>
+                                <th>Billing Status</th>
                                 <th>Billing ID</th>
                                 <th>TaskLead ID</th>
                                 <th>Quotation #</th>

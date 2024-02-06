@@ -95,6 +95,18 @@ class BillingInvoiceModel extends Model
     }
 
     /**
+     * For counting records
+     */
+    public function countRecords($param = null)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if (! $param) return $builder->countAllResults();
+
+        return $builder->where('billing_status', strtolower($param))->countAllResults();        
+    }
+
+    /**
      * Make amount_paid required
      */
     public function makeAmountPaidRequired()
