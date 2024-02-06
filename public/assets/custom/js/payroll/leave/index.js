@@ -81,11 +81,18 @@ $(document).ready(function () {
 function filterData(reset = false) {
 	const status = getSelect2Selection("#filter_status");
 	const leave_type = getSelect2Selection("#filter_leave_type");
+	const start_date = $("#filter_start_date").val();
+	const end_date = $("#filter_end_date").val();
 	const params = {
 		status: status,
 		leave_type: leave_type,
+		start_date: start_date,
+		end_date: end_date,
 	};
-	const condition = !isEmpty(status) || !isEmpty(leave_type);
+	const condition =
+		!isEmpty(status) ||
+		!isEmpty(leave_type) ||
+		(!isEmpty(start_date) && !isEmpty(end_date));
 
 	filterParam(
 		router.leave.list,
@@ -95,6 +102,8 @@ function filterData(reset = false) {
 		() => {
 			clearSelect2Selection("#filter_status");
 			clearSelect2Selection("#filter_leave_type");
+			$("#filter_start_date").val("");
+			$("#filter_end_date").val("");
 		},
 		reset
 	);

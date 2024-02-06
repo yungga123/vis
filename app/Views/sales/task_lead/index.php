@@ -3,38 +3,41 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <label>Filters by [Client Type, Percent (Except 100%) or Quarter]:</label>
-            <div class="input-group" style="flex-wrap: nowrap; width: 100%;">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Client Type</span>
+            <div class="mr-2 mb-2">
+                <strong>Filters by Client Type, Percent (Except 100%) or Quarter: </strong>
+            </div>
+            <div class="d-flex flex-md-row flex-column align-items-md-center">
+                <div class="mr-2 flex-fill mb-2 mb-md-0">
+                    <select class="custom-select select2" id="filter_client_type" data-placeholder="Select a client type" style="width: 100%;">
+                        <option value="">All</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Residential">Residential</option>
+                    </select>  
                 </div>
-                <select class="custom-select select2" id="filter_client_type" data-placeholder="Select a client type">
-                    <option value="">All</option>
-                    <option value="Commercial">Commercial</option>
-                    <option value="Residential">Residential</option>
-                </select>  
-                <div class="input-group-prepend ml-1">
-                    <span class="input-group-text">Percent</span>
+                <div class="mr-2 flex-fill mb-2 mb-md-0">
+                    <select class="custom-select select2" id="filter_status" data-placeholder="Select a percent" multiple style="width: 100%;">
+                        <option value="10.00%">10%</option>
+                        <option value="30.00%">30%</option>
+                        <option value="50.00%">50%</option>
+                        <option value="70.00%">70%</option>
+                        <option value="90.00%">90%</option>
+                    </select>
                 </div>
-                <select class="custom-select select2" id="filter_status" data-placeholder="Select a percent" multiple>
-                    <option value="10.00%">10%</option>
-                    <option value="30.00%">30%</option>
-                    <option value="50.00%">50%</option>
-                    <option value="70.00%">70%</option>
-                    <option value="90.00%">90%</option>
-                </select>
-                <div class="input-group-prepend ml-1">
-                    <span class="input-group-text">Quarter</span>
+                <div class="mr-2 flex-fill mb-2 mb-md-0">
+                    <select class="custom-select select2" id="filter_quarter" data-placeholder="Select a quarter" multiple style="width: 100%;">
+                        <option value="1">1st Quarter</option>
+                        <option value="2">2nd Quarter</option>
+                        <option value="3">3rd Quarter</option>
+                        <option value="4">4th Quarter</option>
+                    </select>  
                 </div>
-                <select class="custom-select select2" id="filter_quarter" data-placeholder="Select a quarter" multiple>
-                    <option value="1">1st Quarter</option>
-                    <option value="2">2nd Quarter</option>
-                    <option value="3">3rd Quarter</option>
-                    <option value="4">4th Quarter</option>
-                </select>  
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
-                    <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterData(true)" type="button" title="Reset filter">Reset</button>
+                <div class="align-items-center justify-content-center d-flex">
+                    <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">
+                        <i class="fas fa-ban"></i>
+                    </button>
                 </div>
             </div>
         </div>

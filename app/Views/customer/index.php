@@ -5,26 +5,38 @@
             <div class="col-12">                
                 <div class="card">
                     <div class="card-header">
-                        <label for="filter-group">Filters by (New Client?, Client Type and Source):</label>
-                        <div class="input-group" id="filter-group" style="flex-wrap: nowrap; width: 100%;">
-                            <select class="custom-select mr-1" name="new_client" id="filter_new_client">
-                                <option value="">All</option>
-                                <option value="1">Yes</option>
-                                <option value="zero">No</option>
-                            </select>
-                            <select class="custom-select mr-1" name="filter_type" id="filter_type">
-                                <option value="">All</option>
-                                <option value="COMMERCIAL">Commercial</option>
-                                <option value="RESIDENTIAL">Residential</option>
-                            </select>
-                            <select class="custom-select select2" id="filter_source" multiple>
-                                <?php foreach (get_client_sources() as $key => $val ): ?>
-                                    <option value="<?= $key ?>"><?= $val ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
-                                <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterData(true)" type="button" title="Reset filter">Reset</button>
+                        <div class="mr-2 mb-2">
+                            <strong>Filters by (New Client?, Client Type and Source):</strong>
+                        </div>
+                        <div class="d-flex flex-md-row flex-column align-items-md-center">
+                            <div class="mr-2 flex-fill mb-2 mb-md-0">
+                                <select class="custom-select mr-1" name="new_client" id="filter_new_client" data-placeholder="Is new client?" style="width: 100%;">
+                                    <option value="">All</option>
+                                    <option value="1">Yes</option>
+                                    <option value="zero">No</option>
+                                </select>
+                            </div>
+                            <div class="mr-2 flex-fill mb-2 mb-md-0">
+                                <select class="custom-select mr-1" name="filter_type" id="filter_type" data-placeholder="Select a client type" style="width: 100%;">
+                                    <option value="">All</option>
+                                    <option value="COMMERCIAL">Commercial</option>
+                                    <option value="RESIDENTIAL">Residential</option>
+                                </select>
+                            </div>
+                            <div class="mr-2 flex-fill mb-2 mb-md-0">
+                                <select class="custom-select select2" id="filter_source" data-placeholder="Select a source" multiple style="width: 100%;">
+                                    <?php foreach (get_client_sources() as $key => $val ): ?>
+                                        <option value="<?= $key ?>"><?= $val ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="align-items-center justify-content-center d-flex">
+                                <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">
+                                    <i class="fas fa-ban"></i>
+                                </button>
                             </div>
                         </div>
                     </div>

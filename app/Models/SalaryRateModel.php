@@ -187,10 +187,12 @@ class SalaryRateModel extends Model
         ";
         $builder    = $this->db->table($this->table);
 
-        $builder->select($columns);     
+        $builder->select($columns);
 
         $this->joinEmployeesView($builder, $model);
         $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
+
+        $this->filterParam($request, $builder, "{$model->table}.employment_status", 'employee_status');
         $this->filterParam($request, $builder, 'rate_type', 'rate_type');
         
         $builder->orderBy("{$model->table}.employee_name", 'ASC');

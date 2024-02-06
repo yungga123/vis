@@ -6,7 +6,7 @@
             <div class="card">
 				<div class="card-header">
                     <div class="mr-2 mb-2">
-                        <strong>Filters by Status, Bill Type and Payment Method: </strong>
+                        <strong>Filters by Status, Bill Type or Payment Method: </strong>
                     </div>
                     <div class="d-flex flex-md-row flex-column align-items-md-center">
                         <div class="mr-2 flex-fill mb-2 mb-md-0">

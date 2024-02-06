@@ -12,9 +12,6 @@ class InventoryLogsModel extends Model
     use InventoryTrait, HRTrait;
 
     protected $DBGroup          = 'default';
-    protected $inventoryTable   = 'inventory';
-    protected $inventoryView    = 'inventory_view';
-    protected $invDropdownTable = 'inventory_dropdowns';
     protected $table            = 'inventory_logs';
     protected $primaryKey       = 'inventory_logs_id';
     protected $useAutoIncrement = true;
@@ -137,9 +134,11 @@ class InventoryLogsModel extends Model
     // For DataTables
     public function noticeTable($request) 
     {
-        $builder = $this->db->table($this->table);
+        $inventoryModel = new InventoryModel();
+        $builder        = $this->db->table($this->table);
 
         $builder->select($this->columns());
+
         $this->joinInventory($builder);
         $this->joinAccountView($builder, "{$this->table}.created_by", 'cb');
 
@@ -154,13 +153,13 @@ class InventoryLogsModel extends Model
                     if (!str_contains($val, 'other__')) return $val;
                 });
     
-                if (! empty($category_ids)) $builder->whereIn("{$this->inventoryTable}.category", $category_ids);
+                if (! empty($category_ids)) $builder->whereIn("{$inventoryModel->table}.category", $category_ids);
             }
 
             if (! empty($params['sub_dropdown'])) {
                 $ids    = implode(',', $params['sub_dropdown']);
                 $in     = "IN({$ids})";
-                $where  = "({$this->inventoryTable}.sub_category {$in} OR {$this->inventoryTable}.item_brand {$in} OR {$this->table}.item_size {$in} OR {$this->table}.stock_unit {$in})";
+                $where  = "({$inventoryModel->table}.sub_category {$in} OR {$inventoryModel->table}.item_brand {$in} OR {$inventoryModel->table}.item_size {$in} OR {$inventoryModel->table}.stock_unit {$in})";
 
                 $builder->where($where);
             }

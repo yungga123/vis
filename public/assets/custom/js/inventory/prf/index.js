@@ -19,8 +19,6 @@ $(document).ready(function () {
 	_fetchItems = [];
 	_status = $pjOptions.prf_status;
 
-	console.log(_status);
-
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
 
@@ -108,14 +106,27 @@ $(document).ready(function () {
 
 /* For filtering and reseting */
 function filterData(reset = false) {
-	let status = getSelect2Selection("#filter_status");
+	const status = getSelect2Selection("#filter_status");
+	const start_date = $("#filter_start_date").val();
+	const end_date = $("#filter_end_date").val();
+	const params = {
+		status: status,
+		start_date: start_date,
+		end_date: end_date,
+	};
+	const condition =
+		!isEmpty(status) || (!isEmpty(start_date) && !isEmpty(end_date));
 
 	filterParam(
 		router.prf.list,
 		table,
-		{ status: status },
-		!isEmpty(status),
-		() => clearSelect2Selection("#filter_status"),
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_status");
+			$("#filter_start_date").val("");
+			$("#filter_end_date").val("");
+		},
 		reset
 	);
 }

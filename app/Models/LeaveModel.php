@@ -269,6 +269,17 @@ class LeaveModel extends Model
         
         $this->filterParam($request, $builder);
         $this->filterParam($request, $builder, 'leave_type', 'leave_type');
+        
+        $start_date = $request['params']['start_date'] ?? '';
+        $end_date   = $request['params']['end_date'] ?? '';
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $start_date = format_date($start_date, 'Y-m-d');
+            $end_date   = format_date($end_date, 'Y-m-d');
+
+            $builder->where("{$this->table}.start_date >=", $start_date);
+            $builder->where("{$this->table}.end_date <=", $end_date);
+        }
 
         $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy("{$this->table}.id", 'DESC');

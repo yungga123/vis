@@ -5,39 +5,38 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <label>Filters by [Supplier Type (ST), Payment Terms (PT), or Mode of Payment (MOP)]:</label>
-                    <div class="input-group" style="flex-wrap: nowrap; width: 100%;">
-                        <!-- Supplier Type -->
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">ST</span>
+                    <div class="mr-2 mb-2">
+                        <strong>Filters by Supplier Type, Payment Terms, or Mode of Payment: </strong>
+                    </div>
+                    <div class="d-flex flex-md-row flex-column align-items-md-center">
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_supplier_type" data-placeholder="Select a supplier type" multiple style="width: 100%;">
+                                <?php foreach (get_supplier_type() as $val => $text): ?>
+                                    <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
+                                <?php endforeach; ?>
+                            </select>        
                         </div>
-                        <select class="custom-select select2" id="filter_supplier_type" data-placeholder="Select a supplier type" multiple>
-                            <?php foreach (get_supplier_type() as $val => $text): ?>
-                                <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
-                            <?php endforeach; ?>
-                        </select>                        
-                        <!-- Payment Terms -->
-                        <div class="input-group-prepend ml-1">
-                            <span class="input-group-text">PT</span>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_payment_terms" data-placeholder="Select a payment term" multiple style="width: 100%;">
+                                <?php foreach (get_payment_terms('', true) as $val => $text): ?>
+                                    <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
+                                <?php endforeach; ?>
+                            </select>           
                         </div>
-                        <select class="custom-select select2" id="filter_payment_terms" data-placeholder="Select a payment term" multiple>
-                            <?php foreach (get_payment_terms('', true) as $val => $text): ?>
-                                <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
-                            <?php endforeach; ?>
-                        </select>             
-                        <!-- Mode of Payment -->
-                        <div class="input-group-prepend ml-1">
-                            <span class="input-group-text">MOP</span>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_payment_mode" data-placeholder="Select an MOP" multiple style="width: 100%;">
+                                <?php foreach (get_supplier_mop() as $val => $text): ?>
+                                    <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
+                                <?php endforeach; ?>
+                            </select> 
                         </div>
-                        <select class="custom-select select2" id="filter_payment_mode" data-placeholder="Select an MOP" multiple>
-                            <?php foreach (get_supplier_mop() as $val => $text): ?>
-                                <option value="<?= $val ?>"><?= ucfirst($text) ?></option>
-                            <?php endforeach; ?>
-                        </select> 
-                        <!-- Action Buttons -->
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-primary px-3" onclick="filterData()" type="button" title="Search filter">Filter</button>
-                            <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterData(true)" type="button" title="Reset filter">Reset</button>
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">
+                                <i class="fas fa-ban"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

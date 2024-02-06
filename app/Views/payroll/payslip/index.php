@@ -6,17 +6,11 @@
             <div class="card">
 				<div class="card-header">
                     <div class="mr-2 mb-2">
-                        <strong>Date Range Filter: </strong>
+                        <strong>Filter by Date Range (Start/End): </strong>
                     </div>
                     <div class="d-flex flex-md-row flex-column align-items-md-center">
-                        <div class="mr-2 mb-2 mb-md-0">
-                            <strong>Start Date: </strong>
-                        </div>
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
                             <input type="date" class="form-control" name="filter_start_date" id="filter_start_date" placeholder="Cut-Off Date">
-                        </div>
-                        <div class="mr-2 mb-2 mb-md-0">
-                            <strong>End Date: </strong>
                         </div>
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
                             <input type="date" class="form-control" name="filter_end_date" id="filter_end_date" placeholder="Cut-Off Date">
