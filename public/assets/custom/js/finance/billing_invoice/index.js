@@ -14,7 +14,7 @@ $(document).ready(function () {
 		"amount_paid",
 	];
 
-	select2Init("#filter_status");
+	select2Init("#filter_billing_status");
 	select2Init("#filter_bill_type");
 	select2Init("#filter_payment_method");
 
@@ -28,6 +28,7 @@ $(document).ready(function () {
 		$(`#${form}`)[0].reset();
 		$("#id").val("");
 		$("#orig_tasklead").html("");
+		$(".tasklead-details").html("");
 
 		clearSelect2Selection("#tasklead_id");
 		clearAlertInForm(elems);
@@ -38,11 +39,8 @@ $(document).ready(function () {
 		"#tasklead_id",
 		"Search & select a tasklead",
 		router.admin.common.quotations,
-		["id", "quotation", "client", "manager", "type"],
-		null,
-		{
-			search_in: ["quotation", "client", "manager"],
-		}
+		["id", "quotation"],
+		_loadTaskleadDetails
 	);
 
 	$("#status").on("change", function () {
@@ -78,16 +76,16 @@ $(document).ready(function () {
 
 /* For filtering and reseting */
 function filterData(reset = false) {
-	const status = getSelect2Selection("#filter_status");
+	const billing_status = getSelect2Selection("#filter_billing_status");
 	const bill_type = getSelect2Selection("#filter_bill_type");
 	const payment_method = getSelect2Selection("#filter_payment_method");
 	const params = {
-		status: status,
+		billing_status: billing_status,
 		bill_type: bill_type,
 		payment_method: payment_method,
 	};
 	const condition =
-		!isEmpty(status) || !isEmpty(bill_type) || !isEmpty(payment_method);
+		!isEmpty(billing_status) || !isEmpty(bill_type) || !isEmpty(payment_method);
 
 	filterParam(
 		router.billing_invoice.list,
@@ -95,7 +93,7 @@ function filterData(reset = false) {
 		params,
 		condition,
 		() => {
-			clearSelect2Selection("#filter_status");
+			clearSelect2Selection("#filter_billing_status");
 			clearSelect2Selection("#filter_bill_type");
 			clearSelect2Selection("#filter_payment_method");
 		},
@@ -109,6 +107,7 @@ function edit(id) {
 	$(`#${modal} .modal-title`).text("Edit Billing Invoice");
 	$("#id").val(id);
 	$("#orig_tasklead").html("");
+	$(".tasklead-details").html("");
 
 	clearAlertInForm(elems);
 	clearSelect2Selection("#tasklead_id");
@@ -116,14 +115,12 @@ function edit(id) {
 	fetchRecord(router.billing_invoice.fetch, { id: id }, modal, (res) => {
 		if (res.status === STATUS.SUCCESS) {
 			if (inObject(res, "data") && !isEmpty(res.data)) {
-				const text = `${res.data.tasklead_id} | ${res.data.quotation} | ${
-					res.data.client
-				} | ${res.data.manager} | ${res.data.quotation_type || "N/A"}`;
+				const text = `${res.data.tasklead_id} | ${res.data.quotation}`;
 
 				setSelect2AjaxSelection("#tasklead_id", text, res.data.tasklead_id);
 				setOptionValue("#bill_type", res.data.bill_type);
 				setOptionValue("#payment_method", res.data.payment_method);
-				setOptionValue("#status", res.data.status);
+				setOptionValue("#billing_status", res.data.billing_status);
 
 				$("#orig_tasklead").html(
 					`Original Task/Lead: <strong>${text}</strong>`
@@ -140,4 +137,40 @@ function edit(id) {
 /* Delete record */
 function remove(id) {
 	deleteRecord(router.billing_invoice.delete, { id: id }, table);
+}
+
+/* Load selected tasklead/quotation details */
+function _loadTaskleadDetails(data) {
+	let html = "";
+
+	if (data.id) {
+		id = data.id;
+		quotation = data.quotation;
+		employee_id = data.employee_id;
+		html = `
+			<h5 class="text-center">Task/Lead Details</h5>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Client</th>
+						<th>Manger</th>
+						<th>Project</th>
+						<th>Amount</th>
+						<th>Quotation Type</th>
+					</tr>
+				</thead>
+				<tbody>				
+					<tr>					
+						<td>${data.client}</td>
+						<td>${data.manager}</td>
+						<td>${data.project}</td>
+						<td>${numberFormat(data.project_amount)}</td>
+						<td>${data.type || "N/A"}</td>
+					</tr>
+				</tbody>
+			</table>
+		`;
+	}
+
+	$(".tasklead-details").html(html);
 }

@@ -14,15 +14,16 @@
                 <div class="modal-body">
                     <div class="callout callout-info">
                         <strong>Note:</strong> 
-                        If not empty, initial dropdowns of <strong>Task/Leads</strong> are by 10. Type the <strong>TASKLEAD ID, QUOTATION #, CLIENT OR MANAGER</strong> to search if not in the options and then, click to select.
+                        If not empty, initial dropdowns of <strong>Task/Leads</strong> are by 10. Type the <strong>TASKLEAD ID OR QUOTATION NUMBER</strong> to search if not in the options and then, click to select.
                     </div>
                     <div class="form-group">
                         <label class="required mb-0" for="tasklead_id">Task/Leads</label>
-                        <div>Format: TASKLEAD ID | QUOTATION # | CLIENT | MANAGER | QUOTATION TYPE</div>
+                        <div>Format: Tasklead ID | Quotation Number</div>
                         <select class="custom-select" name="tasklead_id" id="tasklead_id" style="width: 100%;"></select required>
                         <div id="orig_tasklead"></div>
                         <small id="alert_tasklead_id" class="text-danger"></small>
                     </div>
+                    <div class="form-group tasklead-details"></div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -44,13 +45,13 @@
                                 <small id="alert_payment_method" class="text-danger"></small>
                             </div>
                             <div class="form-group">
-                                <label class="required" for="status">Billing Status</label>
-                                <select class="form-control" name="status" id="status" style="width: 100%;" required>
+                                <label class="required" for="billing_status">Billing Status</label>
+                                <select class="form-control" name="billing_status" id="billing_status" style="width: 100%;" required>
                                     <?php foreach (get_billing_status() as $val => $text): ?>
                                         <option value="<?= $val ?>"><?= $text ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                <small id="alert_status" class="text-danger"></small>
+                                <small id="alert_billing_status" class="text-danger"></small>
                             </div>
                         </div>
                         <div class="col-md-6">

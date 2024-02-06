@@ -232,6 +232,9 @@ define('ACTIONS', [
             'SAVE'          => 'Save',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'FINANCE_BILLING_INVOICE'     => [
+            'PRINT'         => 'Print',
+        ],
     ],
 ]);
 
@@ -367,3 +370,6 @@ define('COMPANY_PO_FORM_CODE', 'F06');
 // Para isahan nlng ng directory
 // Don't foget to add '/' at the end
 define('ROOT_FILE_UPLOAD_DIR', '');
+
+// Purchase Order Form Code
+define('COMPANY_BILLING_INVOICE_FORM_CODE', 'F07');

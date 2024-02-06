@@ -4,14 +4,17 @@ namespace App\Controllers\Finance;
 
 use App\Controllers\BaseController;
 use App\Models\BillingInvoiceModel;
+use App\Models\CustomerModel;
 use App\Models\TaskLeadView;
 use App\Traits\CommonTrait;
+use App\Traits\GeneralInfoTrait;
+use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
 class BillingInvoice extends BaseController
 {
     /* Declare trait here to use */
-    use CommonTrait;
+    use CommonTrait, HRTrait, GeneralInfoTrait;
 
     /**
      * Use to initialize model class
@@ -58,8 +61,8 @@ class BillingInvoice extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $data['title']          = 'Finace | Billing Invoices';
-        $data['page_title']     = 'Finace | Billing Invoices';
+        $data['title']          = 'Finance | Billing Invoices';
+        $data['page_title']     = 'Finance | Billing Invoices';
         $data['btn_add_lbl']    = 'Create Billing Invoice';
         $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;
@@ -108,6 +111,8 @@ class BillingInvoice extends BaseController
             'payment_method',
             'amount_paid',
             'paid_at',
+            'attention_to',
+            'with_vat',
             'created_by',
             'created_at',
         ];
@@ -154,22 +159,30 @@ class BillingInvoice extends BaseController
                 $inputs         = [
                     'id'                => $id,
                     'tasklead_id'       => $request['tasklead_id'] ?? null,
-                    'due_date'          => $request['due_date'],
-                    'bill_type'         => $request['bill_type'],
-                    'payment_method'    => $request['payment_method'],
-                    'status'            => $request['status'],
-                    'billing_amount'    => $request['billing_amount'],
-                    'amount_paid'       => $request['amount_paid'],
+                    'due_date'          => $request['due_date'] ?? null,
+                    'bill_type'         => $request['bill_type'] ?? null,
+                    'payment_method'    => $request['payment_method'] ?? null,
+                    'billing_status'    => $request['billing_status'] ?? null,
+                    'billing_amount'    => $request['billing_amount'] ?? null,
+                    'amount_paid'       => $request['amount_paid'] ?? null,
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
 
-                $this->checkRoleActionPermissions($this->_module_code, $action, true);
-                $this->checkRecordRestrictionViaStatus($id, $this->_model);
+                if (! empty($request['attention_to'] ?? '')) {
+                    $inputs     = [
+                        'id'            => $id,
+                        'attention_to'  => $request['attention_to'] ?? null,
+                        'with_vat'      => ($request['with_vat'] ?? 'no') == 'yes',
+                    ];
+                } else {
+                    $this->checkRoleActionPermissions($this->_module_code, $action, true);
+                    $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
 
-                if (($request['status'] ?? '') === 'paid') {
-                    $inputs['paid_at']  = current_datetime();
-
-                    $this->_model->makeAmountPaidRequired();
+                    if (($request['billing_status'] ?? '') === 'paid') {
+                        $inputs['paid_at']  = current_datetime();
+    
+                        $this->_model->makeAmountPaidRequired();
+                    }
                 }
     
                 if ($id) {
@@ -244,5 +257,67 @@ class BillingInvoice extends BaseController
         );
 
         return $response;
+    }
+
+    /**
+     * Printing record
+     *
+     * @return view
+     */
+    public function print($id) 
+    {
+        // Check role & action if has permission, otherwise redirect to denied page
+        $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
+        
+        $tlVModel   = new TaskLeadView();
+        $custModel  = new CustomerModel();
+        $columns    = "
+            {$this->_model->table}.id,
+            {$this->_model->table}.tasklead_id,
+            {$this->_model->table}.due_date,
+            {$this->_model->table}.bill_type,
+            {$this->_model->table}.billing_amount,
+            {$this->_model->table}.billing_status,
+            {$this->_model->table}.payment_method,
+            {$this->_model->table}.amount_paid,
+            {$this->_model->table}.paid_at,
+            {$this->_model->table}.attention_to,
+            {$this->_model->table}.with_vat,
+            {$this->_model->table}.created_at,
+            {$tlVModel->table}.quotation_num AS quotation,
+            {$tlVModel->table}.customer_id AS client_id,
+            {$tlVModel->table}.customer_name AS client,
+            {$tlVModel->table}.employee_name AS manager,
+            {$tlVModel->table}.tasklead_type AS quotation_type,
+            {$tlVModel->table}.project,
+            {$tlVModel->table}.project_amount,
+            cb.employee_name AS created_by,
+            cb.position AS created_by_position,
+            ".dt_sql_concat_client_address('', 'client_address')."
+        ";
+        $builder                = $this->_model->select($columns);
+
+        $this->_model->joinBookedTasklead($builder, $tlVModel);
+        $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+        $builder->join($custModel->table, "{$tlVModel->table}.customer_id = {$custModel->table}.id", 'left');
+
+        $billing_invoice         = $builder->where("{$this->_model->table}.id", $id)->first();
+
+        // For restriction
+        if (empty($billing_invoice)) {
+            return $this->redirectTo404Page();
+        }
+
+        $data['billing_invoice'] = $billing_invoice;
+        $data['general_info']   = $this->getCompanyInfo();
+        $data['title']          = 'Print Billing Invoice';
+        $data['disable_auto_print'] = true;
+        $data['custom_js']      = [
+            'initialize.js',
+            'functions.js',
+            'finance/billing_invoice/print.js'
+        ];
+
+        return view('finance/billing_invoice/print', $data);
     }
 }

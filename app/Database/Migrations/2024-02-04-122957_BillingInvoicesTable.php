@@ -19,11 +19,6 @@ class BillingInvoicesTable extends Migration
                 'type' => 'INT',
                 'comment' => 'Connected to task_lead_booked table',
             ],
-            'status' => [
-                'type' => 'VARCHAR',
-                'constraint' => 50,
-                'default' => 'pending',
-            ],
             'due_date' => [
                 'type' => 'DATE',
             ],
@@ -34,6 +29,11 @@ class BillingInvoicesTable extends Migration
             'billing_amount' => [
                 'type' => 'DECIMAL',
                 'constraint' => [18,2],
+            ],
+            'billing_status' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
+                'default' => 'pending',
             ],
             'payment_method' => [
                 'type' => 'VARCHAR',
@@ -47,6 +47,16 @@ class BillingInvoicesTable extends Migration
             'paid_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
+            ],
+            'attention_to' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+                'comment' => 'Manual type who will receive the Billing Invoice.'
+            ],
+            'with_vat' => [
+                'type' => 'BOOLEAN',
+                'default' => FALSE,
             ],
             'created_by' => [
                 'type' => 'VARCHAR',

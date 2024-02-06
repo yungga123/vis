@@ -9,20 +9,21 @@ trait CommonTrait
      *
      * @param int|null $id      The id to search
      * @param object $model     The model object to check from
+     * @param string $fieldName The field name
      * 
      * @return \Exception|void
      */
-    public function checkRecordRestrictionViaStatus($id, $model)
+    public function checkRecordRestrictionViaStatus($id, $model, $fieldName = 'status')
     {
         if (empty($id)) return;
         
-        $builder = $model->select('status');
+        $builder = $model->select($fieldName);
         $builder->where('deleted_at IS NULL');
-        $builder->whereIn('status', $model->restrictedStatuses);
+        $builder->whereIn($fieldName, $model->restrictedStatuses);
 
         $result = $builder->find($id);
         if ($result) {
-            $status     = strtoupper(str_replace('_', ' ', $result['status']));
+            $status     = strtoupper(str_replace('_', ' ', $result[$fieldName]));
             $message    = res_lang('restrict.action.change') ." It's already in <strong>{$status}</strong> status.
             ";
             throw new \Exception($message, 2);

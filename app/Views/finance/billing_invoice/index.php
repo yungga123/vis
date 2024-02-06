@@ -10,7 +10,7 @@
                     </div>
                     <div class="d-flex flex-md-row flex-column align-items-md-center">
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
-                            <select class="custom-select select2" id="filter_status" data-placeholder="Select a status" multiple style="width: 100%;">
+                            <select class="custom-select select2" id="filter_billing_status" data-placeholder="Select a billing status" multiple style="width: 100%;">
                                 <?php foreach (get_billing_status() as $val => $text): ?>
                                     <option value="<?= $val ?>"><?= $text ?></option>
                                 <?php endforeach; ?>
@@ -59,6 +59,8 @@
                                 <th>Payment Method</th>
                                 <th>Amount Paid</th>
                                 <th>Paid At</th>
+                                <th>Attention To</th>
+                                <th>With Vat?</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
                             </tr>

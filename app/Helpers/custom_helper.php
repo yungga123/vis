@@ -681,3 +681,28 @@ if (! function_exists('format_results'))
         return $arr;
 	}
 }
+
+if (! function_exists('get_acronymns'))
+{
+    /**
+     * Get the acronymns (first letter) of the words/string
+     * 
+     * @param string $words
+     */
+	function get_acronymns($words) {
+        if (empty($words)) return $words;
+        
+        $regex      = '/(?<=\b)\w/iu';
+        $split      = preg_split("/[\s,_-]+/", $words);
+        
+        preg_match_all($regex, $words, $matches);
+        
+        $results    = $matches[0];
+        
+        foreach ($split as $key => $val) {
+            if (is_numeric($val)) $results[$key] = $val;
+        }
+        
+        return mb_strtoupper(implode('', $results));
+    }
+}

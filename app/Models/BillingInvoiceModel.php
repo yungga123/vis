@@ -21,13 +21,15 @@ class BillingInvoiceModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'tasklead_id',
-        'status',
+        'billing_status',
         'due_date',
         'bill_type',
         'billing_amount',
         'payment_method',
         'amount_paid',
         'paid_at',
+        'attention_to',
+        'with_vat',
     ];
 
     // Dates
@@ -108,13 +110,15 @@ class BillingInvoiceModel extends Model
         $columns = "
             {$this->table}.id,
             {$this->table}.tasklead_id,
-            {$this->table}.status,
             {$this->table}.due_date,
             {$this->table}.bill_type,
             {$this->table}.billing_amount,
+            {$this->table}.billing_status,
             {$this->table}.payment_method,
             {$this->table}.amount_paid,
             {$this->table}.paid_at,
+            {$this->table}.attention_to,
+            {$this->table}.with_vat,
             {$this->table}.created_by,
             {$this->table}.created_at
         ";
@@ -188,7 +192,6 @@ class BillingInvoiceModel extends Model
         $tlVModel   = new TaskLeadView();
         $builder    = $this->db->table($this->table);
         $columns    = "
-            {$this->table}.status,
             {$this->table}.id,
             {$this->table}.tasklead_id,
             {$tlVModel->table}.quotation_num AS quotation,
@@ -198,9 +201,12 @@ class BillingInvoiceModel extends Model
             ".dt_sql_date_format("{$this->table}.due_date")." AS due_date,
             {$this->table}.bill_type,
             ".dt_sql_number_format("{$this->table}.billing_amount")." AS billing_amount,
+            {$this->table}.billing_status,
             {$this->table}.payment_method,
             ".dt_sql_number_format("{$this->table}.amount_paid")." AS amount_paid,
             ".dt_sql_datetime_format("{$this->table}.paid_at")." AS paid_at,
+            {$this->table}.attention_to,
+            IF({$this->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
             cb.employee_name AS created_by,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
         ";
@@ -212,7 +218,7 @@ class BillingInvoiceModel extends Model
         $this->joinAccountView($builder, 'created_by', 'cb');
 
         // Filters
-        $this->filterParam($request, $builder);
+        $this->filterParam($request, $builder, 'billing_status', 'billing_status');
         $this->filterParam($request, $builder, 'bill_type', 'bill_type');
         $this->filterParam($request, $builder, 'payment_method', 'payment_method');
 
@@ -232,7 +238,7 @@ class BillingInvoiceModel extends Model
             $buttons = dt_button_actions($row, $id, $permissions, false);
 
             if (check_permissions($permissions, 'PRINT')) {
-                $print_url = site_url('dispatch/print/') . $row[$id];
+                $print_url = url_to('finance.billing_invoice.print', $row[$id]);
                 $buttons .= <<<EOF
                     <a href="$print_url" class="btn btn-success btn-sm" target="_blank"><i class="fas fa-print"></i></a>
                 EOF;
@@ -250,8 +256,8 @@ class BillingInvoiceModel extends Model
     public function dtStatusFormat()
     {
         $closureFun = function($row) {
-            $text    = ucwords($row['status']);
-            $color   = dt_status_color($row['status']);
+            $text    = ucwords($row['billing_status']);
+            $color   = dt_status_color($row['billing_status']);
 
             return text_badge($color, $text);
         };
