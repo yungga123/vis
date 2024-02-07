@@ -79,6 +79,40 @@ trait GeneralInfoTrait
     }
 
     /**
+     * Get company funds
+     *
+     * @return float    The current funds amount
+     */
+    public function getCompanyFunds() 
+    {
+        return floatval($this->getGeneralInfo('company_funds', true) ?? 0);
+    }
+
+    /**
+     * Save (insert/update) company funds
+     * 
+     * @param int|float $funds 
+     * @param bool $plus        Plus or minus funds
+     *
+     * @return array|bool|null
+     */
+    public function saveCompanyFunds($funds, $plus = true) 
+    {
+        $model  = new GeneralInfoModel();
+        $curr   = $this->getCompanyFunds();
+        $funds  = floatval($funds);
+        $data   = [
+            'key'           => 'company_funds',
+            'value'         => $plus ? $funds + $curr : $curr - $funds,
+            'updated_by'    => session('username'),
+        ];
+
+        if (! $plus && $curr < $funds) return false;
+
+        return $model->singleSave($data);
+    }
+
+    /**
      * The full file path
      *
      * @return string

@@ -68,7 +68,8 @@ if (! function_exists('get_nav_menus'))
             url_is('settings/general-info')
         );
         $is_finance     = (
-            url_is('finance/billing-invoice')
+            url_is('finance/billing-invoice') ||
+            url_is('finance/funds')
         );
         
 		$menu           = [
@@ -328,6 +329,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('finance.billing_invoice.home'),
                 'class'     => (url_is('finance/billing-invoice') ? 'active' : ''),
                 'icon'      => 'fas fa-file-invoice',
+            ],
+            'FINANCE_FUNDS'  => [
+                'menu'      => 'FINANCE', // Leave empty if none
+                'name'      => get_modules('FINANCE_FUNDS'),
+                'url'       => url_to('finance.funds.home'),
+                'class'     => (url_is('finance/funds') ? 'active' : ''),
+                'icon'      => 'fas fa-piggy-bank',
             ],
         ];
 

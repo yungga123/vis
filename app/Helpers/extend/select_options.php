@@ -734,3 +734,22 @@ if (! function_exists('get_billing_status'))
         return $options[$param] ?? $options;
 	}
 }
+
+if (! function_exists('get_expenses'))
+{
+    /**
+     * Get expenses type for Finance/Funds module
+     */
+	function get_expenses(string $param = ''): string|array
+	{
+        $options = [
+            'Petty Cash'        => 'Petty Cash',
+            'Salary'            => 'Salary',
+            'Purchase Orders'   => 'Purchase Orders',
+            'Loans Payment'     => 'Loans Payment',
+            'Advances'          => 'Advances',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}

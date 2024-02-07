@@ -235,6 +235,11 @@ define('ACTIONS', [
         'FINANCE_BILLING_INVOICE'     => [
             'PRINT'         => 'Print',
         ],
+        'FINANCE_FUNDS'     => [
+            'VIEW'          => 'View',
+            'RELEASE'       => 'Release Fund',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
@@ -302,6 +307,7 @@ define('MODULES', [
     'PAYROLL_SETTINGS'      => 'Settings',
     'PAYROLL_TIMESHEETS'    => 'Timesheets',
     'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
+    'FINANCE_FUNDS'         => 'Funds',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -337,6 +343,7 @@ define('MODULE_CODES', [
     'payroll_settings'      => 'PAYROLL_SETTINGS',
     'timesheets'            => 'PAYROLL_TIMESHEETS',
     'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
+    'funds'                 => 'FINANCE_FUNDS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)

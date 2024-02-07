@@ -45,7 +45,7 @@ class GeneralInfoModel extends Model
      *
      * @param array $data    the data to be saved
      * @param array $additionalUpdateFields    the additional fields to be included in update
-     * @return array
+     * @return array|bool|null
      */
     public function singleSave($data, $additionalUpdateFields = [])
     {
@@ -64,7 +64,7 @@ class GeneralInfoModel extends Model
      *
      * @param array $data    the data to be saved
      * @param array $additionalUpdateFields    the additional fields to be included in update
-     * @return array
+     * @return array|bool|null
      */
     public function multipleSave($data, $additionalUpdateFields = [])
     {

@@ -5,6 +5,7 @@ namespace App\Controllers\Finance;
 use App\Controllers\BaseController;
 use App\Models\BillingInvoiceModel;
 use App\Models\CustomerModel;
+use App\Models\FundsHistoryModel;
 use App\Models\TaskLeadView;
 use App\Traits\CommonTrait;
 use App\Traits\GeneralInfoTrait;
@@ -182,6 +183,18 @@ class BillingInvoice extends BaseController
                         $inputs['paid_at']  = current_datetime();
     
                         $this->_model->makeAmountPaidRequired();
+
+                        // Update funds
+                        $this->saveCompanyFunds($request['amount_paid']);
+                        
+                        // Save funds transaction history
+                        $fundHModel = new FundsHistoryModel();
+                        $fundHModel->save([
+                            'billing_invoiced_id'   => $id,
+                            'current_funds'         => $this->getCompanyFunds(),
+                            'transaction_amount'    => $request['amount_paid'],
+                            'coming_from'           => 'Billing Invoice',
+                        ]); 
                     }
                 }
     

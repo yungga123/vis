@@ -142,6 +142,8 @@ class BillingInvoiceModel extends Model
                 {$tlVModel->table}.customer_name AS client,
                 {$tlVModel->table}.employee_name AS manager,
                 {$tlVModel->table}.tasklead_type AS quotation_type,
+                {$tlVModel->table}.project,
+                {$tlVModel->table}.project_amount
             ";
         }
 

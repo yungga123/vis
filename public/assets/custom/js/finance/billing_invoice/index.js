@@ -35,15 +35,9 @@ $(document).ready(function () {
 	});
 
 	/* Quotation via ajax data source */
-	select2AjaxInit(
-		"#tasklead_id",
-		"Search & select a tasklead",
-		router.admin.common.quotations,
-		["id", "quotation"],
-		_loadTaskleadDetails
-	);
+	_initTasklead();
 
-	$("#status").on("change", function () {
+	$("#billing_status").on("change", function () {
 		$(".form-group.amount_paid label").removeClass();
 
 		if ($(this).val() === "paid") {
@@ -116,8 +110,17 @@ function edit(id) {
 		if (res.status === STATUS.SUCCESS) {
 			if (inObject(res, "data") && !isEmpty(res.data)) {
 				const text = `${res.data.tasklead_id} | ${res.data.quotation}`;
+				const data = {
+					client: res.data.client,
+					manager: res.data.manager,
+					project: res.data.project,
+					project_amount: res.data.project_amount,
+					type: res.data.type,
+				};
 
 				setSelect2AjaxSelection("#tasklead_id", text, res.data.tasklead_id);
+				setTimeout(() => _loadTaskleadDetails(data), 200);
+
 				setOptionValue("#bill_type", res.data.bill_type);
 				setOptionValue("#payment_method", res.data.payment_method);
 				setOptionValue("#billing_status", res.data.billing_status);
@@ -139,14 +142,22 @@ function remove(id) {
 	deleteRecord(router.billing_invoice.delete, { id: id }, table);
 }
 
+/* Quotation via ajax data source */
+function _initTasklead() {
+	select2AjaxInit(
+		"#tasklead_id",
+		"Search & select a tasklead",
+		router.admin.common.quotations,
+		["id", "quotation"],
+		_loadTaskleadDetails
+	);
+}
+
 /* Load selected tasklead/quotation details */
 function _loadTaskleadDetails(data) {
 	let html = "";
 
-	if (data.id) {
-		id = data.id;
-		quotation = data.quotation;
-		employee_id = data.employee_id;
+	if (data.client) {
 		html = `
 			<h5 class="text-center">Task/Lead Details</h5>
 			<table class="table table-bordered">

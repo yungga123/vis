@@ -25,7 +25,8 @@ $total_amount		= $subtotal_amount + $vat_amount;
 							<span class="text-danger">
 								<?php 
 									$date 			= format_date($billing_invoice['created_at'], 'y-md');
-									$code_format 	= "{$form_code}-{$billing_invoice['client_id']}-{$date}-{$billing_invoice['id']}";
+									$initials		= get_acronymns($billing_invoice['client']);
+									$code_format 	= "{$form_code}-{$billing_invoice['client_id']}-{$initials}-{$date}-{$billing_invoice['id']}";
 									echo $code_format;
 								?>
 							</span>

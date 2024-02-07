@@ -443,6 +443,14 @@ $routes->group('finance', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('delete', 'Finance\BillingInvoice::delete', ['as' => 'finance.billing_invoice.delete']);
         $routes->get('print/(:num)', 'Finance\BillingInvoice::print/$1', ['as' => 'finance.billing_invoice.print']);
     });
+
+    // FUNDS
+    $routes->group('funds', static function ($routes) {
+        $routes->get('/', 'Finance\Funds::index', ['as' => 'finance.funds.home']);
+        $routes->post('list', 'Finance\Funds::list', ['as' => 'finance.funds.list']);
+        $routes->post('save', 'Finance\Funds::save', ['as' => 'finance.funds.save']);
+        $routes->post('fetch', 'Finance\Funds::fetch', ['as' => 'finance.funds.fetch']);
+    });
 });
 /* FINANCE */
 

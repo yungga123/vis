@@ -5,6 +5,7 @@ return [
     'success' => [
         'added'     => '{title} has been added!',
         'saved'     => '{title} has been saved!',
+        'submitted' => '{title} has been submitted!',
         'updated'   => '{title} has been updated!',
         'deleted'   => '{title} has been deleted!',
         'fetched'   => '{title} has been retrieved!',
