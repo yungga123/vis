@@ -45,11 +45,28 @@ trait GeneralInfoTrait
     /**
      * Get company info
      *
+     * @param array $info
+     * @param bool $keys  Whether to return the keys only
+     * 
      * @return array
      */
-    public function getCompanyInfo()
+    public function getCompanyInfo($info = [], $keys = false)
     {
-        $info = $this->getGeneralInfo(['company_logo', 'company_name', 'company_address'], true);
+        $_keys = [
+			'company_logo',
+			'company_name',
+			'company_address',
+			'company_contact_number',
+			'company_email_address',
+			'company_bank_name',
+			'company_bank_account_name',
+			'company_bank_account_number',
+			'company_bank_branch',
+        ];
+
+        if ($keys) return $_keys;
+
+        $info = empty($info) ? $this->getGeneralInfo($_keys, true) : $info;
 
         $info['company_logo']       = ($info['company_logo'] ?? null)
             ? base_url($this->initialFilePathLogo . $info['company_logo']) : '';

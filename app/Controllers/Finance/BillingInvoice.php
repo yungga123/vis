@@ -321,8 +321,17 @@ class BillingInvoice extends BaseController
             return $this->redirectTo404Page();
         }
 
+        // Get general info
+        $keys = [
+            'vat_percent',
+            'billing_invoice_form_code',
+        ];
+        $keys = array_merge($this->getCompanyInfo([], true), $keys);
+        $info = $this->getGeneralInfo($keys, true);
+
         $data['billing_invoice'] = $billing_invoice;
-        $data['general_info']   = $this->getCompanyInfo();
+        $data['general_info']   = $info;
+        $data['company_info']   = $this->getCompanyInfo($info);
         $data['title']          = 'Print Billing Invoice';
         $data['disable_auto_print'] = true;
         $data['custom_js']      = [

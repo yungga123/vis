@@ -32,13 +32,14 @@ $(document).ready(function () {
 				const message = res.errors ?? res.message;
 
 				if (res.status !== STATUS.ERROR) {
+					let vat_percent = parseFloat($('input[name="vat_percent"]').val());
 					let vat_amount = parseFloat($('input[name="vat_amount"]').val());
 					let subtotal_amount = parseFloat(
 						$('input[name="subtotal_amount"]').val()
 					);
 					let total_amount = subtotal_amount;
 
-					vat_amount = parseFloat(withVat ? subtotal_amount * (12 / 100) : 0);
+					vat_amount = parseFloat(withVat ? subtotal_amount * vat_percent : 0);
 					total_amount = parseFloat(subtotal_amount + vat_amount);
 
 					$("#attention_to_text").text(attentionTo);

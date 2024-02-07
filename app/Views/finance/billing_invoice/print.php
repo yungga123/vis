@@ -3,15 +3,17 @@
 <?php
 $form_code 			= isset($general_info['billing_invoice_form_code']) && !empty($general_info['billing_invoice_form_code'])
 	? $general_info['billing_invoice_form_code'] : COMPANY_BILLING_INVOICE_FORM_CODE;
+$vat_percent 		= floatval($general_info['vat_percent'] ?? 12);
+$vat_percent 		= $vat_percent / 100;
 $subtotal_amount	= $billing_invoice['billing_amount'] ?? 0;
 $with_vat 			= ($billing_invoice['with_vat'] ?? 0) != '0';
-$vat_amount			= $with_vat ? $subtotal_amount * (12/100) : 0;
+$vat_amount			= $with_vat ? $subtotal_amount * $vat_percent : 0;
 $total_amount		= $subtotal_amount + $vat_amount;
 ?>
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-6">
-			<img src="<?= $general_info['company_logo'] ?? '' ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
+			<img src="<?= $company_info['company_logo'] ?? '' ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
 		</div>
         <div class="col-1"></div>
         <div class="col-5">
@@ -68,10 +70,10 @@ $total_amount		= $subtotal_amount + $vat_amount;
             <table class="table table-bordered table-sm" style="font-size: 15px">
                 <tbody>
                     <tr class="text-center text-uppercase text-bold">
-                        <td><?= $general_info['company_name'] ?></td>
+                        <td><?= $company_info['company_name'] ?></td>
                     </tr>
                     <tr class="text-center">
-                        <td><?= $general_info['company_address'] ?></td>
+                        <td><?= $company_info['company_address'] ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -128,7 +130,7 @@ $total_amount		= $subtotal_amount + $vat_amount;
                         <td class="text-bold text-center text-danger" colspan="5">***Nothing Follows***</td>
                     </tr>
                     <tr>
-                        <td class="text-bold text-right" colspan="4">Sub Total (Vat Exlusive)</td>
+                        <td class="text-bold text-right" colspan="4">Sub Total (Vat Exclusive)</td>
                         <td class="text-right subtotal_amount">
 							₱ <?= number_format($subtotal_amount, 2) ?>
 						</td>
@@ -170,19 +172,27 @@ $total_amount		= $subtotal_amount + $vat_amount;
 							<tbody>
 								<tr>
 									<td>Bank Account Name:</td>
-									<td class="text-bold">Vinculum Technologies Corporation</td>
+									<td class="text-bold">
+										<?= $company_info['company_bank_account_name'] ?? COMPANY_NAME ?>
+									</td>
 								</tr>
 								<tr>
 									<td>Account Number:</td>
-									<td class="text-bold">00000-3960-1591</td>
+									<td class="text-bold">
+										<?= $company_info['company_bank_account_number'] ?? '00000-3960-1591' ?>
+									</td>
 								</tr>
 								<tr>
 									<td>Bank Name:</td>
-									<td class="text-bold">Security Bank</td>
+									<td class="text-bold">
+										<?= $company_info['company_bank_name'] ?? 'Security Bank' ?>
+									</td>
 								</tr>
 								<tr>
 									<td>Branch:</td>
-									<td class="text-bold">BF Paranaque-Aguirre Branch</td>
+									<td class="text-bold">
+										<?= $company_info['company_bank_branch'] ?? 'BF Paranaque-Aguirre Branch' ?>
+									</td>
 								</tr>
 							</tbody>
 						</table>
@@ -260,6 +270,7 @@ $total_amount		= $subtotal_amount + $vat_amount;
 								</label>
 							</div>
 							<input type="hidden" name="id" value="<?= $billing_invoice['id'] ?>">
+							<input type="hidden" name="vat_percent" value="<?= $vat_percent ?>">
 							<input type="hidden" name="vat_amount" value="<?= $vat_amount ?>">
 							<input type="hidden" name="subtotal_amount" value="<?= $subtotal_amount ?>">
 							<input type="hidden" name="total_amount" value="<?= $total_amount ?>">
