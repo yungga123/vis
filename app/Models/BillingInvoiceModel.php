@@ -199,6 +199,25 @@ class BillingInvoiceModel extends Model
     }
 
     /**
+     * Check overdue billing invoices
+     */
+    public function checkOverdues()
+    {
+        $self       = clone $this;
+        $overdues   = $this->select('id')
+            ->where("DATE_FORMAT(due_date, '%Y-%m-%d') <", current_date())
+            ->where('billing_status', 'pending')
+            ->findAll(100);
+
+        if (! empty($overdues)) {
+            $ids    = format_results($overdues, 'id', '', true);
+            $data   = ['billing_status' => 'overdue'];
+
+            $self->set($data)->whereIn('id', $ids)->update();
+        }
+    }
+
+    /**
      * For dataTables
      */
     public function noticeTable($request) 
@@ -248,17 +267,30 @@ class BillingInvoiceModel extends Model
     public function buttons($permissions)
     {
         $id         = $this->primaryKey;
-        $closureFun = function($row) use($id, $permissions) {
-            $buttons = dt_button_actions($row, $id, $permissions, false);
+        $dropdown   = false;
+        $closureFun = function($row) use($id, $permissions, $dropdown) {
+            $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
+
+            if (in_array($row['billing_status'], ['pending', 'overdue'])) {
+                $onclick = <<<EOF
+                    onclick="edit({$row[$id]}, '{$row['billing_status']}')" title="Mark as Paid"
+                EOF;
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? 'Mark as Paid' : '',
+                    'button'    => 'btn-success',
+                    'icon'      => 'fas fa-ruble-sign',
+                    'condition' => $onclick,
+                ], $dropdown);
+            }
 
             if (check_permissions($permissions, 'PRINT')) {
                 $print_url = url_to('finance.billing_invoice.print', $row[$id]);
                 $buttons .= <<<EOF
-                    <a href="$print_url" class="btn btn-success btn-sm" target="_blank"><i class="fas fa-print"></i></a>
+                    <a href="$print_url" class="btn btn-dark btn-sm" target="_blank"><i class="fas fa-print"></i></a>
                 EOF;
             }
 
-            return $buttons;
+            return dt_buttons_dropdown($buttons);
         };
         
         return $closureFun;

@@ -667,14 +667,19 @@ if (! function_exists('format_results'))
      * @param array $result     The array/result to format
      * @param string $key       The key name of the key - eg. $value['key']
      * @param string $val       The key name of the value - eg. $value['value']
+     * @param bool $single      Whether to return single array only
      */
-	function format_results(array $result, string $key = 'key', string $val = 'value'): array
+	function format_results(array $result, string $key = 'key', string $val = 'value', $single = false): array
 	{
         $arr = [];
 
         if (! empty($result)) {
             foreach ($result as $_key => $value) {
-                $arr[$value[$key]] = empty($val) ? $value : $value[$val];
+                if ($single) {
+                    $arr[] = $value[$key];
+                } else {
+                    $arr[$value[$key]] = empty($val) ? $value : $value[$val];
+                }                
             }
         }
 

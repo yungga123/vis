@@ -69,6 +69,21 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 
+	/* Form for saving data */
+	formSubmit($("#form_billing_invoice"), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+		const elems = [
+			"billing_invoice_overdue_interest_per_day",
+			"billing_invoice_overdue_interest_per_month",
+		];
+
+		if (res.status !== STATUS.ERROR) {
+			notifMsgSwal(res.status, message, res.status);
+		}
+
+		showAlertInForm(elems, message, res.status);
+	});
+
 	$("#company_logo").on("change", function (e) {
 		if (!isEmpty($(this).val())) {
 			const preview = $("#preview_logo");

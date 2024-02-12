@@ -5,6 +5,9 @@
             <form id="billing_invoice_form" class="with-label-indicator" action="<?= url_to('finance.billing_invoice.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="id" name="id" readonly>
+                <input type="hidden" id="billing_status" name="billing_status" readonly>
+                <input type="hidden" id="days_overdue" name="days_overdue" readonly>
+                <input type="hidden" id="overdue_amount" name="overdue_amount" readonly>
                 <div class="modal-header">
                     <h5 class="modal-title">Create Billing Invoice</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -44,15 +47,6 @@
                                 </select>
                                 <small id="alert_payment_method" class="text-danger"></small>
                             </div>
-                            <div class="form-group">
-                                <label class="required" for="billing_status">Billing Status</label>
-                                <select class="form-control" name="billing_status" id="billing_status" style="width: 100%;" required>
-                                    <?php foreach (get_billing_status() as $val => $text): ?>
-                                        <option value="<?= $val ?>"><?= $text ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <small id="alert_billing_status" class="text-danger"></small>
-                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -65,10 +59,15 @@
                                 <input type="number" class="form-control" name="billing_amount" id="billing_amount" placeholder="Billing Amount" step="0.01">
                                 <small id="alert_billing_amount" class="text-danger"></small>
                             </div>
-                            <div class="form-group amount_paid">
+                            <div class="form-group amount_paid d-none">
                                 <label for="amount_paid">Amount Paid</label>
                                 <input type="number" class="form-control" name="amount_paid" id="amount_paid" placeholder="Amount Paid" step="0.01">
                                 <small id="alert_amount_paid" class="text-danger"></small>
+
+                                <div class="custom-control custom-checkbox mt-2 with_interest-checkbox">
+                                    <input class="custom-control-input" type="checkbox" name="with_interest" id="with_interest" value="1">
+                                    <label for="with_interest" class="custom-control-label not-include">With Interest<span></span>?</label>
+                                </div>
                             </div>
                         </div>
                     </div>

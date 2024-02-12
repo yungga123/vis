@@ -27,8 +27,12 @@ $(document).ready(function () {
 		$(`#${modal} .modal-title`).text("Create Billing Invoice");
 		$(`#${form}`)[0].reset();
 		$("#id").val("");
+		$("#billing_status").val("");
+		$("#days_overdue").val("");
+		$("#overdue_amount").val("");
 		$("#orig_tasklead").html("");
 		$(".tasklead-details").html("");
+		$(".form-group.amount_paid").addClass("d-none");
 
 		clearSelect2Selection("#tasklead_id");
 		clearAlertInForm(elems);
@@ -43,6 +47,20 @@ $(document).ready(function () {
 		if ($(this).val() === "paid") {
 			$(".form-group.amount_paid label").addClass("required");
 		}
+	});
+
+	$("#with_interest").on("change", function () {
+		let interest = 0;
+		let billing_amount = parseFloat($("#billing_amount").val());
+
+		if ($(this).is(":checked")) {
+			interest = parseFloat($("#overdue_amount").val());
+		}
+
+		$("#amount_paid").val(billing_amount + interest);
+		$(".with_interest-checkbox label > span").html(
+			interest ? ` (${numberFormat(interest)})` : ""
+		);
 	});
 
 	/* Form for saving record */
@@ -96,12 +114,28 @@ function filterData(reset = false) {
 }
 
 /* Get record details */
-function edit(id) {
+function edit(id, billing_status) {
+	let title = "Edit Billing Invoice";
+
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Billing Invoice");
 	$("#id").val(id);
+	$("#billing_status").val("");
+	$("#days_overdue").val("");
+	$("#overdue_amount").val("");
 	$("#orig_tasklead").html("");
 	$(".tasklead-details").html("");
+	$(".form-group.amount_paid").removeClass("d-none");
+	$(".form-group.amount_paid label:first-child").removeClass("required");
+
+	if (billing_status && billing_status != "paid") {
+		title = "Mark Billing Invoice as PAID";
+
+		$("#billing_status").val("paid");
+		$(".form-group.amount_paid label:first-child").addClass("required");
+	}
+
+	$(`#${modal} .modal-title`).text(title);
 
 	clearAlertInForm(elems);
 	clearSelect2Selection("#tasklead_id");
@@ -118,19 +152,33 @@ function edit(id) {
 					type: res.data.type,
 				};
 
+				$("#due_date").val(res.data.due_date);
+				$("#billing_amount").val(res.data.billing_amount);
+				$("#amount_paid").val(
+					billing_status ? res.data.billing_amount : res.data.amount_paid
+				);
+				$("#days_overdue").val(res.data.days_overdue || "");
+				$("#overdue_amount").val(res.data.overdue_amount || "");
+				$("#orig_tasklead").html(
+					`Original Task/Lead: <strong>${text}</strong>`
+				);
+
 				setSelect2AjaxSelection("#tasklead_id", text, res.data.tasklead_id);
 				setTimeout(() => _loadTaskleadDetails(data), 200);
 
 				setOptionValue("#bill_type", res.data.bill_type);
 				setOptionValue("#payment_method", res.data.payment_method);
-				setOptionValue("#billing_status", res.data.billing_status);
 
-				$("#orig_tasklead").html(
-					`Original Task/Lead: <strong>${text}</strong>`
-				);
-				$("#due_date").val(res.data.due_date);
-				$("#billing_amount").val(res.data.billing_amount);
-				$("#amount_paid").val(res.data.amount_paid);
+				if (!billing_status && res.data.billing_status !== "paid") {
+					$(".form-group.amount_paid").addClass("d-none");
+				}
+
+				if (res.data.billing_status === "paid") {
+					$(".form-group.amount_paid label:first-child").addClass("required");
+					$("#billing_status").val(res.data.billing_status);
+					$("#amount_paid").val(res.data.billing_amount);
+				}
+
 				$(`#${modal}`).modal("show");
 			}
 		}

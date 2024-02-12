@@ -11,8 +11,11 @@
         <div class="col-12">
             <?= $this->include('settings/general_info/company'); ?>
         </div>
-        <div class="col-sm-12 col-md-5">
+        <div class="col-sm-12 col-md-4">
             <?= $this->include('settings/general_info/form_codes'); ?>
+        </div>
+        <div class="col-sm-12 col-md-4">
+            <?= $this->include('settings/general_info/billing_invoice'); ?>
         </div>
     </div>
 </div>
