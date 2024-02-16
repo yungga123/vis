@@ -1,6 +1,5 @@
 $(document).ready(function () {
 	const initialValAttentionTo = $("#attention_to").val();
-	const initialValWithVat = $("#form_with_vat").is(":checked");
 
 	$("#print_billing_modal").modal("show");
 
@@ -8,13 +7,8 @@ $(document).ready(function () {
 		e.preventDefault();
 
 		const attentionTo = $("#attention_to").val();
-		const withVat = $("#form_with_vat").is(":checked");
 
-		if (
-			!isEmpty(attentionTo) &&
-			attentionTo == initialValAttentionTo &&
-			withVat == initialValWithVat
-		) {
+		if (!isEmpty(attentionTo) && attentionTo == initialValAttentionTo) {
 			$("#print_billing_modal").modal("hide");
 			toggleWindowPrint();
 			return;
@@ -32,19 +26,7 @@ $(document).ready(function () {
 				const message = res.errors ?? res.message;
 
 				if (res.status !== STATUS.ERROR) {
-					let vat_percent = parseFloat($('input[name="vat_percent"]').val());
-					let vat_amount = parseFloat($('input[name="vat_amount"]').val());
-					let subtotal_amount = parseFloat(
-						$('input[name="subtotal_amount"]').val()
-					);
-					let total_amount = subtotal_amount;
-
-					vat_amount = parseFloat(withVat ? subtotal_amount * vat_percent : 0);
-					total_amount = parseFloat(subtotal_amount + vat_amount);
-
 					$("#attention_to_text").text(attentionTo);
-					$("td.vat_amount span").html(numberFormat(vat_amount));
-					$("td.total_amount span").html(numberFormat(total_amount));
 					$("#print_billing_modal").modal("hide");
 
 					toggleWindowPrint();

@@ -29,12 +29,14 @@ class FinanceExportService extends ExportService
             {$tlVModel->table}.tasklead_type AS quotation_type,
             ".dt_sql_date_format("{$model->table}.due_date")." AS due_date,
             {$model->table}.bill_type,
-            ".dt_sql_number_format("{$model->table}.billing_amount")." AS billing_amount,
-            ".dt_sql_number_format("{$model->table}.amount_paid")." AS amount_paid,
             {$model->table}.payment_method,
+            ".dt_sql_number_format("{$model->table}.billing_amount")." AS billing_amount,
+            ".dt_sql_number_format("{$model->table}.overdue_interest")." AS overdue_interest,
+            ".dt_sql_number_format("{$model->table}.amount_paid")." AS amount_paid,
             ".dt_sql_datetime_format("{$model->table}.paid_at")." AS paid_at,
             {$model->table}.attention_to,
             IF({$model->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
+            ".dt_sql_number_format("{$model->table}.vat_amount")." AS vat_amount,
             cb.employee_name AS created_by,
             ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at
         ";
@@ -62,12 +64,14 @@ class FinanceExportService extends ExportService
             'Quotation Type',
             'Due Date',
             'Bill Type',
-            'Billing Amount',
-            'Amount Paid',
             'Payment Method',
+            'Billing Amount',
+            'Overdue Interest',
+            'Amount Paid',
             'Paid At',
             'Attention To',
             'With Vat?',
+            'Vat Amount',
             'Created By',
             'Created At'
         ];

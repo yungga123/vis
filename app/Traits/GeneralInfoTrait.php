@@ -138,4 +138,19 @@ trait GeneralInfoTrait
     {
         return $this->rootDirPath . $this->initialFilePathLogo;
     }
+
+    /**
+     * Get vat percent
+     *
+     * @return float    The current vat percent
+     */
+    public function getVatPercent(bool $decimal = true)
+    {
+        $percent = floatval($this->getGeneralInfo('vat_percent', true) ?? 12);
+        $percent = empty($percent) ? 12 : $percent; // Default value is 12% VAT.
+
+        if (! $decimal) return $percent;
+
+        return $percent / 100;
+    }
 }

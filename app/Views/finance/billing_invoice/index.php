@@ -55,12 +55,14 @@
                                 <th>Quotation Type</th>
                                 <th>Due Date</th>
                                 <th>Bill Type</th>
-                                <th>Billing Amount</th>
                                 <th>Payment Method</th>
+                                <th>Billing Amount</th>
+                                <th>Overdue Interest</th>
                                 <th>Amount Paid</th>
                                 <th>Paid At</th>
                                 <th>Attention To</th>
                                 <th>With Vat?</th>
+                                <th>Vat Amount</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
                             </tr>

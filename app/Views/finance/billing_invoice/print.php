@@ -3,12 +3,14 @@
 <?php
 $form_code 			= isset($general_info['billing_invoice_form_code']) && !empty($general_info['billing_invoice_form_code'])
 	? $general_info['billing_invoice_form_code'] : COMPANY_BILLING_INVOICE_FORM_CODE;
+$overdue_interest	= $billing_invoice['overdue_interest'] ?? 0;
 $vat_percent 		= floatval($general_info['vat_percent'] ?? 12);
 $vat_percent 		= $vat_percent / 100;
 $subtotal_amount	= $billing_invoice['billing_amount'] ?? 0;
 $with_vat 			= ($billing_invoice['with_vat'] ?? 0) != '0';
 $vat_amount			= $with_vat ? $subtotal_amount * $vat_percent : 0;
-$total_amount		= $subtotal_amount + $vat_amount;
+$vat_amount1		= $subtotal_amount * $vat_percent;
+$total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
 ?>
 <div class="container-fluid">
 	<div class="row">		
@@ -20,7 +22,9 @@ $total_amount		= $subtotal_amount + $vat_amount;
             <table class="table table-bordered table-sm" style="font-size: 15px">
                 <tbody>
                     <tr class="text-bold text-center">
-                        <td colspan="2">BILLING INVOICE</td>
+                        <td colspan="2">
+							BILLING INVOICE - <?= strtoupper($billing_invoice['billing_status']) ?>
+						</td>
                     </tr>
                     <tr class="text-bold text-center">
                         <td colspan="2">
@@ -141,12 +145,28 @@ $total_amount		= $subtotal_amount + $vat_amount;
 							₱ <span><?= number_format($vat_amount, 2) ?></span>
 						</td>
                     </tr>
+					<?php if (! empty(floatval($overdue_interest))): ?>
+						<tr>
+							<td class="text-bold text-right" colspan="4">Overdue Interest</td>
+							<td class="text-right overdue_interest">
+								₱ <span><?= number_format($overdue_interest, 2) ?></span>
+							</td>
+						</tr>
+					<?php endif; ?>
                     <tr>
                         <td class="text-bold text-right" colspan="4">Amount Due</td>
                         <td class="text-right total_amount">
 							₱ <span><?= number_format($total_amount, 2) ?></span>
 						</td>
                     </tr>
+					<?php if (! empty(floatval($billing_invoice['amount_paid']))): ?>
+						<tr>
+							<td class="text-bold text-right" colspan="4">Amount Less</td>
+							<td class="text-right overdue_interest">
+								₱ <span><?= number_format($billing_invoice['amount_paid'], 2) ?></span>
+							</td>
+						</tr>
+					<?php endif; ?>
                     <tr style="font-size: 17px">
                         <td class="text-bold text-right" colspan="4">Grand Total Vat Inclusive</td>
                         <td class="text-right total_amount">
@@ -252,29 +272,12 @@ $total_amount		= $subtotal_amount + $vat_amount;
             </div>
 			<form id="print_billing_form" class="with-label-indicator" action="<?= url_to('finance.billing_invoice.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
+				<input type="hidden" id="id" name="id" value="<?= $billing_invoice['id'] ?>" readonly>
 				<div class="modal-body">
-					<div class="row">
-						<div class="col-9">
-							<div class="form-group">
-								<label class="required" for="attention_to">Attention to:</label>
-								<input type="text" class="form-control" id="attention_to" name="attention_to" placeholder="Ex: Mr. / Ms. / Mrs. Antonette" value="<?= $billing_invoice['attention_to'] ?? '' ?>" required>
-								<small id="alert_attention_to" class="text-danger"></small>
-							</div>
-						</div>
-						<div class="col-3">
-							<label for="form_with_vat">With Vat?</label>
-							<div class="form-check">
-								<label class="form-check-label">
-									<input type="checkbox" class="form-check-input" id="form_with_vat" name="with_vat" value="yes" <?= $with_vat ? 'checked' : '' ?>>
-									Vat 12%
-								</label>
-							</div>
-							<input type="hidden" name="id" value="<?= $billing_invoice['id'] ?>">
-							<input type="hidden" name="vat_percent" value="<?= $vat_percent ?>">
-							<input type="hidden" name="vat_amount" value="<?= $vat_amount ?>">
-							<input type="hidden" name="subtotal_amount" value="<?= $subtotal_amount ?>">
-							<input type="hidden" name="total_amount" value="<?= $total_amount ?>">
-						</div>
+					<div class="form-group">
+						<label class="required" for="attention_to">Attention to:</label>
+						<input type="text" class="form-control" id="attention_to" name="attention_to" placeholder="Ex: Mr. / Ms. / Mrs. Antonette" value="<?= $billing_invoice['attention_to'] ?? '' ?>" required>
+						<small id="alert_attention_to" class="text-danger"></small>
 					</div>
 				</div>
 				<div class="modal-footer">

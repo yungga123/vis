@@ -86,6 +86,7 @@ class BillingInvoice extends BaseController
         ]);
         $data['php_to_js_options'] = json_encode([
             'overdue_interests' => $this->_overdueInterests(),
+            'vat_percent'       => $this->getVatPercent(),
         ]);
 
         // Check overdue billing invoices
@@ -114,12 +115,14 @@ class BillingInvoice extends BaseController
             'quotation_type',
             'due_date',
             'bill_type',
-            'billing_amount',
             'payment_method',
+            'billing_amount',
+            'overdue_interest',
             'amount_paid',
             'paid_at',
             'attention_to',
             'with_vat',
+            'vat_amount',
             'created_by',
             'created_at',
         ];
@@ -163,6 +166,7 @@ class BillingInvoice extends BaseController
             function($data) {
                 $id             = $this->request->getVar('id');
                 $request        = $this->request->getVar();
+                $with_vat       = ($request['with_vat'] ?? 0) == 1;
                 $inputs         = [
                     'id'                => $id,
                     'tasklead_id'       => $request['tasklead_id'] ?? null,
@@ -171,6 +175,10 @@ class BillingInvoice extends BaseController
                     'payment_method'    => $request['payment_method'] ?? null,
                     'billing_amount'    => $request['billing_amount'] ?? null,
                     'amount_paid'       => $request['amount_paid'] ?? null,
+                    'with_vat'          => $with_vat,
+                    'vat_amount'        => $with_vat ? ($request['vat_amount'] ?? null) : null,
+                    'grand_total'       => $request['grand_total'] ?? null,
+                    'overdue_interest'  => $request['overdue_interest'] ?? null,
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
 
@@ -178,18 +186,25 @@ class BillingInvoice extends BaseController
                     $inputs     = [
                         'id'            => $id,
                         'attention_to'  => $request['attention_to'] ?? null,
-                        'with_vat'      => ($request['with_vat'] ?? 'no') == 'yes',
                     ];
                 } else {
                     $this->checkRoleActionPermissions($this->_module_code, $action, true);
                     $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
 
-                    if (compare_dates($request['due_date'], current_date(), '<')) {
+                    $overdues = $this->_checkNCalculateOverdues($request['billing_amount'], $request['due_date']);
+
+                    if (! empty($overdues) && empty($id)) {
                         $inputs['billing_status']   = 'overdue';
+                        $inputs['overdue_interest'] = 0;
+                    }
+
+                    if (empty($request['with_interest'] ?? null)) {             
+                        $inputs['overdue_interest'] = 0;
                     }
 
                     if (($request['billing_status'] ?? '') === 'paid') {
                         $inputs['billing_status']   = 'paid';
+                        $inputs['paid_by']          = session('username');
                         $inputs['paid_at']          = current_datetime();
     
                         $this->_model->makeAmountPaidRequired();
@@ -203,8 +218,11 @@ class BillingInvoice extends BaseController
                             'billing_invoiced_id'   => $id,
                             'current_funds'         => $this->getCompanyFunds(),
                             'transaction_amount'    => $request['amount_paid'],
+                            'transaction_type'      => 'incoming',
                             'coming_from'           => 'Billing Invoice',
                         ]); 
+                    } else {
+                        $inputs['amount_paid'] = 0;
                     }
                 }
     
@@ -241,15 +259,12 @@ class BillingInvoice extends BaseController
             function($data) {
                 $id         = $this->request->getVar('id');
                 $record     = $this->_model->fetch($id, true);
+                $compare_to = $record['billing_status'] === 'paid' ? $record['paid_at'] : null;
 
-                if (compare_dates($record['due_date'], current_date(), '<')) {
-                    $interval       = get_date_diff($record['due_date'], current_date());
-                    $days_overdue   = $interval->days;
-                    $interest       = $this->_overdueInterests()['per_day'];
-                    $billing_amount = $record['billing_amount'];
+                $overdues = $this->_checkNCalculateOverdues($record['billing_amount'], $record['due_date'], $compare_to);
 
-                    $record['days_overdue']     = $days_overdue;
-                    $record['overdue_amount']   = $billing_amount * $interest;
+                if (! empty($overdues)) {                        
+                    $record['days_overdue']   = $overdues['days'];
                 }
 
                 $data['data'] = $record;
@@ -279,7 +294,7 @@ class BillingInvoice extends BaseController
                 $id = $this->request->getVar('id');
 
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-                $this->checkRecordRestrictionViaStatus($id, $this->_model);
+                $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
@@ -305,28 +320,10 @@ class BillingInvoice extends BaseController
         
         $tlVModel   = new TaskLeadView();
         $custModel  = new CustomerModel();
-        $columns    = "
-            {$this->_model->table}.id,
-            {$this->_model->table}.tasklead_id,
-            {$this->_model->table}.due_date,
-            {$this->_model->table}.bill_type,
-            {$this->_model->table}.billing_amount,
-            {$this->_model->table}.billing_status,
-            {$this->_model->table}.payment_method,
-            {$this->_model->table}.amount_paid,
-            {$this->_model->table}.paid_at,
-            {$this->_model->table}.attention_to,
-            {$this->_model->table}.with_vat,
-            {$this->_model->table}.created_at,
-            {$tlVModel->table}.quotation_num AS quotation,
-            {$tlVModel->table}.customer_id AS client_id,
-            {$tlVModel->table}.customer_name AS client,
-            {$tlVModel->table}.employee_name AS manager,
-            {$tlVModel->table}.tasklead_type AS quotation_type,
-            {$tlVModel->table}.project,
-            {$tlVModel->table}.project_amount,
+        $columns    = $this->_model->columns(true) . ",
             cb.employee_name AS created_by,
             cb.position AS created_by_position,
+            {$tlVModel->table}.customer_id AS client_id,
             ".dt_sql_concat_client_address('', 'client_address')."
         ";
         $builder                = $this->_model->select($columns);
@@ -355,6 +352,7 @@ class BillingInvoice extends BaseController
         $data['company_info']   = $this->getCompanyInfo($info);
         $data['title']          = 'Print Billing Invoice';
         $data['disable_auto_print'] = true;
+        $data['sweetalert2']    = true;
         $data['custom_js']      = [
             'initialize.js',
             'functions.js',
@@ -369,7 +367,7 @@ class BillingInvoice extends BaseController
      *
      * @return array
      */
-    public function _overdueInterests() 
+    private function _overdueInterests() 
     {
         $keys   = [
             'billing_invoice_overdue_interest_per_day',
@@ -380,6 +378,28 @@ class BillingInvoice extends BaseController
             'per_day'   => (isset($arr[$keys[0]]) && $arr[$keys[0]] ? $arr[$keys[0]] : 0.23) / 100,
             'per_month' => (isset($arr[$keys[1]]) && $arr[$keys[1]] ? $arr[$keys[1]] : 7) / 100,
         ];
+        
+        return $arr;
+    }
+
+    /**
+     * Get overdue interests
+     *
+     * @return array
+     */
+    private function _checkNCalculateOverdues($billing_amount, $overdue_date, $compare_to = null) 
+    {
+        $arr        = [];
+        $compare_to ??= current_date();
+
+        if (compare_dates($overdue_date, $compare_to, '<')) {
+            $interval       = get_date_diff($overdue_date, $compare_to);
+            $days_overdue   = $interval->days;
+            $interest       = $this->_overdueInterests()['per_day'];
+
+            $arr['days']    = $days_overdue;
+            $arr['amount']  = $billing_amount * $interest;
+        }
         
         return $arr;
     }

@@ -28,8 +28,12 @@ class BillingInvoiceModel extends Model
         'payment_method',
         'amount_paid',
         'paid_at',
+        'paid_by',
         'attention_to',
         'with_vat',
+        'vat_amount',
+        'overdue_interest',
+        'grand_total',
     ];
 
     // Dates
@@ -42,23 +46,23 @@ class BillingInvoiceModel extends Model
     // Validation
     protected $validationRules      = [
         'tasklead_id'     => [
-            'rules' => 'required',
+            'rules' => 'if_exist|required',
             'label' => 'task lead',
         ],
         'due_date'     => [
-            'rules' => 'required',
+            'rules' => 'if_exist|required',
             'label' => 'due date',
         ],
         'bill_type'   => [
-            'rules' => 'required',
+            'rules' => 'if_exist|required',
             'label' => 'bill type',
         ],
         'billing_amount'   => [
-            'rules' => 'required|numeric',
+            'rules' => 'if_exist|required|numeric',
             'label' => 'billing amount',
         ],
         'payment_method'   => [
-            'rules' => 'required',
+            'rules' => 'if_exist|required',
             'label' => 'payment method',
         ],
         'amount_paid'   => [
@@ -131,6 +135,9 @@ class BillingInvoiceModel extends Model
             {$this->table}.paid_at,
             {$this->table}.attention_to,
             {$this->table}.with_vat,
+            {$this->table}.vat_amount,
+            {$this->table}.overdue_interest,
+            {$this->table}.grand_total,
             {$this->table}.created_by,
             {$this->table}.created_at
         ";
@@ -234,12 +241,14 @@ class BillingInvoiceModel extends Model
             ".dt_sql_date_format("{$this->table}.due_date")." AS due_date,
             {$this->table}.bill_type,
             ".dt_sql_number_format("{$this->table}.billing_amount")." AS billing_amount,
+            ".dt_sql_number_format("{$this->table}.overdue_interest")." AS overdue_interest,
             {$this->table}.billing_status,
             {$this->table}.payment_method,
             ".dt_sql_number_format("{$this->table}.amount_paid")." AS amount_paid,
             ".dt_sql_datetime_format("{$this->table}.paid_at")." AS paid_at,
             {$this->table}.attention_to,
             IF({$this->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
+            ".dt_sql_number_format("{$this->table}.vat_amount")." AS vat_amount,
             cb.employee_name AS created_by,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
         ";
