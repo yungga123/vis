@@ -35,13 +35,13 @@ class AddNewFieldsInBillingInvoicesTable extends Migration
                 'constraint' => [18,2],
                 'null' => true,
                 'after' => 'overdue_interest',
-                'comment' => 'billing_amount + vat_amount | not include overdue_interest',
+                'comment' => 'billing_amount + vat_amount + overdue_interest',
             ],
         ]);
     }
 
     public function down()
     {
-        $this->forge->dropColumn(self::TABLE, ['overdue_interest', 'paid_by', 'vat_amount']);
+        $this->forge->dropColumn(self::TABLE, ['overdue_interest', 'paid_by', 'vat_amount', 'grand_total']);
     }
 }
