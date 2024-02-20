@@ -379,9 +379,10 @@ class ProjectRequestFormModel extends Model
                 ], $dropdown);
             }
 
+            $allowedToPrint = ['accepted', 'item_out', 'received', 'filed'];
             if (
                 check_permissions($permissions, 'PRINT') && 
-                in_array($row['status'], ['item_out', 'received', 'filed'])
+                in_array($row['status'], $allowedToPrint)
             ) {
                 // Print PRF
                 $print_url = site_url('prf/print/') . $row[$id];

@@ -182,7 +182,7 @@ function itemDetailsHtml(id, stock, data, action) {
 			? ""
 			: `	
 				<tr>
-					<th>Status:</th>
+					<td class="text-bold">Status:</td>
 					<td>
 						<select name="status_logs" id="status_logs" class="form-control" required>
 							<option value="purchase">Purchase</option>
@@ -191,7 +191,7 @@ function itemDetailsHtml(id, stock, data, action) {
 					</td>
 				</tr>
 				<tr>
-					<th>Status Date:</th>
+					<td class="text-bold">Status Date:</td>
 					<td>
 						<input type="date" class="form-control" name="status_date_logs" id="status_date_logs" required/>
 					</td>
@@ -202,27 +202,31 @@ function itemDetailsHtml(id, stock, data, action) {
 		<table class="table">
 			<tbody>
 				<tr>
-					<th>Item Number:</th>
+					<td class="text-bold">Item Number:</td>
 					<td>${id}</td>
 				</tr>
 				<tr>
-					<th>Item Description:</th>
+					<td class="text-bold">Item Description:</td>
 					<td>${data.item_description}</td>
 				</tr>
 				<tr>
-					<th>Item Brand:</th>
+					<td class="text-bold">Item Size:</td>
+					<td>${data.size || "N/A"}</td>
+				</tr>
+				<tr>
+					<td class="text-bold">Item Brand:</td>
 					<td>${data.brand}</td>
 				</tr>
 				<tr>
-					<th>Item Model:</th>
-					<td>${data.item_model}</td>
+					<td class="text-bold">Item Model:</td>
+					<td>${data.item_model || "N/A"}</td>
 				</tr>
 				<tr>
-					<th>Current Stocks:</th>
+					<td class="text-bold">Current Stocks:</td>
 					<td>${data.stocks}</td>
 				</tr>
 				<tr>
-					<th>Quantity (${strUpper(action)}):</th>
+					<td class="text-bold">Quantity (${strUpper(action)}):</td>
 					<td>
 						<input type="number" class="form-control" name="quantity" id="quantity_logs" placeholder="Quantity here" min="1" max="${max}" onkeyup="checkInputQuantity(this.value, ${stock}, '${action}')" required/>
 						<small id="alert_quantity_logs" class="text-danger"></small>

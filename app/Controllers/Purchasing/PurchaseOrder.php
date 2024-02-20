@@ -389,6 +389,7 @@ class PurchaseOrder extends BaseController
             {$this->_model->table}.supplier_id, 
             {$this->_model->table}.attention_to, 
             {$this->_model->table}.with_vat,
+            {$this->_model->table}.approved_at,
             cb.employee_name AS prepared_by_name,
             ab.employee_name AS approved_by_name
         ";

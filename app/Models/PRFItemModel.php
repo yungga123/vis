@@ -70,6 +70,7 @@ class PRFItemModel extends Model
             {$this->table}.quantity_out,
             {$this->table}.returned_q,
             {$this->table}.returned_date,
+            {$this->table}.remarks,
             ".dt_sql_date_format("{$this->table}.returned_date")." AS returned_date_formatted,
             {$this->queryConsumed()}
         ";
@@ -146,6 +147,7 @@ class PRFItemModel extends Model
         $quantity_outs  = $data['quantity_out'];
         $returned_qs    = isset($data['returned_q']) ? $data['returned_q'] : null;
         $returned_date  = isset($data['returned_date']) ? $data['returned_date'] : null;
+        $remarks        = isset($data['remarks']) ? $data['remarks'] : null;
 
         if (! empty($data) && count($inventory_ids)) {
             $arr = [];
@@ -160,6 +162,7 @@ class PRFItemModel extends Model
                     'quantity_out'  => $quantity_outs[$i],
                     'returned_q'    => $returned_qs ? $returned_qs[$i] : $returned_qs,
                     'returned_date' => $returned_date ? $$returned_date[$i] : $returned_date,
+                    'remarks'       => $remarks ? $remarks[$i] : $remarks,
                 ];
             }
 
@@ -175,6 +178,7 @@ class PRFItemModel extends Model
         $returned_date  = $data['returned_date'];
         $stocks         = $data['stocks'];
         $quantity_out   = $data['quantity_out'];
+        $remarks        = isset($data['remarks']) ? $data['remarks'] : null;
 
         if (! empty($data) && count($inventory_id)) {
             $arr        = [];
@@ -186,6 +190,10 @@ class PRFItemModel extends Model
                     'returned_date' => $returned_date[$i],
                     'quantity_out'  => $quantity_out[$i],
                 ];
+
+                if (! empty($remarks)) {
+                    $arr['remarks'][] = $remarks[$i];
+                }
             }
 
             if (! empty($arr)) {
