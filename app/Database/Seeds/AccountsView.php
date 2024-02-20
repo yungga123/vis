@@ -24,6 +24,8 @@ class AccountsView extends Seeder
                 accounts.access_level,
                 accounts.profile_img,
                 employees.email_address,
+                employees.position,
+                employees.employment_status,
                 CONCAT(emp.firstname,' ',emp.lastname) AS created_by_name,
                 DATE_FORMAT(accounts.created_at, '%b %e, %Y at %h:%i %p') AS created_at,
                 accounts.deleted_at

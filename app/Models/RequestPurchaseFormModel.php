@@ -209,6 +209,18 @@ class RequestPurchaseFormModel extends Model
        $this->joinView($builder);
 
        $this->filterParam($request, $builder, "{$this->table}.status");
+        
+       $start_date = $request['params']['start_date'] ?? '';
+       $end_date   = $request['params']['end_date'] ?? '';
+
+       if (! empty($start_date) && ! empty($end_date)) {
+           $start_date = format_date($start_date, 'Y-m-d');
+           $end_date   = format_date($end_date, 'Y-m-d');
+           $between    = "{$this->table}.date_needed BETWEEN '%s' AND '%s'";
+
+           $builder->where(sprintf($between, $start_date, $end_date));
+       }
+
 
        $builder->where("{$this->table}.deleted_at", null);
        $builder->orderBy("{$this->table}.id", 'DESC');

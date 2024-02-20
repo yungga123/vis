@@ -6,6 +6,7 @@ $(document).ready(function () {
 	form = "salary_rate_form";
 	elems = ["employee_id", "salary_rate", "rate_type"];
 
+	select2Init("#filter_employee_status");
 	select2Init("#filter_rate_type");
 
 	$("#btn_add_record").on("click", function () {
@@ -47,18 +48,23 @@ $(document).ready(function () {
 
 /* For filtering and reseting */
 function filterData(reset = false) {
+	const employee_status = getSelect2Selection("#filter_employee_status");
 	const rate_type = getSelect2Selection("#filter_rate_type");
 	const params = {
+		employee_status: employee_status,
 		rate_type: rate_type,
 	};
-	const condition = !isEmpty(rate_type);
+	const condition = !isEmpty(employee_status) || !isEmpty(rate_type);
 
 	filterParam(
 		router.salary_rate.list,
 		table,
 		params,
 		condition,
-		() => clearSelect2Selection("#filter_rate_type"),
+		() => {
+			clearSelect2Selection("#filter_employee_status");
+			clearSelect2Selection("#filter_rate_type");
+		},
 		reset
 	);
 }

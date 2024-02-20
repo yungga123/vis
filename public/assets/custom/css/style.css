@@ -11,6 +11,14 @@ form.with-label-indicator .form-group label.required::after {
 	color: red;
 }
 
+form.with-label-indicator .form-group label.not-include:first-child::after {
+	content: "";
+}
+
+form.with-label-indicator .form-group label.not-include::after {
+	content: "";
+}
+
 .dataTables_wrapper .table,
 .dataTables_scrollHead .dataTables_scrollHeadInner {
 	width: 100% !important;

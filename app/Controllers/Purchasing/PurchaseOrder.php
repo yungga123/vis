@@ -415,11 +415,20 @@ class PurchaseOrder extends BaseController
             {$rpfModel->view}.created_by_name  AS requested_by
         ";
 
+        // Get general info
+        $keys = [
+            'vat_percent',
+            'purchase_order_form_code',
+        ];
+        $keys = array_merge($this->getCompanyInfo([], true), $keys);
+        $info = $this->getGeneralInfo($keys, true);
+
         $data['purchase_order'] = $purchase_order;
         $data['supplier']       = $supplier;
         $data['items']          = $items;
         $data['rpf']            = $rpfModel->getRequestPurchaseForms($purchase_order['rpf_id'], true, $rpfColumns);
-        $data['general_info']   = $this->getCompanyInfo();
+        $data['general_info']   = $info;
+        $data['company_info']   = $this->getCompanyInfo($info);
         $data['title']          = 'Generate Purchase Order';
         $data['disable_auto_print'] = true;
         $data['custom_js']      = [

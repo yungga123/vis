@@ -2,7 +2,9 @@
 <?=$this->section('content');?>
 <?php
 $form_code 			= isset($general_info['purchase_order_form_code']) && !empty($general_info['purchase_order_form_code'])
-	? $general_info['purchase_order_form_code'] : COMPANY_PO_FORM_CODE;
+	? $general_info['purchase_order_form_code'] : COMPANY_PURCHASE_ORDER_FORM_CODE;
+$vat_percent 		= floatval($general_info['vat_percent'] ?? 12);
+$vat_percent 		= $vat_percent / 100;
 $total_amount		= 0;
 $net_of_vat_amount	= 0;
 $vat_amount			= 0;
@@ -12,7 +14,7 @@ $approved_at 		= $purchase_order['approved_at'];
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-6">
-			<img src="<?= $general_info['company_logo'] ?? '' ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
+			<img src="<?= $company_info['company_logo'] ?? '' ?>" alt="Vinculum Logo" class="img-thumbnail mb-4" style="height: 120px; width: 380px">
 		</div>
         <div class="col-3"></div>
         <div class="col-3">
@@ -70,10 +72,10 @@ $approved_at 		= $purchase_order['approved_at'];
             <table class="table table-bordered table-sm" style="font-size: 15px">
                 <tbody>
                     <tr class="text-center text-uppercase text-bold">
-                        <td><?= $general_info['company_name'] ?></td>
+                        <td><?= $company_info['company_name'] ?></td>
                     </tr>
                     <tr class="text-center">
-                        <td><?= $general_info['company_address'] ?></td>
+                        <td><?= $company_info['company_address'] ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -148,7 +150,7 @@ $approved_at 		= $purchase_order['approved_at'];
 						// Computation of initial total amount, net of vat and vat amount
 						$total_amount		= $sub_total;
 						$net_of_vat_amount	= $sub_total / 1.12;
-						$vat_amount			= $net_of_vat_amount * .12; // 12% vat
+						$vat_amount			= $net_of_vat_amount * $vat_percent; // 12% vat
 					}
 					?>
 					<tr>

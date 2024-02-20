@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\FilterParamTrait;
 
 class DispatchModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'dispatch';
     protected $view             = 'dispatch_view';
@@ -162,6 +166,7 @@ class DispatchModel extends Model
     {      
         $builder ?? $builder = $this;
         $builder->join($this->view, "{$this->table}.id = {$this->view}.dispatch_id", $type);
+
         return $this;
     }
 
@@ -170,6 +175,7 @@ class DispatchModel extends Model
     {      
         $model ?? $model = new ScheduleModel();
         $builder->join($model->table, "{$this->table}.schedule_id = {$model->table}.id", $type);
+
         return $this;
     }
     
@@ -196,6 +202,19 @@ class DispatchModel extends Model
         // Join with other tables
         $this->joinView($builder);
         $this->joinSchedule($builder);
+
+        $this->filterParam($request, $builder, 'service_type', 'service_type');
+        
+        $start_date = $request['params']['start_date'] ?? '';
+        $end_date   = $request['params']['end_date'] ?? '';
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $start_date = format_date($start_date, 'Y-m-d');
+            $end_date   = format_date($end_date, 'Y-m-d');
+            $between    = "{$this->table}.dispatch_date BETWEEN '%s' AND '%s'";
+
+            $builder->where(sprintf($between, $start_date, $end_date));
+        }
 
         $builder->where("{$this->table}.deleted_at IS NULL");
         $builder->orderBy("{$this->table}.id", 'DESC');

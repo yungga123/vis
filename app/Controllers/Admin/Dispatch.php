@@ -71,7 +71,7 @@ class Dispatch extends BaseController
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['moment']         = true;
-        $data['custom_js']      = 'admin/dispatch/index.js';
+        $data['custom_js']      = ['admin/dispatch/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'dispatch' => [
                 'list'      => url_to('dispatch.list'),
@@ -133,7 +133,6 @@ class Dispatch extends BaseController
                 "{$scheduleModel->table}.id",
                 "{$scheduleModel->table}.title",
                 "{$this->_model->view}.technicians",
-                "{$this->_model->table}.service_type",
                 "{$this->_model->table}.sr_number",
                 "{$this->_model->view}.dispatched_by",
                 "{$this->_model->view}.checked_by_name",

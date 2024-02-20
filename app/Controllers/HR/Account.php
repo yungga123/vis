@@ -69,7 +69,7 @@ class Account extends BaseController
         $data['sweetalert2']    = true;
         $data['exclude_toastr'] = true;
         $data['select2']        = true;
-        $data['custom_js']      = 'hr/account/index.js';
+        $data['custom_js']      = ['hr/account/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'account' => [
                 'list'      => url_to('account.list'),
@@ -88,14 +88,15 @@ class Account extends BaseController
      */
     public function list()
     {
-        $table = new TablesIgniter();
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
 
-        $table->setTable($this->_model->noticeTable())
+        $table->setTable($builder)
             ->setSearch([
                 'employee_id',
                 'employee_name',
                 'username',
-                'access_level',
             ])
             ->setDefaultOrder('employee_name', 'asc')
             ->setOrder([

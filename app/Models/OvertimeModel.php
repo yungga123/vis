@@ -260,7 +260,7 @@ class OvertimeModel extends Model
 
         // Not include dev record
         if (! is_developer()) {
-            // $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
+            $builder->where("{$this->table}.employee_id !=", DEVELOPER_ACCOUNT);
         }
 
         if (! in_array(ACTION_VIEW_ALL, $permissions)) {
@@ -273,8 +273,11 @@ class OvertimeModel extends Model
         $end_date   = $request['params']['end_date'] ?? '';
 
         if (! empty($start_date) && ! empty($end_date)) {
-            $between = "{$this->table}.date BETWEEN '%s' AND '%s'";
-            $builder->where(sprintf($between, format_date($start_date, 'Y-m-d'), format_date($end_date, 'Y-m-d')));
+            $start_date = format_date($start_date, 'Y-m-d');
+            $end_date   = format_date($end_date, 'Y-m-d');
+            $between    = "{$this->table}.date BETWEEN '%s' AND '%s'";
+
+            $builder->where(sprintf($between, $start_date, $end_date));
         }
 
         $builder->where("{$this->table}.deleted_at IS NULL");

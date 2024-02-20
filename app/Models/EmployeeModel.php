@@ -6,7 +6,6 @@ use CodeIgniter\Model;
 use CodeIgniter\Events\Events;
 use App\Traits\HRTrait;
 use App\Traits\FilterParamTrait;
-use App\Services\Mail\HRMailService;
 
 class EmployeeModel extends Model
 {
@@ -381,6 +380,21 @@ class EmployeeModel extends Model
         }
 
         $this->filterParam($request, $builder, "{$this->view}.employment_status", 'employment_status');
+        $this->filterParam($request, $builder, "{$this->view}.gender", 'gender');
+        
+        $start_date = $request['params']['start_date'] ?? '';
+        $end_date   = $request['params']['end_date'] ?? '';
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $start_date = format_date($start_date, 'Y-m-d');
+            $end_date   = format_date($end_date, 'Y-m-d');
+            // When date was already formmated into string date
+            // then convert back to default date format
+            $convert    = "DATE(DATE_FORMAT(STR_TO_DATE({$this->view}.date_hired, '%b %d, %Y'), '%Y-%m-%d'))";
+            $between    = "{$convert} BETWEEN '{$start_date}' AND '{$end_date}'";
+
+            $builder->where(new \CodeIgniter\Database\RawSql($between));
+        }
         
         return $builder;
     }

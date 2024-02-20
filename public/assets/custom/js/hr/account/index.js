@@ -7,6 +7,7 @@ $(document).ready(function () {
 	elems = ["employee_id", "username", "password", "access_level"];
 
 	select2Init("#employee_id");
+	select2Init("#filter_access_level");
 	passwordShowHideInit();
 
 	$("#btn_add_record").on("click", function () {
@@ -28,7 +29,7 @@ $(document).ready(function () {
 	/* Load dataTable */
 	const options = {
 		columnDefs: {
-			targets: -1,
+			targets: 0,
 			orderable: false,
 		},
 	};
@@ -53,6 +54,33 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const access_level = getSelect2Selection("#filter_access_level");
+	const start_date = $("#filter_start_date").val();
+	const end_date = $("#filter_end_date").val();
+	const params = {
+		access_level: access_level,
+		start_date: start_date,
+		end_date: end_date,
+	};
+	const condition =
+		!isEmpty(access_level) || (!isEmpty(start_date) && !isEmpty(end_date));
+
+	filterParam(
+		router.account.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_access_level");
+			$("#filter_start_date").val("");
+			$("#filter_end_date").val("");
+		},
+		reset
+	);
+}
 
 /* Get account details */
 function edit(id) {

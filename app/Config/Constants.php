@@ -232,6 +232,14 @@ define('ACTIONS', [
             'SAVE'          => 'Save',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'FINANCE_BILLING_INVOICE'     => [
+            'PRINT'         => 'Print',
+        ],
+        'FINANCE_FUNDS'     => [
+            'VIEW'          => 'View',
+            'RELEASE'       => 'Release Fund',
+            'OTHERS_ONLY'   => TRUE,
+        ],
     ],
 ]);
 
@@ -298,6 +306,8 @@ define('MODULES', [
     'PAYROLL_OVERTIME'      => 'Overtime',
     'PAYROLL_SETTINGS'      => 'Settings',
     'PAYROLL_TIMESHEETS'    => 'Timesheets',
+    'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
+    'FINANCE_FUNDS'         => 'Funds',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -332,6 +342,8 @@ define('MODULE_CODES', [
     'overtime'              => 'PAYROLL_OVERTIME',
     'payroll_settings'      => 'PAYROLL_SETTINGS',
     'timesheets'            => 'PAYROLL_TIMESHEETS',
+    'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
+    'funds'                 => 'FINANCE_FUNDS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
@@ -359,9 +371,12 @@ define('COMPANY_ADDRESS', '#70 National Road., Putatan, Muntinlupa City');
 define('COMPANY_CONTACT_NUMBER', '');
 define('COMPANY_EMAIL', '');
 // Purchase Order Form Code
-define('COMPANY_PO_FORM_CODE', 'F06');
+define('COMPANY_PURCHASE_ORDER_FORM_CODE', 'F06');
 
 // Root path directory for all file uploads
 // Para isahan nlng ng directory
 // Don't foget to add '/' at the end
 define('ROOT_FILE_UPLOAD_DIR', '');
+
+// Billing Invoice Form Code
+define('COMPANY_BILLING_INVOICE_FORM_CODE', 'F07');

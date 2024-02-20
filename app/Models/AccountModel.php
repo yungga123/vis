@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use GuzzleHttp\Promise\Is;
+use App\Traits\FilterParamTrait;
 
 class AccountModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'accounts';
     protected $view             = 'accounts_view';
@@ -197,13 +200,29 @@ class AccountModel extends Model
     }
 
     // For dataTables
-    public function noticeTable() 
+    public function noticeTable($request) 
     {
         $builder = $this->db->table($this->view);
         $builder->select('id, employee_id, employee_name, username, access_level, created_by_name, created_at');
 
         if (session('access_level') !== AAL_ADMIN) {
             $builder->whereNotIn('UPPER(access_level)', [strtoupper(AAL_ADMIN)]);
+        }
+
+        $this->filterParam($request, $builder, 'access_level', 'access_level');
+        
+        $start_date = $request['params']['start_date'] ?? '';
+        $end_date   = $request['params']['end_date'] ?? '';
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $start_date = format_date($start_date, 'Y-m-d');
+            $end_date   = format_date($end_date, 'Y-m-d');
+            // When date was already formmated into string date
+            // then convert back to default date format
+            $convert    = "DATE(DATE_FORMAT(STR_TO_DATE(created_at, '%b %d, %Y at %h:%i %p'), '%Y-%m-%d'))";
+            $between    = "{$convert} BETWEEN '{$start_date}' AND '{$end_date}'";
+
+            $builder->where(new \CodeIgniter\Database\RawSql($between));
         }
 
         $builder->where('deleted_at IS NULL');

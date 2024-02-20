@@ -40,6 +40,7 @@ $(document).ready(function () {
 	];
 
 	select2Init("#filter_status");
+	select2Init("#filter_gender");
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -102,17 +103,31 @@ $(document).ready(function () {
 /* For filtering and reseting */
 function filterData(reset = false) {
 	const status = getSelect2Selection("#filter_status");
+	const gender = getSelect2Selection("#filter_gender");
+	const start_date = $("#filter_start_date").val();
+	const end_date = $("#filter_end_date").val();
 	const params = {
 		employment_status: status,
+		gender: gender,
+		start_date: start_date,
+		end_date: end_date,
 	};
-	const condition = !isEmpty(status);
+	const condition =
+		!isEmpty(status) ||
+		!isEmpty(gender) ||
+		(!isEmpty(start_date) && !isEmpty(end_date));
 
 	filterParam(
 		router.employee.list,
 		table,
 		params,
 		condition,
-		() => clearSelect2Selection("#filter_status"),
+		() => {
+			clearSelect2Selection("#filter_status");
+			clearSelect2Selection("#filter_gender");
+			$("#filter_start_date").val("");
+			$("#filter_end_date").val("");
+		},
 		reset
 	);
 }

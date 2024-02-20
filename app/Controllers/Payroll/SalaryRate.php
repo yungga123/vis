@@ -54,8 +54,8 @@ class SalaryRate extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $data['title']          = 'Employee Salary Rates';
-        $data['page_title']     = 'Employee Salary Rates';
+        $data['title']          = 'Payroll | Employee Salary Rates';
+        $data['page_title']     = 'Payroll | Employee Salary Rates';
         $data['btn_add_lbl']    = 'Add Salary Rate';
         $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;

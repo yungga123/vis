@@ -22,8 +22,8 @@
                                 <option value="my_timesheets">My Timesheets</option>
                             </select>
                         </div>
-                        <div class="align-items-center justify-content-center d-flex d-md-block">
-                            <button class="btn btn-outline-primary mr-1 mr-md-0" title="Filter" onclick="filterData()">
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
                                 <i class="fas fa-search"></i>
                             </button>
                             <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">

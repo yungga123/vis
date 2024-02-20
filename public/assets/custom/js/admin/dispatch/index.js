@@ -24,6 +24,8 @@ $(document).ready(function () {
 		"employee_name"
 	);
 
+	select2Init("#filter_service_type");
+
 	/* Load dataTable */
 	loadDataTable(table, router.dispatch.list, METHOD.POST);
 
@@ -37,6 +39,7 @@ $(document).ready(function () {
 		$("#schedule_id").val("");
 		$("#orig_schedule").addClass("d-none");
 		$(".schedule-details").html("");
+
 		clearSelect2Selection("#schedules");
 		clearSelect2Selection("#technicians");
 		clearSelect2Selection("#checked_by");
@@ -67,10 +70,12 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
+
 			$("#dispatch_id").val("");
 			$("#schedule_id").val("");
 			$("#orig_schedule").addClass("d-none");
 			$(".schedule-details").html("");
+
 			clearSelect2Selection("#schedules");
 			clearSelect2Selection("#technicians");
 			clearSelect2Selection("#checked_by");
@@ -83,6 +88,33 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const service_type = getSelect2Selection("#filter_service_type");
+	const start_date = $("#filter_start_date").val();
+	const end_date = $("#filter_end_date").val();
+	const params = {
+		service_type: service_type,
+		start_date: start_date,
+		end_date: end_date,
+	};
+	const condition =
+		!isEmpty(service_type) || (!isEmpty(start_date) && !isEmpty(end_date));
+
+	filterParam(
+		router.dispatch.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_service_type");
+			$("#filter_start_date").val("");
+			$("#filter_end_date").val("");
+		},
+		reset
+	);
+}
 
 /* Get record details */
 function edit(id) {

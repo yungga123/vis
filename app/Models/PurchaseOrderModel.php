@@ -210,7 +210,18 @@ class PurchaseOrderModel extends Model
         $this->joinAccountView($builder, "{$this->table}.approved_by", 'ab');
         $this->joinAccountView($builder, "{$this->table}.received_by", 'rb');
 
-        $this->filterParam($request, $builder, "{$this->table}.status");
+        $this->filterParam($request, $builder);
+        
+        $start_date = $request['params']['start_date'] ?? '';
+        $end_date   = $request['params']['end_date'] ?? '';
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $start_date = format_date($start_date, 'Y-m-d');
+            $end_date   = format_date($end_date, 'Y-m-d');
+            $between    = "DATE_FORMAT({$this->table}.approved_at, '%Y-%m-%d') BETWEEN '{$start_date}' AND '{$end_date}'";
+
+            $builder->where($between);
+        }
 
         $builder->where("{$this->table}.deleted_at", null);
         $builder->orderBy('id', 'DESC');

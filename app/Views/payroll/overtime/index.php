@@ -6,7 +6,7 @@
             <div class="card">
 				<div class="card-header">
                     <div class="mr-2 mb-2">
-                        <strong>Filters by Status and Overtime Date (Start and End): </strong>
+                        <strong>Filters by Status or Overtime Date (Start/End): </strong>
                     </div>
                     <div class="d-flex flex-md-row flex-column align-items-md-center">
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
@@ -22,8 +22,8 @@
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
                             <input type="date" class="form-control" name="filter_end_date" id="filter_end_date" placeholder="End Date">
                         </div>
-                        <div class="align-items-center justify-content-center d-flex d-md-block">
-                            <button class="btn btn-outline-primary mr-1 mr-md-0" title="Filter" onclick="filterData()">
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
                                 <i class="fas fa-search"></i>
                             </button>
                             <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">

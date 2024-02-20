@@ -358,6 +358,7 @@ function select2AjaxInit(
 	perPage
 ) {
 	selector = selector || ".select2";
+	placeholder = placeholder || "Select an option";
 
 	function dataHandler(params) {
 		let newOptions = {
@@ -374,8 +375,16 @@ function select2AjaxInit(
 		};
 	}
 
+	function returnText(data) {
+		if (!isArray(text) || isEmpty(data.id) || data.selected) {
+			return data[text] || data.text;
+		}
+
+		return $.map(text, (val, i) => data[val] || data.val || "N/A").join(" | ");
+	}
+
 	$(selector).select2({
-		placeholder: placeholder || "Select an option",
+		placeholder: placeholder,
 		allowClear: true,
 		ajax: {
 			url: route,
@@ -393,11 +402,11 @@ function select2AjaxInit(
 			},
 		},
 		templateResult: function (data) {
-			return data[text] || data.text;
+			return returnText(data);
 		},
 		templateSelection: function (data) {
 			if (isFunction(callback)) callback(data);
-			return data[text] || data.text;
+			return returnText(data);
 		},
 	});
 }

@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\FilterParamTrait;
 
 class PermissionModel extends Model
 {
+    /* Declare trait here to use */
+    use FilterParamTrait;
+
     protected $DBGroup          = 'default';
     protected $table            = 'permissions';
     protected $primaryKey       = 'permission_id';
@@ -89,9 +93,13 @@ class PermissionModel extends Model
     }
 
     // For dataTables
-    public function noticeTable() 
+    public function noticeTable($request) 
     {
-        $builder = $this->db->table($this->table);    
+        $builder = $this->db->table($this->table);
+
+        $this->filterParam($request, $builder, 'role_code', 'role_code');
+        $this->filterParam($request, $builder, 'module_code', 'module_code');
+
         $builder->where('deleted_at IS NULL');
 
         return $builder;

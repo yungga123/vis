@@ -52,8 +52,8 @@ class Settings extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
         
-        $data['title']          = 'Payroll Settings';
-        $data['page_title']     = 'Payroll Settings';
+        $data['title']          = 'Payroll | Settings';
+        $data['page_title']     = 'Payroll | Settings';
         $data['can_save']       = $this->_can_save;
         $data['sweetalert2']    = true;
         $data['toastr']         = true;

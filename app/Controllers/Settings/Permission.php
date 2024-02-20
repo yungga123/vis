@@ -63,7 +63,7 @@ class Permission extends BaseController
         $data['btn_add_lbl']    = $this->_can_add ? 'Add Permission' : '';
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;
-        $data['custom_js']      = 'settings/permission.js';
+        $data['custom_js']      = ['settings/permission.js', 'dt_filter.js'];
         $data['sweetalert2']    = true;
         $data['select2']        = true;
         $data['routes']         = json_encode([
@@ -87,13 +87,13 @@ class Permission extends BaseController
      */
     public function list()
     {
-        $table  = new TablesIgniter();
-        $custom = $this->_model->dtCustomizeData();
+        $table      = new TablesIgniter();
+        $request    = $this->request->getVar();
+        $builder    = $this->_model->noticeTable($request);
+        $custom     = $this->_model->dtCustomizeData();
 
-        $table->setTable($this->_model->noticeTable())
+        $table->setTable($builder)
             ->setSearch([
-                'role_code',
-                'module_code',
                 'permissions',
             ])
             ->setOrder([

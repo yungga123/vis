@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\AccountModel;
+use App\Models\BillingInvoiceModel;
 use App\Models\EmployeeModel;
 use App\Models\CustomerModel;
 use App\Models\DispatchModel;
@@ -83,8 +84,9 @@ class Dashboard extends BaseController
             // Sort modules ascending
             sort($modules);
 
-            $setup_modules = array_keys(setup_modules());
-            $record_counts = $this->_recordCounts();
+            $setup_modules  = array_keys(setup_modules());
+            $record_counts  = $this->_recordCounts();
+            $headers        = [];
 
             foreach ($modules as $val) {
                 $_perms = isset($permissions[$val]) ? $permissions[$val] : get_generic_modules_actions($val);
@@ -108,10 +110,18 @@ class Dashboard extends BaseController
                     $menu           = empty($module['menu']) ? $val : $module['menu'];
                     $count          = '';
                     $more_info      = '';
+                    $header         = $module['header'] ?? '';
+                    $_header        = '';
+
+                    if (! empty($header) && ! in_array($header, $headers)) {
+                        $headers[$header]   = $header;
+                        $_header            = '<h5 class="mt-3">'.strtoupper($header).'</h5>';
+                    }
 
                     if (isset($record_counts[$val])) {
                         $param = $record_counts[$val];
                         $count = $param;
+
                         if (is_array($param)) {
                             $count          = $param['count'];
                             $module_name    = isset($param['name']) ? $param['name'] : $module_name;
@@ -157,6 +167,7 @@ class Dashboard extends BaseController
 
                     // Add module card menu
                     $card = <<<EOF
+                        {$_header}
                         <div class="small-box bg-success">
                             <div class="inner">
                                 {$count}
@@ -241,6 +252,7 @@ class Dashboard extends BaseController
         $payrollModel       = new PayrollModel();
         $timesheetModel     = new TimesheetModel();
         $salaryRateModel    = new SalaryRateModel();
+        $billingModel       = new BillingInvoiceModel();
 
         // Count all queries
         $accountCount           = $accountModel->where('deleted_at IS NULL');
@@ -399,6 +411,23 @@ class Dashboard extends BaseController
             'PAYROLL_PAYSLIP'       => $payrollModel->countRecords(true),
             'PAYROLL_TIMESHEETS'    => $timesheetModel->countRecords(true),
             'PAYROLL_SALARY_RATES'  => $salaryRateModel->countRecords(),
+            'FINANCE_BILLING_INVOICE' => [
+                'count'     => $billingModel->countRecords(),
+                'more_info' => [
+                    'pending'   => [
+                        'count' => $billingModel->countRecords('pending'),
+                        'bg'    => 'warning',
+                    ],
+                    'overdue'   => [
+                        'count' => $billingModel->countRecords('overdue'),
+                        'bg'    => 'danger',
+                    ],
+                    'paid'      => [
+                        'count' => $billingModel->countRecords('paid'),
+                        'bg'    => 'success',
+                    ],
+                ]
+            ],
         ];
 
         if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_permissions['PAYROLL_LEAVE'] ?? []))) {

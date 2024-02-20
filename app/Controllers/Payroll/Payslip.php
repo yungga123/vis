@@ -69,8 +69,8 @@ class Payslip extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
         
-        $data['title']          = 'Payslip List';
-        $data['page_title']     = 'Payslip List';
+        $data['title']          = 'Payroll | Payslip List';
+        $data['page_title']     = 'Payroll | Payslip List';
         $data['can_view_all']   = $this->_can_view_all;
         $data['with_dtTable']   = true;
         $data['with_jszip']     = true;

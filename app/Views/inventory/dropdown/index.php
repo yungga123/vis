@@ -5,13 +5,17 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="input-group" style="flex-wrap: nowrap;">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="filter_dtypes">Filter by Types</label>
+                    <div class="d-flex flex-md-row flex-column align-items-md-center">
+                        <div class="mr-2 mb-2 mb-md-0">
+                            <strong>Filter by Types: </strong>
                         </div>
-                        <select name="filter_dtypes[]" id="filter_dtypes" class="form-control select2" multiple="multiple" data-placeholder="Select filter by types (Multiple)" style="width: 100%;"></select>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary px-5" type="button" title="Refresh & Reset" onclick="reset()">Reset</button>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select name="filter_dtypes[]" id="filter_dtypes" class="form-control select2" multiple="multiple" data-placeholder="Select filter by types (Multiple)" style="width: 100%;"></select>
+                        </div>
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-secondary" title="Reset" onclick="reset()">
+                                <i class="fas fa-ban"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

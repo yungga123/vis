@@ -24,6 +24,10 @@ $(document).ready(function () {
 
 	select2Init($permission, "Select Permissions", $initialPermissions);
 
+	/* Init filter */
+	select2Init("#filter_role_code");
+	select2Init("#filter_module_code");
+
 	$("#module_code").on("change", function () {
 		otherPermissions($(this).val());
 	});
@@ -59,6 +63,29 @@ $(document).ready(function () {
 		showAlertInForm(elems, message, res.status);
 	});
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const role_code = getSelect2Selection("#filter_role_code");
+	const module_code = getSelect2Selection("#filter_module_code");
+	const params = {
+		role_code: role_code,
+		module_code: module_code,
+	};
+	const condition = !isEmpty(role_code) || !isEmpty(module_code);
+
+	filterParam(
+		router.permission.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_role_code");
+			clearSelect2Selection("#filter_module_code");
+		},
+		reset
+	);
+}
 
 /* Get employee details */
 function edit(id) {

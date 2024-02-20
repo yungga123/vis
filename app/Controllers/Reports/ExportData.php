@@ -11,6 +11,7 @@ use App\Services\Export\InventoryExportService;
 use App\Services\Export\PayrollExportService;
 use App\Services\Export\SalesExportService;
 use App\Services\Export\PurchasingExportService;
+use App\Services\Export\FinanceExportService;
 
 class ExportData extends BaseController
 {
@@ -320,6 +321,11 @@ class ExportData extends BaseController
                 'name'      => 'Rate Type',
                 'options'   => get_salary_rate_type(),
             ],
+            'FINANCE_BILLING_INVOICE'  => [
+                'type'      => 'multiple',
+                'name'      => 'Billing Status',
+                'options'   => get_billing_status(),
+            ],
         ];
 
         if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_LEAVE'] ?? []))) {
@@ -404,6 +410,7 @@ class ExportData extends BaseController
             'PAYROLL_PAYSLIP'       => [new PayrollExportService(), 'payslip'],
             'PAYROLL_TIMESHEETS'    => [new PayrollExportService(), 'timesheets'],
             'PAYROLL_SALARY_RATES'  => [new PayrollExportService(), 'salaryRates'],
+            'FINANCE_BILLING_INVOICE'  => [new FinanceExportService(), 'billingInvoices'],
         ];
 
         // Return the initailized service class and the method name

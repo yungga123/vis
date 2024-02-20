@@ -5,27 +5,33 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <label>Filters by (Logs Type, Category and Dropdowns):</label>
-                    <div class="row">
-                        <div class="col-2 pr-0">
-                            <select class="custom-select" name="filter_action" id="filter_action">
-                                <option value="all">All</option>
+                    <div class="mr-2 mb-2">
+                        <strong>Filters by Logs Type, Category or Dropdowns:</strong>
+                    </div>
+                    <div class="d-flex flex-md-row flex-column align-items-md-center">
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" name="filter_action" id="filter_action" data-placeholder="Select a logs type" style="width: 100%;">
+                                <option value="">All</option>
                                 <option value="ITEM_IN">Item In</option>
                                 <option value="ITEM_OUT">Item Out</option>
                             </select>
                         </div>
-                        <div class="col-10 pl-0">
-                            <div class="input-group" style="flex-wrap: nowrap; width: 100%;">
-                                <select class="custom-select select2 mr-1" id="filter_category_logs" data-placeholder="Select a Category" multiple>
-                                    <?= $categories ?>
-                                </select>
-                                <select class="custom-select select2 round-left-0" id="filter_sub_category_logs" data-placeholder="Select a Sub-Dropdowns" multiple>
-                                </select>
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-primary px-3" onclick="filterDataLogs()" type="button" title="Search filter">Filter</button>
-                                    <button class="btn btn-outline-secondary px-3 rounded-right" onclick="filterDataLogs(true)" type="button" title="Reset filter">Reset</button>
-                                </div>
-                            </div>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_category_logs" data-placeholder="Select a category" multiple style="width: 100%;">
+                                <?= $categories ?>
+                            </select>
+                        </div>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_sub_category_logs" data-placeholder="Select a sub-dropdowns" multiple style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterDataLogs()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" title="Reset" onclick="filterDataLogs(true)">
+                                <i class="fas fa-ban"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

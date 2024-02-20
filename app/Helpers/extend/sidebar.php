@@ -33,6 +33,17 @@ if (! function_exists('get_nav_menus'))
      */
 	function get_nav_menus(?string $param = null): array
 	{
+        $is_human_resource = (
+            url_is('accounts') || 
+            url_is('employees') || 
+            url_is('payroll/salary-rates') || 
+            url_is('payroll/computation') || 
+            url_is('payroll/payslip') || 
+            url_is('payroll/leave') ||
+            url_is('payroll/settings') ||
+            url_is('payroll/overtime') ||
+            url_is('payroll/timesheets')
+        );
         $is_sales       = (
             url_is('tasklead') || 
             url_is('tasklead/booked') || 
@@ -56,14 +67,9 @@ if (! function_exists('get_nav_menus'))
             url_is('settings/roles') || 
             url_is('settings/general-info')
         );
-        $is_payroll     = (
-            url_is('payroll/salary-rates') || 
-            url_is('payroll/computation') || 
-            url_is('payroll/payslip') || 
-            url_is('payroll/leave') ||
-            url_is('payroll/settings') ||
-            url_is('payroll/overtime') ||
-            url_is('payroll/timesheets')
+        $is_finance     = (
+            url_is('finance/billing-invoice') ||
+            url_is('finance/funds')
         );
         
 		$menu           = [
@@ -76,7 +82,7 @@ if (! function_exists('get_nav_menus'))
             'HUMAN_RESOURCE'    => [
                 'name'      => 'Human Resource',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('accounts') || url_is('employees')),
+                'urls'      => $is_human_resource,
                 'icon'      => 'fas fa-users',
             ],
             'SETTINGS'      => [
@@ -109,11 +115,11 @@ if (! function_exists('get_nav_menus'))
                 'urls'      => url_is('reports/export'),
                 'icon'      => 'fas fa-server',
             ],
-            'PAYROLL'         => [
-                'name'      => 'Payroll',
+            'FINANCE'         => [
+                'name'      => 'Finance',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => $is_payroll,
-                'icon'      => 'fas fa-ruble-sign',
+                'urls'      => $is_finance,
+                'icon'      => 'fas fa-wallet',
             ],
         ];
 
@@ -263,53 +269,73 @@ if (! function_exists('setup_modules'))
                 'icon'      => 'fas fa-file-export',
             ],
             'PAYROLL_SALARY_RATES'  => [
-                'menu'      => 'PAYROLL', // Leave empty if none
+                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_SALARY_RATES'),
                 'url'       => url_to('payroll.salary_rate.home'),
                 'class'     => (url_is('payroll/salary-rates') ? 'active' : ''),
                 'icon'      => 'fas fa-dollar-sign',
             ],
             'PAYROLL_PAYSLIP'  => [
-                'menu'      => 'PAYROLL', // Leave empty if none
+                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_PAYSLIP'),
                 'url'       => url_to('payroll.payslip.home'),
                 'class'     => (url_is('payroll/payslip') ? 'active' : ''),
                 'icon'      => 'fas fa-receipt',
+                'header'    => 'PAYROLL',
             ],
             'PAYROLL_COMPUTATION'  => [
-                'menu'      => 'PAYROLL', // Leave empty if none
+                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_COMPUTATION'),
                 'url'       => url_to('payroll.computation.home'),
                 'class'     => (url_is('payroll/computation') ? 'active' : ''),
                 'icon'      => 'fas fa-calculator',
+                'header'    => 'PAYROLL',
             ],
             'PAYROLL_LEAVE'  => [
-                'menu'      => 'PAYROLL', // Leave empty if none
+                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_LEAVE'),
                 'url'       => url_to('payroll.leave.home'),
                 'class'     => (url_is('payroll/leave') ? 'active' : ''),
                 'icon'      => 'fas fa-folder-open',
+                'header'    => 'PAYROLL',
             ],
             'PAYROLL_OVERTIME'  => [
-                'menu'      => 'PAYROLL', // Leave empty if none
+                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_OVERTIME'),
                 'url'       => url_to('payroll.overtime.home'),
                 'class'     => (url_is('payroll/overtime') ? 'active' : ''),
                 'icon'      => 'fas fa-stopwatch',
+                'header'    => 'PAYROLL',
             ],
             'PAYROLL_SETTINGS'  => [
-                'menu'      => 'PAYROLL', // Leave empty if none
+                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_SETTINGS'),
                 'url'       => url_to('payroll.settings.home'),
                 'class'     => (url_is('payroll/settings') ? 'active' : ''),
                 'icon'      => 'fas fa-tools',
+                'header'    => 'PAYROLL',
             ],
             'PAYROLL_TIMESHEETS'  => [
-                'menu'      => 'PAYROLL', // Leave empty if none
+                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_TIMESHEETS'),
                 'url'       => url_to('payroll.timesheet.home'),
                 'class'     => (url_is('payroll/timesheets') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
+                'header'    => 'PAYROLL',
+            ],
+            'FINANCE_BILLING_INVOICE'  => [
+                'menu'      => 'FINANCE', // Leave empty if none
+                'name'      => get_modules('FINANCE_BILLING_INVOICE'),
+                'url'       => url_to('finance.billing_invoice.home'),
+                'class'     => (url_is('finance/billing-invoice') ? 'active' : ''),
+                'icon'      => 'fas fa-file-invoice',
+            ],
+            'FINANCE_FUNDS'  => [
+                'menu'      => 'FINANCE', // Leave empty if none
+                'name'      => get_modules('FINANCE_FUNDS'),
+                'url'       => url_to('finance.funds.home'),
+                'class'     => (url_is('finance/funds') ? 'active' : ''),
+                'icon'      => 'fas fa-piggy-bank',
             ],
         ];
 
@@ -327,6 +353,7 @@ if (! function_exists('get_sidebar_menus'))
         $html           = '';
         $items          = [];
         $menus          = [];
+        $headers        = [];
         $modules        = setup_modules();
         $permissions    = get_permissions();
         $user_modules   = get_user_modules($permissions);
@@ -349,14 +376,22 @@ if (! function_exists('get_sidebar_menus'))
                         continue;
                     }
 
+                    $header     = $module['header'] ?? '';
+                    $_header    = '';
+
+                    if (! empty($header) && ! in_array($header, $headers)) {
+                        $headers[$header]   = $header;
+                        $_header            = '<li class="nav-header">'.strtoupper($header).'</li>';
+                    }
+
                     if (! empty($module['menu'])) {                        
-                        $_menu = $module['menu'];
-                        $_key = $_menu;
+                        $_menu  = $module['menu'];
+                        $_key   = $_menu;
 
                         // Check if module has nav menu
-                        if (!in_array($module['menu'], $menus)) {
-                            $head = get_nav_menus($module['menu']);
-                            $menu = $head['urls'] ? 'menu-open' : '';
+                        if (! in_array($module['menu'], $menus)) {
+                            $head   = get_nav_menus($module['menu']);
+                            $menu   = $head['urls'] ? 'menu-open' : '';
                             $active = $head['urls'] ? 'active' : '';
 
                             // Create the nav menu item
@@ -375,6 +410,7 @@ if (! function_exists('get_sidebar_menus'))
 
                     // Html for nav item
                     $_item  = <<<EOF
+                        {$_header}
                         <li class="nav-item" id="{$key}">
                             <a href="{$module['url']}" class="nav-link {$module['class']}">
                                 <i class="nav-icon {$module['icon']}"></i>

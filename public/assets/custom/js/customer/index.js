@@ -20,6 +20,8 @@ $(document).ready(function () {
 		"referred_by",
 	];
 
+	select2Init("#filter_new_client");
+	select2Init("#filter_type");
 	select2Init("#filter_source");
 
 	/* Inputmask init */
@@ -80,6 +82,32 @@ $(document).ready(function () {
 	/* Dropzone init */
 	_dropzoneInit();
 });
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const new_client = $("#filter_new_client").val();
+	const type = $("#filter_type").val();
+	const source = getSelect2Selection("#filter_source");
+	const params = {
+		new_client: new_client,
+		type: type,
+		source: source,
+	};
+	const condition = !isEmpty(new_client) || !isEmpty(type) || !isEmpty(source);
+
+	filterParam(
+		router.customer.list,
+		table,
+		params,
+		condition,
+		() => {
+			setOptionValue("#filter_new_client");
+			setOptionValue("#filter_type");
+			clearSelect2Selection("#filter_source");
+		},
+		reset
+	);
+}
 
 /* Get record details */
 function edit(id) {
@@ -155,32 +183,6 @@ function upload(id, client) {
 	);
 
 	dzGetFiles(_dropzone, router.customer.files.fetch + "/" + id);
-}
-
-/* For filtering and reseting */
-function filterData(reset = false) {
-	const new_client = $("#filter_new_client").val();
-	const type = $("#filter_type").val();
-	const source = getSelect2Selection("#filter_source");
-	const params = {
-		new_client: new_client,
-		type: type,
-		source: source,
-	};
-	const condition = !isEmpty(new_client) || !isEmpty(type) || !isEmpty(source);
-
-	filterParam(
-		router.customer.list,
-		table,
-		params,
-		condition,
-		() => {
-			setOptionValue("#filter_new_client");
-			setOptionValue("#filter_type");
-			clearSelect2Selection("#filter_source");
-		},
-		reset
-	);
 }
 
 /* Dropzone init */

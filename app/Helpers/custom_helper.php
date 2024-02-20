@@ -667,17 +667,47 @@ if (! function_exists('format_results'))
      * @param array $result     The array/result to format
      * @param string $key       The key name of the key - eg. $value['key']
      * @param string $val       The key name of the value - eg. $value['value']
+     * @param bool $single      Whether to return single array only
      */
-	function format_results(array $result, string $key = 'key', string $val = 'value'): array
+	function format_results(array $result, string $key = 'key', string $val = 'value', $single = false): array
 	{
         $arr = [];
 
         if (! empty($result)) {
             foreach ($result as $_key => $value) {
-                $arr[$value[$key]] = empty($val) ? $value : $value[$val];
+                if ($single) {
+                    $arr[] = $value[$key];
+                } else {
+                    $arr[$value[$key]] = empty($val) ? $value : $value[$val];
+                }                
             }
         }
 
         return $arr;
 	}
+}
+
+if (! function_exists('get_acronymns'))
+{
+    /**
+     * Get the acronymns (first letter) of the words/string
+     * 
+     * @param string $words
+     */
+	function get_acronymns($words) {
+        if (empty($words)) return $words;
+        
+        $regex      = '/(?<=\b)\w/iu';
+        $split      = preg_split("/[\s,_-]+/", $words);
+        
+        preg_match_all($regex, $words, $matches);
+        
+        $results    = $matches[0];
+        
+        foreach ($split as $key => $val) {
+            if (is_numeric($val)) $results[$key] = $val;
+        }
+        
+        return mb_strtoupper(implode('', $results));
+    }
 }

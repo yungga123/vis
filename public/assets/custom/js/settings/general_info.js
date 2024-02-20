@@ -14,7 +14,7 @@ $(document).ready(function () {
 			notifMsgSwal(res.status, message, res.status);
 		}
 
-		showAlertInForm(["system_name"], message, res.status);
+		showAlertInForm(["system_name", "vat_percent"], message, res.status);
 	});
 
 	/* Form for saving data */
@@ -44,6 +44,37 @@ $(document).ready(function () {
 			"company_address",
 			"company_contact_number",
 			"company_email_address",
+			"company_bank_name",
+			"company_bank_account_name",
+			"company_bank_account_number",
+			"company_bank_branch",
+		];
+
+		if (res.status !== STATUS.ERROR) {
+			notifMsgSwal(res.status, message, res.status);
+		}
+
+		showAlertInForm(elems, message, res.status);
+	});
+
+	/* Form for saving data */
+	formSubmit($("#form_form_codes"), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+		const elems = ["purchase_order_form_code", "billing_invoice_form_code"];
+
+		if (res.status !== STATUS.ERROR) {
+			notifMsgSwal(res.status, message, res.status);
+		}
+
+		showAlertInForm(elems, message, res.status);
+	});
+
+	/* Form for saving data */
+	formSubmit($("#form_billing_invoice"), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+		const elems = [
+			"billing_invoice_overdue_interest_per_day",
+			"billing_invoice_overdue_interest_per_month",
 		];
 
 		if (res.status !== STATUS.ERROR) {

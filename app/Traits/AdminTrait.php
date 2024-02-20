@@ -40,19 +40,43 @@ trait AdminTrait
         if (! empty($q)) {
             if (empty($options)) {                
                 $model->where('quotation_num', $q);
+                
                 return $model->find();
             }
 
-            $model->like('quotation_num', $q);
+            if (is_numeric($q)) {
+                $model->like('id', $q);
+            } else {
+                $search_in = $options['search_in'] ?? [];
+
+                if (! empty($search_in)) {
+                    $arr = [
+                        'quotation' => 'quotation_num',
+                        'manager'   => 'employee_name',
+                        'client'    => 'customer_name',
+                        'type'      => 'tasklead_type',
+                    ];
+
+                    foreach ($search_in as $key => $val) {
+                        $like = $key === 0 ? 'like' : 'orLike';
+                        
+                        $model->{$like}($arr[$val] ?? $val, $q);
+                    }
+                } else {
+                    $model->like('quotation_num', $q);
+                }
+            }
+            
         }
 
         $model->orderBy('id', 'DESC');
+
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
-        $total = $model->countAllResults();
+        $total  = $model->countAllResults();
 
         return [
             'data'  => $result,
-            'total'  => $total
+            'total' => $total
         ];     
     }
 

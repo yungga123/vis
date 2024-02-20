@@ -432,6 +432,28 @@ $routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
 });
 /* PAYROLL */
 
+/* FINANCE */
+$routes->group('finance', ['filter' => 'checkauth'], static function ($routes) {
+    // BILLING INVOICE
+    $routes->group('billing-invoice', static function ($routes) {
+        $routes->get('/', 'Finance\BillingInvoice::index', ['as' => 'finance.billing_invoice.home']);
+        $routes->post('list', 'Finance\BillingInvoice::list', ['as' => 'finance.billing_invoice.list']);
+        $routes->post('save', 'Finance\BillingInvoice::save', ['as' => 'finance.billing_invoice.save']);
+        $routes->post('fetch', 'Finance\BillingInvoice::fetch', ['as' => 'finance.billing_invoice.fetch']);
+        $routes->post('delete', 'Finance\BillingInvoice::delete', ['as' => 'finance.billing_invoice.delete']);
+        $routes->get('print/(:num)', 'Finance\BillingInvoice::print/$1', ['as' => 'finance.billing_invoice.print']);
+    });
+
+    // FUNDS
+    $routes->group('funds', static function ($routes) {
+        $routes->get('/', 'Finance\Funds::index', ['as' => 'finance.funds.home']);
+        $routes->post('list', 'Finance\Funds::list', ['as' => 'finance.funds.list']);
+        $routes->post('save', 'Finance\Funds::save', ['as' => 'finance.funds.save']);
+        $routes->post('fetch', 'Finance\Funds::fetch', ['as' => 'finance.funds.fetch']);
+    });
+});
+/* FINANCE */
+
 /***************** PHASE 3 *****************/
 
 /*

@@ -39,6 +39,10 @@
     <?php if(! isset($disable_auto_print)): ?>
         <script type="text/javascript">window.addEventListener("load", window.print());</script>
     <?php endif; ?>
+    <?php if (isset($sweetalert2) && $sweetalert2): ?>
+        <!-- Sweetalert2 -->
+        <script src="<?=base_url('assets')?>/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <?php endif;?>
     <?php
     if (isset($custom_js) && !empty($custom_js)):
         $custom_js = is_string($custom_js) ? [$custom_js] : $custom_js;

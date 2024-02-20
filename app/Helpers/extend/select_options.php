@@ -718,3 +718,56 @@ if (! function_exists('get_prf_item_remarks'))
         return $param ? $options[$param] : $options;
 	}
 }
+
+if (! function_exists('get_bill_types'))
+{
+    /**
+     * Get bill types for Finance/Billing Invoice module
+     */
+	function get_bill_types(string $param = ''): string|array
+	{
+        $options = [
+            'Down Payment'      => 'Down Payment',
+            'Progress Billing'  => 'Progress Billing',
+            'Final Payment'     => 'Final Payment',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
+if (! function_exists('get_billing_status'))
+{
+    /**
+     * Get billing status for Finance/Billing Invoice module
+     */
+	function get_billing_status(string $param = ''): string|array
+	{
+        $options = [
+            'pending'   => 'Pending',
+            'overdue'   => 'Overdue',
+            'paid'      => 'Paid',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
+if (! function_exists('get_expenses'))
+{
+    /**
+     * Get expenses type for Finance/Funds module
+     */
+	function get_expenses(string $param = ''): string|array
+	{
+        $options = [
+            'Petty Cash'        => 'Petty Cash',
+            'Salary'            => 'Salary',
+            'Purchase Orders'   => 'Purchase Orders',
+            'Loans Payment'     => 'Loans Payment',
+            'Advances'          => 'Advances',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
