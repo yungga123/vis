@@ -248,7 +248,11 @@ trait AdminTrait
         if (! empty($q)) {
             if (empty($options)) return $model->find($q);
 
-            $model->like('LOWER(name)', strtolower($q));
+            if (is_numeric($q)) {
+                $model->where("{$model->table}.id", $q);
+            } else {
+                $model->like("LOWER({$model->table}.name)", strtolower($q));
+            }
         }
 
         $model->groupBy("{$model->table}.id, {$model->table}.name");

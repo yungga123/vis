@@ -46,6 +46,7 @@
                                 <tr>
                                     <th></th>
                                     <th>Actions</th>
+                                    <th>Branches</th>
                                     <th>Client ID</th>
                                     <th>New Client?</th>
                                     <th>Client Name</th>

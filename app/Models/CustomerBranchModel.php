@@ -109,22 +109,22 @@ class CustomerBranchModel extends Model
             {$this->table}.id,
             {$this->table}.customer_id,
             {$this->table}.branch_name,
-            province,
-            city,
-            barangay,
-            subdivision,
-            contact_person,
-            contact_number,
-            email_address,
-            notes
+            {$this->table}.province,
+            {$this->table}.city,
+            {$this->table}.barangay,
+            {$this->table}.subdivision,
+            {$this->table}.contact_person,
+            {$this->table}.contact_number,
+            {$this->table}.email_address,
+            {$this->table}.notes
         ";
 
         if ($dtTable) {
             $datetimeFormat = dt_sql_datetime_format();
-            $addressConcat  = dt_sql_concat_client_address();
+            $addressConcat  = dt_sql_concat_client_address($this->table);
             $columns        .= ",
                 {$addressConcat},
-                DATE_FORMAT(created_at, '{$datetimeFormat}') AS created_at,
+                DATE_FORMAT({$this->table}.created_at, '{$datetimeFormat}') AS created_at,
                 {$this->accountsView}.employee_name AS created_by
             ";
         }
@@ -137,10 +137,12 @@ class CustomerBranchModel extends Model
     {
         $builder = $this->db->table($this->table);
         $builder->select($this->columns(true));
+
         $this->joinAccountView($builder, "{$this->table}.created_by");
-        $builder->where('customer_id', $customer_id);
-        $builder->where("deleted_at IS NULL");
-        $builder->orderBy('id', 'DESC');
+
+        $builder->where("{$this->table}.customer_id", $customer_id);
+        $builder->where("{$this->table}.deleted_at IS NULL");
+        $builder->orderBy("{$this->table}.id", "DESC");
 
         return $builder;
     }
