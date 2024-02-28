@@ -433,7 +433,7 @@ class JobOrderModel extends Model
     }
 
     // Get clients details using job_order_id
-    public function getClientInfo($job_order_id, $columns = '')
+    public function getClientInfo($job_order_id, $columns = '', $branch = false)
     {
         $customerModel  = new CustomerModel();
         $columns        = $columns ? $columns : "
@@ -447,16 +447,28 @@ class JobOrderModel extends Model
             {$customerModel->table}.telephone AS client_telephone,
             ".dt_sql_concat_client_address($customerModel->table, '')." AS client_address
         ";
+
+        if ($branch) {
+            $branchModel    = new CustomerBranchModel();
+            $columns        .= ",
+                {$branchModel->table}.contact_person AS client_branch_contact_person,
+                {$branchModel->table}.contact_number AS client_branch_contact_number,
+                ".dt_sql_concat_client_address($branchModel->table, '')." AS client_branch_address
+            ";
+        }
+
         $this->setUseSoftDeletes(false);
         $this->setTable($this->view)->select($columns);
-        $this->joinCustomers($this, $customerModel);
+        $this->joinCustomers($this, $customerModel, 'left', $branch);
 
         if (is_array($job_order_id)) {
             $this->whereIn("{$this->view}.job_order_id", $job_order_id);
+
             return $this->findAll();
         }
 
         $this->where("{$this->view}.job_order_id", $job_order_id);
+
         return $this->first();
     }
 

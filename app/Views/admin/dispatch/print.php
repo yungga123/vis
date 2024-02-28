@@ -1,5 +1,17 @@
 <?=$this->extend('templates/print');?>
 <?=$this->section('content');?>
+<?php 
+$branch_label 	= empty($client['client_branch_id']) 
+	? '' : '(Branch)';
+$branch_name 	= empty($client['client_branch_id']) 
+	? '' : $client['client_branch_id'].' --- '.$client['client_branch_name'];
+$contact_person = empty($client['client_branch_id']) 
+	? $client['client_contact_person'] : $client['client_branch_contact_person'];
+$contact_number = empty($client['client_branch_id']) 
+	? $client['client_contact_number'] : $client['client_branch_contact_number'];
+$address		= empty($client['client_branch_id']) 
+	? $client['client_address'] : $client['client_branch_address'];
+?>
 <div class="container-fluid">
 <div class="row">
 		<div class="col-12">
@@ -22,21 +34,33 @@
 									<?= empty($client) ? '' : $client['client_id'].' --- '.$client['client_name'] ?>
 								</td>
 							</tr>
+							<?php if (! empty($branch_name)): ?>
+								<tr>
+									<td width="20%" style="font-weight: bold">Client Branch Name</td>
+									<td width="80%"><?= $branch_name ?></td>
+								</tr>
+							<?php endif; ?>
 							<tr>
-								<td width="20%" style="font-weight: bold">Contact Person</td>
-								<td width="80%"><?= empty($client) ? '' : $client['client_contact_person'] ?></td>
+								<td width="20%" style="font-weight: bold">Contact Person <?= $branch_label ?></td>
+								<td width="80%"><?= $contact_person ?></td>
 							</tr>
 							<tr>
-								<td width="20%" style="font-weight: bold">Mobile Number</td>
-								<td width="80%"><?= empty($client) ? '' : $client['client_contact_number'] ?? 'N/A' ?></td>
+								<td width="20%" style="font-weight: bold">
+									<?= empty($branch_name) ? 'Mobile ' : 'Contact ' ?> Number <?= $branch_label ?>
+								</td>
+								<td width="80%"><?= $contact_number ?></td>
 							</tr>
+							<?php if (empty($branch_name)): ?>
+								<tr>
+									<td width="20%" style="font-weight: bold">Telephone Number <?= $branch_label ?></td>
+									<td width="80%">
+										<?= empty($client) || ! empty($branch_name) ? 'N/A' : $client['client_telephone'] ?? 'N/A' ?>
+									</td>
+								</tr>
+							<?php endif; ?>
 							<tr>
-								<td width="20%" style="font-weight: bold">Telephone Number</td>
-								<td width="80%"><?= empty($client) ? '' : $client['client_telephone'] ?? 'N/A' ?></td>
-							</tr>
-							<tr>
-								<td width="20%" style="font-weight: bold">Address</td>
-								<td width="80%"><?= empty($client) ? '' : $client['client_address'] ?? 'N/A' ?></td>
+								<td width="20%" style="font-weight: bold">Address <?= $branch_label ?></td>
+								<td width="80%"><?= $address ?></td>
 							</tr>
 						</tbody>
 					</table>
