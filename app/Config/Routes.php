@@ -441,6 +441,7 @@ $routes->group('finance', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('save', 'Finance\BillingInvoice::save', ['as' => 'finance.billing_invoice.save']);
         $routes->post('fetch', 'Finance\BillingInvoice::fetch', ['as' => 'finance.billing_invoice.fetch']);
         $routes->post('delete', 'Finance\BillingInvoice::delete', ['as' => 'finance.billing_invoice.delete']);
+        $routes->post('change', 'Finance\BillingInvoice::change', ['as' => 'finance.billing_invoice.change']);
         $routes->get('print/(:num)', 'Finance\BillingInvoice::print/$1', ['as' => 'finance.billing_invoice.print']);
     });
 

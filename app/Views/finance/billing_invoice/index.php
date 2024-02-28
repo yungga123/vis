@@ -46,6 +46,7 @@
                             <tr>
                                 <th></th>
                                 <th>Actions</th>
+                                <th>Status</th>
                                 <th>Billing Status</th>
                                 <th>Billing ID</th>
                                 <th>TaskLead ID</th>
@@ -65,6 +66,8 @@
                                 <th>Vat Amount</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
+                                <th>Approved By</th>
+                                <th>Approved At</th>
                             </tr>
                         </thead>
                     </table>
