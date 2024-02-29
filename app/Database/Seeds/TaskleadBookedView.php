@@ -27,6 +27,7 @@ class TaskleadBookedView extends Seeder
             tasklead.existing_customer,
             tasklead.customer_id,
             customers.name as customer_name,
+            tasklead.branch_id,
             customer_branches.branch_name,
             customers.contact_number as contact_number,
             tasklead.project,

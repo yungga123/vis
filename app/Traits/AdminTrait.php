@@ -195,10 +195,14 @@ trait AdminTrait
     public function fetchJobOrders($q, $options = [], $fields = '')
     {
         $model  = new JobOrderModel();
+        $client = "IF(({$model->view}.client_branch_id IS NOT NULL OR {$model->view}.client_branch_id != 0), {$model->view}.client_branch_name, {$model->view}.client_name)";
         $fields = $fields ? $fields : "
             {$model->view}.job_order_id AS id,
-            CONCAT({$model->view}.job_order_id, ' | ', {$model->view}.client_name) AS text,
+            CONCAT({$model->view}.job_order_id, ' | ', {$client}) AS text,
+            {$client} AS client,
             {$model->view}.client_name,
+            {$model->view}.client_branch_id,
+            {$model->view}.client_branch_name,
             {$model->view}.client_id,
             {$model->view}.quotation,
             {$model->view}.quotation_type,
@@ -215,6 +219,7 @@ trait AdminTrait
                 $model->where("{$model->view}.job_order_id", $q);
             } else {
                 $model->like("LOWER({$model->view}.client_name)", strtolower($q));
+                $model->orLike("LOWER({$model->view}.client_branch_name)", strtolower($q));
             }
         }
 

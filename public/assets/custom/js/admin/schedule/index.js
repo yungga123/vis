@@ -89,8 +89,8 @@ $(document).ready(function () {
 		router.admin.common.job_orders,
 		"text",
 		(data) => {
-			if (data.client_name) {
-				$("#title").val(data.client_name);
+			if (data.client) {
+				$("#title").val(data.client);
 			}
 		}
 	);
