@@ -20,6 +20,7 @@ class BillingInvoiceModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        'status',
         'tasklead_id',
         'billing_status',
         'due_date',
@@ -34,6 +35,8 @@ class BillingInvoiceModel extends Model
         'vat_amount',
         'overdue_interest',
         'grand_total',
+        'approved_at',
+        'approved_by',
     ];
 
     // Dates
@@ -87,7 +90,7 @@ class BillingInvoiceModel extends Model
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses = ['paid'];
+    protected $restrictedStatuses = ['paid', 'approved'];
 
     /**
      * Set the value for created_by before inserting
@@ -125,6 +128,7 @@ class BillingInvoiceModel extends Model
     {
         $columns = "
             {$this->table}.id,
+            {$this->table}.status,
             {$this->table}.tasklead_id,
             {$this->table}.due_date,
             {$this->table}.bill_type,
@@ -139,7 +143,9 @@ class BillingInvoiceModel extends Model
             {$this->table}.overdue_interest,
             {$this->table}.grand_total,
             {$this->table}.created_by,
-            {$this->table}.created_at
+            {$this->table}.created_at,
+            {$this->table}.approved_by,
+            {$this->table}.approved_at
         ";
 
         if ($joinTlV) {
@@ -233,6 +239,7 @@ class BillingInvoiceModel extends Model
         $builder    = $this->db->table($this->table);
         $columns    = "
             {$this->table}.id,
+            {$this->table}.status,
             {$this->table}.tasklead_id,
             {$tlVModel->table}.quotation_num AS quotation,
             {$tlVModel->table}.customer_name AS client,
@@ -250,7 +257,9 @@ class BillingInvoiceModel extends Model
             IF({$this->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
             ".dt_sql_number_format("{$this->table}.vat_amount")." AS vat_amount,
             cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
+            ab.employee_name AS approved_by,
+            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at,
+            ".dt_sql_datetime_format("{$this->table}.approved_at")." AS approved_at
         ";
 
         $builder->select($columns);
@@ -258,6 +267,7 @@ class BillingInvoiceModel extends Model
         // Join with other tables
         $this->joinBookedTasklead($builder, $tlVModel);
         $this->joinAccountView($builder, 'created_by', 'cb');
+        $this->joinAccountView($builder, 'approved_by', 'ab');
 
         // Filters
         $this->filterParam($request, $builder, 'billing_status', 'billing_status');
@@ -280,23 +290,34 @@ class BillingInvoiceModel extends Model
         $closureFun = function($row) use($id, $permissions, $dropdown) {
             $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
 
-            if (in_array($row['billing_status'], ['pending', 'overdue'])) {
-                $onclick = <<<EOF
-                    onclick="edit({$row[$id]}, '{$row['billing_status']}')" title="Mark as Paid"
-                EOF;
+            if ($row['status'] === 'pending') {
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? 'Mark as Paid' : '',
-                    'button'    => 'btn-success',
-                    'icon'      => 'fas fa-ruble-sign',
-                    'condition' => $onclick,
+                    'button'    => 'btn-primary',
+                    'icon'      => 'fas fa-check-circle',
+                    'condition' => dt_status_onchange($row[$id], 'approve', $row['status'], 'Billing Invoice'),
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'PRINT')) {
-                $print_url = url_to('finance.billing_invoice.print', $row[$id]);
-                $buttons .= <<<EOF
-                    <a href="$print_url" class="btn btn-dark btn-sm" target="_blank"><i class="fas fa-print"></i></a>
-                EOF;
+            if ($row['status'] === 'approved') {
+                if (in_array($row['billing_status'], ['pending', 'overdue'])) {
+                    $onclick = <<<EOF
+                        onclick="edit({$row[$id]}, '{$row['billing_status']}')" title="Mark as Paid"
+                    EOF;
+                    $buttons .= dt_button_html([
+                        'text'      => $dropdown ? 'Mark as Paid' : '',
+                        'button'    => 'btn-success',
+                        'icon'      => 'fas fa-ruble-sign',
+                        'condition' => $onclick,
+                    ], $dropdown);
+                }
+    
+                if (check_permissions($permissions, 'PRINT')) {
+                    $print_url = url_to('finance.billing_invoice.print', $row[$id]);
+                    $buttons .= <<<EOF
+                        <a href="$print_url" class="btn btn-dark btn-sm" target="_blank"><i class="fas fa-print"></i></a>
+                    EOF;
+                }
             }
 
             return dt_buttons_dropdown($buttons);
@@ -309,6 +330,21 @@ class BillingInvoiceModel extends Model
      * DataTable status formatter
      */
     public function dtStatusFormat()
+    {
+        $closureFun = function($row) {
+            $text    = ucwords($row['status']);
+            $color   = dt_status_color($row['status']);
+
+            return text_badge($color, $text);
+        };
+        
+        return $closureFun;
+    }
+
+    /**
+     * DataTable billing status formatter
+     */
+    public function dtBillingStatusFormat()
     {
         $closureFun = function($row) {
             $text    = ucwords($row['billing_status']);

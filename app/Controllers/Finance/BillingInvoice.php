@@ -77,6 +77,7 @@ class BillingInvoice extends BaseController
                 'list'      => url_to('finance.billing_invoice.list'),
                 'fetch'     => url_to('finance.billing_invoice.fetch'),
                 'delete'    => url_to('finance.billing_invoice.delete'),
+                'change'    => url_to('finance.billing_invoice.change'),
             ],
             'admin' => [
                 'common' => [
@@ -125,6 +126,8 @@ class BillingInvoice extends BaseController
             'vat_amount',
             'created_by',
             'created_at',
+            'approved_by',
+            'approved_at',
         ];
 
         $table->setTable($builder)
@@ -134,13 +137,14 @@ class BillingInvoice extends BaseController
                 "{$tlVModel->table}.client",
                 "{$tlVModel->table}.manager",
             ])
-            ->setOrder(array_merge([null, null, null], $fields))
+            ->setOrder(array_merge([null, null, null, null], $fields))
             ->setOutput(
                 array_merge(
                     [
                         dt_empty_col(), 
                         $this->_model->buttons($this->_permissions),
                         $this->_model->dtStatusFormat(),
+                        $this->_model->dtBillingStatusFormat(),
                     ], 
                     $fields
                 )
@@ -190,6 +194,7 @@ class BillingInvoice extends BaseController
                 } else {
                     $this->checkRoleActionPermissions($this->_module_code, $action, true);
                     $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
+                    $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                     $overdues = $this->_checkNCalculateOverdues($request['billing_amount'], $request['due_date']);
 
@@ -295,12 +300,50 @@ class BillingInvoice extends BaseController
 
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
                 $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
+                $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                 if (! $this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 }
+                return $data;
+            }
+        );
+
+        return $response;
+    }
+
+    /**
+     * Changing status of billing invoice
+     *
+     * @return json
+     */
+    public function change() 
+    {
+        $data       = [];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $id         = $this->request->getVar('id');
+                $status     = 'approved';
+                $inputs     = [
+                    'status'        => $status,
+                    'approved_by'   => session('username'),
+                    'approved_at'   => current_datetime(),
+                ];
+
+                $this->checkRoleActionPermissions($this->_module_code, 'approve', true);
+    
+                if (! $this->_model->update($id, $inputs)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                } else {
+                    $data['status']     = res_lang('status.success');
+                    $data['message']    = res_lang('success.changed', ['Billing Invoice', strtoupper($status)]);
+                }
+
                 return $data;
             }
         );
@@ -322,7 +365,9 @@ class BillingInvoice extends BaseController
         $custModel  = new CustomerModel();
         $columns    = $this->_model->columns(true) . ",
             cb.employee_name AS created_by,
+            ab.employee_name AS approved_by,
             cb.position AS created_by_position,
+            ab.position AS approved_by_position,
             {$tlVModel->table}.customer_id AS client_id,
             ".dt_sql_concat_client_address('', 'client_address')."
         ";
@@ -330,6 +375,7 @@ class BillingInvoice extends BaseController
 
         $this->_model->joinBookedTasklead($builder, $tlVModel);
         $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
+        $this->joinAccountView($builder, "{$this->_model->table}.approved_by", 'ab');
         $builder->join($custModel->table, "{$tlVModel->table}.customer_id = {$custModel->table}.id", 'left');
 
         $billing_invoice         = $builder->where("{$this->_model->table}.id", $id)->first();

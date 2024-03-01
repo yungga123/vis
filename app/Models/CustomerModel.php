@@ -176,14 +176,17 @@ class CustomerModel extends Model
     {
         $builder = $this->db->table($this->table);
         $builder->select($this->columns(true));
+
         $this->joinAccountView($builder, "{$this->table}.created_by");
+
         $builder->where("{$this->table}.deleted_at IS NULL");
 
         $this->filterParam($request, $builder, "{$this->table}.forecast", 'new_client');
         $this->filterParam($request, $builder, "{$this->table}.type", 'type');
         $this->filterParam($request, $builder, "{$this->table}.source", 'source');
 
-        $builder->orderBy("{$this->table}.id", 'DESC');        
+        $builder->orderBy("{$this->table}.id", 'DESC');
+            
         return $builder;
     }
 
@@ -200,10 +203,6 @@ class CustomerModel extends Model
                         <button class="btn btn-sm btn-success" onclick="addBranch({$row["$id"]}, '{$row["name"]}')" title="Add Branch"><i class="fas fa-plus-square"></i> </button> 
                     EOF;
                 }
-
-                $buttons .= <<<EOF
-                    <button class="btn btn-sm btn-info" onclick="branchList({$row["$id"]}, '{$row["name"]}')" title="View Branch"><i class="fas fa-eye"></i> </button>
-                EOF;
             }
 
             if (check_permissions($permissions, ACTION_UPLOAD)) {
@@ -213,6 +212,25 @@ class CustomerModel extends Model
             }
 
             return dt_buttons_dropdown($buttons);
+        };
+        
+        return $closureFun;
+    }
+
+    // DataTable view customer's branches
+    public function dtViewClientBranches()
+    {
+         $id         = $this->primaryKey;
+         $closureFun = function($row) use($id) {
+            $button = '~~N/A~~';
+
+            if (strtoupper($row['type']) === 'COMMERCIAL') {
+                $button = <<<EOF
+                    <button class="btn btn-sm btn-primary" onclick="branchList({$row["$id"]}, '{$row["name"]}')" title="View Branches"><i class="fas fa-eye"></i> View</button>
+                EOF;
+            }
+
+            return $button;
         };
         
         return $closureFun;

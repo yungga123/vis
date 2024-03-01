@@ -249,6 +249,37 @@ function remove(id) {
 	deleteRecord(router.billing_invoice.delete, { id: id }, table);
 }
 
+/* Change status record */
+function change(id, changeTo, status) {
+	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
+	const swalMsg = `
+		<div>Billing #: <strong>${id}</strong></div>
+		<div>Are you sure you want to <strong>${strUpper(
+			changeTo
+		)}</strong> this Billing Invoice?</div>
+	`;
+	const data = { id: id, status: changeTo };
+
+	swalNotifConfirm(
+		function () {
+			$.post(router.billing_invoice.change, data)
+				.then((res) => {
+					const message = res.errors ?? res.message;
+
+					if (res.status !== STATUS.ERROR) {
+						refreshDataTable($("#" + table));
+					}
+
+					notifMsgSwal(res.status, message, res.status);
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		title,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
 /* Quotation via ajax data source */
 function _initTasklead() {
 	select2AjaxInit(

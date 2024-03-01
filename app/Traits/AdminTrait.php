@@ -195,10 +195,14 @@ trait AdminTrait
     public function fetchJobOrders($q, $options = [], $fields = '')
     {
         $model  = new JobOrderModel();
+        $client = "IF(({$model->view}.client_branch_id IS NOT NULL OR {$model->view}.client_branch_id != 0), {$model->view}.client_branch_name, {$model->view}.client_name)";
         $fields = $fields ? $fields : "
             {$model->view}.job_order_id AS id,
-            CONCAT({$model->view}.job_order_id, ' | ', {$model->view}.client_name) AS text,
+            CONCAT({$model->view}.job_order_id, ' | ', {$client}) AS text,
+            {$client} AS client,
             {$model->view}.client_name,
+            {$model->view}.client_branch_id,
+            {$model->view}.client_branch_name,
             {$model->view}.client_id,
             {$model->view}.quotation,
             {$model->view}.quotation_type,
@@ -211,8 +215,12 @@ trait AdminTrait
         if (! empty($q)) {
             if (empty($options)) return $model->find($q);
 
-            $model->like("{$model->view}.job_order_id", $q);
-            $model->orLike("{$model->view}.client_name", $q);
+            if (is_numeric($q)) {
+                $model->where("{$model->view}.job_order_id", $q);
+            } else {
+                $model->like("LOWER({$model->view}.client_name)", strtolower($q));
+                $model->orLike("LOWER({$model->view}.client_branch_name)", strtolower($q));
+            }
         }
 
         $model->orderBy("{$model->view}.job_order_id", 'DESC');
@@ -248,7 +256,11 @@ trait AdminTrait
         if (! empty($q)) {
             if (empty($options)) return $model->find($q);
 
-            $model->like('LOWER(name)', strtolower($q));
+            if (is_numeric($q)) {
+                $model->where("{$model->table}.id", $q);
+            } else {
+                $model->like("LOWER({$model->table}.name)", strtolower($q));
+            }
         }
 
         $model->groupBy("{$model->table}.id, {$model->table}.name");

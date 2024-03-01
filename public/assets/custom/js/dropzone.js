@@ -13,25 +13,25 @@ function dropzoneInit(id, route, button, options) {
 		".jpg, .jpeg, .png, .pdf, .doc, .docx, xls, .xlsx, .csv";
 	let _defaultMsg = `Drop files here or click to upload.`;
 
-	_defaultMsg = inObjectReturn(options, "dictDefaultMessage") ?? _defaultMsg;
+	_defaultMsg = inObjectReturn(options, "dictDefaultMessage") || _defaultMsg;
 
 	const _options = {
 		// The route or url to upload to
 		url: route,
-		paramName: inObjectReturn(options, "paramName") ?? "file",
+		paramName: inObjectReturn(options, "paramName") || "file",
 		// Max file size in MB
-		maxFilesize: inObjectReturn(options, "maxFilesize") ?? 15,
+		maxFilesize: inObjectReturn(options, "maxFilesize") || 15,
 		// How many files allowed to be selected/uploaded
-		maxFiles: inObjectReturn(options, "maxFiles") ?? 5,
+		maxFiles: inObjectReturn(options, "maxFiles") || 5,
 		dictDefaultMessage: _defaultMsgIcon + _defaultMsg,
 		acceptedFiles:
-			inObjectReturn(options, "acceptedFiles") ?? _defaultAcceptedFiles,
-		addRemoveLinks: inObjectReturn(options, "addRemoveLinks") ?? true,
+			inObjectReturn(options, "acceptedFiles") || _defaultAcceptedFiles,
+		addRemoveLinks: inObjectReturn(options, "addRemoveLinks") || true,
 		dictRemoveFileConfirmation: "Are you sure you want to remove this file?",
 		// Disable auto processing
-		autoProcessQueue: inObjectReturn(options, "autoProcessQueue") ?? false,
-		uploadMultiple: inObjectReturn(options, "uploadMultiple") ?? true,
-		parallelUploads: inObjectReturn(options, "parallelUploads") ?? 10,
+		autoProcessQueue: inObjectReturn(options, "autoProcessQueue") || false,
+		uploadMultiple: inObjectReturn(options, "uploadMultiple") || true,
+		parallelUploads: inObjectReturn(options, "parallelUploads") || 10,
 		// Added a custom option attribute/key
 		// An identifier whether to remove
 		// also the file in the backend

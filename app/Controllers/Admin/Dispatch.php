@@ -295,7 +295,7 @@ class Dispatch extends BaseController
 
         // Get client details
         $joModel    = new JobOrderModel();
-        $client     = $joModel->getClientInfo($dispatch['job_order_id']);
+        $client     = $joModel->getClientInfo($dispatch['job_order_id'], '', true);
         
         $data['dispatch']       = $dispatch;
         $data['client']         = $client;

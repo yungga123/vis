@@ -192,8 +192,11 @@ function removeFiles(id, filename, i) {
 function _dropzoneInit() {
 	const form = "upload_form";
 	const button = "#modal-addfile .btn-upload";
+	const options = {
+		maxFiles: 20,
+	};
 
-	_dropzone = dropzoneInit(form, null, button);
+	_dropzone = dropzoneInit(form, null, button, options);
 	dzOnSuccessEvent(_dropzone, button, _dzOnSuccessEvent);
 }
 

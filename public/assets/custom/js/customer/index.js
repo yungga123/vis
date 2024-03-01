@@ -189,7 +189,10 @@ function upload(id, client) {
 function _dropzoneInit() {
 	const form = "upload_form";
 	const button = "#upload_modal .btn-upload";
+	const options = {
+		maxFiles: 20,
+	};
 
-	_dropzone = dropzoneInit(form, router.customer.files.upload, button);
+	_dropzone = dropzoneInit(form, router.customer.files.upload, button, options);
 	dzOnRemoveFileEvent(_dropzone, router.customer.files.remove);
 }

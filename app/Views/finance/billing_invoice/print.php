@@ -12,6 +12,9 @@ $vat_amount			= $with_vat ? $subtotal_amount * $vat_percent : 0;
 $vat_amount1		= $subtotal_amount * $vat_percent;
 $total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
 ?>
+<style>
+	.container-fluid { font-family: 'Courier New', Courier, monospace; }
+</style>
 <div class="container-fluid">
 	<div class="row">		
 		<div class="col-6">
@@ -238,9 +241,9 @@ $total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
 				<h6>APPROVED BY:</h6>
 				<h6 class="ml-5 mt-4">
 					<span class="text-underline text-bold">
-						Engr. Ginelou Niño T. Garzon
+						<?= $billing_invoice['approved_by'] ?? 'Engr. Ginelou Niño T. Garzon' ?>
 					</span><br> 
-					<span>CEO/President</span>
+					<span><?= $billing_invoice['approved_by_position'] ?? 'CEO/President' ?></span>
 				</h6>
 			</div>
 		</div>

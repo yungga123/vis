@@ -58,42 +58,37 @@ class CustomerBranch extends BaseController
         $table          = new TablesIgniter();
         $customer_id    = $this->request->getVar('c');
         $builder        = $this->_model->noticeTable($customer_id);
+        $fields         = [
+            'branch_name',
+            'contact_person',
+            'contact_number',
+            'address',
+            'email_address',
+            'notes',
+            'created_by',
+            'created_at'
+        ];
 
         $table
             ->setTable($builder)
             ->setSearch([
-                'branch_name',
-                'contact_person',
-                'contact_number',
-                'province',
-                'city',
-                'barangay',
-                'subdivision',
-                'email_address', 
+                "{$this->_model->table}.branch_name",
+                "{$this->_model->table}.contact_person",
+                "{$this->_model->table}.contact_number",
+                "{$this->_model->table}.province",
+                "{$this->_model->table}.city",
+                "{$this->_model->table}.barangay",
+                "{$this->_model->table}.subdivision",
+                "{$this->_model->table}.email_address", 
             ])
             ->setDefaultOrder('id','desc')
-            ->setOrder([
-                null,
-                'branch_name',
-                'contact_person',
-                'contact_number',
-                'address',
-                'email_address',
-                'notes',
-                'created_by',
-                'created_at'
-            ])
-            ->setOutput([
-                $this->_model->buttons($this->_permissions),
-                'branch_name',
-                'contact_person',
-                'contact_number',
-                'address',
-                'email_address',
-                'notes',
-                'created_by',
-                'created_at'
-            ]);
+            ->setOrder(array_merge([null], $fields))
+            ->setOutput(
+                array_merge(
+                    [$this->_model->buttons($this->_permissions)], 
+                    $fields
+                )
+            );
 
         return $table->getDatatable();
     }
