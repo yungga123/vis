@@ -73,7 +73,8 @@ trait InventoryTrait
             {$model->view}.brand,
             {$model->view}.unit,
             {$model->view}.size,
-            {$model->view}.supplier_name
+            {$model->view}.supplier_name,
+            {$model->table}.item_sdp AS item_price
         ";
         $builder = $model->select($fields);
         

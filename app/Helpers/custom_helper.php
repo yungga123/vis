@@ -65,6 +65,17 @@ if (! function_exists('current_date'))
 	}
 }
 
+if (! function_exists('current_time'))
+{
+    /**
+     * Get current time - default format 'H:i:s'
+     */
+	function current_time(string $format = 'H:i:s'): string
+	{
+        return date($format);
+	}
+}
+
 if (! function_exists('current_datetime'))
 {
     /**

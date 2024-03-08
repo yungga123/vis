@@ -54,7 +54,8 @@ if (! function_exists('get_nav_menus'))
             url_is('inventory') || 
             url_is('inventory/dropdowns') || 
             url_is('inventory/logs') || 
-            url_is('project-request-forms')
+            url_is('project-request-forms') || 
+            url_is('inventory/order-forms')
         );
         $is_purchasing  = (
             url_is('suppliers') || 
@@ -336,6 +337,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('finance.funds.home'),
                 'class'     => (url_is('finance/funds') ? 'active' : ''),
                 'icon'      => 'fas fa-piggy-bank',
+            ],
+            'INVENTORY_ORDER_FORMS'  => [
+                'menu'      => 'INVENTORY', // Leave empty if none
+                'name'      => get_modules('INVENTORY_ORDER_FORMS'),
+                'url'       => url_to('inventory.order_form.home'),
+                'class'     => (url_is('inventory/order-forms') ? 'active' : ''),
+                'icon'      => 'fab fa-wpforms',
             ],
         ];
 
