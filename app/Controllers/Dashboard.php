@@ -302,7 +302,14 @@ class Dashboard extends BaseController
                     ],
                 ]
             ],
-            'INVENTORY'             => $inventoryCount,
+            'INVENTORY'             => [
+                'count'     => $inventoryCount,
+                'more_info' => [
+                    'total QTY of all items' => [
+                        'count' => $inventoryModel->getItemTotalStocks(),
+                    ],
+                ],
+            ],
             'INVENTORY_PRF'         => [
                 'count'     => $prfModel->countRecords(),
                 'more_info' => [

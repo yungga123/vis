@@ -19,7 +19,14 @@ class SalaryRateModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['employee_id', 'rate_type', 'salary_rate', 'is_current', 'created_by'];
+    protected $allowedFields    = [
+        'employee_id', 
+        'rate_type', 
+        'salary_rate', 
+        'payout', 
+        'is_current', 
+        'created_by'
+    ];
 
     // Dates
     protected $useTimestamps = true;
@@ -41,6 +48,10 @@ class SalaryRateModel extends Model
         'rate_type'   => [
             'rules' => 'required|max_length[50]',
             'label' => 'rate type',
+        ],
+        'payout'   => [
+            'rules' => 'required|max_length[50]',
+            'label' => 'payout',
         ],
     ];
     protected $validationMessages   = [];
@@ -181,6 +192,7 @@ class SalaryRateModel extends Model
             {$model->table}.position,
             {$model->table}.employment_status,
             {$this->table}.rate_type,
+            {$this->table}.payout,
             ".dt_sql_number_format("{$this->table}.salary_rate")." AS salary_rate,
             cb.employee_name AS created_by,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
@@ -209,6 +221,20 @@ class SalaryRateModel extends Model
         $closureFun = function($row) use($id, $permissions) {
             $buttons = dt_button_actions($row, $id, $permissions);
             return $buttons;
+        };
+        
+        return $closureFun;
+    }
+
+    /**
+     * DataTable payout
+     */
+    public function dtPayout()
+    {
+        $closureFun = function($row) {
+            $payout = empty($row['payout']) ? 'N/A' : get_salary_rates_payout($row['payout']);
+
+            return $payout;
         };
         
         return $closureFun;

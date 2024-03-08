@@ -6,7 +6,7 @@
             <div class="card">
 				<div class="card-header">
                     <div class="mb-1">
-                        <strong>Filters by Employee Status or Rate Type:</strong>
+                        <strong>Filters by Employee Status, Rate Type or Payout:</strong>
                     </div>
                     <div class="d-flex flex-md-row flex-column align-items-md-center">
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
@@ -19,6 +19,13 @@
                         <div class="mr-2 flex-fill mb-2 mb-md-0">
                             <select class="custom-select select2" id="filter_rate_type" data-placeholder="Select a rate type" multiple style="width: 100%;">
                                 <?php foreach (get_salary_rate_type() as $val => $text): ?>
+                                    <option value="<?= $val ?>"><?= $text ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_payout" data-placeholder="Select a payout" multiple style="width: 100%;">
+                                <?php foreach (get_salary_rates_payout() as $val => $text): ?>
                                     <option value="<?= $val ?>"><?= $text ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -45,6 +52,7 @@
                                 <th>Employee Status</th>
                                 <th>Rate Type</th>
                                 <th>Salary Rate</th>
+                                <th>Payout</th>
                                 <th>Set By</th>
                                 <th>Set At</th>
                             </tr>
