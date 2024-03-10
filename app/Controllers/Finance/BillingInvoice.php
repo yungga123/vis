@@ -185,7 +185,7 @@ class BillingInvoice extends BaseController
                     'overdue_interest'  => $request['overdue_interest'] ?? null,
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
-
+ 
                 if (! empty($request['attention_to'] ?? '')) {
                     $inputs     = [
                         'id'            => $id,
@@ -194,7 +194,6 @@ class BillingInvoice extends BaseController
                 } else {
                     $this->checkRoleActionPermissions($this->_module_code, $action, true);
                     $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
-                    $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
                     $overdues = $this->_checkNCalculateOverdues($request['billing_amount'], $request['due_date']);
 
