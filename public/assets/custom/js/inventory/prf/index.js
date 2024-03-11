@@ -337,7 +337,7 @@ function edit(id) {
 					}
 				}
 
-				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+				$("#process_date").val(res.data.process_date);
 				$("#orig_job_order")
 					.removeClass()
 					.html(

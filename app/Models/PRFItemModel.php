@@ -178,10 +178,13 @@ class PRFItemModel extends Model
         $returned_date  = $data['returned_date'];
         $stocks         = $data['stocks'];
         $quantity_out   = $data['quantity_out'];
-        $remarks        = isset($data['remarks']) ? $data['remarks'] : null;
+        $remarks        = $data['remarks'] ?? null;
 
         if (! empty($data) && count($inventory_id)) {
             $arr        = [];
+            $logs_data  = [];
+            $action     = 'ITEM_IN';
+
             for ($i=0; $i < count($inventory_id); $i++) { 
                 $arr[] = [
                     'prf_id'        => (int)$prf_id,
@@ -191,13 +194,32 @@ class PRFItemModel extends Model
                     'quantity_out'  => $quantity_out[$i],
                 ];
 
-                if (! empty($remarks)) {
-                    $arr['remarks'][] = $remarks[$i];
+                if ($data['status'] === 'file') {
+                    if (! empty($returned_q[$i]) && $returned_q[$i] > 0) {
+                        $this->traitUpdateInventoryStock($inventory_id[$i], $returned_q[$i], $action);
+    
+                        $logs_data[] = [
+                            'inventory_id'  => $inventory_id[$i],
+                            'stocks'        => $returned_q[$i],
+                            'parent_stocks' => $stocks[$i],
+                            'status'        => 'return',
+                            'status_date'   => $returned_date[$i],
+                            'action'        => $action,
+                            'created_by'    => session('username'),
+                        ];
+                    }
+                } else {
+                    if (! empty($remarks)) {
+                        $arr['remarks'][] = $remarks[$i];
+                    }
                 }
             }
 
+            // Add inventory logs
+            $this->saveInventoryLogs($logs_data);
+
             if (! empty($arr)) {
-                $constraint = ['prf_id', 'inventory_id', 'quantity_out'];
+                $constraint = ['prf_id', 'inventory_id'];
                 return $this->db->table($this->table)->updateBatch($arr, $constraint);
             }
         }

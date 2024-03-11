@@ -35,7 +35,7 @@
                             <div class="form-group">
                                 <label class="required" for="process_date">Date Needed</label>
                                 <div>Format: MM/DD/YYYY</div>
-                                <input type="date" name="process_date" id="process_date" class="form-control">
+                                <input type="date" name="process_date" id="process_date" class="form-control" value="<?= current_date() ?>">
                                 <small id="alert_process_date" class="text-danger"></small>
                             </div>
                         </div>
