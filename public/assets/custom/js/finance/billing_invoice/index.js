@@ -92,7 +92,9 @@ $(document).ready(function () {
 		$("div.with_interest").addClass("d-none");
 
 		if ($(this).is(":checked")) {
-			interest = billing_amount * _interest.per_day;
+			const daysInterest = parseFloat($("#days_overdue").val() || 0);
+
+			interest = billing_amount * (daysInterest * _interest.per_day);
 			interest = parseFloat(interest.toFixed(2));
 
 			if (interest) $("div.with_interest").removeClass("d-none");
@@ -189,7 +191,7 @@ function edit(id, billing_status) {
 	fetchRecord(router.billing_invoice.fetch, { id: id }, modal, (res) => {
 		if (res.status === STATUS.SUCCESS) {
 			if (inObject(res, "data") && !isEmpty(res.data)) {
-				const text = `${res.data.tasklead_id} | ${res.data.quotation}`;
+				const text = `${res.data.tasklead_id} | ${res.data.quotation} | ${res.data.client}`;
 				const data = {
 					client: res.data.client,
 					manager: res.data.manager,
@@ -286,7 +288,7 @@ function _initTasklead() {
 		"#tasklead_id",
 		"Search & select a tasklead",
 		router.admin.common.quotations,
-		["id", "quotation"],
+		["id", "quotation", "client"],
 		_loadTaskleadDetails
 	);
 }

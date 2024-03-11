@@ -46,29 +46,33 @@
                                 </select>
                                 <small id="alert_payment_method" class="text-danger"></small>
                             </div>
-                            <div class="d-none with_vat">
-                                <div class="form-group">
-                                    <label class="not-include" for="vat_amount">Vat Amount</label>
-                                    <input type="number" class="form-control" name="vat_amount" id="vat_amount" placeholder="Vat Amount" step="0.01" readonly>
-                                    <small id="alert_vat_amount" class="text-danger"></small>
-                                </div>
-                                <div class="form-group">
-                                    <label class="not-include" for="grand_total">Grand Total Vat Inclusive</label>
-                                    <input type="number" class="form-control" name="grand_total" id="grand_total" placeholder="Grand Total" step="0.01" readonly>
-                                    <small id="alert_grand_total" class="text-danger"></small>
-                                </div>
-                            </div>
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" type="checkbox" name="with_vat" id="with_vat" value="1">
                                     <label for="with_vat" class="custom-control-label">With Vat<span></span>?</label>
                                 </div>
                             </div>
+                            <div class="row d-none with_vat">
+                                <div class="col-sm-12 col-md-6">
+                                    <div class="form-group">
+                                        <label class="not-include" for="vat_amount">Vat Amount</label>
+                                        <input type="number" class="form-control" name="vat_amount" id="vat_amount" placeholder="Vat Amount" step="0.01" readonly>
+                                        <small id="alert_vat_amount" class="text-danger"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <div class="form-group">
+                                        <label class="not-include" for="grand_total">Grand Total Vat Inclusive</label>
+                                        <input type="number" class="form-control" name="grand_total" id="grand_total" placeholder="Grand Total" step="0.01" readonly>
+                                        <small id="alert_grand_total" class="text-danger"></small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="required" for="due_date">Due Date</label>
-                                <input type="date" class="form-control" name="due_date" id="due_date" placeholder="Due Date">
+                                <input type="date" class="form-control" name="due_date" id="due_date" placeholder="Due Date" value="<?= current_date() ?>">
                                 <small id="alert_due_date" class="text-danger"></small>
                             </div>
                             <div class="form-group">
@@ -81,16 +85,16 @@
                                 <input type="number" class="form-control" name="amount_paid" id="amount_paid" placeholder="Amount Paid" step="0.01">
                                 <small id="alert_amount_paid" class="text-danger"></small>
                             </div>
-                            <div class="form-group with_interest d-none">
-                                <label class="required not-include" for="overdue_interest">Overdue Interest</label>
-                                <input type="number" class="form-control" name="overdue_interest" id="overdue_interest" placeholder="Overdue Interest" step="0.01" readonly>
-                                <small id="alert_overdue_interest" class="text-danger"></small>
-                            </div>
                             <div class="form-group with_interest-checkbox">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" type="checkbox" name="with_interest" id="with_interest" value="1">
                                     <label for="with_interest" class="custom-control-label not-include">With Interest<span></span>?</label>
                                 </div>
+                            </div>
+                            <div class="form-group with_interest d-none">
+                                <label class="required not-include" for="overdue_interest">Overdue Interest</label>
+                                <input type="number" class="form-control" name="overdue_interest" id="overdue_interest" placeholder="Overdue Interest" step="0.01" readonly>
+                                <small id="alert_overdue_interest" class="text-danger"></small>
                             </div>
                         </div>
                     </div>

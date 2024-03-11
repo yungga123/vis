@@ -133,9 +133,9 @@ class BillingInvoice extends BaseController
         $table->setTable($builder)
             ->setSearch([
                 "{$this->_model->table}.id",
-                "{$tlVModel->table}.quotation",
-                "{$tlVModel->table}.client",
-                "{$tlVModel->table}.manager",
+                "{$tlVModel->table}.quotation_num",
+                "{$tlVModel->table}.customer_name",
+                "{$tlVModel->table}.employee_name",
             ])
             ->setOrder(array_merge([null, null, null, null], $fields))
             ->setOutput(
