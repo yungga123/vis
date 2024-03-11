@@ -289,7 +289,8 @@ function _initTasklead() {
 		"Search & select a tasklead",
 		router.admin.common.quotations,
 		["id", "quotation", "client"],
-		_loadTaskleadDetails
+		_loadTaskleadDetails,
+		{ search_in: ["quotation", "client"] }
 	);
 }
 

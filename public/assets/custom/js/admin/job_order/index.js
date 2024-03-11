@@ -26,8 +26,9 @@ $(document).ready(function () {
 		"#select2Quotation",
 		"Search a quotation",
 		router.admin.common.quotations,
-		"quotation",
-		loadQDetails
+		["id", "quotation", "client"],
+		loadQDetails,
+		{ search_in: ["quotation", "client"] }
 	);
 
 	/* Load dataTable */
@@ -51,9 +52,10 @@ $(document).ready(function () {
 
 	$("#is_manual").on("change", function (e) {
 		if (e.target.checked) {
-			is_manual = true;
-			toggleQuotationFields(is_manual);
+			clearSelect2Selection("#select2Quotation");
+			toggleQuotationFields(true);
 			initSelect2Customers("commercial");
+
 			return;
 		}
 

@@ -20,7 +20,7 @@
                     </div>
                     <div class="form-group">
                         <label class="required mb-0" for="tasklead_id">Task/Leads</label>
-                        <div>Format: Tasklead ID | Quotation Number</div>
+                        <div>Format: Tasklead ID | Quotation Number | Client</div>
                         <select class="custom-select" name="tasklead_id" id="tasklead_id" style="width: 100%;"></select required>
                         <div id="orig_tasklead"></div>
                         <small id="alert_tasklead_id" class="text-danger"></small>

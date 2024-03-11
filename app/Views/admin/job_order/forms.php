@@ -27,6 +27,7 @@
                         <input type="hidden" name="quotation" id="quotation" readonly>
                         <input type="hidden" name="employee_id" id="employee_id" readonly>
                         <label class="required" for="select2Quotation">Quotation Number</label>
+                        <div>Format: Tasklead ID | Quotation Number | Client</div>
                         <select class="custom-select select2" id="select2Quotation" style="width: 100%;">
                         </select>
                         <div class="d-none" id="orig_qn"></div>
