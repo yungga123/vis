@@ -88,7 +88,7 @@
                                 <small id="alert_stock_unit" class="text-danger"></small>
                                 <p>Not in the list? <a href="#" role="button" onclick="openDropdownModal('Item Unit', 'UNIT', '#stock_unit')">Add unit here</a>!</p>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group d-none">
                                 <label for="date_of_purchase">Date of Purchase</label>
                                 <input type="date" name="date_of_purchase" id="date_of_purchase" class="form-control" placeholder="Enter...">
                                 <small id="alert_date_of_purchase" class="text-danger"></small>
