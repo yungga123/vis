@@ -39,9 +39,9 @@
                         <small id="alert_salary_rate" class="form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label class="required" for="payout">Payout</label>
+                        <label class="required" for="payout">Salary Payout</label>
                         <select type="text" class="form-control" name="payout" id="payout" style="width: 100%;">
-                            <option value=""></option>
+                            <option value="">Select a salary payout</option>
                             <?php foreach (get_salary_rates_payout() as $val => $text): ?>
                                 <option value="<?= $val ?>"><?= $text ?></option>
                             <?php endforeach; ?>

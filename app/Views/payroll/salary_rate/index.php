@@ -52,7 +52,7 @@
                                 <th>Employee Status</th>
                                 <th>Rate Type</th>
                                 <th>Salary Rate</th>
-                                <th>Payout</th>
+                                <th>Salary Payout</th>
                                 <th>Set By</th>
                                 <th>Set At</th>
                             </tr>
