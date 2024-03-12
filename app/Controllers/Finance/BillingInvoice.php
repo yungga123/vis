@@ -184,7 +184,9 @@ class BillingInvoice extends BaseController
                     'grand_total'       => $request['grand_total'] ?? null,
                     'overdue_interest'  => $request['overdue_interest'] ?? null,
                 ];
+                $is_paid        = ($request['billing_status'] ?? '') === 'paid';
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
+                $action         = $is_paid ? 'MARK_PAID': $action;
  
                 if (! empty($request['attention_to'] ?? '')) {
                     $inputs     = [
@@ -206,7 +208,7 @@ class BillingInvoice extends BaseController
                         $inputs['overdue_interest'] = 0;
                     }
 
-                    if (($request['billing_status'] ?? '') === 'paid') {
+                    if ($is_paid) {
                         $inputs['billing_status']   = 'paid';
                         $inputs['paid_by']          = session('username');
                         $inputs['paid_at']          = current_datetime();

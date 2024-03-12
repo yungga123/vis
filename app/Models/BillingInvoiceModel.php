@@ -290,9 +290,9 @@ class BillingInvoiceModel extends Model
         $closureFun = function($row) use($id, $permissions, $dropdown) {
             $buttons = dt_button_actions($row, $id, $permissions, $dropdown);
 
-            if ($row['status'] === 'pending') {
+            if (check_permissions($permissions, 'APPROVE') && $row['status'] === 'pending') {
                 $buttons .= dt_button_html([
-                    'text'      => $dropdown ? 'Mark as Paid' : '',
+                    'text'      => $dropdown ? 'Approve' : '',
                     'button'    => 'btn-primary',
                     'icon'      => 'fas fa-check-circle',
                     'condition' => dt_status_onchange($row[$id], 'approve', $row['status'], 'Billing Invoice'),
@@ -300,7 +300,10 @@ class BillingInvoiceModel extends Model
             }
 
             if ($row['status'] === 'approved') {
-                if (in_array($row['billing_status'], ['pending', 'overdue'])) {
+                if (
+                    in_array($row['billing_status'], ['pending', 'overdue']) &&
+                    check_permissions($permissions, 'MARK_PAID')
+                ) {
                     $onclick = <<<EOF
                         onclick="edit({$row[$id]}, '{$row['billing_status']}')" title="Mark as Paid"
                     EOF;

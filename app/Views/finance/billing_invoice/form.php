@@ -16,7 +16,7 @@
                 <div class="modal-body">
                     <div class="callout callout-info">
                         <strong>Note:</strong> 
-                        If not empty, initial dropdowns of <strong>Task/Leads</strong> are by 10. Type the <strong>TASKLEAD ID OR QUOTATION NUMBER</strong> to search if not in the options and then, click to select.
+                        If not empty, initial dropdowns of <strong>Task/Leads</strong> are by 10. Type the <strong>TASKLEAD ID QUOTATION NUMBER OR CLIENT</strong> to search if not in the options and then, click to select.
                     </div>
                     <div class="form-group">
                         <label class="required mb-0" for="tasklead_id">Task/Leads</label>

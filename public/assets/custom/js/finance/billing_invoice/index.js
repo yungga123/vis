@@ -115,6 +115,11 @@ $(document).ready(function () {
 			$("#id").val("");
 			$("#billing_status").val("");
 			$("#days_overdue").val("");
+			$("#orig_tasklead").html("");
+			$(".tasklead-details").html("");
+			$("div.with_vat").addClass("d-none");
+			$("div.with_interest").addClass("d-none");
+			$(".with_interest-checkbox").addClass("d-none");
 			$(".with_interest-checkbox label > span").html("");
 
 			self[0].reset();
