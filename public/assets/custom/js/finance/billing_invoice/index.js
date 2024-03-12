@@ -252,6 +252,7 @@ function remove(id) {
 }
 
 /* Change status record */
+
 function change(id, changeTo, status) {
 	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
 	const swalMsg = `
