@@ -25,7 +25,7 @@
                     </div>
                     <div class="form-group">
                         <label class="required" for="rate_type">Rate Type</label>
-                        <select type="text" class="form-control" name="rate_type" id="rate_type">
+                        <select type="text" class="form-control" name="rate_type" id="rate_type" style="width: 100%;">
                             <option value="">Select a rate type</option>
                             <?php foreach (get_salary_rate_type() as $val => $text): ?>
                                 <option value="<?= $val ?>"><?= $text ?></option>
@@ -37,6 +37,16 @@
                         <label class="required" for="salary_rate">Salary Rate</label>
                         <input type="number" class="form-control" name="salary_rate" id="salary_rate" step="0.01" placeholder="Enter salary rate">
                         <small id="alert_salary_rate" class="form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label class="required" for="payout">Salary Payout</label>
+                        <select type="text" class="form-control" name="payout" id="payout" style="width: 100%;">
+                            <option value="">Select a salary payout</option>
+                            <?php foreach (get_salary_rates_payout() as $val => $text): ?>
+                                <option value="<?= $val ?>"><?= $text ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <small id="alert_payout" class="form-text text-danger"></small>
                     </div>
                 </div>
                 <div class="modal-footer">

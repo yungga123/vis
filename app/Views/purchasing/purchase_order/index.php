@@ -43,6 +43,10 @@
                                 <th>PO #</th>
                                 <th>RPF #</th>
                                 <th>Supplier</th>
+                                <th>With Vat?</th>
+                                <th>Vat Amount</th>
+                                <th>Sub Total</th>
+                                <th>Grand Total</th>
                                 <th>Attention To</th>
                                 <th>Requested By</th>
                                 <th>Requested At</th>

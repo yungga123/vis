@@ -137,7 +137,7 @@ $approved_at 		= $purchase_order['approved_at'];
 								<td class="text-center"><?= $val['size'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['unit'] ?? 'N/A' ?></td>
 								<td class="text-center"><?= $val['quantity_in'] ?? 'N/A' ?></td>
-								<td class="text-right"><?= number_format($val['item_sdp'] ?? 0) ?></td>
+								<td class="text-right"><?= number_format($val['item_sdp'] ?? 0, 2) ?></td>
 								<td class="text-right"><?= number_format($discount, 2) ?></td>
 								<td class="text-right"><?= number_format($total_price, 2) ?></td>
 								<td class="text-center"><?= $rpf['date_needed'] ?? 'N/A' ?></td>
@@ -148,9 +148,9 @@ $approved_at 		= $purchase_order['approved_at'];
 						}
 
 						// Computation of initial total amount, net of vat and vat amount
-						$total_amount		= $sub_total;
-						$net_of_vat_amount	= $sub_total / 1.12;
-						$vat_amount			= $net_of_vat_amount * $vat_percent; // 12% vat
+						$net_of_vat_amount	= $sub_total;
+						$vat_amount			= $sub_total * $vat_percent; // 12% vat
+						$total_amount		= $sub_total + $vat_amount;
 					}
 					?>
 					<tr>
@@ -168,7 +168,7 @@ $approved_at 		= $purchase_order['approved_at'];
 							<div id="net_of_vat_amount">
 								<?= number_format($with_vat ? $net_of_vat_amount : 0, 2) ?>
 							</div>
-							<div id="vat_amount">
+							<div class="vat_amount">
 								<?= number_format($with_vat ? $vat_amount : 0, 2) ?>
 							</div>
                         </td>
@@ -178,7 +178,10 @@ $approved_at 		= $purchase_order['approved_at'];
 							TOTAL AMOUNT<span id="vat_text"></span>
 						</td>
                         <td class="text-bold text-right" colspan="2">
-							PHP <span id="total_amount"><?= number_format($total_amount, 2) ?></span>
+							PHP 
+							<span class="total_amount">
+								<?= number_format($with_vat ? $total_amount : $sub_total, 2) ?>
+							</span>
 						</td>
                     </tr>
 				</tbody>
@@ -237,7 +240,7 @@ $approved_at 		= $purchase_order['approved_at'];
 			<div>
 				<h6>CHECKED BY:</h6>
 				<h6 class="text-bold ml-5 mt-4">
-					<?= $purchase_order['prepared_by_name'] ? strtoupper($purchase_order['prepared_by_name']) : '' ?>
+					<?= $rpf['checked_by'] ? strtoupper($rpf['checked_by']) : '' ?>
 				</h6>
 			</div>
         </div>
@@ -294,9 +297,12 @@ $approved_at 		= $purchase_order['approved_at'];
 							</div>
 							<input type="hidden" name="po_id" value="<?= $purchase_order['id'] ?>">
 							<input type="hidden" name="net_of_vat_amount" value="<?= number_format($net_of_vat_amount, 2) ?>">
-							<input type="hidden" name="vat_amount" value="<?= number_format($vat_amount, 2) ?>">
-							<input type="hidden" name="sub_total" value="<?= number_format($sub_total, 2) ?>">
-							<input type="hidden" name="total_amount" value="<?= number_format($total_amount, 2) ?>">
+							<input type="hidden" id="vat_amount_formatted" value="<?= number_format($vat_amount, 2) ?>">
+							<input type="hidden" id="vat_amount" value="<?= $vat_amount ?>">
+							<input type="hidden" name="vat_amount" value="<?= $with_vat ? $vat_amount : 0 ?>">
+							<input type="hidden" name="sub_total" value="<?= $sub_total ?>">
+							<input type="hidden" id="sub_total_formatted" value="<?= number_format($sub_total, 2) ?>">
+							<input type="hidden" id="total_amount" value="<?= number_format($total_amount, 2) ?>">
 						</div>
 					</div>
 				</div>

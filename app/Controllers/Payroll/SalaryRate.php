@@ -98,9 +98,13 @@ class SalaryRate extends BaseController
             'employment_status',
             'rate_type',
             'salary_rate',
+            'payout',
             'created_by',
             'created_at'
         ];
+        $fields[6]  = null;
+        $fields1    = $fields;
+        $fields1[6] = $this->_model->dtPayout();
 
         $table->setTable($builder)
             ->setSearch([
@@ -112,7 +116,7 @@ class SalaryRate extends BaseController
             ->setOutput(
                 array_merge(
                     [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
-                    $fields
+                    $fields1
                 )
             );
         
@@ -141,6 +145,7 @@ class SalaryRate extends BaseController
                     'employee_id'   => $employee_id,
                     'rate_type'     => $request['rate_type'],
                     'salary_rate'   => $request['salary_rate'],
+                    'payout'        => $request['payout'],
                     'is_current'    => 1,
                 ];
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
@@ -157,16 +162,19 @@ class SalaryRate extends BaseController
                     $inputs[] = $inputs;
                     if (! empty($employee_id) && is_array($employee_id)) {
                         $inputs = [];
+
                         foreach ($employee_id as $empId) {
                             $inputs[] = [
                                 'employee_id'   => $empId,
                                 'rate_type'     => $request['rate_type'],
                                 'salary_rate'   => $request['salary_rate'],
+                                'payout'        => $request['payout'],
                                 'is_current'    => 1,
                                 'created_by'    => session('username'),
                             ];
                         }
                     }
+
                     $save   = $this->_model->insertBatch($inputs);
                 }
 
@@ -205,7 +213,8 @@ class SalaryRate extends BaseController
                     {$table}.employee_id,
                     {$empVModel->table}.employee_name,
                     {$table}.rate_type,
-                    {$table}.salary_rate
+                    {$table}.salary_rate,
+                    {$table}.payout
                 ";
                 $record     = $model->joinEmployeesView()->fetch($id, $columns);
 

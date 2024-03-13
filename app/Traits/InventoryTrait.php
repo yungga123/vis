@@ -214,7 +214,7 @@ trait InventoryTrait
     {
         $columns    = "prf_items.quantity_out, inventory.stocks";
         $items      = $this->traitFetchPrfItems($id, true, false, $columns);
-
+        
         if (! empty($items)) {
             foreach ($items as $val) {
                 if (floatval($val['stocks']) < floatval($val['quantity_out']))
