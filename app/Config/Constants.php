@@ -241,6 +241,9 @@ define('ACTIONS', [
             'RELEASE'       => 'Release Fund',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'SALES_CUSTOMER_SUPPORTS'     => [
+            'CHANGE'        => 'Change Status',
+        ],
     ],
 ]);
 
@@ -309,6 +312,7 @@ define('MODULES', [
     'PAYROLL_TIMESHEETS'    => 'Timesheets',
     'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
     'FINANCE_FUNDS'         => 'Funds',
+    'SALES_CUSTOMER_SUPPORTS' => 'Customer Supports',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -345,6 +349,7 @@ define('MODULE_CODES', [
     'timesheets'            => 'PAYROLL_TIMESHEETS',
     'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
     'funds'                 => 'FINANCE_FUNDS',
+    'customer_supports'     => 'SALES_CUSTOMER_SUPPORTS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)

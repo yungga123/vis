@@ -82,9 +82,18 @@ class Dispatch extends BaseController
             'admin' => [
                 'common' => [
                     'schedules' => url_to('admin.common.schedules'),
-                    'customers' => url_to('admin.common.customers'),
                 ]
-            ]
+            ],
+            'clients' => [
+                'common' => [
+                    'customers' => url_to('clients.common.customers'),
+                ]
+            ],
+            'employee' => [
+                'common' => [
+                    'search'    => url_to('employee.common.search'),
+                ]
+            ],
         ]);
         $data['php_to_js_options'] = json_encode([
             'employees'     => get_employees(),

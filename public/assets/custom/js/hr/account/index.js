@@ -15,15 +15,25 @@ $(document).ready(function () {
 		$(`#${modal}`).removeClass("edit").addClass("add");
 		$(`#${modal} .modal-title`).text("Add New Account");
 		$(`#${form}`)[0].reset();
+
 		$("#account_id").val("");
-		$("#employee_id").attr("disabled", false);
+		$("#employee_id").attr("disabled", false).removeClass("d-none");
 		$("#employee_id1").val("").attr("name", "employee_id1");
+		$("#employee_name").val("").attr("type", "hidden");
 		$(".lbl_password").addClass("required");
 		$("#small_password").css("display", "none");
-		setOptionValue("#employee_id", "");
-		clearSelect2Selection("#employee_id", "");
 
+		setOptionValue("#employee_id", "");
+		clearSelect2Selection("#employee_id");
 		clearAlertInForm(elems);
+
+		/* Initialize select2 employees/check by */
+		select2AjaxInit(
+			"#employee_id",
+			"Select an employee",
+			router.employee.common.search,
+			"text"
+		);
 	});
 
 	/* Load dataTable */
@@ -87,6 +97,7 @@ function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Account");
 	$("#account_id").val(id);
+	$("#employee_name").val("").attr("type", "hidden");
 
 	clearAlertInForm(elems);
 	showLoading();
@@ -97,16 +108,19 @@ function edit(id) {
 
 			if (res.status === STATUS.SUCCESS) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
+					destroySelect2("#employee_id");
+					setOptionValue("#access_level", res.data.access_level);
+
 					$("#username").val(res.data.username);
 					$("#prev_username").val(res.data.username);
-					$("#employee_id").attr("disabled", true);
-					setOptionValue("#employee_id", res.data.employee_id);
-					setOptionValue("#access_level", res.data.access_level);
+					$("#employee_id").attr("disabled", true).addClass("d-none");
 					$("#employee_id1")
 						.val(res.data.employee_id)
 						.attr("name", "employee_id");
+					$("#employee_name").val(res.data.employee_name).attr("type", "text");
 					$(".lbl_password").removeClass("required");
 					$("#small_password").css("display", "block");
+
 					$(`#${modal}`).modal("show");
 				}
 			} else {

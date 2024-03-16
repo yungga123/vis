@@ -60,7 +60,12 @@ $(document).ready(function () {
 	select2Init("#technicians", "Select technicians", $technicians);
 
 	/* Initialize select2 employees/check by */
-	select2Init("#checked_by", "Select an employee");
+	select2AjaxInit(
+		"#checked_by",
+		"Select an employee",
+		router.employee.common.search,
+		"text"
+	);
 
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -124,6 +129,9 @@ function edit(id) {
 	$("#schedule_id").val("");
 
 	clearAlertInForm(elems);
+	clearSelect2Selection("#schedules");
+	clearSelect2Selection("#technicians");
+	clearSelect2Selection("#checked_by");
 	showLoading();
 
 	$.post(router.dispatch.fetch, { id: id })
@@ -141,11 +149,16 @@ function edit(id) {
 				// Set selected technicians in select2
 				setSelect2Technicians(res.data.technicians);
 
-				if (!isEmpty(res.data.customer_type))
+				if (!isEmpty(res.data.customer_type)) {
 					$("#" + strLower(res.data.customer_type)).prop("checked", true);
+				}
 
 				// Set selected employee/checked by in select2
-				setSelect2Selection("#checked_by", res.data.checked_by);
+				setSelect2AjaxSelection(
+					"#checked_by",
+					res.data.checked_by_name,
+					res.data.checked_by
+				);
 
 				$.each(res.data, (key, value) => {
 					if (key !== "customer_type") $(`input[name="${key}"]`).val(value);
@@ -156,9 +169,9 @@ function edit(id) {
 					.html(`Original schedule: <strong>${res.data.schedule}</strong>`);
 				$("#remarks").val(res.data.remarks);
 				$("#comments").val(res.data.comments);
+
 				setOptionValue("#service_type", res.data.service_type);
 				setOptionValue("#with_permit", res.data.with_permit);
-
 				setTimeout(() => {
 					$("#schedule_id").val(res.data.schedule_id);
 				}, 500);

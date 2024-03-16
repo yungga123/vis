@@ -771,3 +771,61 @@ if (! function_exists('get_expenses'))
         return $options[$param] ?? $options;
 	}
 }
+
+if (! function_exists('get_priorities'))
+{
+    /**
+     * Priority list 1 - 5 > Very low to high
+     */
+	function get_priorities(string $param = ''): string|array
+	{
+        $options = [
+            1 => 1,
+            2 => 2,
+            3 => 3,
+            4 => 4,
+            5 => 5,
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
+if (! function_exists('get_security_ict_systems'))
+{
+    /**
+     * Get the Type of Security and ICT System
+     */
+	function get_security_ict_systems(string $param = ''): string|array
+	{
+        $options = [
+            'CCTV'                          => 'CCTV',
+            'ALARM SYSTEM'                  => 'ALARM SYSTEM',
+            'PABX'                          => 'PABX',
+            'WIRES/WIRELESS CONNECTIVITY'   => 'WIRES/WIRELESS CONNECTIVITY',
+            'VIDEO INTERCOM'                => 'VIDEO INTERCOM',
+            'ACCESS CONTROL'                => 'ACCESS CONTROL',
+            'OTHER'                         => 'OTHER',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
+if (! function_exists('get_customer_support_status'))
+{
+    /**
+     * Final remarks/status for Sales/Customer Supports module
+     */
+	function get_customer_support_status(string $param = ''): string|array
+	{
+        $options = [
+            'pending'   => 'Pending',
+            'done'      => 'Done',
+            'turn_over' => 'Turn-Over to Sales Department',
+            'create-jo' => 'Create Job Order',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
