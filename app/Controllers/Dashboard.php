@@ -12,6 +12,7 @@ use App\Models\JobOrderModel;
 use App\Models\ScheduleModel;
 use App\Models\InventoryModel;
 use App\Models\LeaveModel;
+use App\Models\OrderFormModel;
 use App\Models\OvertimeModel;
 use App\Models\PayrollModel;
 use App\Models\ProjectRequestFormModel;
@@ -253,6 +254,7 @@ class Dashboard extends BaseController
         $timesheetModel     = new TimesheetModel();
         $salaryRateModel    = new SalaryRateModel();
         $billingModel       = new BillingInvoiceModel();
+        $orderFormModel     = new OrderFormModel();
 
         // Count all queries
         $accountCount           = $accountModel->where('deleted_at IS NULL');
@@ -432,6 +434,36 @@ class Dashboard extends BaseController
                     'paid'      => [
                         'count' => $billingModel->countRecords('paid'),
                         'bg'    => 'success',
+                    ],
+                ]
+            ],
+            'INVENTORY_ORDER_FORMS' => [
+                'count'     => $orderFormModel->countRecords(),
+                'more_info' => [
+                    'pending' => [
+                        'icon'  => 'far fa-clock',
+                        'count' => $orderFormModel->countRecords('pending'),
+                        'bg'    => 'warning',
+                    ],
+                    'accepted' => [
+                        'icon'  => 'fas fa-check-circle',
+                        'count' => $orderFormModel->countRecords('accepted'),
+                        'bg'    => 'primary',
+                    ],
+                    'item_out' => [
+                        'icon'  => 'fas fa-file-import',
+                        'count' => $orderFormModel->countRecords('item_out'),
+                        'bg'    => 'success',
+                    ],
+                    'filed' => [
+                        'icon'  => 'fas fa-file-alt',
+                        'count' => $orderFormModel->countRecords('filed'),
+                        'bg'    => 'dark',
+                    ],
+                    'rejected' => [
+                        'icon'  => 'fas fa-times-circle',
+                        'count' => $orderFormModel->countRecords('rejected'),
+                        'bg'    => 'secondary',
                     ],
                 ]
             ],

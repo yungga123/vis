@@ -34,40 +34,21 @@ $(document).ready(function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
 		$(`#${modal} .modal-title`).text("Add PRF");
-		$(`#${form}`)[0].reset();
-		$("#id").val("");
-		$("#orig_item").addClass("d-none");
-		$(".job-order-details").html("");
-		$(".item-row").remove();
-		$(".original-item").html("");
 
-		clearSelect2Selection(clientSelector);
-		clearSelect2Selection(invSelector);
-		clearAlertInForm(elems);
+		_clearForm();
 	});
 
 	/* Initial init of customers (commerical) via ajax data source */
-	initSelect2Customers();
+	initSelect2Customers(router.clients.common.customers);
 	onChangeCustomerType();
-
-	$(clientSelector).on("select2:select", function () {
-		$("#client_branch_wrapper").addClass("d-none");
-
-		const customer_type = $('input[name="customer_type"]:checked').val();
-
-		if (customer_type === "commercial") {
-			_initSelect2CustomerBranches($(this).val());
-
-			$("#client_branch_wrapper").removeClass("d-none");
-		}
-	});
+	onSelectCustomer(clientSelector);
+	onClearCustomer(clientSelector);
+	initSelect2CustomerBranches(router.clients.common.customer_branches);
 
 	/* Masterlist select2 via ajax data source */
 	_initInventorySelect2();
 
-	$("#with_vat").on("change", function () {
-		_computeVat(this);
-	});
+	$("#with_vat").on("change", () => _computeVat(this));
 
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -77,7 +58,7 @@ $(document).ready(function () {
 			self[0].reset();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, message, res.status);
-			_formReset();
+			_clearForm();
 
 			if ($(`#${modal}`).hasClass("edit")) {
 				$(`#${modal}`).modal("hide");
@@ -235,7 +216,7 @@ function edit(id) {
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Order Form");
 
-	_formReset();
+	_clearForm();
 	fetchRecord(router.order_form.fetch, { id: id }, modal, (res) => {
 		if (res.status === STATUS.SUCCESS) {
 			const customer_type = strLower(res.data.customer_type);
@@ -506,27 +487,6 @@ function calculateGrandTotals() {
 	_computeVat();
 }
 
-/* Initialize select2 customer branches */
-function _initSelect2CustomerBranches(customer_id, branch_id) {
-	const options = {
-		options: {
-			not_select2_ajax: true,
-			customer_id: customer_id,
-		},
-	};
-
-	/* Get customer branches via ajax post */
-	$.post(router.admin.common.customer_branches, options)
-		.then((res) => {
-			select2Reinit("#customer_branch_id", "Please select a branch", res.data);
-
-			if (branch_id) {
-				setSelect2Selection("#customer_branch_id", branch_id);
-			}
-		})
-		.catch((err) => catchErrMsg(err));
-}
-
 /* Masterlist select2 via ajax data source */
 function _initInventorySelect2() {
 	select2AjaxInit(
@@ -618,7 +578,7 @@ function _computeVat(elem) {
 }
 
 /* Reset form */
-function _formReset() {
+function _clearForm() {
 	$("#id").val("");
 	$("#total_amount").val("");
 	$("#total_discount").val("");

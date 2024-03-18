@@ -232,7 +232,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'INVENTORY', // Leave empty if none
                 'name'      => get_modules('INVENTORY_PRF'),
                 'url'       => url_to('prf.home'),
-                'class'     => (url_is('project-request-forms') ? 'active' : ''),
+                'class'     => (url_is('inventory/project-request-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-sign-out-alt',
             ],
             'PURCHASING_SUPPLIERS'      => [
