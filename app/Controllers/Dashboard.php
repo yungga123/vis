@@ -7,6 +7,7 @@ use App\Models\AccountModel;
 use App\Models\BillingInvoiceModel;
 use App\Models\EmployeeModel;
 use App\Models\CustomerModel;
+use App\Models\CustomerSupportModel;
 use App\Models\DispatchModel;
 use App\Models\JobOrderModel;
 use App\Models\ScheduleModel;
@@ -255,6 +256,7 @@ class Dashboard extends BaseController
         $salaryRateModel    = new SalaryRateModel();
         $billingModel       = new BillingInvoiceModel();
         $orderFormModel     = new OrderFormModel();
+        $custmrSupportModel = new CustomerSupportModel();
 
         // Count all queries
         $accountCount           = $accountModel->where('deleted_at IS NULL');
@@ -464,6 +466,27 @@ class Dashboard extends BaseController
                         'icon'  => 'fas fa-times-circle',
                         'count' => $orderFormModel->countRecords('rejected'),
                         'bg'    => 'secondary',
+                    ],
+                ]
+            ],
+            'SALES_CUSTOMER_SUPPORTS' => [
+                'count'     => $custmrSupportModel->countRecords(),
+                'more_info' => [
+                    'pending' => [
+                        'icon'  => 'far fa-clock',
+                        'count' => $custmrSupportModel->countRecords('pending'),
+                        'bg'    => 'warning',
+                    ],
+                    'done' => [
+                        'icon'  => 'fas fa-check-circle',
+                        'count' => $custmrSupportModel->countRecords('done'),
+                        'bg'    => 'success',
+                    ],
+                    'Turn-Over to Sales Department' => [
+                        'count' => $custmrSupportModel->countRecords('turn_over'),
+                    ],
+                    'create job order' => [
+                        'count' => $custmrSupportModel->countRecords('create-jo'),
                     ],
                 ]
             ],
