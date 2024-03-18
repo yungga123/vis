@@ -242,6 +242,14 @@ define('ACTIONS', [
             'RELEASE'       => 'Release Fund',
             'OTHERS_ONLY'   => TRUE,
         ],
+        'INVENTORY_ORDER_FORMS'     => [
+            'ACCEPT'        => 'Accept',
+            'REJECT'        => 'Reject',
+            'ITEM_OUT'      => 'Item Out',
+            'RECEIVE'       => 'Receive',
+            'FILE'          => 'File',
+            'PRINT'         => 'Print',
+        ],
     ],
 ]);
 
@@ -310,6 +318,7 @@ define('MODULES', [
     'PAYROLL_TIMESHEETS'    => 'Timesheets',
     'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
     'FINANCE_FUNDS'         => 'Funds',
+    'INVENTORY_ORDER_FORMS' => 'Order Forms',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -346,6 +355,7 @@ define('MODULE_CODES', [
     'timesheets'            => 'PAYROLL_TIMESHEETS',
     'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
     'funds'                 => 'FINANCE_FUNDS',
+    'order_forms'           => 'INVENTORY_ORDER_FORMS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
