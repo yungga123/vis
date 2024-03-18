@@ -244,19 +244,25 @@ function clearAlertInForm(elems, status, prefix = "alert") {
  * @param {function} responseFunc   - callback response function - you can refer to accounts/form.js
  * @param {string} requestType      - either 'AJAX' (ajax for file upload) or 'POST' / POST is default
  * @param {boolean} attachment      - identifier if form has file upload
+ * @param {callable} callback      	- optional callback before sending the request
  */
 function formSubmit(
 	form,
 	confirmMsg,
 	responseFunc,
 	requestType = METHOD.POST,
-	attachment = false
+	attachment = false,
+	callback = null
 ) {
 	form.on("submit", function (e) {
 		e.preventDefault();
 		const self = $(this);
 		const route = self.attr("action");
 		const data = attachment ? new FormData(this) : self.serialize();
+
+		if (callback) {
+			callback();
+		}
 
 		function sendRequest() {
 			showLoading();
@@ -305,15 +311,17 @@ function fetchRecord(route, data, modal, callback) {
 		.then((res) => {
 			closeLoading();
 
+			if (callback) return callback(res);
+
 			if (res.status === STATUS.ERROR) {
 				if (modal && $(`#${modal}`).length) $(`#${modal}`).modal("hide");
+
 				notifMsgSwal(res.status, res.message, res.status);
+
 				return;
 			}
 
-			if (callback) return callback(res);
-
-			// If has not callback provided
+			// If callback not provided
 			// populate record thru $.each method
 			if (inObject(res, "data") && !isEmpty(res.data)) {
 				$.each(res.data, (key, value) => {
