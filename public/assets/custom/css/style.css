@@ -11,10 +11,29 @@ form.with-label-indicator .form-group label.required::after {
 	color: red;
 }
 
-.table thead {
-	margin-top: 20px !important;
-	background-color: #17a2b8 !important;
-	color: #fff !important;
+form.with-label-indicator .form-group label.not-include:first-child::after {
+	content: "";
+}
+
+form.with-label-indicator .form-group label.not-include::after {
+	content: "";
+}
+
+.dataTables_wrapper .table,
+.dataTables_scrollHead .dataTables_scrollHeadInner {
+	width: 100% !important;
+}
+
+.dataTables_wrapper .table thead th {
+	font-weight: 600;
+	color: #6c757d;
+}
+
+.dataTables_wrapper .table tbody td span.td-technicians {
+	color: #fff;
+	background-color: #3c8dbc;
+	padding: 5px 10px;
+	border-radius: 0.25rem;
 }
 
 .dataTables_scrollHead {
@@ -23,4 +42,61 @@ form.with-label-indicator .form-group label.required::after {
 
 .dataTables_wrapper .dataTables_paginate {
 	margin-top: 10px !important;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+	display: inline !important;
+	text-align: right !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+	width: 90% !important;
+}
+
+.fc .fc-header-toolbar .fc-today-button {
+	text-transform: capitalize;
+}
+
+.external-event {
+	cursor: inherit;
+}
+
+.text-underline {
+	text-decoration: underline;
+}
+
+.text-italic {
+	font-style: italic;
+}
+
+.text-lowercase {
+	text-transform: lowercase;
+}
+
+.hover .hover-show {
+	display: none;
+}
+
+.hover:hover .hover-show {
+	display: inherit;
+}
+
+.hover .hover-hide {
+	display: inherit;
+}
+
+.hover:hover .hover-hide {
+	display: none;
+}
+
+/* Additional styling for dropzone js */
+.dropzone .dz-preview.dz-uploaded .dz-image img {
+	width: 120px;
+	height: 120px;
+	object-fit: cover;
+}
+
+.dropzone.dz-single-upload .dz-preview {
+	display: flex;
+	justify-content: center;
 }

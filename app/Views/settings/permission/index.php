@@ -4,20 +4,39 @@
     <div class="row">
         <div class="col-12">                    
             <div class="card">
-                <div class="card-body">                    
-                    <input type="hidden" id="edit_url" value="<?= url_to('permission.edit'); ?>" disabled>
-                    <input type="hidden" id="remove_url" value="<?= url_to('permission.delete'); ?>" disabled>
-                    <table id="permission_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('permission.list'); ?>">
+				<div class="card-header">
+                    <div class="mr-2 mb-2">
+                        <strong>Filters by Role or Module: </strong>
+                    </div>
+                    <div class="d-flex flex-md-row flex-column align-items-md-center">
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_role_code" data-placeholder="Select a role" multiple style="width: 100%;">
+                                <?= get_roles_options(); ?>  
+                            </select>
+                        </div>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_module_code" data-placeholder="Select a module" multiple style="width: 100%;">
+                                <?= get_modules_options() ?>
+                            </select>
+                        </div>
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </div>
+                    </div>
+				</div>
+                <div class="card-body">
+                    <table id="permission_table" class="table table-hover table-striped nowrap" width="100%">
                         <thead class="nowrap">
                             <tr>
                                 <th>Role</th>
                                 <th>Module</th>
                                 <th>Permissions</th>
-                                <th width="10%">Action</th>
-                                <!-- <th>Added By</th>
-                                <th>Updated By</th>
-                                <th>Created At</th>
-                                <th>Updated At</th> -->
+                                <th>Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -41,34 +60,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="required" for="item_name">Role</label>
+                        <label class="required" for="role_code">Role</label>
                         <select class="form-control" name="role_code" id="role_code" style="width: 100%;" required>
-                        <option value="">Select Role</option>
-                        
-                            <!-- <option value="</?= $key ?>"></?= $val ?></option> -->
-                            <optgroup label="Managerial Level">
-                                <?php foreach (get_roles() as $key => $val): ?>
-                                    <?php if (str_contains($key,'MANAGER')) : ?>
-                                        <option value="<?= $key ?>"><?= $val ?></option>
-                                    <?php endif ?>
-                                <?php endforeach; ?>
-                            </optgroup>
-                            <optgroup label="Supervisory Level">
-                                <?php foreach (get_roles() as $key => $val): ?>
-                                    <?php if (str_contains($key,'SUPERVISOR')) : ?>
-                                        <option value="<?= $key ?>"><?= $val ?></option>
-                                    <?php endif ?>
-                                <?php endforeach; ?>
-                            </optgroup>
-
-                            <optgroup label="Others">
-                                <?php foreach (get_roles() as $key => $val): ?>
-                                    <?php if (!str_contains($key,'SUPERVISOR') && !str_contains($key,'MANAGER')) : ?>
-                                        <option value="<?= $key ?>"><?= $val ?></option>
-                                    <?php endif ?>
-                                <?php endforeach; ?>
-                            </optgroup>
-                        
+                            <option value="">Select Role</option>
+                            <?= get_roles_options(); ?>  
                         </select>
                         <small id="alert_role_code" class="text-danger"></small>
                     </div>
@@ -76,10 +71,7 @@
                         <label class="required" for="module_code">Module</label>
                         <select class="form-control" name="module_code" id="module_code" style="width: 100%;" required>
                             <option value="">Select Module</option>
-                            <?php $modules = get_modules(); unset($modules['DASHBOARD']);
-                            foreach ($modules as $key => $val): ?>
-                                <option value="<?= $key ?>"><?= $val ?></option>
-                            <?php endforeach; ?>
+                            <?= get_modules_options() ?>
                         </select>
                         <small id="alert_module_code" class="text-danger"></small>
                     </div>

@@ -1,4 +1,4 @@
-var table, modal, form, editRoute, removeRoute, elems;
+var table, modal, form, elems, $actions, $permission, $initialPermissions;
 
 $(document).ready(function () {
 	table = "permission_table";
@@ -7,8 +7,9 @@ $(document).ready(function () {
 	editRoute = $("#edit_url").val();
 	removeRoute = $("#remove_url").val();
 	elems = ["role_code", "module_code", "permissions"];
-
-	select2Init("#permissions");
+	$actions = $pjOptions.actions;
+	$permission = "#permissions";
+	$initialPermissions = initialPermissions();
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -21,17 +22,26 @@ $(document).ready(function () {
 		clearAlertInForm(elems);
 	});
 
-	/* Load dataTable */
-	const route = $("#" + table).data("url"),
-		options = {
-			columnDefs: {
-				orderable: false,
-				targets: -1,
-			},
-			order: [0, "asc"],
-		};
+	select2Init($permission, "Select Permissions", $initialPermissions);
 
-	loadDataTable(table, route, METHOD.POST, options);
+	/* Init filter */
+	select2Init("#filter_role_code");
+	select2Init("#filter_module_code");
+
+	$("#module_code").on("change", function () {
+		otherPermissions($(this).val());
+	});
+
+	/* Load dataTable */
+	const options = {
+		columnDefs: {
+			orderable: false,
+			targets: -1,
+		},
+		order: [0, "asc"],
+	};
+
+	loadDataTable(table, router.permission.list, METHOD.POST, options);
 
 	/* Form for saving employee */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -54,6 +64,29 @@ $(document).ready(function () {
 	});
 });
 
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const role_code = getSelect2Selection("#filter_role_code");
+	const module_code = getSelect2Selection("#filter_module_code");
+	const params = {
+		role_code: role_code,
+		module_code: module_code,
+	};
+	const condition = !isEmpty(role_code) || !isEmpty(module_code);
+
+	filterParam(
+		router.permission.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_role_code");
+			clearSelect2Selection("#filter_module_code");
+		},
+		reset
+	);
+}
+
 /* Get employee details */
 function edit(id) {
 	$(`#${modal}`).modal("show");
@@ -64,7 +97,7 @@ function edit(id) {
 	clearAlertInForm(elems);
 	showLoading();
 
-	$.post(editRoute, { id: id })
+	$.post(router.permission.edit, { id: id })
 		.then((res) => {
 			closeLoading();
 
@@ -72,7 +105,7 @@ function edit(id) {
 				if (inObject(res, "data") && !isEmpty(res.data)) {
 					setOptionValue("#role_code", res.data.role_code);
 					setOptionValue("#module_code", res.data.module_code);
-					$("#permissions").val(res.data.permissions).change();
+					setSelect2Selection($permission, res.data.permissions);
 				}
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -87,7 +120,7 @@ function remove(id) {
 	const swalMsg = "delete";
 	swalNotifConfirm(
 		function () {
-			$.post(removeRoute, { id: id })
+			$.post(router.permission.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
@@ -100,4 +133,35 @@ function remove(id) {
 		swalMsg,
 		STATUS.WARNING
 	);
+}
+
+/* Populate initial permissions options */
+function initialPermissions() {
+	const options = $.map($actions, (action, key) => {
+		// Not include the OTHERS options yet
+		if (key !== "OTHERS") return { id: key, text: action };
+	});
+
+	return options;
+}
+
+/* Check and populate other permissions options */
+function otherPermissions(val) {
+	let data = $initialPermissions;
+
+	if (val && inObject($actions.OTHERS, val)) {
+		const _actions = $actions.OTHERS[val];
+		const options = $.map(_actions, (text, key) => {
+			// Include the OTHERS options
+			if (key !== "OTHERS_ONLY") return { id: key, text: text };
+		});
+
+		data = options;
+
+		if (!inObject(_actions, "OTHERS_ONLY")) {
+			data = $initialPermissions.concat(options);
+		}
+	}
+
+	select2Reinit($permission, "Select Permissions", data);
 }

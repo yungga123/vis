@@ -119,27 +119,145 @@ defined('AAL_MANAGER_SALES')   || define('AAL_MANAGER_SALES', 'manager_sales');
 defined('AAL_MANAGER_HR')   || define('AAL_MANAGER_HR', 'manager_hr');
 defined('AAL_MANAGER_ACCOUNTING')   || define('AAL_MANAGER_ACCOUNTING', 'manager_accounting');
 defined('AAL_MANAGER_FINANCE')   || define('AAL_MANAGER_FINANCE', 'manager_finance');
-// defined('AAL_USER')         || define('AAL_USER', 'user');
-
-// Old
-// defined('AAL_ADMIN')        || define('AAL_ADMIN', 'admin');
-defined('AAL_MANAGER')      || define('AAL_MANAGER', 'manager');
-defined('AAL_HR')           || define('AAL_HR', 'hr');
-defined('AAL_SALES')        || define('AAL_SALES', 'sales');
-defined('AAL_OFCADMIN')     || define('AAL_OFCADMIN', 'ofcadmin');
 defined('AAL_USER')         || define('AAL_USER', 'user');
 
 // Actions - add new here
 define('ACTIONS', [
-    'VIEW'      => 'View',
-    'ADD'       => 'Add',
-    'EDIT'      => 'Edit',
-    'DELETE'    => 'Delete',
-    // 'EXPORT'    => 'Export',
-    // 'IMPORT'    => 'Import',
+    'VIEW'          => 'View',
+    'ADD'           => 'Add',
+    'EDIT'          => 'Edit',
+    'DELETE'        => 'Delete',
+    'OTHERS'        => [
+        // Add here for specific permissions for specific module
+        // Follow the format below
+        // 'MODULE_NAME' => [
+        //     'ACTION_NAME' => 'Action Name',
+        //     'ACTION_NAME' => 'Action Name',
+        //     'ACTION_NAME' => 'Action Name',
+        // ],
+        'INVENTORY'   => [
+            'ITEM_IN'       => 'Item In',
+            'ITEM_OUT'      => 'Item Out',
+        ],
+        'ADMIN_JOB_ORDER'   => [
+            'ACCEPT'        => 'Accept',
+            'DISCARD'       => 'Discard',
+            'FILE'          => 'File',
+            'RESCHEDULE'    => 'Reschedule',
+        ],
+        'ADMIN_DISPATCH'    => [
+            'PRINT'         => 'Print',
+        ],
+        'INVENTORY_PRF'     => [
+            'ACCEPT'        => 'Accept',
+            'REJECT'        => 'Reject',
+            'ITEM_OUT'      => 'Item Out',
+            'RECEIVE'       => 'Receive',
+            'FILE'          => 'File',
+            'PRINT'         => 'Print',
+        ],
+        'PURCHASING_RPF'    => [
+            'ACCEPT'        => 'Accept',
+            'REJECT'        => 'Reject',
+            'REVIEW'        => 'Review',
+            'PRINT'         => 'Print',
+        ],
+        'PURCHASING_PO'     => [
+            'APPROVE'       => 'Approve',
+            'RECEIVE'       => 'Receive',
+            'PRINT'         => 'Print',
+        ],
+        'CUSTOMERS'         => [
+            'UPLOAD'        => 'Upload',
+        ],
+        'EMPLOYEES'         => [
+            'CHANGE'        => 'Change Employment Status',
+        ],
+        'PAYROLL_MANAGE_LEAVES' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            // Add this if you want the 4 above actions only
+            // not include the generic ones
+            // such as VIEW, ADD, EDIT, DELETE
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_COMPUTATION' => [
+            'VIEW'          => 'View',
+            'SUBMIT'        => 'Submit',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_SETTINGS' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_LEAVE' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_OVERTIME' => [
+            'VIEW_ALL'      => 'View All',
+            'DISCARD'       => 'Discard',
+            'PROCESS'       => 'Process',
+            'APPROVE'       => 'Approve',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_TIMESHEETS' => [
+            'VIEW_ALL'      => 'View All',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'PAYROLL_PAYSLIP' => [
+            'EDIT'          => 'Edit',
+            'DELETE'        => 'Delete',
+            'VIEW_ALL'      => 'View All',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'EXPORT_DATA' => [
+            'VIEW'          => 'View',
+            'GENERATE'      => 'Generate',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'SETTINGS_GENERAL_INFO' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'SETTINGS_MAILCONFIG' => [
+            'VIEW'          => 'View',
+            'SAVE'          => 'Save',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+        'FINANCE_BILLING_INVOICE'     => [
+            'APPROVE'   => 'Approve',
+            'PRINT'     => 'Print',
+            'MARK_PAID' => 'Mark as Paid',
+        ],
+        'FINANCE_FUNDS'     => [
+            'VIEW'          => 'View',
+            'RELEASE'       => 'Release Fund',
+            'OTHERS_ONLY'   => TRUE,
+        ],
+    ],
 ]);
 
-// Roles - add new here
+// Individual actions constants
+define('ACTION_VIEW', 'VIEW');
+define('ACTION_ADD', 'ADD');
+define('ACTION_EDIT', 'EDIT');
+define('ACTION_DELETE', 'DELETE');
+define('ACTION_PRINT', 'PRINT');
+define('ACTION_UPLOAD', 'UPLOAD');
+define('ACTION_CHANGE', 'CHANGE');
+define('ACTION_VIEW_ALL', 'VIEW_ALL');
+define('ACTION_SAVE', 'SAVE');
+
+// Roles - No need to add new roles here
+// Deprecated - Adding new roles will be on the dashboard
 define('ROLES', [
     'ADMIN'                 => 'Administrator',
     'EXECUTIVE'             => 'Executive',
@@ -166,14 +284,32 @@ define('MODULES', [
     'DASHBOARD'             => 'Dashboard',
     'ACCOUNTS'              => 'Accounts',
     'EMPLOYEES'             => 'Employees',
-    // 'CUSTOMERS'             => 'Customers (Forecast)',
-    'CUSTOMERS_COMMERCIAL'  => 'Clients (Commercial)',
-    'CUSTOMERS_RESIDENTIAL' => 'Clients (Residential)',
+    'CUSTOMERS'             => 'Clients',
     'TASK_LEAD'             => 'Task/Lead Monitoring',
     'MANAGER_OF_SALES'      => 'Manager of Sales',
+    'MANAGER_OF_SALES_INDV' => 'Manager of Sales (Individual)',
+    'INVENTORY'             => 'Items Masterlist',
     'SETTINGS_MAILCONFIG'   => 'Mail Config',
     'SETTINGS_PERMISSIONS'  => 'Permissions',
-    'MANAGER_OF_SALES_INDV' => 'Manager of Sales(Individual)',
+    'SETTINGS_ROLES'        => 'Roles',
+    'PURCHASING_SUPPLIERS'  => 'Suppliers',
+    'ADMIN_JOB_ORDER'       => 'Job Orders',
+    'ADMIN_SCHEDULES'       => 'Schedules',
+    'ADMIN_DISPATCH'        => 'Dispatch',
+    'INVENTORY_PRF'         => 'Project Request Forms (PRF)',
+    'PURCHASING_RPF'        => 'Request to Purchase Forms (RPF)',
+    'PURCHASING_PO'         => 'Purchase Orders',
+    'SETTINGS_GENERAL_INFO' => 'General Info',
+    'EXPORT_DATA'           => 'Export Data',
+    'PAYROLL_SALARY_RATES'  => 'Salary Rates',
+    'PAYROLL_PAYSLIP'       => 'Payslip',
+    'PAYROLL_COMPUTATION'   => 'Computation',
+    'PAYROLL_LEAVE'         => 'Leave',
+    'PAYROLL_OVERTIME'      => 'Overtime',
+    'PAYROLL_SETTINGS'      => 'Settings',
+    'PAYROLL_TIMESHEETS'    => 'Timesheets',
+    'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
+    'FINANCE_FUNDS'         => 'Funds',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -184,11 +320,65 @@ define('MODULE_CODES', [
     'accounts'              => 'ACCOUNTS',
     'employees'             => 'EMPLOYEES',
     'customers'             => 'CUSTOMERS',
-    'customers_commercial'  => 'CUSTOMERS_COMMERCIAL',
-    'customers_residential' => 'CUSTOMERS_RESIDENTIAL',
     'task_lead'             => 'TASK_LEAD',
     'manager_sales'         => 'MANAGER_OF_SALES',
+    'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
+    'inventory'             => 'INVENTORY',
     'mail_config'           => 'SETTINGS_MAILCONFIG',
     'permissions'           => 'SETTINGS_PERMISSIONS',
+    'roles'                 => 'SETTINGS_ROLES',
     'manager_sales_indv'    => 'MANAGER_OF_SALES_INDV',
+    'suppliers'             => 'PURCHASING_SUPPLIERS',
+    'job_orders'            => 'ADMIN_JOB_ORDER',
+    'schedules'             => 'ADMIN_SCHEDULES',
+    'dispatch'              => 'ADMIN_DISPATCH',
+    'inventory_prf'         => 'INVENTORY_PRF',
+    'purchasing_rpf'        => 'PURCHASING_RPF',
+    'purchase_order'        => 'PURCHASING_PO',
+    'general_info'          => 'SETTINGS_GENERAL_INFO',
+    'export_data'           => 'EXPORT_DATA',
+    'salary_rates'          => 'PAYROLL_SALARY_RATES',
+    'payslip'               => 'PAYROLL_PAYSLIP',
+    'payroll_computation'   => 'PAYROLL_COMPUTATION',
+    'leave'                 => 'PAYROLL_LEAVE',
+    'overtime'              => 'PAYROLL_OVERTIME',
+    'payroll_settings'      => 'PAYROLL_SETTINGS',
+    'timesheets'            => 'PAYROLL_TIMESHEETS',
+    'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
+    'funds'                 => 'FINANCE_FUNDS',
 ]);
+
+// Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
+// It means user can access the said modules
+// without setting a permissions
+// Add them here
+define('MODULES_WITH_GENERIC_ACCESS', [
+    'PAYROLL_PAYSLIP' => [
+        'EXCEPT' => ['ADD', 'EDIT', 'DELETE']
+    ],
+    'PAYROLL_LEAVE',
+    'PAYROLL_OVERTIME',
+    'PAYROLL_TIMESHEETS',
+]);
+
+// Developer Account
+define('DEVELOPER_ACCOUNT', 'SOFTWAREDEV');
+define('DEVELOPER_USERNAME', 'yungga');
+
+// Company Info 
+// - These following constants will be used as default data
+// - if there's no entered data in General Info module
+define('COMPANY_NAME', 'Vinculum Technologies Corporation');
+define('COMPANY_ADDRESS', '#70 National Road., Putatan, Muntinlupa City');
+define('COMPANY_CONTACT_NUMBER', '');
+define('COMPANY_EMAIL', '');
+// Purchase Order Form Code
+define('COMPANY_PURCHASE_ORDER_FORM_CODE', 'F06');
+
+// Root path directory for all file uploads
+// Para isahan nlng ng directory
+// Don't foget to add '/' at the end
+define('ROOT_FILE_UPLOAD_DIR', '');
+
+// Billing Invoice Form Code
+define('COMPANY_BILLING_INVOICE_FORM_CODE', 'F07');

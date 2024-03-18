@@ -93,6 +93,7 @@ abstract class BaseController extends Controller
 
     /**
      * Check if current logged user is administrator
+     * 
      * @return bool
      */
     protected function isAdmin()
@@ -101,98 +102,227 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * For sending mail to employee
-     * $request param should contain [employee_id, username, password]
-     * @param array $request    - should contain [employee_id, username, password]
-     * @param string $sendVia   - either 'xoauth' or 'regular'
-     * @param boolean $is_add   - set true if from add request
-     * @return array
-     */
-    protected function sendMail($request, $sendVia, $is_add = false)
-    {
-        // Declare mail config controller
-        $mail = new \App\Controllers\Settings\MailConfig();
-
-        // Get employee details
-        $employeesModel = new \App\Models\EmployeesModel();
-        $params = $employeesModel->getEmployeeDetails(
-            $request['employee_id'],
-            'employee_id, employee_name, email_address',
-        );
-
-        $params['username'] = $request['username'];
-        $params['password'] = $request['password'];
-        $params['subject'] = 'Password changed confirmation!';
-
-        if ($is_add) {
-            $params['subject'] = 'Account confirmation!';
-            $params['is_add'] = true;
-        }
-
-        // $params should contain (employee_id, employee_name, email_address, username, password, subject)
-        // And $sendVia either via 'regular' or 'xoauth'
-        $res = $mail->send($params, $sendVia);
-        $status = $res['status'];
-        $message = $res['message'];
-
-        if($status === STATUS_ERROR) {
-            // If mail didn't sent set status as info
-            $status = STATUS_INFO;
-            $message = 'Account has been updated but mail could not be sent!';
-        }
-
-        return compact('status', 'message');
-    }
-
-    /**
      * Get specific permissions based on module code
      *
      * @param string $module_code
-     * @return string|array
+     * 
+     * @return string|array|bool
      */
     protected function getSpecificPermissions($module_code)
 	{
-        if ($this->isAdmin()) return array_keys(ACTIONS);
+        helper('custom');
 
-        $model = new \App\Models\PermissionModel();
-        $perms = $model->getCurrUserSpecificPermissions($module_code);
+        if ($this->isAdmin()) {
+            // Get the array keys
+            return array_keys(get_actions($module_code, false, true));
+        }
 
-        if (empty($perms)) return false;
+        $model      = new \App\Models\PermissionModel();
+        $perms      = $model->getCurrUserSpecificPermissions($module_code);
+        $generic    = get_generic_modules_actions($module_code);
+
+        if (empty($perms)) return $generic;
         
-		return explode(',', $perms['permissions']);
+		return array_merge($generic, explode(',', $perms['permissions']));
+	}
+
+    /**
+     * Get specific permissions from $this->permissions based on module code
+     *
+     * @param string $module_code
+     * 
+     * @return array
+     */
+    protected function getSpecificActionsByModule($module_code)
+	{
+        helper('custom');
+
+        // Get the generic action, if there's any
+        $generic = get_generic_modules_actions($module_code);
+
+        if ($this->isAdmin()) {
+            // Get the array keys only
+            $actions = array_keys(get_actions($module_code));
+            // Merge them together
+            return array_merge($actions, $generic);
+        }
+
+        if (! empty($this->permissions)) {
+            foreach ($this->permissions as $permission) {
+                if ($permission['module_code'] === $module_code) {
+                    // Get the permissions
+                    $actions = explode(',', $permission['permissions']);
+                    // Merge them together
+                    return array_merge($actions, $generic);
+                }
+            }
+        }
+        
+		return $generic;
 	}
 
     /**
      * Check permissions based on the passed needle
      *
-     * @param string $permissions
+     * @param string|array $permissions
      * @param string $needle
+     * 
      * @return bool
      */
     protected function checkPermissions($permissions, $needle)
 	{
         if ($this->isAdmin()) return true;
         if ($permissions) {
-		    return in_array($needle, $permissions) ? true : false;
+		    return in_array($needle, $permissions);
         }
 
         return false;
 	}
 
     /**
-     * Check role permissions based on the passed needle
+     * Check role permissions based on the passed arguments
      * and redirect to denied page
+     * 
      * @param string $module
-     * @return view
+     * @param string $action
+     * 
+     * @return void|view
      */
-    public function checkRolePermissions($module)
+    public function checkRolePermissions($module, $action = null)
 	{
+        if ($this->isAdmin()) return true;
+        if ($action) $this->checkRoleActionPermissions($module, $action);
 		if (! in_array($module, $this->modules)) {
-            $data['title']          = 'Access Denied';
-            $data['page_title']     = 'Access Denied!';
-
-            echo view('errors/custom/denied', $data);
-            exit;
+            $this->redirectToAccessDenied();
         }
+	}
+
+    /**
+     * Check role & action permissions based on the passed argument
+     * and redirect to denied page if user don't have
+     * 
+     * @param string $module
+     * @param string|array $action
+     * @param bool $throwException  Whether to throw an exception or the default return
+     * 
+     * @return void|view|\Exception
+     */
+    public function checkRoleActionPermissions($module, $action, $throwException = false)
+	{
+        $module     = $module ? strtoupper($module) : $module;
+		$this->checkRolePermissions($module);
+        // If has access in the module, then check 
+        // if user has the specific permission/action
+        // Ex. User has access to Dispatch but don't have permission for printing
+        $action     = clean_param($action, 'strtoupper');
+        $action     = is_string($action) ? [$action] : $action;
+        $actions    = $this->getSpecificActionsByModule($module);
+        // Add the default PENDING
+        $actions[]  = 'PENDING';
+
+        // Check if user has the permission 
+        // to perform that $action
+        $value = array_intersect($action, $actions);
+
+        if (empty($value)) {
+            if ($throwException) {
+                throw new \Exception(res_lang('restrict.permission.change', implode(', ', $action)), 2);
+            }
+
+            $this->redirectToAccessDenied();
+        }
+	}
+
+    /**
+     * Redirect to access denied page
+     * 
+     * @return string|view
+     */
+    public function redirectToAccessDenied()
+	{
+		$data['title']          = 'Access Denied';
+        $data['page_title']     = 'Access Denied!';
+
+        echo view('errors/custom/denied', $data);
+        exit;
+	}
+
+    /**
+     * Redirect to 404 page
+     * 
+     * @return string|view
+     */
+    public function redirectTo404Page()
+	{
+		$data['title']          = '404 Page Not Found';
+        $data['page_title']     = '404 Page Not Found!';
+
+        echo view('errors/custom/404', $data);
+        exit;
+	}
+
+    /**
+     * The custom try catch function for handling error
+     * 
+     * @param array $data           The $data variable from the parent method
+     * @param callable $callback    The callback function where logic is
+     * @param bool $dbTrans         [Optional - default true] The identifier if will use db transactions
+     * 
+     * @return array|object         The passed/response $data variable
+     */
+    public function customTryCatch($data, $callback, $dbTrans = true)
+	{
+        // Using DB Transaction
+        if ($dbTrans) $this->transBegin();
+
+        try {
+            $data = $callback($data);
+
+            // Commit transaction
+            if ($dbTrans) $this->transCommit();
+        } catch (\Exception $e) {
+            // Try catch exception error handling
+            $data = $this->tryCatchException($data, $e, $dbTrans);
+        }
+
+        return $this->response->setJSON($data);
+	}
+
+    /**
+     * The common try catch exception method in handling error
+     * 
+     * @param array $data   The $data variable from the parent method
+     * @param object $e     The exception object
+     * 
+     * @return array        The passed $data variable
+     */
+    public function tryCatchException($data, $e, $dbTrans = true)
+	{
+        // Rollback transaction if there's an error
+        if ($dbTrans) $this->transRollback();
+
+		$this->logExceptionError($e, __METHOD__);
+        
+        $data['status']     = res_lang('status.error');
+        $data['message']    = $e->getCode() > 0 
+            ? $e->getMessage() : res_lang('error.process');
+
+        return $data;
+	}
+
+    /**
+     * Log the exception error
+     * 
+     * @param array|object $exception
+     * @param string $method
+     * 
+     * @return void 
+     */
+    public function logExceptionError($exception, $method = null)
+	{
+		log_msg(
+            "Exception Error: {exception} \nMethod: '{method}'", 
+            ['exception' => $exception, 'method' => $method ?? __METHOD__]
+        );
 	}
 }

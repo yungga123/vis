@@ -1,85 +1,3 @@
-/* Declaration for global variable */
-var STATUS = {
-		SUCCESS: "success",
-		ERROR: "error",
-		INFO: "info",
-		QUESTION: "question",
-		WARNING: "warning",
-		CONFIRM: "confirm",
-	},
-	TITLE = {
-		SUCCESS: "Success!",
-		ERROR: "Oops!",
-		INFO: "Info!",
-		QUESTION: "Question!",
-		WARNING: "Warning!",
-		CONFIRM: "Confirmation!",
-	},
-	METHOD = {
-		GET: "GET",
-		POST: "POST",
-		AJAX: "AJAX",
-	},
-	dtTable;
-
-$(document).ready(function () {
-	$.ajaxSetup({
-		headers: {
-			"X-CSRF-TOKEN": $("meta#csrf").attr("content"),
-		},
-	});
-
-	$(document).ajaxComplete(function (event, request, settings) {
-		if (request.responseText === "already_logged_out") {
-			setTimeout(() => {
-				$(".modal").modal("hide");
-				Swal.close();
-				swalNotifRedirect(
-					TITLE.INFO,
-					"Your session has expired! You will be redirected to login page in <b></b> second/s.",
-					STATUS.WARNING,
-					"reload",
-					6000
-				);
-			}, 100);
-		}
-	});
-
-	// Initialize toastr
-	if (isToastrLoaded()) {
-		toastr.options = {
-			closeButton: false,
-			debug: false,
-			newestOnTop: false,
-			progressBar: true,
-			positionClass: "toast-top-center",
-			preventDuplicates: false,
-			onclick: null,
-			showDuration: "300",
-			hideDuration: "1000",
-			timeOut: "4000",
-			extendedTimeOut: "1000",
-			showEasing: "swing",
-			hideEasing: "linear",
-			showMethod: "fadeIn",
-			hideMethod: "fadeOut",
-		};
-
-		console.log("Toastr is loaded!");
-	} else {
-		console.log("Toastr is not loaded!");
-	}
-
-	if (isSwalLoaded()) console.log("Swal is loaded!");
-	else console.log("Swal is not loaded!");
-
-	// Custom file input initialization
-	$(".custom-file-input").on("change", function (e) {
-		const fileName = e.target.files[0].name;
-		$(this).next(".custom-file-label").text(fileName);
-	});
-});
-
 /* Show loading overlay - need to include the templates/loading view to work */
 function showLoading(id) {
 	id = id || "modal_loading";
@@ -189,7 +107,7 @@ function swalNotifConfirm(
 	if (message === "delete") {
 		message = "Are you really sure you want to delete this?";
 		confirmText = "Yes, delete it!";
-	} else if ((message = "continue")) {
+	} else if (message === "continue") {
 		message = "Are you really sure you want to continue?";
 		color = "#007bff";
 	}
@@ -263,8 +181,8 @@ function catchErrMsg(err, swal = false) {
 
 /**
  * Show alert message in form or small elem
- * @param {string} elems    - list of name of the inputs
- * @param {string} errors   - error message pass from validation error
+ * @param {array} elems    - list of name of the inputs
+ * @param {string|object} errors   - error message pass from validation error
  * @param {string} status   - status of alert - refer to 'STATUS' global variable
  * @param {string} prefix   - prefix for small elements container for error messages
  * @param {bool} swal       - set true if using swal
@@ -275,9 +193,14 @@ function showAlertInForm(elems, errors, status, prefix = "alert", swal = true) {
 
 	if (isObject(errors) && !isEmpty(errors)) {
 		$.each(errors, (key, value) => {
+			let select2 = $("#" + key).hasClass("select2") ? " select2-success" : "";
+			let select2Err = $("#" + key).hasClass("select2")
+				? " select2-danger"
+				: "";
+
 			$("#" + key)
-				.removeClass("is-valid")
-				.addClass("is-invalid");
+				.removeClass("is-valid" + select2)
+				.addClass("is-invalid" + select2Err);
 			$(`#${prefix}_${key}`).html(value);
 		});
 	}
@@ -298,12 +221,18 @@ function clearAlertInForm(elems, status, prefix = "alert") {
 	if (Array.isArray(elems) && !isEmpty(elems)) {
 		for (let i = 0; i < elems.length; i++) {
 			const elem = elems[i];
+			let select2 = $("#" + elem).hasClass("select2") ? " select2-success" : "";
+			let select2Err = $("#" + elem).hasClass("select2")
+				? " select2-danger"
+				: "";
+
 			$("#" + elem)
-				.removeClass("is-invalid")
-				.removeClass("is-valid");
+				.removeClass("is-invalid" + select2Err)
+				.removeClass("is-valid" + select2);
 			$(`#${prefix}_${elem}`).html("");
 
-			if (status === STATUS.SUCCESS) $("#" + elem).addClass("is-valid");
+			if (status === STATUS.SUCCESS)
+				$("#" + elem).addClass("is-valid" + select2);
 		}
 	}
 }
@@ -362,114 +291,164 @@ function formSubmit(
 }
 
 /**
- * Load dataTable data
- * @param {string} table    - id of the table
- * @param {string} route    - url path to get data
- * @param {string} type     - type of request method (GET, POST)
- * @param {object} options  - other options for the dataTable
+ * Shorcut for fetching record via ajax post request
+ *
+ * @param {string} route            	- The backend delete route/url
+ * @param {object} data     			- Object of data to pass - like {id: id}
+ * @param {string} modal   				- Modal name
+ * @param {CallableFunction} callback 	- A callable to handle the response
  */
-function loadDataTable(
-	table,
-	route,
-	type = METHOD.GET,
-	options = {},
-	destroy = false
-) {
-	let columnDefs = [
-			inObject(options, "columnDefs")
-				? options.columnDefs
-				: {
-						targets: 0,
-						orderable: false,
-				  },
-		],
-		order = inObject(options, "order") ? [options.order] : [];
+function fetchRecord(route, data, modal, callback) {
+	showLoading();
 
-	dtTable = $("#" + table).DataTable({
-		destroy: destroy,
-		processing: true,
-		scrollX: true,
-		autoWidth: false,
-		columnDefs: columnDefs,
-		order: order,
-		language: {
-			emptyTable: "No records found...",
-		},
-		buttons: [
-			{
-				extend: "excel",
-				exportOptions: {
-					columns: ":visible",
-				},
-				text: "Excel",
-			},
-			"colvis",
-		],
-		serverSide: true,
-		ajax: {
-			url: route,
-			type: type.toUpperCase() !== METHOD.POST ? METHOD.GET : METHOD.POST,
-			data: function (d) {
-				if (inObject(options, "params") && !isEmpty(options.params)) {
-					d.params = options.params;
-				}
-			},
-		},
-		createdRow: function (row, data, dataIndex) {
-			if (data.length > 1) {
-				for (var i = 0; i < data.length; i++) {
-					if (isEmpty(data[i])) {
-						$(`td:eq(${i})`, row).text("N/A");
-					}
-				}
+	$.post(route, data)
+		.then((res) => {
+			closeLoading();
+
+			if (res.status === STATUS.ERROR) {
+				if (modal && $(`#${modal}`).length) $(`#${modal}`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status);
+				return;
 			}
+
+			if (callback) return callback(res);
+
+			// If has not callback provided
+			// populate record thru $.each method
+			if (inObject(res, "data") && !isEmpty(res.data)) {
+				$.each(res.data, (key, value) => {
+					$(`input[name="${key}"]`).val(value);
+				});
+			}
+		})
+		.catch((err) => catchErrMsg(err));
+}
+
+/**
+ * Shorcut for fetching record via ajax post request
+ *
+ * @param {string} route            	- The backend delete route/url
+ * @param {object} data     			- Object of data to pass - like {id: id}
+ * @param {string} title   				- The swal/message title
+ * @param {string} table   				- The DataTable table name
+ * @param {string} modal   				- Modal name
+ * @param {CallableFunction} callback 	- An optional callable to handle the response
+ */
+function changeRecord(route, data, title, table, modal, callback) {
+	let swalMsg = data.id ? `<div>ID #: <strong>${data.id}</strong></div>` : "";
+	let change = data.status ? data.status : "change";
+
+	change = strUpper(change);
+	swalMsg = `
+		${swalMsg} <div>Are you sure you want to <strong>${change}</strong> this record?</div>
+	`;
+
+	swalNotifConfirm(
+		function () {
+			showLoading();
+			$.post(route, data)
+				.then((res) => {
+					closeLoading();
+
+					if (callback) return callback(res);
+
+					// If no callback, code below will be executed
+					const message = res.errors ?? res.message;
+
+					notifMsgSwal(res.status, message, res.status);
+
+					if (res.status !== STATUS.ERROR) {
+						if (table) refreshDataTable($("#" + table));
+						if (modal) $(`#${modal}`).modal("hide");
+					}
+				})
+				.catch((err) => catchErrMsg(err));
 		},
-		initComplete: function (settings, json) {
-			dtTable
-				.buttons()
-				.container()
-				.appendTo(`#${table}_wrapper .col-md-6:eq(0)`);
+		title,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
+/**
+ * Shorcut for deleting record via ajax post request
+ *
+ * @param {string} route            	- The backend delete route/url
+ * @param {object} data     			- Object of data to pass - like {id: id}
+ * @param {string} table   				- The DataTable table name
+ * @param {CallableFunction} callback 	- An optional callable to handle the response
+ */
+function deleteRecord(route, data, table, callback) {
+	const swalMsg = "delete";
+
+	swalNotifConfirm(
+		function () {
+			$.post(route, data)
+				.then((res) => {
+					if (callback) {
+						return callback(res);
+					}
+
+					if (res.status === STATUS.SUCCESS) {
+						if (table) refreshDataTable($("#" + table));
+					}
+
+					const message = res.errors ?? res.message;
+					notifMsgSwal(res.status, message, res.status);
+				})
+				.catch((err) => catchErrMsg(err));
 		},
+		TITLE.WARNING,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
+/* Check if select2 was initialized */
+function isSelect2Initialized(selector, initIfNot = false) {
+	let isInitialized = $(selector).hasClass("select2-hidden-accessible");
+
+	if (initIfNot && !isInitialized) $(selector).select2();
+	return isInitialized;
+}
+
+/* Clear select2 selection */
+function clearSelect2Selection(selector) {
+	$(selector).val("").trigger("change");
+}
+
+/* Set select2 selection */
+function setSelect2Selection(selector, val) {
+	$(selector).val(val).trigger("change");
+}
+
+/* Set select2 selection */
+function destroySelect2(selector) {
+	if ($(selector).hasClass("select2-hidden-accessible"))
+		$(selector).select2("destroy");
+}
+
+/**
+ * Set select2 selection for ajax data source
+ *
+ * @param {string} selector    	- id or class name of the select
+ * @param {string} text 		- text to display after selection
+ * @param {string} id  			- the option value
+ * @return void
+ */
+function setSelect2AjaxSelection(selector, text, id) {
+	// Set selected option in select2
+	const option = new Option(text, id, true, true);
+
+	$(selector).append(option).trigger("change");
+	$(selector).trigger({
+		type: "select2:select",
 	});
 }
 
-/* Refresh dataTable data */
-function refreshDataTable(table = null) {
-	if (!isEmpty(table)) table.DataTable().ajax.reload();
-	else dtTable.ajax.reload();
-}
-
-/*
- * Use for showing and hiding a password - dependent on input group password
- * You can see reference from Views/settings/send_mail.php for the input group
- * passId = name of the password id selector
- * showPassId = name of the show password button id selector
- */
-function passwordShowHideInit(
-	passId = "password",
-	showPassId = "show_password"
-) {
-	$("#" + showPassId).on("click", function () {
-		if ($(this).hasClass("show")) {
-			$(this).removeClass("show").attr("title", "Click here to show password!");
-			$(this).children("i").removeClass().addClass("fas fa-eye");
-			$("#" + passId).attr("type", "password");
-		} else {
-			$(this).addClass("show").attr("title", "Click here to hide password!");
-			$(this).children("i").removeClass().addClass("fas fa-eye-slash");
-			$("#" + passId).attr("type", "text");
-		}
-	});
-}
-
-/*
- * Small functions
- */
-
-/* Initialize select2 */
-function select2Init(selector) {
-	selector = selector || ".select2";
-	$(`${selector}`).select2();
+/* Get select2 selection */
+function getSelect2Selection(selector, isText = false) {
+	return isText ? $(selector + " :selected").text() : $(selector).val();
 }
 
 /* To set option value dynamically */
@@ -477,6 +456,19 @@ function setOptionValue(selector, val) {
 	$(`${selector}`).val(val).change();
 }
 
+/* To format options for select2 */
+function formatOptionsForSelect2(options, id, text) {
+	if (isEmpty(options)) return [];
+	return $.map(options, (val, i) => {
+		if (Number.isInteger(Number(i)) && (isArray(val) || isObject(val)))
+			return { id: val[id], text: strCapitalize(val[text]) };
+		return { id: i, text: strCapitalize(val) };
+	});
+}
+
+/*
+ * More generic functions
+ */
 /* Check if value is empty - from stackoverflow */
 function isEmpty(value) {
 	return (
@@ -497,6 +489,14 @@ function isObject(obj) {
 	// return (Object.prototype.toString.call(obj) === '[object Object]');
 }
 
+/* Check if param is Array or not - from stackoverflow */
+function isArray(param) {
+	return !isEmpty(param) && Array.isArray(param);
+
+	/* Another approach */
+	// return (Object.prototype.toString.call(obj) === '[object Object]');
+}
+
 /* Check if param/value is string */
 function isString(param) {
 	return Object.prototype.toString.call(param) === "[object String]";
@@ -504,6 +504,7 @@ function isString(param) {
 
 /* Check if Object key exist */
 function inObject(obj, key) {
+	if (isEmpty(obj)) return false;
 	return isObject(obj) ? Object.prototype.hasOwnProperty.call(obj, key) : false;
 
 	/* Another methods */
@@ -511,17 +512,255 @@ function inObject(obj, key) {
 	// return obj.hasOwnProperty(key); // Same as above
 }
 
+/* Check if Array key exist */
+function inArray(arr, key) {
+	return isArray(arr) ? arr.includes(key) : false;
+
+	/* Another methods */
+	// return isArray(arr) ? (arr.indexOf(key) !== -1) : false;
+}
+
+/* Check if array or object? is associative from chatgpt */
+function isArrayOrObjectAssoc(obj) {
+	if (!isObject(obj) || !isArray(obj)) return false;
+
+	// Check if the object has at least one non-numeric key
+	for (const key in obj) {
+		if (!Number.isInteger(Number(key))) return true;
+	}
+
+	return false;
+}
+
+/* Check if param is function */
+function isFunction(param) {
+	return typeof param === "function";
+}
+
+/* Check if function exist */
+function isFunctionExist(param) {
+	return isFunction(param);
+}
+
 /* Check if param is Object or not - from stackoverflow */
 function countObject(obj) {
 	return Object.keys(obj).length;
 }
 
-/* Check if is toastr is loaded */
-function isToastrLoaded() {
-	return window.toastr != undefined;
+/* Check if param is number/float or not - from chatgpt */
+function isNumber(param) {
+	return typeof param === "number" && isFinite(param);
 }
 
-/* Check if is swal is loaded */
-function isSwalLoaded() {
-	return window.Swal != undefined;
+/* Source: https://flexiple.com/javascript/javascript-capitalize-first-letter/ */
+/* Capitalize first letter of string/word */
+function strCapitalize(str) {
+	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/* Transform string to upper case */
+function strUpper(str) {
+	return isEmpty(str) ? "" : str.toUpperCase();
+}
+
+/* Transform string to lower case */
+function strLower(str) {
+	return isEmpty(str) ? "" : str.toLowerCase();
+}
+
+/* Transform every words to upper case */
+function strUpperWords(str) {
+	if (isEmpty(str)) return "";
+
+	const arr = str.split(" ");
+
+	for (var i = 0; i < arr.length; i++) {
+		arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+	}
+
+	return arr.join(" ");
+}
+
+/* Transform every words to lower case */
+function strUpperWords(str) {
+	if (isEmpty(str)) return "";
+
+	const arr = str.split(" ");
+
+	for (var i = 0; i < arr.length; i++) {
+		arr[i] = arr[i].charAt(0).toLowerCase() + arr[i].slice(1);
+	}
+
+	return arr.join(" ");
+}
+
+/* Get the current date in "YYYY-MM-DD" format  */
+function currentDate() {
+	return new Date().toISOString().split("T")[0];
+}
+
+/**
+ * Add a query string in url
+ *
+ * @param {object} params		the params to add in the url
+ * @returns {void}
+ */
+function addQueryStringInUrl(params) {
+	// Get the current query string
+	const url = new URLSearchParams(window.location.search);
+
+	// Add or update query parameters
+	for (let key in params) {
+		url.set(key, params[key]);
+	}
+
+	// Reconstruct the URL with the updated query string
+	const updatedUrl = url.toString();
+
+	// Update the address bar URL without reloading the page
+	const newUrl = `${window.location.pathname}?${updatedUrl}`;
+	window.history.pushState({}, "", newUrl);
+}
+
+/**
+ * Get the query string in url
+ *
+ * @param {string} param		the specific param to return
+ * @returns {object|string}
+ */
+function getQueryStringInUrl(param) {
+	// Get the query string from the current URL
+	const queryString = window.location.search;
+
+	if (!queryString) return {};
+
+	// Remove the leading '?' character if present
+	const queryStringWithoutQuestionMark = queryString.slice(1);
+
+	// Split the query string into an array of key-value pairs
+	const queryParams = queryStringWithoutQuestionMark.split("&");
+
+	// Create an object to store the parameters
+	const params = {};
+
+	// Iterate over the key-value pairs and populate the object
+	for (const param of queryParams) {
+		const [key, value] = param.split("=");
+		params[key] = decodeURIComponent(value);
+	}
+
+	// Now, return the params
+	return param ? params[param] : params;
+}
+
+/**
+ * Get the query string in url
+ *
+ * @param {array|string} params		the params to remove
+ * @returns {void}
+ */
+function removeQueryStringInUrl(params) {
+	// Get the current query string from the URL
+	const queryString = window.location.search;
+
+	if (!queryString) return;
+
+	// Create a URLSearchParams object from the query string
+	const searchParams = new URLSearchParams(queryString);
+
+	// Remove a specific query parameter
+	if (isArray(params)) {
+		for (let index = 0; index < params.length; index++) {
+			searchParams.delete(params[index]);
+		}
+	} else {
+		searchParams.delete(params);
+	}
+
+	// Generate the new query string
+	const newQueryString = searchParams.toString();
+
+	// Create a new URL with the updated query string
+	const newUrl = `${window.location.pathname}${
+		newQueryString ? `?${newQueryString}` : ""
+	}`;
+
+	// Update the URL without reloading the page
+	window.history.pushState({}, "", newUrl);
+
+	// Optionally, you can also update the address bar directly
+	// window.location.search = newQueryString;
+}
+
+/**
+ * Format number - eg. 1000 to 1,000
+ *
+ * @param {integer} number 	the number to format
+ * @param {integer} decimal	identifier on how many decimals - default 2
+ * @returns {integer}
+ */
+function numberFormat(number, decimal) {
+	return parseFloat(number).toLocaleString("en-US", {
+		minimumFractionDigits: decimal || 2,
+		maximumFractionDigits: decimal || 2,
+	});
+}
+
+/**
+ * Add decimal to the number
+ *
+ * @param {integer} number 	the number to format
+ * @param {integer} decimal	identifier on how many decimals - default 2
+ * @returns {integer}
+ */
+function numberToFixed(number, decimal = 2) {
+	number = parseFloat(number);
+	return number.toFixed(decimal);
+}
+
+/**
+ * Check key in object if exist then return
+ *
+ * @param {object} obj 	the object to search from
+ * @param {string} key	the key to search for
+ * @returns {string|null}
+ */
+function inObjectReturn(obj, key) {
+	return inObject(obj, key) ? obj[key] : null;
+}
+
+/**
+ * Parse number or float string
+ *
+ * @param {string} string 	Float/number string
+ * @returns {string|number}
+ */
+function parseNumber(string) {
+	// Convert if not string to avoid error
+	string = isString(string) ? string : string.toString();
+	return parseFloat(string.replace(/,/g, ""));
+}
+
+/**
+ * Check if page is reloaded
+ *
+ * @returns {bool}
+ */
+function isPageReloaded() {
+	return performance.navigation.type === 1;
+}
+
+/**
+ * Check if there's a query paramaters
+ * Intended if from mail notif
+ *
+ * @returns {bool}
+ */
+function showItemsIfRedirectedFromMail() {
+	const query = getQueryStringInUrl();
+
+	if (!isEmpty(query)) {
+		if (query.mail && !isPageReloaded())
+			if (isFunctionExist(view)) view(query.id);
+	}
 }

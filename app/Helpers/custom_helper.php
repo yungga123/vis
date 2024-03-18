@@ -1,420 +1,713 @@
 <?php
+// Helper functions for sidebar rendering
 
-/**
- * Get the permissions of the current logged user
- */
-if (! function_exists('get_permissions'))
+use GuzzleHttp\Promise\Is;
+
+require APPPATH.'Helpers/extend/sidebar.php';
+
+// Helper functions for user related functionality
+require APPPATH.'Helpers/extend/user_mngmt.php';
+
+// Helper functions for datatable related functionality
+require APPPATH.'Helpers/extend/datatable.php';
+
+// Helper functions for select/options related
+require APPPATH.'Helpers/extend/select_options.php';
+
+// Helper functions checking and getting
+// the session flashdata in view
+require APPPATH.'Helpers/extend/view_session.php';
+
+// Mixed helper functions - start from here
+if (! function_exists('check_string_contains'))
 {
-	function get_permissions(): array 
+    /**
+     * Check string if contains the passed value
+     */
+	function check_string_contains(string $string, string $val): bool
 	{
-		$model = new \App\Models\PermissionModel();
-        return $model->getCurrUserPermissions();
+        return (strpos($string, $val) !== false);
 	}
 }
 
-/**
- * Get the modules of the current logged user
- */
-if (! function_exists('get_user_modules'))
+if (! function_exists('remove_string'))
 {
-	function get_user_modules(array|null $permissions = null): array 
+    /**
+     * Clear variable based on the passed params
+     */
+	function remove_string(string|array|null $subject, string $search, string $replace = ''): string|array|null
 	{
-        if (session('access_level') === AAL_ADMIN) {
-            return array_keys(MODULES);
+        if (! empty($subject)) {
+            if (is_array($subject)) {
+                $arr = [];
+                foreach ($subject as $val) {
+                    $arr[] = str_replace($search, $replace, $val);
+                }
+    
+                $subject = $arr;
+            } else {
+                $subject = str_replace($search, $replace, $subject);
+            }
         }
 
-        $permissions = $permissions ?? get_permissions();
-		return !empty($permissions) 
-                ? array_column($permissions, 'module_code') : [];
+        return $subject;
 	}
 }
 
-/**
- * Get the nav menus of some of the modules
- */
-if (! function_exists('get_nav_menus'))
+if (! function_exists('current_date'))
 {
-	function get_nav_menus(string $param): array
+    /**
+     * Get current date - default format 'Y-m-d'
+     */
+	function current_date(string $format = 'Y-m-d'): string
 	{
-		$menu = [
-            'SALES'            => [
-                'name'      => 'Sales',
-                // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('customers') || url_is('customers/commercial') || url_is('customers/residential') || url_is('tasklead') || url_is('sales_manager') || url_is('sales_manager_indv')),
-                'icon'      => 'far fa-credit-card',
-            ],
-            'HUMAN_RESOURCE'   => [
-                'name'      => 'Human Resource',
-                // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('accounts') || url_is('employees')),
-                'icon'      => 'fas fa-users',
-            ],
-            'SETTINGS'          => [
-                'name'      => 'Settings',
-                // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('settings/mail') || url_is('settings/permissions')),
-                'icon'      => 'fas fa-cog',
-            ],
-        ];
-
-        return $menu[$param];
+        return date($format);
 	}
 }
 
-/**
- * Setup modules - like icons, urls etc..
- */
-if (! function_exists('setup_modules'))
+if (! function_exists('current_datetime'))
 {
-	function setup_modules(string $param = null)
+    /**
+     * Get current date & time - default format 'Y-m-d H:i:s'
+     */
+	function current_datetime(string $format = 'Y-m-d H:i:s'): string
 	{
-		$modules = [
-            // 'DASHBOARD'             => 'Dashboard',
-            'ACCOUNTS'              => [
-                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
-                'name'      => get_modules('ACCOUNTS'),
-                'url'       => url_to('account.home'),
-                'class'     => (url_is('accounts') ? 'active' : ''),
-                'icon'      => 'fas fa-user-cog',
-            ],
-            'EMPLOYEES'             => [
-                'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
-                'name'      => get_modules('EMPLOYEES'),
-                'url'       => url_to('employee.home'),
-                'class'     => (url_is('employees') ? 'active' : ''),
-                'icon'      => 'fas fa-user-clock',
-            ],
-            // 'CUSTOMERS'             => [
-            //     'menu'      => 'SALES', // Leave empty if none
-            //     'name'      => get_modules('CUSTOMERS'),
-            //     'url'       => url_to('customers.home'),
-            //     'class'     => (url_is('customers') ? 'active' : ''),
-            //     'icon'      => 'far fa-address-card',
-            // ],
-            'CUSTOMERS_COMMERCIAL'             => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('CUSTOMERS_COMMERCIAL'),
-                'url'       => url_to('customervt.home'),
-                'class'     => (url_is('customers/commercial') ? 'active' : ''),
-                'icon'      => 'far fa-address-card',
-            ],
-            'CUSTOMERS_RESIDENTIAL'             => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('CUSTOMERS_RESIDENTIAL'),
-                'url'       => url_to('customersresidential.home'),
-                'class'     => (url_is('customers/residential') ? 'active' : ''),
-                'icon'      => 'far fa-address-book',
-            ],
-            'TASK_LEAD'             => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('TASK_LEAD'),
-                'url'       => url_to('tasklead.home'),
-                'class'     => (url_is('tasklead') ? 'active' : ''),
-                'icon'      => 'fas fa-tasks',
-            ],
-            'MANAGER_OF_SALES'      => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('MANAGER_OF_SALES'),
-                'url'       => url_to('sales_manager.home'),
-                'class'     => (url_is('sales_manager') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
-            ],
-            'MANAGER_OF_SALES_INDV'      => [
-                'menu'      => 'SALES', // Leave empty if none
-                'name'      => get_modules('MANAGER_OF_SALES_INDV'),
-                'url'       => url_to('sales_manager_indv.home'),
-                'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
-                'icon'      => 'far fa-circle',
-            ],
-            'SETTINGS_MAILCONFIG'   => [
-                'menu'      => 'SETTINGS', // Leave empty if none
-                'name'      => get_modules('SETTINGS_MAILCONFIG'),
-                'url'       => url_to('mail.home'),
-                'class'     => (url_is('settings/mail') ? 'active' : ''),
-                'icon'      => 'fas fa-envelope',
-            ],
-            'SETTINGS_PERMISSIONS'   => [
-                'menu'      => 'SETTINGS', // Leave empty if none
-                'name'      => get_modules('SETTINGS_PERMISSIONS'),
-                'url'       => url_to('permission.home'),
-                'class'     => (url_is('settings/permissions') ? 'active' : ''),
-                'icon'      => 'fas fa-user-lock',
-            ],
-        ];
-
-        return $param ? $modules[$param] : $modules;
+        return date($format);
 	}
 }
 
-/**
- * Format the sidebar menus of the current user
- */
-if (! function_exists('get_sidebar_menus'))
+if (! function_exists('format_date'))
 {
-	function get_sidebar_menus()
+    /**
+     * Format date - default format 'M d, Y' (ex. Jan 1, 2023)
+     */
+	function format_date(string $date, string $format = 'M d, Y'): string
 	{
-        $html           = '';
-        $items          = [];
-        $menus          = [];
-        $modules        = setup_modules();
-        $user_modules   = get_user_modules();
+        if (! is_date_valid($date)) return '';
+        return !empty($date) ? date($format, strtotime($date)) : '';
+	}
+}
 
-		if (! empty($modules)) {
-            ksort($modules);
-            foreach ($modules as $key => $module) {
-                if (in_array($key, $user_modules) && !empty($module)) {
-
-                    if (! empty($module['menu'])) {                        
-                        $_menu = $module['menu'];
-                        $_key = $_menu;
-
-                        // Check if module has nav menu
-                        if (!in_array($module['menu'], $menus)) {
-                            $head = get_nav_menus($module['menu']);
-                            $menu = $head['urls'] ? 'menu-open' : '';
-                            $active = $head['urls'] ? 'active' : '';
-
-                            // Create the nav menu item
-                            $menus[$module['menu']] = <<<EOF
-                                <li class="nav-item {$menu}" id="{$module['menu']}">
-                                    <a href="#" class="nav-link {$active}">
-                                        <i class="nav-icon {$head['icon']}"></i>
-                                        <p>
-                                            {$head['name']}
-                                            <i class="fas fa-angle-left right"></i>
-                                        </p>
-                                    </a>
-                            EOF;
-                        }
-                    } else $_key = $key;
-
-                    // Html for nav item
-                    $_item  = <<<EOF
-                        <li class="nav-item" id="{$key}">
-                            <a href="{$module['url']}" class="nav-link {$module['class']}">
-                                <i class="nav-icon {$module['icon']}"></i>
-                                <p>
-                                    {$module['name']}
-                                </p>
-                            </a>
-                        </li>
-                    EOF;
-
-                    // Concat to $html if $_key is false
-                    if (strpos($html, $_key) === false)  $html .= "[$_key]";
-                    
-                    // Append to $items
-                    if (isset($items[$_key])) {
-                        // Concat if $_key does exist
-                        $items[$_key] .= $_item;
-                    } else $items[$_key] = $_item;
-                }
-            }
-
-            if (! empty($menus)) {
-                // Check if the $menus has value
-                foreach ($menus as $key => $val) {
-                    if (isset($items[$key])) {
-                        $mod = <<<EOF
-                            {$val}
-                             <ul class="nav nav-treeview">
-                                 {$items[$key]}
-                             </ul>
-                         EOF;
-                        // If key is in the item replace it
-                        $html = str_replace("[$key]", $mod, $html);
-                    }
-                }
-            }
-
-            if (! empty($items)) {
-                // For nav item that has no nav header
-                foreach ($items as $key => $val) {
-                    if (strpos($html, $key)) {
-                        $html = str_replace("[$key]", $val, $html);
-                    }
-                        
-                }
-            }
-
+if (! function_exists('format_time'))
+{
+    /**
+     * Format time - default format 'h:i A' (ex. 12:00 PM)
+     */
+	function format_time(string $time, string $format = 'h:i A', bool $print = false): string
+	{
+        if (! is_date_valid($time)) return '';
+        if ($print) {
+            if (empty($time) || $time == '00:00:00') return ''; 
         }
 
-        return $html;
+        return !empty($time) ? date($format ? $format : 'h:i A', strtotime($time)) : '';
 	}
 }
 
-/**
- * Check if current logged user is administration
- */
-if (! function_exists('is_admin'))
+if (! function_exists('format_datetime'))
 {
-	function is_admin(): bool
+    /**
+     * Format datetime - default format 'M d, Y h:i A' (ex. Jan 1, 2023 12:00 PM)
+     */
+	function format_datetime(string $datetime, string $format = 'M d, Y h:i A'): string
 	{
-        return session('access_level') === AAL_ADMIN;
+        if (! is_date_valid($datetime)) return '';
+        return !empty($datetime) ? date($format, strtotime($datetime)) : '';
 	}
 }
 
-/**
- * Check if current logged user is executive
- */
-if (! function_exists('is_executive'))
+if (! function_exists('is_date_valid'))
 {
-	function is_executive(): bool
+    /**
+     * Check date or datetime if valid
+     */
+	function is_date_valid(string $datetime): string
 	{
-        return session('access_level') === AAL_EXECUTIVE;
+        $check = strtotime($datetime);
+        return ($check > 0);
 	}
 }
 
-/**
- * Check if current logged user is manager
- */
-if (! function_exists('is_manager'))
+if (! function_exists('is_array_multi_dimen'))
 {
-	function is_manager(): bool
+    /**
+     * Check if array is multi-dimensional
+     */
+	function is_array_multi_dimen(array $array): bool
 	{
-        return session('access_level') === AAL_MANAGER;
+        foreach ($array as $element) {
+            if (is_array($element)) return true; // Found a nested array
+        }
+        return false; // No nested arrays found
 	}
 }
 
-/**
- * Get role / access level list
- */
-if (! function_exists('get_roles'))
+if (! function_exists('clean_param'))
 {
-	function get_roles(string|null $param = null): string|array
+    /**
+     * Clean input using trim default function
+     */
+	function clean_param(string|array $input, $func_name = '', $trim_chars = ''): string|array
 	{
-		$roles = ROLES;
+        if (empty($input)) return $input;
         
-        if(! is_admin()) unset($roles['ADMIN']);
+        if (is_array($input)) {
+            $arr = [];
+            foreach ($input as $key => $val) {
+                if (! is_array($val)) {
+                    $val = $trim_chars ? trim($val, $trim_chars) : trim($val);
+                }
+                if ($func_name) $val = $func_name($val);
 
-		return $param ? $roles[strtoupper($param)] : $roles;
+                $arr[$key] = $val;
+            }
+
+            return $arr;
+        }
+
+        $input = $trim_chars ? trim($input, $trim_chars) : trim($input);
+        
+        if ($func_name) $input = $func_name($input);
+
+        return $input;
 	}
 }
 
-/**
- * Get the module list
- */
-if (! function_exists('get_modules'))
+if (! function_exists('has_empty_value'))
 {
-	function get_modules(string|null $param = null): string|array
+    /**
+     * Check if array has an empty value
+     */
+	function has_empty_value(array $array): bool
 	{
-		$modules = MODULES;
-
-        asort($modules);
-
-        // if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
-
-		return $param ? $modules[strtoupper($param)] : $modules;
+        foreach ($array as $value) {
+            if (empty($value)) return true; // Found an empty value
+        }
+        return false; // No empty values found
 	}
 }
 
-/**
- * Get the action list
- */
-if (! function_exists('get_actions'))
+if (! function_exists('has_html_tags'))
 {
-	function get_actions(string|null $param = null): string|array
+    /**
+     * Check string if has html tags
+     */
+	function has_html_tags(string $string): bool
 	{
-		$actions = ACTIONS;
-
-		return $param ? $actions[strtoupper($param)] : $actions;
+        return preg_match('/<[^>]+>/', $string) === 1;
 	}
 }
 
-/**
- * Check the permissions if user can add/edit/delete
- */
-if (! function_exists('check_permissions'))
+if (! function_exists('kb_to_mb'))
 {
-	function check_permissions(array $permissions, string $needle): bool
+    /**
+     * Convert kb to mb
+     */
+	function kb_to_mb(int $size_in_kb): int
 	{
-		return in_array($needle, $permissions) ? true : false;
+        return $size_in_kb / 1024;
 	}
 }
 
-/**
- * Access level
- */
-if (! function_exists('account_access_level'))
+if (! function_exists('mb_to_kb'))
 {
-	function account_access_level($old = false, $params = null): mixed
+    /**
+     * Convert mb to kb
+     */
+	function mb_to_kb(int $size_in_mb): int
 	{
-		$access_levels = $old 
-			? [
-				'admin' 		=> 'Administrator',
-				'manager' 		=> 'Manager',
-				'sales' 		=> 'Sales',
-				'ofcadmin' 		=> 'Office Admin',
-				'hr' 			=> 'HR',
-				'user'  		=> 'User',
-			] 
-			: [
-				// 'super_admin' 	=> 'Super Admin',
-				'admin' 		=> 'Administrator',
-				'executive' 	=> 'Executive',
-				'manager' 		=> 'Manager',
-				'operation' 	=> 'Admin/Operation',
-				'supervisor'	=> 'Supervisory',
-				'user'  		=> 'General User',
-                'supervisor_sales'     => 'Sales Supervisor',
-                'supervisor_inventory'     => 'Inventory',
-                'supervisor_project'     => 'Project Engineer',
-                'supervisor_purchasing'     => 'Purchasing',
-                'supervisor_hr'     => 'HR Staff',
-                'supervisor_it'     => 'IT Head',
-                'manager_technical'     => 'Technical Manager',
-                'manager_admin'     => 'Admin Manager',
-                'manager_sales'     => 'Sales Manager',
-                'manager_hr'     => 'HR Manager',
-                'manager_accounting'     => 'Accounting Manager',
-                'manager_finance'     => 'Finance Manager',
-			];
-
-		if (! empty($params)) {
-			if (is_string($params)) {
-				return $access_levels[$params];
-			} 
-
-			if (is_array($params)) {
-				$arr = [];
-				foreach ($access_levels as $key => $val) {
-					if (in_array($key, $params)) {
-						$arr[$key] = $val;
-					}
-				}
-
-				return $arr;
-			}
-		}
-
-		return $access_levels;
+        return $size_in_mb * 1024;
 	}
 }
 
-/**
- * Get the avatar of the current user
- */
-if (! function_exists('get_avatar'))
+if (! function_exists('get_file_icons'))
 {
-	function get_avatar(string|null $param = null): string|array
+    /**
+     * Get fontawesome file icons
+     */
+	function get_file_icons(string $param): string
 	{
-		$avatars = [
-			'female' 	=> 'assets/dist/img/avatar3.png',
-			'male' 		=> 'assets/dist/img/avatar5.png',
-		];
+        $icon = 'fas fa-file';
+        switch (strtolower($param)) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'webp':
+                $icon = 'fas fa-file-image';  
+                break;
+            case 'pdf':
+                $icon = 'fas fa-file-pdf';                   
+                break;
+                break;
+            case 'doc':
+            case 'docx':
+                $icon = 'fas fa-file-word';                   
+                break;
+            case 'xlx':
+            case 'xlsx':
+            case 'csv':
+                $icon = 'fas fa-file-excel';                   
+                break;
+        }
 
-		return $param ? $avatars[strtolower($param)] : $avatars;
+        return $icon;
 	}
 }
 
-/**
- * Get the avatar of the current logged user
- */
-if (! function_exists('get_current_user_avatar'))
+if (! function_exists('flatten_array'))
 {
-	function get_current_user_avatar(): string
+    /**
+     * Flatten a multidimensional array.
+     * Or convert into one dimensional array.
+     */
+	function flatten_array(array $array, string $param = ''): array
 	{
-        $profile = new \App\Controllers\AccountProfile();
-        return $profile->getProfileImg(session('gender'));
+        if (is_array($array) && ! empty($array)) {
+            $arr = [];
+            foreach ($array as $key => $val) {
+                if (is_array($val)) {
+                    if ($param && isset($val[$param])) {
+                        $_key = $val[$param];
+                        unset($val[$param]);
+                        $arr[$_key] = $val;
+                    } else {
+                        $vals = array_values($val);
+
+                        if (count($vals) > 1)
+                            $arr[$vals[0]] = $vals[1];
+                        else
+                            $arr[$vals[0]] = $vals[0];
+                    }
+                } else
+                    $arr[$key] = $val;  
+            }
+            return $arr;
+        }
+        return $array;
 	}
+}
+
+if (! function_exists('_lang'))
+{
+    /**
+     * Add a custom logic in lang() function 
+     * before returning the result/response
+     */
+	function _lang(string $line, array|string $args = [], ?string $locale = null): string
+	{
+        // Convert $args to array and store in $_args
+        $_args      = is_array($args) ? $args : [$args];
+        // Get the corresponding line/value
+        $string     = lang($line, $_args, $locale);
+        // Define the pattern to match placeholders
+        $pattern    = '/\{([^}]*)\}/';
+
+        // Match placeholders in the string
+        preg_match_all($pattern, $string, $matches);
+
+        // Check if matches
+        if (! empty($matches[0])) { 
+            $result = $matches[1];
+
+            // Loop through each placeholder if $_args is not empty
+            if (! empty($_args)) {
+                // Replace the placeholder with value
+                for ($i=0; $i < count($result); $i++) { 
+                    $search     = $matches[0][$i];
+                    $replace    = $_args[$i];
+                    $string     = str_replace($search, $replace, $string);
+                }
+            } else {
+                // Replace the placeholder with value
+                $replace    = is_string($args) ? $args : 'Data';
+                $replace    = strpos($line, 'change') !== false ? 'CHANGE' : $replace;
+                $replace    = strpos($line, 'uploaded') !== false ? 'File' : $replace;
+                $string     = str_replace($matches[0][0], $replace, $string);
+            }
+        }
+
+        return $string;
+	}
+}
+
+if (! function_exists('res_lang'))
+{
+    /**
+     * Custom function for getting the value/line
+     * from Response Language (App\Language\en\Response).
+     * 
+     * You can call it instead of the usual lang() function
+     * so that you don't need to add the file name.
+     */
+	function res_lang(string $line, array|string $args = [], ?string $locale = null): string
+	{
+        // Add the prefix or the file name
+        $line   = 'Response.' . $line;
+        $string = _lang($line, $args, $locale);
+
+        return $string;
+	}
+}
+
+if (! function_exists('check_param'))
+{
+    /**
+     * Determine if passed $needle or $needle2 is existed.
+     * If $return is set to true, return the param (either empty string or not) otherwise boolean
+     */
+	function check_param(array|string $haystack, string $needle, string $needle2 = '', $return = false): mixed
+	{
+        if (empty($haystack)) 
+            return $return ? '' : false;
+
+        if (isset($haystack[$needle])) {
+            $param = $haystack[$needle];
+
+            if (! empty($param) && is_array($param)) {
+                foreach ($param as $val) {
+                    if (isset($val[$needle2]))
+                        $param = $val[$needle2];
+                }
+            }
+
+            if ($return) return $param;
+
+            // Check the value whether empty, null or zero
+            return !empty($param);
+        }
+        
+        return $return ? '' : false;
+	}
+}
+
+if (! function_exists('log_msg'))
+{
+    /**
+     * For logging message using the log_message() function
+     * with some little before calling the said method
+     */
+	function log_msg(mixed $message, array $context = []): bool
+	{
+        $level = ENVIRONMENT === 'development' ? 'info' : 'error';
+
+        if (empty($context)) {
+            $message = is_string($message) ? $message : json_encode($message);
+        }
+
+        return log_message($level, 'log_msg: '. $message, $context);
+	}
+}
+
+if (! function_exists('get_array_duplicate'))
+{
+    /**
+     * Get the duplicate value(s) of an array
+     */
+	function get_array_duplicate(array $array): array
+	{
+        $unique     = array_unique($array);
+        $duplicates = array_diff_assoc($array, $unique);
+
+        return $duplicates;
+	}
+}
+
+if (! function_exists('has_internet_connection'))
+{
+    /**
+     * Check if server has internet connection
+     */
+	function has_internet_connection(): bool
+	{
+        $url = "http://www.google.com"; // Use a reliable and accessible URL
+
+        $headers = @get_headers($url);
+
+        // Check if there is a response and the response code is 200 OK
+        return $headers && strpos($headers[0], '200') !== false;
+	}
+}
+
+if (! function_exists('get_time_diff'))
+{
+    /**
+     * Get time difference from two different times
+     */
+	function get_time_diff(string $time_start, string $time_end, $format = ''): int|object|string
+	{
+        $time_diff = 0;
+
+        if (! empty($time_start) && ! empty($time_end)) {
+            // Create DateTime objects for start and end times
+            $time_start = new DateTime(format_time($time_start, 'H:i:s'));
+            $time_end   = new DateTime(format_time($time_end, 'H:i:s'));
+
+            // Calculate the difference in hours and minutes
+            $time_diff  = $time_start->diff($time_end);
+
+            if (! empty($format)) {
+                return $time_diff->format($format);
+            }
+        }
+
+        return $time_diff;
+	}
+}
+
+if (! function_exists('get_total_hours'))
+{
+    /**
+     * Get total hours from two different times
+     * 
+     * @param float $break  To less the total hours
+     */
+	function get_total_hours(string $time_start, string $time_end, float $break = 0, $format = ''): int|string
+	{
+        $total_hours    = 0;
+        $time_diff      = get_time_diff($time_start, $time_end);
+
+        if (! empty($time_diff)) {
+            // Calculate total hours
+            if (! empty($format)) {
+                $time_diff->h = $time_diff->h - $break;
+
+                return $time_diff->format($format);
+            }
+
+            // Get hours plus fraction of an hour (mins / 60) 
+            $total_hours = $time_diff->h + ($time_diff->i / 60);
+            // Minus hr_break time
+            $total_hours = $total_hours - $break;
+            // Format to decimal with 2 places
+            $total_hours = number_format($total_hours, 2);
+        }
+
+        return $total_hours;
+	}
+}
+
+if (! function_exists('get_hours'))
+{
+    /**
+     * Get hours from time
+     */
+	function get_hours(string|float $time): int|float
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                return floor($time < 60 ? $time : $time / 60);
+            }
+
+            $time = time_to_mins($time);
+
+            return floor($time / 60);
+        }
+        
+        return $time;
+	}
+}
+
+if (! function_exists('get_minutes'))
+{
+    /**
+     * Get minutes from time
+     */
+	function get_minutes(string|float $time): int|float
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                $time   = (float) $time;
+                $hours  = floor($time);
+                
+                return round(($time - $hours) * 60);
+            }
+
+            $time = time_to_mins($time);
+
+            return get_minutes($time);
+        }
+
+        return $time;
+	}
+}
+
+if (! function_exists('time_to_mins'))
+{
+    /**
+     * Get total hours from two different times
+     */
+	function time_to_mins(float|string $time): int|float|string
+	{
+        if (! empty($time)) {
+            if (is_numeric($time)) {
+                return number_format(($time * 60), 2);
+            }
+
+            // Convert the time string to a DateTime object
+            $time_obj = new DateTime(format_time($time, 'H:i'));
+
+            // Get the total minutes from midnight
+            $total_mins = $time_obj->format('H') * 60 + $time_obj->format('i');
+
+            return number_format($total_mins, 2);
+        }
+
+        return $time;
+	}
+}
+
+if (! function_exists('compare_times'))
+{
+    /**
+     * Compare two different times based on the pass third param
+     */
+	function compare_times(string $time, string $time2, string $operator = '='): bool
+	{
+        // Convert time strings to DateTime objects
+        $date_time  = new DateTime(format_time($time, 'H:i'));
+        $date_time2 = new DateTime(format_time($time2, 'H:i'));
+
+        // Check if both DateTime objects are valid
+        if (!$date_time || !$date_time2) {
+            return false; // Invalid time format
+        }
+
+        // Perform the comparison based on the specified operator
+        switch ($operator) {
+            case '=':
+                return $date_time == $date_time2;
+            case '<':
+                return $date_time < $date_time2;
+            case '>':
+                return $date_time > $date_time2;
+            case '>=':
+                return $date_time >= $date_time2;
+            case '<=':
+                return $date_time <= $date_time2;
+            case '!=':
+                return $date_time != $date_time2;
+            default:
+                return false; // Invalid operator
+        }
+	}
+}
+
+if (! function_exists('get_date_diff'))
+{
+    /**
+     * Get date difference from two different date
+     */
+	function get_date_diff(string $start_date, string $end_date, $days = false): int|object|string
+	{
+        $interval = 0;
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            // Create DateTime objects for start and end dates
+            $start_date = new DateTime(format_date($start_date, 'Y-m-d'));
+            $end_date   = new DateTime(format_date($end_date, 'Y-m-d'));
+
+            // Calculate the difference between the two dates
+            $interval  = $start_date->diff($end_date);
+
+            if ($days) {
+                // Access the difference in days
+                $days =  $interval->days;
+
+                // Include the end date in the count
+                return $days += 1;
+            }
+        }
+
+        return $interval;
+	}
+}
+
+if (! function_exists('compare_dates'))
+{
+    /**
+     * Compare two different dates based on the pass third param
+     */
+	function compare_dates(string $date, string $date2, string $operator = '='): bool
+	{
+        // Convert date strings to Datedate objects
+        $date_time  = new DateTime(format_date($date, 'Y-m-d'));
+        $date_time2 = new DateTime(format_date($date2, 'Y-m-d'));
+
+        // Check if both DateTime objects are valid
+        if (!$date_time || !$date_time2) {
+            return false; // Invalid date format
+        }
+
+        // Perform the comparison based on the specified operator
+        switch ($operator) {
+            case '=':
+                return $date_time == $date_time2;
+            case '<':
+                return $date_time < $date_time2;
+            case '>':
+                return $date_time > $date_time2;
+            case '>=':
+                return $date_time >= $date_time2;
+            case '<=':
+                return $date_time <= $date_time2;
+            case '!=':
+                return $date_time != $date_time2;
+            default:
+                return false; // Invalid operator
+        }
+	}
+}
+
+if (! function_exists('format_results'))
+{
+    /**
+     * Format query result into one assoc array.
+     * This will be mostly use in a table with two columns (key, value)
+     * 
+     * @param array $result     The array/result to format
+     * @param string $key       The key name of the key - eg. $value['key']
+     * @param string $val       The key name of the value - eg. $value['value']
+     * @param bool $single      Whether to return single array only
+     */
+	function format_results(array $result, string $key = 'key', string $val = 'value', $single = false): array
+	{
+        $arr = [];
+
+        if (! empty($result)) {
+            foreach ($result as $_key => $value) {
+                if ($single) {
+                    $arr[] = $value[$key];
+                } else {
+                    $arr[$value[$key]] = empty($val) ? $value : $value[$val];
+                }                
+            }
+        }
+
+        return $arr;
+	}
+}
+
+if (! function_exists('get_acronymns'))
+{
+    /**
+     * Get the acronymns (first letter) of the words/string
+     * 
+     * @param string $words
+     */
+	function get_acronymns($words) {
+        if (empty($words)) return $words;
+        
+        $regex      = '/(?<=\b)\w/iu';
+        $split      = preg_split("/[\s,_-]+/", $words);
+        
+        preg_match_all($regex, $words, $matches);
+        
+        $results    = $matches[0];
+        
+        foreach ($split as $key => $val) {
+            if (is_numeric($val)) $results[$key] = $val;
+        }
+        
+        return mb_strtoupper(implode('', $results));
+    }
 }

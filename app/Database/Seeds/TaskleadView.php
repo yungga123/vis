@@ -8,63 +8,63 @@ class TaskleadView extends Seeder
 {
     public function run()
     {
-        $db = \Config\Database::connect();
-        $db->query("
-            DROP VIEW IF EXISTS
-                task_lead
-        ");
-        $db->query("
-        CREATE VIEW 
-            task_lead 
-        AS SELECT 
-            tasklead.id as id,
-            tasklead.employee_id,
-            CONCAT(employees.firstname,' ',employees.lastname) as employee_name,
-            quarter,
-            CONCAT(status,'%') as status,
-            status_percent,
-            customer_type,
-            existing_customer,
-            IF(customer_type='Commercial',customers_vt.customer_name,customers_residential.customer_name) as customer_name,
-            branch_name,
-            customers_vt.contact_number as contact_number,
-            project,
-            project_amount,
-            quotation_num,
-            DATE_FORMAT(forecast_close_date,'%b %d, %Y') as forecast_close_date,
-            DATE_FORMAT(DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as min_forecast_date,
-            DATE_FORMAT(DATE_ADD(forecast_close_date, INTERVAL 6 DAY),'%b %d, %Y') as max_forecast_date,
-            IF(close_deal_date<DATE_ADD(forecast_close_date, INTERVAL 6 DAY) AND close_deal_date>DATE_SUB(forecast_close_date, INTERVAL 6 DAY),'HIT','MISSED') as status1,
-            remark_next_step,
-            DATE_FORMAT(close_deal_date,'%b %d, %Y') as close_deal_date,
-            DATE_FORMAT(project_start_date,'%b %d, %Y') as project_start_date,
-            DATE_FORMAT(project_finish_date,'%b %d, %Y') as project_finish_date,
-            CONCAT(DATEDIFF(project_finish_date,project_start_date),' day/s') as project_duration,
-            tasklead.deleted_at
-        FROM 
-            tasklead
-        LEFT JOIN
-            customers_vt
-        ON
-            tasklead.customer_id=customers_vt.id
-        LEFT JOIN
-            customers_residential
-        ON
-            tasklead.customer_id=customers_residential.id
-        LEFT JOIN
-            tasklead_status
-        ON
-            tasklead.status=tasklead_status.percent
-        LEFT JOIN
-            employees
-        ON
-            tasklead.employee_id=employees.employee_id
-        LEFT JOIN
-            customervt_branch
-        ON
-            tasklead.branch_id=customervt_branch.id
-        WHERE
-            tasklead.deleted_at IS NULL
+        $this->db->query("DROP VIEW IF EXISTS task_lead");
+        $this->db->query("
+            CREATE VIEW 
+                task_lead 
+            AS SELECT 
+                tasklead.id AS id,
+                tasklead.employee_id,
+                CONCAT(employees.firstname,' ',employees.lastname) AS employee_name,
+                tasklead.quarter,
+                CONCAT(tasklead.status,'%') AS status,
+                tasklead_status.status_percent,
+                tasklead.customer_id,
+                tasklead.customer_type,
+                tasklead.existing_customer,
+                customers.name AS customer_name,
+                customer_branches.branch_name,
+                customers.contact_number,
+                tasklead.project,
+                FORMAT(ROUND(tasklead.project_amount, 2), 2) AS project_amount,
+                tasklead.quotation_num,
+                tasklead.tasklead_type,
+                DATE_FORMAT(forecast_close_date,'%b %d, %Y') AS forecast_close_date,
+                DATE_FORMAT(DATE_SUB(forecast_close_date, INTERVAL 6 DAY), '%b %d, %Y') AS min_forecast_date,
+                DATE_FORMAT(DATE_ADD(forecast_close_date, INTERVAL 6 DAY), '%b %d, %Y') AS max_forecast_date,
+                IF(close_deal_date < DATE_ADD(forecast_close_date, INTERVAL 6 DAY) AND close_deal_date > DATE_SUB(tasklead.forecast_close_date, INTERVAL 6 DAY), 'HIT', 'MISSED') AS status1,
+                tasklead.remark_next_step,
+                DATE_FORMAT(tasklead.close_deal_date, '%b %d, %Y') AS close_deal_date,
+                DATE_FORMAT(tasklead.project_start_date, '%b %d, %Y') AS project_start_date,
+                DATE_FORMAT(tasklead.project_finish_date, '%b %d, %Y') AS project_finish_date,
+                CONCAT(DATEDIFF(tasklead.project_finish_date, tasklead.project_start_date),' day/s') AS project_duration,
+                accounts_view.employee_name AS created_by,
+                DATE_FORMAT(tasklead.created_at, '%b %e, %Y at %h:%i %p') AS created_at,
+                tasklead.updated_at
+            FROM 
+                tasklead
+            LEFT JOIN
+                customers
+            ON
+                tasklead.customer_id = customers.id
+            LEFT JOIN
+                tasklead_status
+            ON
+                tasklead.status = tasklead_status.percent
+            LEFT JOIN
+                employees
+            ON
+                tasklead.employee_id = employees.employee_id
+            LEFT JOIN
+                customer_branches
+            ON
+                tasklead.branch_id = customer_branches.id
+            LEFT JOIN
+                accounts_view
+            ON
+                tasklead.created_by = accounts_view.username
+            WHERE
+                tasklead.deleted_at IS NULL
         ");
     }
 }

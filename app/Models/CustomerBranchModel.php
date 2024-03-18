@@ -3,28 +3,35 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\HRTrait;
 
 class CustomerBranchModel extends Model
 {
+    /* Declare trait here to use */
+    use HRTrait;
+
     protected $DBGroup          = 'default';
-    protected $table            = 'customer_branch';
+    protected $table            = 'customer_branches';
+    protected $accountsView     = 'accounts_view';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        "customer_id",
-        "branch_name",
-        "address_province",
-        "address_city",
-        "address_brgy",
-        "address_sub",
-        "contact_number",
-        "contact_person",
-        "email_address",
-        "notes"
+        'customer_id',
+        'branch_name',
+        'province',
+        'city',
+        'barangay',
+        'subdivision',
+        'contact_person',
+        'contact_number',
+        'email_address',
+        'notes',
+        'referred_by',
+        'created_by',
     ];
 
     // Dates
@@ -35,65 +42,51 @@ class CustomerBranchModel extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [
-        "customer_id" => 'required',
-        "branch_name" => 'required|max_length[500]',
-        "address_province" => 'required|max_length[500]',
-        "address_city" => 'required|max_length[500]',
-        "address_brgy" => 'required|max_length[500]',
-        "address_sub" => 'permit_empty|max_length[500]',
-        "contact_number" => 'required|max_length[500]',
-        "contact_person" => 'required|max_length[500]',
-        "email_address" => 'permit_empty|valid_email|max_length[500]',
-        "notes" => 'required|max_length[500]',
+    protected $validationRules      = [        
+        'branch_name' => [
+            'rules' => 'required|string|min_length[2]|max_length[255]',
+            'label' => 'branch name'
+        ],
+        'province' => [
+            'rules' => 'required|string|min_length[2]|max_length[255]',
+            'label' => 'province'
+        ],
+        'city' => [
+            'rules' => 'required|string|min_length[2]|max_length[255]',
+            'label' => 'city'
+        ],
+        'barangay' => [
+            'rules' => 'permit_empty|string|min_length[2]|max_length[255]',
+            'label' => 'barangay'
+        ],
+        'subdivision' => [
+            'rules' => 'permit_empty|string|min_length[2]|max_length[255]',
+            'label' => 'subdivision'
+        ],
+        'contact_person' => [
+            'rules' => 'required|string|min_length[2]|max_length[255]',
+            'label' => 'contact person'
+        ],
+        'contact_number' => [
+            'rules' => 'required|string|min_length[6]|max_length[255]',
+            'label' => 'contact number'
+        ],
+        'email_address' => [
+            'rules' => 'permit_empty|string|min_length[2]|max_length[255]',
+            'label' => 'email address'
+        ],
+        'notes' => [
+            'rules' => 'permit_empty|string|min_length[5]|max_length[255]',
+            'label' => 'notes'
+        ],
     ];
-    protected $validationMessages   = [
-        "customer_id" => [
-            "required" => "This field is required"
-        ],
-        "branch_name" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ],
-        "address_province" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ],
-        "address_city" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ],
-        "address_brgy" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ],
-        "address_sub" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ],
-        "contact_number" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ],
-        "contact_person" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ],
-        "email_address" => [
-            "valid_email" => "Please enter valid email.",
-            "max_length" => "Max length is 500."
-        ],
-        "notes" => [
-            "required" => "This field is required",
-            "max_length" => "Max length is 500."
-        ]
-    ];
+    protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['setCreatedByValue'];
     protected $afterInsert    = [];
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
@@ -102,26 +95,79 @@ class CustomerBranchModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function noticeTable($customers_id) 
+    // Set the value for created_by before inserting
+    protected function setCreatedByValue(array $data)
     {
-        $builder = $this->db->table('customer_view_branch');
-        $builder->where('customer_id', $customers_id);
-        $builder->select("*");
+        $data['data']['created_by'] = session('username');
+        return $data;
+    }
+
+    // Set the columns
+    public function columns($dtTable = false)
+    {
+        $columns = "
+            {$this->table}.id,
+            {$this->table}.customer_id,
+            {$this->table}.branch_name,
+            {$this->table}.province,
+            {$this->table}.city,
+            {$this->table}.barangay,
+            {$this->table}.subdivision,
+            {$this->table}.contact_person,
+            {$this->table}.contact_number,
+            {$this->table}.email_address,
+            {$this->table}.notes
+        ";
+
+        if ($dtTable) {
+            $datetimeFormat = dt_sql_datetime_format();
+            $addressConcat  = dt_sql_concat_client_address($this->table);
+            $columns        .= ",
+                {$addressConcat},
+                DATE_FORMAT({$this->table}.created_at, '{$datetimeFormat}') AS created_at,
+                {$this->accountsView}.employee_name AS created_by
+            ";
+        }
+
+        return $columns;
+    }
+
+    // For dataTables
+    public function noticeTable($customer_id) 
+    {
+        $builder = $this->db->table($this->table);
+        $builder->select($this->columns(true));
+
+        $this->joinAccountView($builder, "{$this->table}.created_by");
+
+        $builder->where("{$this->table}.customer_id", $customer_id);
+        $builder->where("{$this->table}.deleted_at IS NULL");
+        $builder->orderBy("{$this->table}.id", "DESC");
 
         return $builder;
     }
 
-    public function buttons()
+    // DataTable action buttons
+    public function buttons($permissions)
     {
-        $id = $this->primaryKey;
-        $closureFun = function($row) use($id) {
-            return <<<EOF
-                <button class="btn btn-sm btn-warning" onclick="editBranch({$row["$id"]})" title="Edit" data-toggle="modal" data-target="#modal_branchcustomer"><i class="fas fa-edit"></i> </button> 
+        $id         = $this->primaryKey;
+        $closureFun = function($row) use($id, $permissions) {
+            $buttons = '';
+            if (check_permissions($permissions, ACTION_EDIT)) {
+                $buttons .= <<<EOF
+                    <button class="btn btn-sm btn-warning" onclick="editBranch({$row["$id"]})" title="Edit Branch"><i class="fas fa-edit"></i> </button> 
+                EOF;
+            }
 
-                <button class="btn btn-sm btn-danger" onclick="removeBranch({$row["$id"]})" title="Delete"><i class="fas fa-trash"></i></button>                
-            EOF; 
+            if (check_permissions($permissions, ACTION_DELETE)) {
+                $buttons .= <<<EOF
+                    <button class="btn btn-sm btn-danger" onclick="removeBranch({$row["$id"]})" title="Delete Branch"><i class="fas fa-trash"></i></button>  
+                EOF;
+            }
+
+            return $buttons ? $buttons : '~~N/A~~';
         };
-
+        
         return $closureFun;
     }
 }

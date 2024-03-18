@@ -1,121 +1,74 @@
 <?=$this->extend('templates/default');?>
 <?=$this->section('content');?>
 <div class="container-fluid">
-    <div class="card">
-        <div class="card-body">
-            <input type="hidden" id="edit_url" value="<?= url_to('inventory.edit'); ?>" disabled>
-            <input type="hidden" id="remove_url" value="<?= url_to('inventory.delete'); ?>" disabled>
-            <table id="inventory_table" class="table table-hover table-striped nowrap" data-url="<?= url_to('inventory.list'); ?>">
-                <thead class="nowrap">
-                    <tr> 
-                        <th>Action</th>
-                        <th>Item Name</th>
-                        <th>Brand</th>
-                        <th>Item Type</th>
-                        <th>Dealer's Price</th>
-                        <th>Retail Price</th>
-                        <th>Project Price</th>
-                        <th>Quantity</th>
-                        <th>Unit</th>
-                        <th>Date of Purchase</th>
-                        <th>Supplier</th>
-                        <th>Location</th>
-                        <th>Encoder</th>
-                        <th>Created At</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-</div>
-<!-- Modal -->
-<div class="modal fade" id="modal_inventory" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form id="form_inventory" action="<?= url_to('inventory.save'); ?>" method="post" autocomplete="off">
-                <?= csrf_field(); ?>
-                <input type="hidden" id="inventory_id" name="id" readonly>
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Item</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="item_name">Item name</label>
-                                <input type="text" name="item_name" id="item_name" class="form-control" placeholder="Enter...">
-                                <small id="alert_item_name" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="item_brand">Brand</label>
-                                <input type="text" name="item_brand" id="item_brand" class="form-control" placeholder="Enter...">
-                                <small id="alert_item_brand" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="item_type">Item Type</label>
-                                <input type="text" name="item_type" id="item_type" class="form-control" placeholder="Enter...">
-                                <small id="alert_item_type" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="item_sdp">Dealer's Price</label>
-                                <input type="number" name="item_sdp" id="item_sdp" class="form-control" placeholder="Enter...">
-                                <small id="alert_item_sdp" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="item_srp">Retail Price</label>
-                                <input type="number" name="item_srp" id="item_srp" class="form-control" placeholder="Enter...">
-                                <small id="alert_item_srp" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="project_price">Project Price</label>
-                                <input type="number" name="project_price" id="project_price" class="form-control" placeholder="Enter...">
-                                <small id="alert_project_price" class="text-danger"></small>
-                            </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="mr-2 mb-2">
+                        <strong>Filters By: Category and Dropdowns: </strong>
+                    </div>
+                    <div class="d-flex flex-md-row flex-column align-items-md-center">
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_category" data-placeholder="Select a category" multiple style="width: 100%;">
+                                <?= $categories_filter ?>
+                            </select>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="number">Quantity</label>
-                                <input type="text" name="stocks" id="stocks" class="form-control" placeholder="Enter...">
-                                <small id="alert_stocks" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="stock_unit">Unit</label>
-                                <input type="text" name="stock_unit" id="stock_unit" class="form-control" placeholder="Enter...">
-                                <small id="alert_stock_unit" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="date_of_purchase">Date of Purchase</label>
-                                <input type="date" name="date_of_purchase" id="date_of_purchase" class="form-control" placeholder="Enter...">
-                                <small id="alert_date_of_purchase" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="location">Item Location</label>
-                                <input type="text" name="location" id="location" class="form-control" placeholder="Enter...">
-                                <small id="alert_location" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="supplier">Supplier</label>
-                                <input type="text" name="supplier" id="supplier" class="form-control" placeholder="Enter...">
-                                <small id="alert_supplier" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="encoder">Encoder</label>
-                                <input type="text" name="encoder" id="encoder" class="form-control" placeholder="Enter..." readonly value="<?= session('name') ?>">
-                                <small id="alert_encoder" class="text-danger"></small>
-                            </div>
+                        <div class="mr-2 flex-fill mb-2 mb-md-0">
+                            <select class="custom-select select2" id="filter_sub_category" data-placeholder="Select a sub-dropdowns" multiple style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="align-items-center justify-content-center d-flex">
+                            <button class="btn btn-outline-primary mr-1" title="Filter" onclick="filterData()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" title="Reset" onclick="filterData(true)">
+                                <i class="fas fa-ban"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Save Changes</button>
+                <div class="card-body">
+                    <table id="inventory_table" class="table table-hover table-striped nowrap" width="100%">
+                        <thead class="nowrap">
+                            <tr> 
+                                <th></th>
+                                <th>Actions</th>
+                                <th>Item #</th>
+                                <th>Supplier</th>
+                                <th>Category</th>
+                                <th>Sub-Category</th>
+                                <th>Item Brand</th>
+                                <th>Item Model</th>
+                                <th>Item Description</th>
+                                <th>Item Size</th>
+                                <th>Item Unit</th>
+                                <th>Quantity</th>
+                                <th>Dealer's Price</th>
+                                <th>Total Price</th>
+                                <th>Retail Price</th>
+                                <th>Project Price</th>
+                                <!-- <th>Date Purchase</th> -->
+                                <th>Location</th>
+                                <th>Encoder</th>
+                                <th>Encoded At</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
-            </form>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a href="<?= url_to('inventory.dropdown.home'); ?>" class="btn btn-success">Inventory Dropdowns</a>
+                            <a href="<?= url_to('inventory.logs.home'); ?>" class="btn btn-success">Inventory Logs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<?= $this->include('inventory/form'); ?>
+<?= $this->include('inventory/logs/form'); ?>
 <?= $this->include('templates/loading'); ?>
 <?=$this->endSection();?>

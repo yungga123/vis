@@ -1,0 +1,392 @@
+var table,
+	modal,
+	form,
+	elems,
+	invSelector,
+	supSelector,
+	itemFieldTable,
+	_status;
+
+$(document).ready(function () {
+	table = "rpf_table";
+	modal = "rpf_modal";
+	form = "rpf_form";
+	elems = [
+		"inventory_id",
+		"supplier_id",
+		"quantity_in",
+		"received_q",
+		"received_date",
+		"date_needed",
+	];
+	invSelector = ".inventory_id";
+	supSelector = ".supplier_id";
+	itemFieldTable = $("#item_field_table tbody");
+	_status = $pjOptions.rpf_status;
+
+	/* Load dataTable */
+	loadDataTable(table, router.rpf.list, METHOD.POST);
+
+	/* Init filter */
+	select2Init("#filter_status");
+
+	/* Toggle modal */
+	$("#btn_add_record").on("click", function () {
+		$(`#${modal}`).modal("show");
+		$(`#${modal}`).removeClass("edit").addClass("add");
+		$(`#${modal} .modal-title`).text("Add RPF");
+		$(`#${form}`)[0].reset();
+		$("#rpf_id").val("");
+		$(".item-row").remove();
+		clearSelect2Selection(invSelector);
+		clearAlertInForm(elems);
+	});
+
+	/* Masterlist select2 via ajax data source */
+	_initInventorySelect2();
+
+	/* Suppliers select2 via ajax data source */
+	select2AjaxInit(
+		".supplier_id",
+		"Search & select a supplier",
+		router.purchasing.common.suppliers,
+		"text"
+	);
+
+	// If select2 clear, set the item_available input next to it to empty
+	$(invSelector).on("select2:clear", function (e) {
+		const parentSiblingElem = e.target.parentElement.nextElementSibling;
+		_populateAvailableItemStocks(parentSiblingElem, "");
+	});
+
+	/* Form for saving record */
+	formSubmit($("#" + form), "continue", function (res, self) {
+		const message = res.errors ?? res.message;
+
+		if (res.status !== STATUS.ERROR) {
+			self[0].reset();
+			refreshDataTable($("#" + table));
+			notifMsgSwal(res.status, message, res.status);
+			$("#rpf_id").val("");
+			$(".item-row").remove();
+			clearSelect2Selection(invSelector);
+			// clearSelect2Selection(supSelector);
+
+			if ($(`#${modal}`).hasClass("edit")) {
+				$(`#${modal}`).modal("hide");
+			}
+		}
+
+		showAlertInForm(elems, message, res.status);
+	});
+
+	showItemsIfRedirectedFromMail();
+});
+
+/* For filtering and reseting */
+function filterData(reset = false) {
+	const status = getSelect2Selection("#filter_status");
+	const start_date = $("#filter_start_date").val();
+	const end_date = $("#filter_end_date").val();
+	const params = {
+		status: status,
+		start_date: start_date,
+		end_date: end_date,
+	};
+	const condition =
+		!isEmpty(status) || (!isEmpty(start_date) && !isEmpty(end_date));
+
+	filterParam(
+		router.rpf.list,
+		table,
+		params,
+		condition,
+		() => {
+			clearSelect2Selection("#filter_status");
+			$("#filter_start_date").val("");
+			$("#filter_end_date").val("");
+		},
+		reset
+	);
+}
+
+/* Get rpf items */
+function view(id, changeTo, status) {
+	$(`#rpf_items_modal .modal-title`).html("RPF Item Details");
+	$(`#rpf_items_modal .modal-footer #btn_mark`).remove();
+	$("#rpf_items_modal #rpf_id_text").text("RPF #: " + id);
+	$("#item_note").html("");
+
+	if (inArray(["accept", "review"], changeTo)) {
+		let markAs = strUpper(_status[changeTo]);
+		let onclick = `onclick="change(${id}, '${changeTo}', '${status}', ${true})"`;
+
+		$(`#rpf_items_modal .modal-title`).html(
+			`Change Status from ${strUpper(status)} to ${strUpper(changeTo)}`
+		);
+
+		// Append button
+		$("#rpf_items_modal .modal-footer").append(`
+			<button type="button" class="btn btn-success" id="btn_mark" ${onclick}>Mark as ${markAs}</button>	
+		`);
+
+		if (changeTo === "review") {
+			// Add note
+			const note = `
+				Please review the items first! If good to go, click the <strong>Mark as ${markAs}</strong> button to make this as <strong>REVIEWED</strong> and ready for purchase. Once marked as ${markAs}, record cannot be edited anymore.
+			`;
+			$("#item_note").html(note);
+		}
+	}
+
+	showLoading();
+
+	const data = { id: id, rpf_items: true };
+
+	$.post(router.rpf.fetch, data)
+		.then((res) => {
+			closeLoading();
+
+			if (res.status === STATUS.SUCCESS) {
+				let html = "";
+
+				if (!isEmpty(res.data)) {
+					let totalAmount = 0,
+						totalAmountReceived = 0;
+
+					$.each(res.data, (index, val) => {
+						const totalCost = Math.floor(val.quantity_in * val.item_sdp);
+						const totalCostReceived = Math.floor(val.received_q * val.item_sdp);
+
+						totalAmount = Math.floor(totalAmount + totalCost);
+						totalAmountReceived = Math.floor(
+							totalAmountReceived + totalCostReceived
+						);
+						html += `
+							<tr>
+								<td>${val.inventory_id}</td>
+								<td>${val.category_name}</td>
+								<td>${val.item_model}</td>
+								<td>${val.item_description}</td>
+								<td>${val.supplier_name || "N/A"}</td>
+								<td>${val.unit || "N/A"}</td>
+								<td>${val.size || "N/A"}</td>
+								<td>${val.stocks}</td>
+								<td>${val.quantity_in}</td>
+								<td>${numberFormat(val.item_sdp)}</td>
+								<td>${numberFormat(totalCost)}</td>
+								<td>${val.purpose || "N/A"}</td>
+							</tr>
+						`;
+					});
+					$(`#total_amount`).text(numberFormat(totalAmount));
+					$(`#total_amount_received`).text(numberFormat(totalAmountReceived));
+				} else {
+					html =
+						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';
+				}
+
+				$(`#rpf_items_table tbody`).html(html);
+				$(`#rpf_items_modal`).modal("show");
+			} else {
+				$(`#rpf_items_modal`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status);
+			}
+		})
+		.catch((err) => catchErrMsg(err));
+}
+
+/* Get record details */
+function edit(id) {
+	$("#rpf_items_modal").modal("hide");
+	$(`#${modal}`).removeClass("add").addClass("edit");
+	$(`#${modal} .modal-title`).text("Edit RPF");
+	$("#rpf_id").val(id);
+	$(".quantity_in").val("");
+	$(".item-row").remove();
+
+	// clearSelect2Selection(supSelector);
+	clearSelect2Selection(invSelector);
+	clearAlertInForm(elems);
+	showLoading();
+
+	$.post(router.rpf.fetch, { id: id })
+		.then((res) => {
+			closeLoading();
+
+			if (res.status === STATUS.SUCCESS) {
+				if (!isEmpty(res.data.items)) {
+					const items = res.data.items;
+					// Add item fields
+					for (let i = 1; i < items.length; i++) toggleItemField();
+
+					// Populate data
+					const itemFields = $(".inventory_id");
+					const quantity_in = $(".quantity_in");
+					for (let x = 0; x < itemFields.length; x++) {
+						const elem = itemFields[x];
+						const qelem = quantity_in[x];
+						const item = items[x];
+						const text = `${item.inventory_id} | ${item.item_model} | ${item.item_description}`;
+						// Set selected item in each select2
+						setSelect2AjaxSelection(elem, text, item.inventory_id);
+						// Set quantity_in in each input
+						$(qelem).val(parseInt(item.quantity_in));
+						// Get the parent next sibling td (which where the item_available input) each
+						const parentSiblingElem = $(elem).parent().next();
+						// Set available stocks each
+						_populateAvailableItemStocks(parentSiblingElem[0], item.stocks);
+					}
+				}
+
+				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+				$(`#${modal}`).modal("show");
+			} else {
+				$(`#${modal}`).modal("hide");
+				notifMsgSwal(res.status, res.message, res.status);
+			}
+		})
+		.catch((err) => catchErrMsg(err));
+}
+
+/* Delete record */
+function remove(id) {
+	const swalMsg = "delete";
+	swalNotifConfirm(
+		function () {
+			$.post(router.rpf.delete, { id: id })
+				.then((res) => {
+					const message = res.errors ?? res.message;
+
+					refreshDataTable($("#" + table));
+					notifMsgSwal(res.status, message, res.status);
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		TITLE.WARNING,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
+/* Change status record */
+function change(id, changeTo, status, proceed) {
+	if (inArray(["pending", "accepted"], status) && !proceed) {
+		$("#prf_id_file").val(id);
+		$("#status_file").val(changeTo);
+
+		// Display the items details
+		view(id, changeTo, status);
+		return;
+	}
+
+	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
+	const swalMsg = `
+		<div>RPF #: <strong>${id}</strong></div>
+		<div>Are you sure you want to <strong>${strUpper(
+			changeTo
+		)}</strong> this RPF?</div>
+	`;
+	const data = { id: id, status: changeTo };
+
+	swalNotifConfirm(
+		function () {
+			$.post(router.rpf.change, data)
+				.then((res) => {
+					const message = res.errors ?? res.message;
+
+					notifMsgSwal(res.status, message, res.status);
+					if (res.status !== STATUS.ERROR) {
+						refreshDataTable($("#" + table));
+						$("#rpf_items_modal").modal("hide");
+					}
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		title,
+		swalMsg,
+		STATUS.WARNING
+	);
+}
+
+/* Toggle item field */
+function toggleItemField(row) {
+	const itemFieldCount = itemFieldTable.find("tr").length + 1;
+
+	if (row) {
+		itemFieldTable.children("tr#row_" + row).remove();
+		return;
+	}
+
+	const html = `
+		<tr class="item-row" id="row_${itemFieldCount}">
+			<td>
+				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
+			</td>
+			<td>
+				<input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
+			</td>
+			<td>
+				<input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
+			</td>
+			<td>
+				<input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
+			</td>
+			<td>
+				<button type="button" class="btn btn-sm btn-danger" onclick="toggleItemField(${itemFieldCount})" title="Add new item field">
+					<i class="fas fa-minus"></i>
+				</button>
+			</td>
+		</tr>
+	`;
+
+	itemFieldTable.append(html);
+	_initInventorySelect2();
+}
+
+/* Toggle item field */
+function validate(quantity_in, evt) {
+	const value = parseFloat(evt.target.value);
+	let alertMsg = "";
+
+	if (
+		isNumber(value) &&
+		Math.floor(parseFloat(quantity_in) < parseFloat(value))
+	) {
+		alertMsg = "Received qty must not be greater than quantity in!";
+	}
+
+	$("#alert_received_q").text(alertMsg);
+}
+
+/* Masterlist select2 via ajax data source */
+function _initInventorySelect2() {
+	select2AjaxInit(
+		invSelector,
+		"Search & select an item",
+		router.inventory.common.masterlist,
+		"text",
+		_loadItemDetails
+	);
+}
+
+/* Load selected item details */
+function _loadItemDetails(data) {
+	if (data.id) {
+		const parentSiblingElem =
+			data.element.parentElement.parentElement.nextElementSibling;
+		if (data.stocks)
+			_populateAvailableItemStocks(parentSiblingElem, data.stocks);
+	}
+}
+
+/* Populate the item available stocks */
+function _populateAvailableItemStocks(parentSiblingElem, stock, noChild) {
+	if (parentSiblingElem.tagName === "TD" && typeof stock !== "undefined") {
+		if (noChild) {
+			$(parentSiblingElem).text(stock);
+			return;
+		}
+		$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
+	}
+}

@@ -4,19 +4,23 @@ namespace App\Controllers\Settings;
 
 use App\Controllers\BaseController;
 use App\Models\MailConfigModel;
+use App\Models\MailNotifModel;
 use League\OAuth2\Client\Provider\Google;
-use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\OAuth;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 
 class MailConfig extends BaseController
 {
     /**
-     * Use to initialize PermissionModel class
+     * Use to initialize model class
      * @var object
      */
     private $_model;
+
+    /**
+     * Use to initialize model class
+     * @var object
+     */
+    private $_mailNotifModel;
 
     /**
      * Use to get current module code
@@ -26,26 +30,26 @@ class MailConfig extends BaseController
     
     /**
      * Use to get current permissions
-     * @var string
+     * @var array
      */
-
     private $_permissions;
 
     /**
-     * Use to check if can add
+     * Use to check if can save
      * @var bool
      */
-    private $_can_add;
+    private $_can_save;
 
     /**
      * Class constructor
      */
     public function __construct()
     {
-        $this->_model       = new MailConfigModel(); // Current model
-        $this->_module_code = MODULE_CODES['mail_config']; // Current module
-        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, 'ADD');
+        $this->_model           = new MailConfigModel(); // Current model
+        $this->_mailNotifModel  = new MailNotifModel(); // Current model
+        $this->_module_code     = MODULE_CODES['mail_config']; // Current module
+        $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_save        = $this->checkPermissions($this->_permissions, ACTION_SAVE);
     }
 
     /**
@@ -56,174 +60,114 @@ class MailConfig extends BaseController
     public function index()
     {
         // Check role if has permission, otherwise redirect to denied page
-        $this->checkRolePermissions($this->_module_code);
+        $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
+
+        $mail_notifs = $this->_mailNotifModel->getMailNotifs(
+            null, '',
+            function($builder) {
+                if (! is_developer()) 
+                    $builder->where('is_mail_notif_enabled != 0');
+            }
+        );
+        $mail_notifs = flatten_array($mail_notifs, 'module_code');
 
         $data['title']          = 'Settings | Mail Configuration';
         $data['page_title']     = 'Settings | Mail Configuration';
         $data['custom_js']      = 'settings/mail_config.js';
-        $data['sweetalert2']    = true;
-        $data['exclude_toastr'] = true;
-        $data['can_save']       = is_admin() ? true : $this->_can_add;
+        $data['can_save']       = $this->_can_save;
         $data['mail']           = $this->_model->getMailConfig();
+        $data['mail_notifs']    = $mail_notifs;
+        $data['modules']        = get_modules();
+        $data['sweetalert2']    = true;
+        $data['toastr']         = true;
+        $data['bootstrap_switch'] = true;
+        $data['routes']         = json_encode([
+            'mail_config' => [
+                'save'      => url_to('mail_config.save'),
+            ],
+        ]);
 
-        return view('settings/mail_config/send_mail', $data);
-    }
+        return view('settings/mail_config/index', $data);
+    }   
 
     /**
      * For saving changes
      *
-     * @return json_encode array
+     * @return json
      */
     public function save()
     {
-        $data = [];
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.saved', 'Changes')
+        ];
+        $response   = $this->customTryCatch(
+            $data,
+            function($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
 
-        // Using DB Transaction
-        $this->transBegin();
+                $inputs = $this->request->getVar();
+                $model  = $this->_model;
+                $param  = 'config';
 
-        try {
-            $data['status'] = STATUS_SUCCESS;
-            $data['message'] = "Changes have been saved!";
+                if (isset($inputs['module_code'])) {
+                    $_recipients    = trim(trim($inputs['cc_recipients']), ', ');
+                    $param          = 'notifs';
+                    $inputs         = [
+                        'module_code'           => $inputs['module_code'],
+                        'has_mail_notif'        => $inputs['has_mail_notif'],
+                        'is_mail_notif_enabled' => $inputs['is_mail_notif_enabled'],
+                        'cc_recipients'         => $_recipients,
+                        'updated_by'            => session('username'),
+                    ];
+                    if (! empty($_recipients)) {
+                        $recipients = ['cc_recipients' => clean_param(explode(',', $_recipients))];
+                        $validate   = $this->validateData(
+                            $recipients,
+                            ['cc_recipients.*' => 'permit_empty|valid_email|max_length[500]']
+                        );
 
-            if (!$this->_model->save($this->request->getVar())) {
-                $data['errors'] = $this->_model->errors();
-                $data['status'] = STATUS_ERROR;
-                $data['message'] = "Validation error!";
-            } else {
-                log_message(
-                    'error',
-                    'Mail config data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.',
-                    [
-                        'username' => session()->get('username'),
-                        'employee_id' => session()->get('employee_id'),
-                        'access_level' => session()->get('access_level'),
-                        'saved_at' => date('Y-m-d H:i:s'),
-                        'ip_address' => $this->request->getIPAddress(),
-                    ]
-                );
-            }
+                        if (! $validate) {
+                            $data['errors']     = ['recipients' => res_lang('error.email')];
+                            $data['status']     = res_lang('status.error');
+                            $data['message']    = res_lang('error.validation');
+        
+                            return $data;
+                        }
+                        $data['recipients'] = $_recipients;
+                    }
 
-            // Commit transaction
-            $this->transCommit();
-        } catch (\Exception$e) {
-            // Rollback transaction if there's an error
-            $this->transRollback();
-
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status'] = STATUS_ERROR;
-            // $data['errors']     = $e->getMessage();
-            $data['message'] = 'Error while processing data! Please contact your system administrator.';
-        }
-
-        return $this->response->setJSON($data);
-    }
-
-    /**
-     * Function for sending mail using PHPMailer library
-     *
-     * @param array $params
-     * @param string $sendVia
-     * @return array
-     */
-    protected function send(array $params, $sendVia = 'xoauth2')
-    {
-        $error = '';
-
-        //Create a new PHPMailer instance
-        $mail = new PHPMailer();
-
-        try {
-            // $this->checkIfStillHasSessionToken();
-
-            //Get mail config details
-            $mail_config = $this->_model->getMailConfig();
-
-            if (empty($mail_config)) {
-                throw new Exception("There is no mail config data.", 1);
-            }
-
-            //Tell PHPMailer to use SMTP
-            $mail->isSMTP();
-
-            //Enable SMTP debugging
-            //SMTP::DEBUG_OFF = off (for production use)
-            //SMTP::DEBUG_CLIENT = client messages
-            //SMTP::DEBUG_SERVER = client and server messages
-            $mail->SMTPDebug = SMTP::DEBUG_OFF;
-
-            //Set the hostname of the mail server
-            $mail->Host = $mail_config['hostname'];
-
-            //Set the SMTP port number:
-            // - 465 for SMTP with implicit TLS, a.k.a. RFC8314 SMTPS or
-            // - 587 for SMTP+STARTTLS
-            $mail->Port = 587;
-
-            //Set the encryption mechanism to use:
-            // - SMTPS (implicit TLS on port 465) or
-            // - STARTTLS (explicit TLS on port 587)
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-
-            //Whether to use SMTP authentication
-            $mail->SMTPAuth = true;
-
-            if ($sendVia === 'xoauth2') {
-                $this->_sendViaOAuth2($mail, $mail_config);
-            } else {
-                $this->_sendViaRegularSMPT($mail, $mail_config);
-            }
-
-            //Set who the message is to be sent from
-            $mail->setFrom($mail_config['email'], $mail_config['email_name']);
-
-            //Set who will receive the mail
-            $mail->addAddress($params['email_address'], $params['employee_name'] ?? '');
-
-            //Set who can get a copy
-            if (!empty($mail_config['recepients'])) {
-                $split = explode(',', $mail_config['recepients']);
-                foreach ($split as $val) {
-                    $mail->addCC(trim($val));
+                    $model  = new MailNotifModel();
+                    $save   = $model->upsert($inputs);
+                } else {
+                    $inputs['is_enable'] = (isset($inputs['is_enable']) && $inputs['is_enable']) ? $inputs['is_enable'] : 'NO';
+                    $save   = $model->save($inputs);
                 }
 
+                if (! $save) {
+                    if (empty($model->errors())) return $data;
+
+                    $data['errors']     = $model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                } else {
+                    log_msg(
+                        "Mail {$param} data has been saved. Updated by {username} with details ({employee_id}, {access_level}) at {saved_at} from {ip_address}.",
+                        [
+                            'username'      => session('username'),
+                            'employee_id'   => session()->get('employee_id'),
+                            'access_level'  => session()->get('access_level'),
+                            'saved_at'      => date('Y-m-d H:i:s'),
+                            'ip_address'    => $this->request->getIPAddress(),
+                        ]
+                    );
+                }
+
+                return $data;
             }
-            // $mail->addBCC('bcc@example.com');
+        );
 
-            //Set the subject line
-            $mail->Subject = $params['subject'] ?? $mail_config['email_name'];
-
-            //Attachments
-            // $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
-            // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
-
-            //Set email format to HTML
-            $mail->isHTML(true);
-
-            //Content
-            $mail->Body = $params['body'] ?? $this->_bodyMailTemplate($params);
-
-            //Read an HTML message body from an external file, convert referenced images to embedded,
-            //convert HTML into a basic plain-text alternative body
-            $mail->CharSet = PHPMailer::CHARSET_UTF8;
-            $mail->msgHTML($mail->Body);
-
-            //send the message, check for errors
-            if (!$mail->send()) {
-                throw new Exception("Mail could not be sent!", 1);
-            }
-        } catch (Exception $e) {
-            $error = 'Mail could not be sent! Please contact your system administrator.';
-            log_message(
-                'error',
-                'Mail could not be sent. Mailer Error: {mail_error}! [ERROR] {exception}!',
-                ['mail_error' => $mail->ErrorInfo, 'exception' => $e]
-            );
-        }
-
-        return [
-            'status' => empty($error) ? STATUS_SUCCESS : STATUS_ERROR,
-            'message' => empty($error) ? ' A mail has been sent to employee.' : $error,
-        ];
+        return $response;
     }
 
     /**
@@ -257,7 +201,7 @@ class MailConfig extends BaseController
         if (null === $provider) {
             // exit('Provider missing');
             log_message('error', 'OAuth2: Provider missing!');
-            return $this->_status(STATUS_ERROR, $view);
+            return $this->_status(res_lang('status.error'), $view);
         }
 
         if (!isset($_GET['code'])) {
@@ -280,7 +224,7 @@ class MailConfig extends BaseController
             // exit('Invalid state');
 
             log_message('error', 'OAuth2: Invalid state!');
-            return $this->_status(STATUS_ERROR, $view);
+            return $this->_status(res_lang('status.error'), $view);
         } else {
             //Try to get an access token (using the authorization code grant)
             $token = $provider->getAccessToken(
@@ -303,7 +247,7 @@ class MailConfig extends BaseController
 
             $this->_model->saveRefreshToken($token->getRefreshToken());
 
-            return $this->_status(STATUS_SUCCESS, $view);
+            return $this->_status(res_lang('status.success'), $view);
         }
     }
 
@@ -318,7 +262,7 @@ class MailConfig extends BaseController
         unset($_SESSION['oauth2state']);
         unset($_SESSION['refresh_token']);
 
-        return redirect()->route('mail.home');
+        return redirect()->route('mail_config.home');
     }
 
     /**
@@ -459,7 +403,7 @@ class MailConfig extends BaseController
     public function _status($status = 'success', $view = true)
     {
         $message = 'Your OAuth2 Google Client configuration is success.';
-        if ($status === STATUS_ERROR) {
+        if ($status === res_lang('status.error')) {
             $status = 'danger';
             $message = "There's an error in your OAuth2 Google Client configuration";
         }

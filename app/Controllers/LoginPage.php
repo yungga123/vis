@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\Accounts as AccountsModel;
-use App\Models\EmployeesModel;
+use App\Models\AccountModel;
+use App\Models\EmployeeModel;
 
 class LoginPage extends BaseController
 {
@@ -27,16 +27,24 @@ class LoginPage extends BaseController
             ];
             
             if ($this->validate($rules)) {
-                $accountsModel  = new AccountsModel();
+                $accountsModel  = new AccountModel();
                 $username       = $this->request->getVar('username');
                 $password       = $this->request->getVar('password');
 
-                $data['status']         = STATUS_ERROR;
+                $data['status']         = res_lang('status.error');
                 $data['message']        = 'Wrong username or password. Please try again!';
 
                 if ($user = $accountsModel->authenticate($username, $password)) {
-                    $employeesModel = new EmployeesModel();
-                    $employee = $employeesModel->where('employee_id', $user['employee_id'])->first();
+                    $employeesModel = new EmployeeModel();
+                    $fields         = '
+                        employee_id,
+                        firstname,
+                        lastname,
+                        gender,
+                        email_address
+                    ';
+                    $employee       = $employeesModel->select($fields)
+                                        ->where('employee_id', $user['employee_id'])->first();
 
                     $session = session();
                     $session->set([
@@ -47,23 +55,24 @@ class LoginPage extends BaseController
                         'employee_id'   => $employee['employee_id'],
                         'name'          => $employee['firstname'].' '.$employee['lastname'],
                         'gender'        => $employee['gender'],
+                        'email_address' => $employee['email_address'],
                         'logged_at'     => date('Y-m-d H:i:s'),
                     ]);
 
-                    $data['status']     = STATUS_SUCCESS;
+                    $data['status']     = res_lang('status.success');
                     $data['message']    = 'You have successfully logged in!';
                     $data['redirect']   = base_Url('/dashboard');
                 }
             } else {
-                $data['status']     = STATUS_ERROR;
-                $data['message']    = 'Validation error!';
+                $data['status']     = res_lang('status.error');
+                $data['message']    = res_lang('error.validation');
                 $data['errors']     = $this->validator->getErrors();
             }
         } catch (\Exception $e) {
-            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            $data['status'] = STATUS_ERROR;
-            // $data['errors']     = $e->getMessage();
-            $data ['message']   = 'Error while processing data! Please contact your system administrator.';
+            $this->logExceptionError($e, __METHOD__);
+            
+            $data['status']     = res_lang('status.error');
+            $data ['message']   = res_lang('error.process');
         }
 
         return $this->response->setJSON($data); 
