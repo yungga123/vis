@@ -29,5 +29,6 @@ class AllViews extends Seeder
         $this->call('JobOrdersView');
         $this->call('ChangeRPFStatus');
         $this->call('ChangePOStatus');
+        $this->call('CustomerSupportsView');
     }
 }

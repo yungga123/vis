@@ -250,6 +250,9 @@ define('ACTIONS', [
             'FILE'          => 'File',
             'PRINT'         => 'Print',
         ],
+        'SALES_CUSTOMER_SUPPORTS'     => [
+            'CHANGE'        => 'Change Status',
+        ],
     ],
 ]);
 
@@ -319,6 +322,7 @@ define('MODULES', [
     'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
     'FINANCE_FUNDS'         => 'Funds',
     'INVENTORY_ORDER_FORMS' => 'Order Forms',
+    'SALES_CUSTOMER_SUPPORTS' => 'Customer Supports',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -356,6 +360,7 @@ define('MODULE_CODES', [
     'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
     'funds'                 => 'FINANCE_FUNDS',
     'order_forms'           => 'INVENTORY_ORDER_FORMS',
+    'customer_supports'     => 'SALES_CUSTOMER_SUPPORTS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)

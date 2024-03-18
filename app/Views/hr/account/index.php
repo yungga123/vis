@@ -34,6 +34,7 @@
                     <table id="account_table" class="table table-striped table-hover nowrap">
                         <thead class="nowrap">
                             <tr>
+                                <th></th>
                                 <th>Actions</th>
                                 <th>Employee ID</th>
                                 <th>Employee Name</th>
