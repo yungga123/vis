@@ -84,9 +84,11 @@ class AccountModel extends Model
         $id = $data['id'][0];
 
         if (is_numeric($id)) {
-            $result = $this->getAccounts($id);
-    
-            if (! empty($result) && $result[0]['username'] === session('username'))  {
+            $result     = $this->getAccounts($id);
+            $username   = $result[0]['username'] ?? null;
+            $username   = $username ?? ($result['username'] ?? null);
+
+            if (! empty($result) && $username === session('username'))  {
                 throw new \Exception("You can't delete your own record!", 2);
             }
         }
@@ -160,21 +162,30 @@ class AccountModel extends Model
         }
 
         if ($id) {
+            if (is_numeric($id)) {
+                $builder->where('id', $id);
+
+                return $builder->get()->getRowArray();
+            }
+
             if (is_array($id)) {
                 $builder->whereIn('employee_id', $id);
+
                 return $builder->get()->getResultArray();
             }
            
             if (strpos(',', $id) !== false) {
                 $builder->whereIn('employee_id', clean_param(explode(',', $id)));
+
                 return $builder->get()->getResultArray();
             } 
             
             return $builder->where('employee_id', $id)->get()->getRowArray();
 
         } else {
-            if (is_string($username) && strpos(',', $username) === false)
+            if (is_string($username) && strpos(',', $username) === false) {
                 return $builder->get()->getRowArray();
+            }
         }
 
         return $builder->get()->getResultArray();

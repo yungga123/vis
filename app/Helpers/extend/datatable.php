@@ -125,6 +125,7 @@ if (! function_exists('dt_status_color'))
             case 'received':
             case 'reviewed':
             case 'paid':
+            case 'done':
                 $color   = 'success';
                 break;
             case 'view':

@@ -45,16 +45,17 @@ if (! function_exists('get_nav_menus'))
             url_is('payroll/timesheets')
         );
         $is_sales       = (
-            url_is('tasklead') || 
-            url_is('tasklead/booked') || 
-            url_is('sales_manager') || 
-            url_is('sales_manager_indv')
+            url_is('sales/tasklead') || 
+            url_is('sales/tasklead/booked') || 
+            url_is('sales/manager') || 
+            url_is('sales/manager/indvidual') || 
+            url_is('sales/customer-supports')
         );
         $is_inventory = (
             url_is('inventory') || 
             url_is('inventory/dropdowns') || 
             url_is('inventory/logs') || 
-            url_is('project-request-forms') || 
+            url_is('inventory/project-request-forms') || 
             url_is('inventory/order-forms')
         );
         $is_purchasing  = (
@@ -161,21 +162,21 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('TASK_LEAD'),
                 'url'       => url_to('tasklead.home'),
-                'class'     => (url_is('tasklead') || url_is('tasklead/booked') ? 'active' : ''),
+                'class'     => (url_is('sales/tasklead') || url_is('sales/tasklead/booked') ? 'active' : ''),
                 'icon'      => 'fas fa-tasks',
             ],
             'MANAGER_OF_SALES'      => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('MANAGER_OF_SALES'),
                 'url'       => url_to('sales_manager.home'),
-                'class'     => (url_is('sales_manager') ? 'active' : ''),
+                'class'     => (url_is('sales/manager') ? 'active' : ''),
                 'icon'      => 'fas fa-user-tie',
             ],
             'MANAGER_OF_SALES_INDV' => [
                 'menu'      => 'SALES', // Leave empty if none
                 'name'      => get_modules('MANAGER_OF_SALES_INDV'),
                 'url'       => url_to('sales_manager_indv.home'),
-                'class'     => (url_is('sales_manager_indv') ? 'active' : ''),
+                'class'     => (url_is('sales/manager/indvidual') ? 'active' : ''),
                 'icon'      => 'fas fa-user-tag',
             ],
             'INVENTORY'             => [
@@ -345,8 +346,15 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('inventory/order-forms') ? 'active' : ''),
                 'icon'      => 'fab fa-wpforms',
             ],
+            'SALES_CUSTOMER_SUPPORTS'  => [
+                'menu'      => 'SALES', // Leave empty if none
+                'name'      => get_modules('SALES_CUSTOMER_SUPPORTS'),
+                'url'       => url_to('sales.customer_support.home'),
+                'class'     => (url_is('sales/customer-supports') ? 'active' : ''),
+                'icon'      => 'fas fa-headset',
+            ],
         ];
-
+        
         return $param ? $modules[$param] : $modules;
 	}
 }

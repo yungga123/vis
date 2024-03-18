@@ -412,16 +412,17 @@ if (! function_exists('get_employees'))
 
 		if ($id) {
 			if (is_string($id) && strpos($id, ',') === false) {
-				$builder->where('employee_id =', $id);
+				$builder->where('employee_id', $id);
+				
 				return $builder->first();
 			}
 
 			if (is_array($id) && !empty($id)) {
 				foreach ($id as $key => $val) {
 					if (is_numeric($val)) {
-						$builder->where("id", $val);
+						$builder->where('id', $val);
 					} else {
-						$builder->where('employee_id =', $val);
+						$builder->where('employee_id', $val);
 					}
 				}
 

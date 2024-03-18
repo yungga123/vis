@@ -70,7 +70,7 @@ class JobOrder extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['admin/job_order/index.js', 'admin/common.js', 'dt_filter.js'];
+        $data['custom_js']      = ['admin/job_order/index.js', 'customer/common.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'job_order' => [
                 'list'      => url_to('job_order.list'),
@@ -82,10 +82,14 @@ class JobOrder extends BaseController
             'admin' => [
                 'common' => [
                     'quotations'        => url_to('admin.common.quotations'),
-                    'customers'         => url_to('admin.common.customers'),
-                    'customer_branches' => url_to('admin.common.customer.branches'),
                 ]
-            ]
+            ],
+            'clients' => [
+                'common' => [
+                    'customers'         => url_to('clients.common.customers'),
+                    'customer_branches' => url_to('clients.common.customer.branches'),
+                ]
+            ],
         ]);
         $data['php_to_js_options'] = json_encode([
             'status'    => get_jo_status('', true),

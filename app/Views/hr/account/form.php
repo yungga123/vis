@@ -22,15 +22,9 @@
                     </div>
                     <div class="form-group">
                         <label class="required" for="employee_id">Employee Name</label>
-                        <select class="select2" name="employee_id" id="employee_id" data-placeholder="Select an employee" style="width: 100%;" required>
-                            <?php $employees = get_employees(); 
-                                if (! empty($employees)): ?>
-                            <?php foreach ($employees as $val): ?>
-                                <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
-                            <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
+                        <select class="select2" name="employee_id" id="employee_id" data-placeholder="Select an employee" style="width: 100%;" required></select>
                         <input type="hidden" id="employee_id1" name="employee_id1" readonly>
+                        <input type="hidden" class="form-control" id="employee_name" readonly>
                         <small id="alert_employee_id" class="text-danger"></small>
                     </div>
                     <div class="form-group">

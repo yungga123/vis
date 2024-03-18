@@ -29,7 +29,8 @@ form.with-label-indicator .form-group label.not-include::after {
 	color: #6c757d;
 }
 
-.dataTables_wrapper .table tbody td span.td-technicians {
+.dataTables_wrapper .table tbody td span.td-technicians,
+.dataTables_wrapper .table tbody td span.td-specialists {
 	color: #fff;
 	background-color: #3c8dbc;
 	padding: 5px 10px;

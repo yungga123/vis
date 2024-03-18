@@ -76,6 +76,11 @@ class Account extends BaseController
                 'fetch'     => url_to('account.fetch'),
                 'delete'    => url_to('account.delete'),
             ],
+            'employee' => [
+                'common' => [
+                    'search' => url_to('employee.common.search'),
+                ]
+            ],
         ]);
 
         return view('hr/account/index', $data);
@@ -101,6 +106,7 @@ class Account extends BaseController
             ->setDefaultOrder('employee_name', 'asc')
             ->setOrder([
                 null,
+                null,
                 'employee_id',
                 'employee_name',
                 'username',
@@ -109,6 +115,7 @@ class Account extends BaseController
                 'created_at',
             ])
             ->setOutput([
+                dt_empty_col(),
                 $this->_model->buttons($this->_permissions),
                 'employee_id',
                 'employee_name',
@@ -211,8 +218,9 @@ class Account extends BaseController
             $data,
             function($data) {
                 $id     = $this->request->getVar('id');
-                $fields = 'employee_id, username, UPPER(access_level) as access_level';    
-                $data['data'] = $this->_model->select($fields)->find($id);
+                $fields = 'employee_id, employee_name, username, UPPER(access_level) as access_level';  
+
+                $data['data'] = $this->_model->getAccountsView($id, null, $fields);
 
                 return $data;
             },

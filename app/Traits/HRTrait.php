@@ -126,6 +126,7 @@ trait HRTrait
         if (! empty($q)) {
             if (empty($options)) {
                 $modelV->where("{$modelV->table}.employee_id", $q);
+                
                 return $modelV->first();
             }
 
