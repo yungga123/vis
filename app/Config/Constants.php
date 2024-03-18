@@ -233,8 +233,9 @@ define('ACTIONS', [
             'OTHERS_ONLY'   => TRUE,
         ],
         'FINANCE_BILLING_INVOICE'     => [
-            'APPROVE'       => 'Approve',
-            'PRINT'         => 'Print',
+            'APPROVE'   => 'Approve',
+            'PRINT'     => 'Print',
+            'MARK_PAID' => 'Mark as Paid',
         ],
         'FINANCE_FUNDS'     => [
             'VIEW'          => 'View',

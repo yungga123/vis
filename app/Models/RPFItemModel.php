@@ -200,7 +200,7 @@ class RPFItemModel extends Model
             }
 
             if (! empty($rpf_data)) {
-                $constraint = ['rpf_id', 'inventory_id', 'quantity_in'];
+                $constraint = ['rpf_id', 'inventory_id'];
                 $this->db->table($this->table)->updateBatch($rpf_data, $constraint);
             }
 

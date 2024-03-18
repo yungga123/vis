@@ -318,20 +318,26 @@ class ProjectRequestForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id         = $this->request->getVar('id');
-                $_status    = $this->request->getVar('status');
+                $request    = $this->request->getVar();
+                $id         = $request['id'];
+                $_status    = $request['status'];
                 $status     = set_prf_status($_status);
                 $inputs     = ['status' => $status];
+                $remarks    = $request['_remarks'] ?? null;
 
                 $this->checkRoleActionPermissions($this->_module_code, $_status, true);
 
-                if (null !== $this->request->getVar('remarks'))
-                    $inputs['remarks'] = trim($this->request->getVar('remarks'));
+                if ($remarks) {
+                    $inputs['remarks'] = trim($remarks);
+                }
 
                 // Prev ['accepted', 'item_out']
                 if (in_array($status, ['item_out'])) {
-                    if ($this->checkPrfItemsOutNStocks($id))
-                        throw new \Exception("There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!", 2);
+                    if ($this->checkPrfItemsOutNStocks($id)) {
+                        $message = "There is/are item(s)'s <strong>available stocks</strong> are less than the <strong>quantity out</strong>!";
+
+                        throw new \Exception($message, 2);
+                    }
                 }
 
                 if (! $this->_model->update($id, $inputs)) {
@@ -342,12 +348,12 @@ class ProjectRequestForm extends BaseController
                     $data['status']     = res_lang('status.success');
                     $data['message']    = res_lang('success.changed', ['PRF', strtoupper($status)]);
                     
-                    if (in_array($status, ['item_out', 'filed'])) {
-                        if ($status === 'filed') {
-                            $prfItemModel = new PRFItemModel();
-                            $prfItemModel->updatePrfItems($this->request->getVar(), $id);
-                        }
+                    if ($status === 'filed') {
+                        $prfItemModel = new PRFItemModel();
+                        $prfItemModel->updatePrfItems($request, $id);
+                    }
 
+                    if ($status === 'item_out') {
                         $this->_model->updateInventoryStock($id, $status);
                     }
                 }

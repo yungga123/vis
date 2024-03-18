@@ -25,6 +25,7 @@ class PurchaseOrderModel extends Model
         'attention_to',
         'requestor',
         'with_vat',
+        'vat_amount',
         'sub_total',
         'status',
     ];
@@ -189,6 +190,10 @@ class PurchaseOrderModel extends Model
             {$this->table}.id,
             {$this->table}.rpf_id,
             {$this->table}.supplier_id,
+            IF({$this->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
+            ".dt_sql_number_format("{$this->table}.vat_amount")." AS vat_amount,
+            ".dt_sql_number_format("{$this->table}.sub_total")." AS sub_total,
+            ".dt_sql_number_format("{$this->table}.sub_total + {$this->table}.vat_amount")." AS grand_total,
             {$this->table}.attention_to,
             {$this->table}.status,
             {$supplierModel->table}.supplier_name,

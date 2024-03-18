@@ -48,7 +48,7 @@
                                 <th>Total Price</th>
                                 <th>Retail Price</th>
                                 <th>Project Price</th>
-                                <th>Date Purchase</th>
+                                <!-- <th>Date Purchase</th> -->
                                 <th>Location</th>
                                 <th>Encoder</th>
                                 <th>Encoded At</th>

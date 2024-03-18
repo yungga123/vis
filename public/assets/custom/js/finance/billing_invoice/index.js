@@ -92,7 +92,9 @@ $(document).ready(function () {
 		$("div.with_interest").addClass("d-none");
 
 		if ($(this).is(":checked")) {
-			interest = billing_amount * _interest.per_day;
+			const daysInterest = parseFloat($("#days_overdue").val() || 0);
+
+			interest = billing_amount * (daysInterest * _interest.per_day);
 			interest = parseFloat(interest.toFixed(2));
 
 			if (interest) $("div.with_interest").removeClass("d-none");
@@ -113,6 +115,11 @@ $(document).ready(function () {
 			$("#id").val("");
 			$("#billing_status").val("");
 			$("#days_overdue").val("");
+			$("#orig_tasklead").html("");
+			$(".tasklead-details").html("");
+			$("div.with_vat").addClass("d-none");
+			$("div.with_interest").addClass("d-none");
+			$(".with_interest-checkbox").addClass("d-none");
 			$(".with_interest-checkbox label > span").html("");
 
 			self[0].reset();
@@ -189,7 +196,7 @@ function edit(id, billing_status) {
 	fetchRecord(router.billing_invoice.fetch, { id: id }, modal, (res) => {
 		if (res.status === STATUS.SUCCESS) {
 			if (inObject(res, "data") && !isEmpty(res.data)) {
-				const text = `${res.data.tasklead_id} | ${res.data.quotation}`;
+				const text = `${res.data.tasklead_id} | ${res.data.quotation} | ${res.data.client}`;
 				const data = {
 					client: res.data.client,
 					manager: res.data.manager,
@@ -250,6 +257,7 @@ function remove(id) {
 }
 
 /* Change status record */
+
 function change(id, changeTo, status) {
 	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
 	const swalMsg = `
@@ -286,8 +294,9 @@ function _initTasklead() {
 		"#tasklead_id",
 		"Search & select a tasklead",
 		router.admin.common.quotations,
-		["id", "quotation"],
-		_loadTaskleadDetails
+		["id", "quotation", "client"],
+		_loadTaskleadDetails,
+		{ search_in: ["quotation", "client"] }
 	);
 }
 

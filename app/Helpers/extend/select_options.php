@@ -772,6 +772,22 @@ if (! function_exists('get_expenses'))
 	}
 }
 
+if (! function_exists('get_salary_rates_payout'))
+{
+    /**
+     * Get payout set for Payroll/Salary Rates module
+     */
+	function get_salary_rates_payout(string $param = ''): string|array
+	{
+        $options = [
+            'Set A' => 'Set A - 10 & 20 Payout',
+            'Set B' => 'Set B - 15 & 30 Payout',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
 if (! function_exists('get_priorities'))
 {
     /**

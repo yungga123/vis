@@ -40,7 +40,7 @@
                         <input type="hidden" name="status" id="status_file" class="form-control" readonly>
 
                         <label class="required" for="remarks">Remarks</label>
-                        <textarea name="remarks" id="remarks" class="form-control" cols="3" rows="3" placeholder="Enter remarks"></textarea>
+                        <textarea name="_remarks" id="remarks" class="form-control" cols="3" rows="3" placeholder="Enter remarks"></textarea>
                         <small id="alert_remarks" class="text-danger"></small>
                     </div>
                 </div>

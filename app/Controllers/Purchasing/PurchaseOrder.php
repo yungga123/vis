@@ -91,7 +91,8 @@ class PurchaseOrder extends BaseController
             ],
         ]);
         $data['php_to_js_options'] = json_encode([
-            'po_status'  => set_po_status()
+            'po_status'     => set_po_status(),
+            'vat_percent'   => $this->getVatPercent(),
         ]);
 
         return view('purchasing/purchase_order/index', $data);
@@ -112,6 +113,10 @@ class PurchaseOrder extends BaseController
             'id',
             'rpf_id',
             'supplier_name',
+            'with_vat',
+            'vat_amount',
+            'sub_total',
+            'grand_total',
             'attention_to',
             'requested_by',
             'requested_at_formatted',
@@ -179,6 +184,8 @@ class PurchaseOrder extends BaseController
                     $set_arr = [
                         'attention_to'  => $this->request->getVar('attention_to'),
                         'with_vat'      => $this->request->getVar('with_vat') ? true : false,
+                        'vat_amount'    => $this->request->getVar('vat_amount'),
+                        'sub_total'     => $this->request->getVar('sub_total'),
                     ];
                     $this->_model->update($print_po_id, $set_arr);
 
@@ -410,9 +417,10 @@ class PurchaseOrder extends BaseController
             'supplier_name, address, payment_terms, payment_mode, others_payment_mode'
         );
         $rpfColumns             = "
-            DATE_FORMAT(date_needed, '".dt_sql_date_format()."') AS date_needed,
-            DATE_FORMAT(created_at, '".dt_sql_datetime_format()."') AS requested_at,
-            {$rpfModel->view}.created_by_name  AS requested_by
+            ".dt_sql_date_format('date_needed')." AS date_needed,
+            ".dt_sql_datetime_format('created_at')." AS requested_at,
+            {$rpfModel->view}.created_by_name  AS requested_by,
+            {$rpfModel->view}.reviewed_by_name  AS checked_by
         ";
 
         // Get general info

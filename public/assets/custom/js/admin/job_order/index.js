@@ -27,8 +27,9 @@ $(document).ready(function () {
 		"#select2Quotation",
 		"Search a quotation",
 		router.admin.common.quotations,
-		"quotation",
-		loadQDetails
+		["id", "quotation", "client"],
+		loadQDetails,
+		{ search_in: ["quotation", "client"] }
 	);
 
 	/* Load dataTable */

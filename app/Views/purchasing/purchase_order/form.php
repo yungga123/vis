@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <form id="purchase_order_form" class="with-label-indicator" action="<?= url_to('purchase_order.save'); ?>" method="post" autocomplete="off">
-                <?= csrf_field(); ?>
+                <?= csrf_field(); ?>                
                 <div class="modal-header">
                     <h5 class="modal-title">Add PO</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">

@@ -149,6 +149,21 @@ class InventoryModel extends Model
         return $data;
     }
 
+    // Get the total item stocks count from the inventory
+    public function getItemTotalStocks($id = null)
+    {
+        $this->select(new \CodeIgniter\Database\RawSql('SUM(stocks) AS total_stocks'));
+        $this->where('deleted_at IS NULL');
+
+        if (! is_null($id)) {
+            $this->where($this->primaryKey, $id);
+        }
+
+        $result = $this->first();
+
+        return $result['total_stocks'] ?? 0;
+    }
+
     // Set/format columns to include in select
     public function columns($joinView = false, $withboth = false, $date_format = false)
     {

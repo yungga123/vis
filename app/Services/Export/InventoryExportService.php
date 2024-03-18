@@ -161,15 +161,13 @@ class InventoryExportService extends ExportService
     {
         $model          = new ProjectRequestFormModel();
         $joModel        = new JobOrderModel();
-        $customerModel  = new CustomerModel();
-        $tlBookedModel  = new TaskLeadView();
         $columns    = "
             UPPER({$model->table}.status) AS status,
             {$model->table}.id,
             {$model->table}.job_order_id,
-            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.quotation_num, {$joModel->table}.manual_quotation) AS quotation,
-            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.tasklead_type, {$joModel->table}.manual_quotation_type) AS quotation_type,
-            IF({$joModel->table}.is_manual = 0, {$tlBookedModel->table}.customer_name, {$customerModel->table}.name) AS client,
+            {$joModel->view}.quotation,
+            {$joModel->view}.quotation_type,
+            {$joModel->view}.client_name,
             {$joModel->table}.work_type,
             ".dt_sql_date_format("{$joModel->table}.date_requested")." AS date_requested,
             ".dt_sql_date_format("{$joModel->table}.date_committed")." AS date_committed,
@@ -189,6 +187,7 @@ class InventoryExportService extends ExportService
         $builder    = $model->select($columns);
 
         $model->joinView($builder)->joinJobOrder($builder);
+
         $builder->where("{$model->table}.deleted_at", null);
         $builder->orderBy("{$model->table}.id", 'ASC');
         

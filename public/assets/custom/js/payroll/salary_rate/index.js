@@ -8,6 +8,7 @@ $(document).ready(function () {
 
 	select2Init("#filter_employee_status");
 	select2Init("#filter_rate_type");
+	select2Init("#filter_payout");
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -50,11 +51,14 @@ $(document).ready(function () {
 function filterData(reset = false) {
 	const employee_status = getSelect2Selection("#filter_employee_status");
 	const rate_type = getSelect2Selection("#filter_rate_type");
+	const payout = getSelect2Selection("#filter_payout");
 	const params = {
 		employee_status: employee_status,
 		rate_type: rate_type,
+		payout: payout,
 	};
-	const condition = !isEmpty(employee_status) || !isEmpty(rate_type);
+	const condition =
+		!isEmpty(employee_status) || !isEmpty(rate_type) || !isEmpty(payout);
 
 	filterParam(
 		router.salary_rate.list,
@@ -64,6 +68,7 @@ function filterData(reset = false) {
 		() => {
 			clearSelect2Selection("#filter_employee_status");
 			clearSelect2Selection("#filter_rate_type");
+			clearSelect2Selection("#filter_payout");
 		},
 		reset
 	);
@@ -89,6 +94,7 @@ function edit(id) {
 					res.data.employee_id
 				);
 				setOptionValue("#rate_type", res.data.rate_type);
+				setOptionValue("#payout", res.data.payout);
 
 				$("#salary_rate").val(res.data.salary_rate);
 				$(`#${modal}`).modal("show");
