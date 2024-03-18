@@ -239,6 +239,17 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     // Common
     $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
     $routes->post('job-orders', 'Inventory\Common::searchJobOrders', ['as' => 'inventory.common.joborders']);
+
+    // ORDER FORMS
+    $routes->group('order-forms', static function ($routes) {
+        $routes->get('/', 'Inventory\OrderForm::index', ['as' => 'inventory.order_form.home']);
+        $routes->post('list', 'Inventory\OrderForm::list', ['as' => 'inventory.order_form.list']);
+        $routes->post('save', 'Inventory\OrderForm::save', ['as' => 'inventory.order_form.save']);
+        $routes->post('fetch', 'Inventory\OrderForm::fetch', ['as' => 'inventory.order_form.fetch']);
+        $routes->post('delete', 'Inventory\OrderForm::delete', ['as' => 'inventory.order_form.delete']);
+        $routes->post('change', 'Inventory\OrderForm::change', ['as' => 'inventory.order_form.change']);
+        $routes->get('print/(:num)', 'Inventory\OrderForm::print/$1', ['as' => 'inventory.order_form.print']);
+    });
 });
 
 // Project Request Forms    
