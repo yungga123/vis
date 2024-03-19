@@ -1,7 +1,7 @@
 <!-- PO Items Modal -->
 <div class="modal fade" id="po_items_modal" aria-hidden="true">
     <div class="modal-dialog modal-xl">
-        <form id="po_items_form" class="with-label-indicator" action="<?= url_to('purchase_order.change'); ?>" method="post" autocomplete="off">
+        <form id="po_items_form" class="with-label-indicator" action="<?= url_to('purchasing.purchase_order.change'); ?>" method="post" autocomplete="off">
             <?= csrf_field(); ?>
             <div class="modal-content">
                 <div class="modal-header">

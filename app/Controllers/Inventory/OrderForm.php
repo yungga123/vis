@@ -72,7 +72,7 @@ class OrderForm extends BaseController
         $data['with_jszip']     = true;
         $data['sweetalert2']    = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['inventory/order_form/index.js', 'dt_filter.js', 'admin/common.js'];
+        $data['custom_js']      = ['inventory/order_form/index.js', 'dt_filter.js', 'customer/common.js'];
         $data['routes']         = json_encode([
             'order_form' => [
                 'list'      => url_to('inventory.order_form.list'),
@@ -81,10 +81,10 @@ class OrderForm extends BaseController
                 'delete'    => url_to('inventory.order_form.delete'),
                 'change'    => url_to('inventory.order_form.change'),
             ],
-            'admin' => [
+            'clients' => [
                 'common' => [
-                    'customers'         => url_to('admin.common.customers'),
-                    'customer_branches' => url_to('admin.common.customer.branches'),
+                    'customers'         => url_to('clients.common.customers'),
+                    'customer_branches' => url_to('clients.common.customer.branches'),
                 ]
             ],
             'inventory' => [

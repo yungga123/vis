@@ -2,7 +2,7 @@
 <div class="modal fade" id="modal_add_supplier_brand" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="form_add_supplier_brand" class="with-label-indicator" action="<?= url_to('suppliers.brand.save'); ?>" method="post" autocomplete="off">
+            <form id="form_add_supplier_brand" class="with-label-indicator" action="<?= url_to('purchasing.suppliers.brand.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="brand_id" name="id" readonly>
                 <input type="hidden" id="brand_supplier_id" name="supplier_id" readonly>

@@ -132,6 +132,18 @@ class OrderFormModel extends Model
     }
 
     /**
+     * Count records
+     */
+    public function countRecords($param = null)
+    {
+        $builder = $this->where('deleted_at IS NULL');
+
+        if (! $param) return $builder->countAllResults();
+        return $builder->where('status', strtolower($param))->countAllResults();
+        
+    }
+
+    /**
      * Check if record exist
      */
     public function exists($id)
