@@ -230,8 +230,8 @@ class DispatchModel extends Model
             $buttons = dt_button_actions($row, $id, $permissions, false);
 
             if (check_permissions($permissions, 'PRINT')) {
-                $print_url = site_url('dispatch/print/') . $row[$id];
-                $buttons .= <<<EOF
+                $print_url  = url_to('admin.dispatch.print', $row[$id]);
+                $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-success btn-sm" target="_blank"><i class="fas fa-print"></i></a>
                 EOF;
             }

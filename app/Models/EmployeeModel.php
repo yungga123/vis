@@ -323,8 +323,8 @@ class EmployeeModel extends Model
         $alias = empty($alias) ? '' : $alias .'.';
         
         ($builder ?? $this)
-            ->where("({$alias}date_resigned = '' OR {$alias}date_resigned IS NULL)")
-            ->where("{$alias}employment_status !=", $this->resigned);
+            ->where("(({$alias}date_resigned = '' OR {$alias}date_resigned IS NULL)")
+            ->where("{$alias}employment_status != '{$this->resigned}')");
             
         return $this;
     }

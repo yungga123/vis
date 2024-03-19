@@ -19,7 +19,7 @@ class RpfMailService extends BaseMailService implements MailServiceInterface
 
         $module     = 'Request to Purchase Form';
         $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
-        $url        = url_to('rpf.home') . '?id='. $data['id'] .'&mail=true';
+        $url        = url_to('purchasing.rpf.home') . '?id='. $data['id'] .'&mail=true';
         $items      = '<a href="'.$url.'">Click here</a>';
         $info       = [
             'module'    => $module,

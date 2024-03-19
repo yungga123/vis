@@ -177,6 +177,7 @@ $(document).ready(function () {
 	$(".btn-submit").on("click", function () {
 		employeeInfo.id = $("#id").val();
 		employeeInfo.notes = $("#notes").val();
+
 		swalNotifConfirm(_submit, TITLE.WARNING, "continue", STATUS.WARNING);
 	});
 });
@@ -188,7 +189,7 @@ function _initSelect2Employees() {
 	select2AjaxInit(
 		"#employee_id",
 		"Select an employee",
-		router.hr.common.employees,
+		router.employee.common.search,
 		"text",
 		_populateEmployeeInfo,
 		options
@@ -258,6 +259,7 @@ function _populateEmployeeInfo(data) {
 	$(".info-text.employment_status span").text(employeeInfo.employment_status);
 	$(".info-text.position span").text(employeeInfo.position);
 	$(".info-text.rate_type span").text(employeeInfo.rate_type || "N/A");
+	$(".info-text.payout span").text(employeeInfo.payout || "N/A");
 	$(".info-text.salary_rate span").text(
 		numberFormat(employeeInfo.salary_rate || 0)
 	);

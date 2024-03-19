@@ -274,7 +274,7 @@ class RequestPurchaseFormModel extends Model
 
             if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['reviewed'])) {
                 // Print PRF
-                $print_url  = site_url('rpf/print/') . $row[$id];
+                $print_url  = url_to('purchasing.rpf.print', $row[$id]);
                 $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;

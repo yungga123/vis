@@ -77,7 +77,7 @@ class TaskLeadBooked extends BaseController
                 'booked_files'      => url_to('tasklead.booked.files'),
                 'booked_download'   => url_to('tasklead.booked.download'),
                 'booked' => [
-                    'files'         => site_url('tasklead/booked/files'),
+                    'files'         => site_url('sales/tasklead/booked/files'),
                     'files_remove'  => url_to('tasklead.booked.files.remove'),
                 ],
             ],

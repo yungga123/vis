@@ -71,13 +71,13 @@ class Suppliers extends BaseController
         ];
         $data['routes']         = json_encode([
             'supplier' => [
-                'list'      => url_to('suppliers.list'),
-                'edit'      => url_to('suppliers.edit'),
-                'delete'    => url_to('suppliers.delete'),
+                'list'      => url_to('purchasing.suppliers.list'),
+                'edit'      => url_to('purchasing.suppliers.edit'),
+                'delete'    => url_to('purchasing.suppliers.delete'),
                 'brand'     => [
-                    'list'      => url_to('suppliers.brand.list'),
-                    'edit'      => url_to('suppliers.brand.edit'),
-                    'delete'    => url_to('suppliers.brand.delete'),
+                    'list'      => url_to('purchasing.suppliers.brand.list'),
+                    'edit'      => url_to('purchasing.suppliers.brand.edit'),
+                    'delete'    => url_to('purchasing.suppliers.brand.delete'),
                 ],
             ],
         ]);

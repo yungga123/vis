@@ -12,7 +12,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="callout callout-info">
-                        <strong>Note:</strong> Once an employee is marked as resigned, their corresponding accounts will be deleted also!
+                        <strong>Note:</strong> Once an employee is marked as resigned, their corresponding accounts will also be deleted!
                     </div>
                     <div class="form-group">
                         <label class="required" for="_employee_id">Employee ID</label>

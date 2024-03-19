@@ -34,15 +34,15 @@ if (! function_exists('get_nav_menus'))
 	function get_nav_menus(?string $param = null): array
 	{
         $is_human_resource = (
-            url_is('accounts') || 
-            url_is('employees') || 
-            url_is('payroll/salary-rates') || 
-            url_is('payroll/computation') || 
-            url_is('payroll/payslip') || 
-            url_is('payroll/leave') ||
-            url_is('payroll/settings') ||
-            url_is('payroll/overtime') ||
-            url_is('payroll/timesheets')
+            url_is('hr/accounts') || 
+            url_is('hr/employees') || 
+            url_is('hr/payroll/salary-rates') || 
+            url_is('hr/payroll/computation') || 
+            url_is('hr/payroll/payslip') || 
+            url_is('hr/payroll/leave') ||
+            url_is('hr/payroll/settings') ||
+            url_is('hr/payroll/overtime') ||
+            url_is('hr/payroll/timesheets')
         );
         $is_sales       = (
             url_is('sales/tasklead') || 
@@ -59,9 +59,9 @@ if (! function_exists('get_nav_menus'))
             url_is('inventory/order-forms')
         );
         $is_purchasing  = (
-            url_is('suppliers') || 
-            url_is('request-purchase-forms') ||
-            url_is('purchase-orders')
+            url_is('purchasing/suppliers') || 
+            url_is('purchasing/request-purchase-forms') ||
+            url_is('purchasing/purchase-orders')
         );
         $is_settings    = (
             url_is('settings/mail') || 
@@ -72,6 +72,11 @@ if (! function_exists('get_nav_menus'))
         $is_finance     = (
             url_is('finance/billing-invoice') ||
             url_is('finance/funds')
+        );
+        $is_admin       = (
+            url_is('admin/job-orders') || 
+            url_is('admin/schedules') || 
+            url_is('admin/dispatch')
         );
         
 		$menu           = [
@@ -102,7 +107,7 @@ if (! function_exists('get_nav_menus'))
             'ADMIN'             => [
                 'name'      => 'Admin',
                 // Level two urls (modules) - need to add ||/OR in every new module
-                'urls'      => (url_is('job-orders') || url_is('schedules') || url_is('dispatch')),
+                'urls'      => $is_admin,
                 'icon'      => 'fas fa-users-cog',
             ],
             'INVENTORY'         => [
@@ -141,14 +146,14 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('ACCOUNTS'),
                 'url'       => url_to('account.home'),
-                'class'     => (url_is('accounts') ? 'active' : ''),
+                'class'     => (url_is('hr/accounts') ? 'active' : ''),
                 'icon'      => 'fas fa-user-cog',
             ],
             'EMPLOYEES'             => [
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('EMPLOYEES'),
                 'url'       => url_to('employee.home'),
-                'class'     => (url_is('employees') ? 'active' : ''),
+                'class'     => (url_is('hr/employees') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
             ],
             'CUSTOMERS'  => [
@@ -210,22 +215,22 @@ if (! function_exists('setup_modules'))
             'ADMIN_JOB_ORDER'       => [
                 'menu'      => 'ADMIN', // Leave empty if none
                 'name'      => get_modules('ADMIN_JOB_ORDER'),
-                'url'       => url_to('job_order.home'),
-                'class'     => (url_is('job-orders') ? 'active' : ''),
+                'url'       => url_to('admin.job_order.home'),
+                'class'     => (url_is('admin/job-orders') ? 'active' : ''),
                 'icon'      => 'fas fa-user-md',
             ],
             'ADMIN_SCHEDULES'       => [
                 'menu'      => 'ADMIN', // Leave empty if none
                 'name'      => get_modules('ADMIN_SCHEDULES'),
-                'url'       => url_to('schedule.home'),
-                'class'     => (url_is('schedules') ? 'active' : ''),
+                'url'       => url_to('admin.schedule.home'),
+                'class'     => (url_is('admin/schedules') ? 'active' : ''),
                 'icon'      => 'fas fa-calendar-alt',
             ],
             'ADMIN_DISPATCH'        => [
                 'menu'      => 'ADMIN', // Leave empty if none
                 'name'      => get_modules('ADMIN_DISPATCH'),
-                'url'       => url_to('dispatch.home'),
-                'class'     => (url_is('dispatch') ? 'active' : ''),
+                'url'       => url_to('admin.dispatch.home'),
+                'class'     => (url_is('admin/dispatch') ? 'active' : ''),
                 'icon'      => 'fas fa-user-astronaut',
             ],
             'INVENTORY_PRF'   => [
@@ -238,22 +243,22 @@ if (! function_exists('setup_modules'))
             'PURCHASING_SUPPLIERS'      => [
                 'menu'      => 'PURCHASING', // Leave empty if none
                 'name'      => get_modules('PURCHASING_SUPPLIERS'),
-                'url'       => url_to('suppliers.home'),
-                'class'     => (url_is('suppliers') ? 'active' : ''),
+                'url'       => url_to('purchasing.suppliers.home'),
+                'class'     => (url_is('purchasing/suppliers') ? 'active' : ''),
                 'icon'      => 'fas fa-truck-loading',
             ],
             'PURCHASING_RPF'        => [
                 'menu'      => 'PURCHASING', // Leave empty if none
                 'name'      => get_modules('PURCHASING_RPF'),
-                'url'       => url_to('rpf.home'),
-                'class'     => (url_is('request-purchase-forms') ? 'active' : ''),
+                'url'       => url_to('purchasing.rpf.home'),
+                'class'     => (url_is('purchasing/request-purchase-forms') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-bag',
             ],
             'PURCHASING_PO'           => [
                 'menu'      => 'PURCHASING', // Leave empty if none
                 'name'      => get_modules('PURCHASING_PO'),
-                'url'       => url_to('purchase_order.home'),
-                'class'     => (url_is('purchase-orders') ? 'active' : ''),
+                'url'       => url_to('purchasing.purchase_order.home'),
+                'class'     => (url_is('purchasing/purchase-orders') ? 'active' : ''),
                 'icon'      => 'fas fa-shopping-basket',
             ],
             'SETTINGS_GENERAL_INFO'  => [
@@ -274,14 +279,14 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_SALARY_RATES'),
                 'url'       => url_to('payroll.salary_rate.home'),
-                'class'     => (url_is('payroll/salary-rates') ? 'active' : ''),
+                'class'     => (url_is('hr/payroll/salary-rates') ? 'active' : ''),
                 'icon'      => 'fas fa-dollar-sign',
             ],
             'PAYROLL_PAYSLIP'  => [
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_PAYSLIP'),
                 'url'       => url_to('payroll.payslip.home'),
-                'class'     => (url_is('payroll/payslip') ? 'active' : ''),
+                'class'     => (url_is('hr/payroll/payslip') ? 'active' : ''),
                 'icon'      => 'fas fa-receipt',
                 'header'    => 'PAYROLL',
             ],
@@ -289,7 +294,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_COMPUTATION'),
                 'url'       => url_to('payroll.computation.home'),
-                'class'     => (url_is('payroll/computation') ? 'active' : ''),
+                'class'     => (url_is('hr/payroll/computation') ? 'active' : ''),
                 'icon'      => 'fas fa-calculator',
                 'header'    => 'PAYROLL',
             ],
@@ -297,7 +302,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_LEAVE'),
                 'url'       => url_to('payroll.leave.home'),
-                'class'     => (url_is('payroll/leave') ? 'active' : ''),
+                'class'     => (url_is('hr/payroll/leave') ? 'active' : ''),
                 'icon'      => 'fas fa-folder-open',
                 'header'    => 'PAYROLL',
             ],
@@ -305,7 +310,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_OVERTIME'),
                 'url'       => url_to('payroll.overtime.home'),
-                'class'     => (url_is('payroll/overtime') ? 'active' : ''),
+                'class'     => (url_is('hr/payroll/overtime') ? 'active' : ''),
                 'icon'      => 'fas fa-stopwatch',
                 'header'    => 'PAYROLL',
             ],
@@ -313,7 +318,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_SETTINGS'),
                 'url'       => url_to('payroll.settings.home'),
-                'class'     => (url_is('payroll/settings') ? 'active' : ''),
+                'class'     => (url_is('hr/payroll/settings') ? 'active' : ''),
                 'icon'      => 'fas fa-tools',
                 'header'    => 'PAYROLL',
             ],
@@ -321,7 +326,7 @@ if (! function_exists('setup_modules'))
                 'menu'      => 'HUMAN_RESOURCE', // Leave empty if none
                 'name'      => get_modules('PAYROLL_TIMESHEETS'),
                 'url'       => url_to('payroll.timesheet.home'),
-                'class'     => (url_is('payroll/timesheets') ? 'active' : ''),
+                'class'     => (url_is('hr/payroll/timesheets') ? 'active' : ''),
                 'icon'      => 'fas fa-user-clock',
                 'header'    => 'PAYROLL',
             ],

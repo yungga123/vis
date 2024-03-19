@@ -60,36 +60,34 @@ $routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 
 /***************** PHASE 1 *****************/
 /* HUMAN RESOURCE */
-// Common
-$routes->group('hr/common', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->post('employees', 'HR\Common::searchEmployees', ['as' => 'hr.common.employees']);
-});
-// ACCOUNTS
-$routes->group('accounts', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'HR\Account::index', ['as' => 'account.home']);
-    $routes->post('list', 'HR\Account::list', ['as' => 'account.list']);
-    $routes->post('save', 'HR\Account::save', ['as' => 'account.save']);
-    $routes->post('fetch', 'HR\Account::fetch', ['as' => 'account.fetch']);
-    $routes->post('delete', 'HR\Account::delete', ['as' => 'account.delete']);
-
-    // Account Profile
-    $routes->get('profile','HR\AccountProfile::index', ['as' => 'account.profile']);
-    $routes->post('change-password','HR\AccountProfile::changePassword', ['as' => 'account.change_pass']);
-    $routes->post('change-profile-image','HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
-});
-
-// EMPLOYEES
-$routes->group('employees', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'HR\Employee::index', ['as' => 'employee.home']);
-    $routes->post('list', 'HR\Employee::list', ['as' => 'employee.list']);
-    $routes->post('save', 'HR\Employee::save', ['as' => 'employee.save']);
-    $routes->post('fetch', 'HR\Employee::fetch', ['as' => 'employee.fetch']);
-    $routes->post('delete', 'HR\Employee::delete', ['as' => 'employee.delete']);
-    $routes->post('change', 'HR\Employee::change', ['as' => 'employee.change']);
+$routes->group('hr', ['filter' => 'checkauth'], static function ($routes) {
+    // ACCOUNTS
+    $routes->group('accounts', static function ($routes) {
+        $routes->get('/', 'HR\Account::index', ['as' => 'account.home']);
+        $routes->post('list', 'HR\Account::list', ['as' => 'account.list']);
+        $routes->post('save', 'HR\Account::save', ['as' => 'account.save']);
+        $routes->post('fetch', 'HR\Account::fetch', ['as' => 'account.fetch']);
+        $routes->post('delete', 'HR\Account::delete', ['as' => 'account.delete']);
     
-    // COMMON
-    $routes->group('common', static function ($routes) {
-        $routes->post('search-employees', 'HR\Common::searchEmployees', ['as' => 'employee.common.search']);
+        // Account Profile
+        $routes->get('profile','HR\AccountProfile::index', ['as' => 'account.profile']);
+        $routes->post('change-password','HR\AccountProfile::changePassword', ['as' => 'account.change_pass']);
+        $routes->post('change-profile-image','HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
+    });
+    
+    // EMPLOYEES
+    $routes->group('employees', static function ($routes) {
+        $routes->get('/', 'HR\Employee::index', ['as' => 'employee.home']);
+        $routes->post('list', 'HR\Employee::list', ['as' => 'employee.list']);
+        $routes->post('save', 'HR\Employee::save', ['as' => 'employee.save']);
+        $routes->post('fetch', 'HR\Employee::fetch', ['as' => 'employee.fetch']);
+        $routes->post('delete', 'HR\Employee::delete', ['as' => 'employee.delete']);
+        $routes->post('change', 'HR\Employee::change', ['as' => 'employee.change']);
+        
+        // COMMON
+        $routes->group('common', static function ($routes) {
+            $routes->post('search-employees', 'HR\Common::searchEmployees', ['as' => 'employee.common.search']);
+        });
     });
 });
 /* HUMAN RESOURCE */
@@ -196,38 +194,40 @@ $routes->group('sales', ['filter' => 'checkauth'], static function($routes) {
 /* SALES */
 
 /* SETTINGS */
-// MAIL CONFIG
-$routes->group('settings/mail', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/','Settings\MailConfig::index', ['as' => 'mail_config.home']);
-    $routes->post('save','Settings\MailConfig::save', ['as' => 'mail_config.save']);
-    $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail_config.config']);
-    $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail_config.reset']);
-});
+$routes->group('settings', ['filter' => 'checkauth'], static function ($routes) {
+    // MAIL CONFIG
+    $routes->group('mail', static function ($routes) {
+        $routes->get('/','Settings\MailConfig::index', ['as' => 'mail_config.home']);
+        $routes->post('save','Settings\MailConfig::save', ['as' => 'mail_config.save']);
+        $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail_config.config']);
+        $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail_config.reset']);
+    });
 
-// PERMISSIONS
-$routes->group('settings/permissions', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Settings\Permission::index', ['as' => 'permission.home']);
-    $routes->post('list', 'Settings\Permission::list', ['as' => 'permission.list']);
-    $routes->post('save', 'Settings\Permission::save', ['as' => 'permission.save']);
-    $routes->post('edit', 'Settings\Permission::edit', ['as' => 'permission.edit']);
-    $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
-});
+    // PERMISSIONS
+    $routes->group('permissions', static function ($routes) {
+        $routes->get('/', 'Settings\Permission::index', ['as' => 'permission.home']);
+        $routes->post('list', 'Settings\Permission::list', ['as' => 'permission.list']);
+        $routes->post('save', 'Settings\Permission::save', ['as' => 'permission.save']);
+        $routes->post('edit', 'Settings\Permission::edit', ['as' => 'permission.edit']);
+        $routes->post('delete', 'Settings\Permission::delete', ['as' => 'permission.delete']);
+    });
 
-// ROLES
-$routes->group('settings/roles', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Settings\Roles::index', ['as' => 'roles.home']);
-    $routes->post('list', 'Settings\Roles::list', ['as' => 'roles.list']);
-    $routes->post('save', 'Settings\Roles::save', ['as' => 'roles.save']);
-    $routes->post('edit', 'Settings\Roles::edit', ['as' => 'roles.edit']);
-    $routes->post('delete', 'Settings\Roles::delete', ['as' => 'roles.delete']);
-});
-
-// GENERAL INFO
-$routes->group('settings/general-info', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Settings\GeneralInfo::index', ['as' => 'general_info.home']);
-    $routes->post('save', 'Settings\GeneralInfo::save', ['as' => 'general_info.save']);
-    $routes->post('upload', 'Settings\GeneralInfo::upload', ['as' => 'general_info.upload']);
-    $routes->match(['get', 'post'], 'fetch', 'Settings\GeneralInfo::fetch', ['as' => 'general_info.fetch']);
+    // ROLES
+    $routes->group('roles', static function ($routes) {
+        $routes->get('/', 'Settings\Roles::index', ['as' => 'roles.home']);
+        $routes->post('list', 'Settings\Roles::list', ['as' => 'roles.list']);
+        $routes->post('save', 'Settings\Roles::save', ['as' => 'roles.save']);
+        $routes->post('edit', 'Settings\Roles::edit', ['as' => 'roles.edit']);
+        $routes->post('delete', 'Settings\Roles::delete', ['as' => 'roles.delete']);
+    });
+    
+    // GENERAL INFO
+    $routes->group('general-info', static function ($routes) {
+        $routes->get('/', 'Settings\GeneralInfo::index', ['as' => 'general_info.home']);
+        $routes->post('save', 'Settings\GeneralInfo::save', ['as' => 'general_info.save']);
+        $routes->post('upload', 'Settings\GeneralInfo::upload', ['as' => 'general_info.upload']);
+        $routes->match(['get', 'post'], 'fetch', 'Settings\GeneralInfo::fetch', ['as' => 'general_info.fetch']);
+    });
 });
 
 /* Access denied */
@@ -289,92 +289,88 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
 /* INVENTORY */
 
 /* ADMIN */
-// Common
 $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->post('quotations', 'Admin\Common::searchQuotation', ['as' => 'admin.common.quotations']);
-    $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
-    $routes->post('customers', 'Admin\Common::searchCustomers', ['as' => 'admin.common.customers']);
-    $routes->post('schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
-    $routes->post('job-orders', 'Admin\Common::searchJobOrders', ['as' => 'admin.common.job_orders']);
-});
+    // COMMON
+    $routes->post('search-quotations', 'Admin\Common::searchQuotation', ['as' => 'admin.common.quotations']);
+    $routes->post('search-schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
+    $routes->post('search-job-orders', 'Admin\Common::searchJobOrders', ['as' => 'admin.common.job_orders']);
     
-// JOB ORDERS
-$routes->group('job-orders', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Admin\JobOrder::index', ['as' => 'job_order.home']);
-    $routes->post('list', 'Admin\JobOrder::list', ['as' => 'job_order.list']);
-    $routes->post('save', 'Admin\JobOrder::save', ['as' => 'job_order.save']);
-    $routes->post('fetch', 'Admin\JobOrder::fetch', ['as' => 'job_order.fetch']);
-    $routes->post('delete', 'Admin\JobOrder::delete', ['as' => 'job_order.delete']);
-    $routes->post('status', 'Admin\JobOrder::change', ['as' => 'job_order.status']);
-});
-
-// SCHEDULES
-$routes->group('schedules', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Admin\Schedule::index', ['as' => 'schedule.home']);
-    $routes->get('list', 'Admin\Schedule::list', ['as' => 'schedule.list']);
-    $routes->post('save', 'Admin\Schedule::save', ['as' => 'schedule.save']);
-    $routes->post('delete', 'Admin\Schedule::delete', ['as' => 'schedule.delete']);
-});
-
-// DISPATCH
-$routes->group('dispatch', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Admin\Dispatch::index', ['as' => 'dispatch.home']);
-    $routes->post('list', 'Admin\Dispatch::list', ['as' => 'dispatch.list']);
-    $routes->post('save', 'Admin\Dispatch::save', ['as' => 'dispatch.save']);
-    $routes->post('fetch', 'Admin\Dispatch::fetch', ['as' => 'dispatch.fetch']);
-    $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'dispatch.delete']);
-    $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'dispatch.print']);
+    // JOB ORDERS
+    $routes->group('job-orders', static function ($routes) {
+        $routes->get('/', 'Admin\JobOrder::index', ['as' => 'admin.job_order.home']);
+        $routes->post('list', 'Admin\JobOrder::list', ['as' => 'admin.job_order.list']);
+        $routes->post('save', 'Admin\JobOrder::save', ['as' => 'admin.job_order.save']);
+        $routes->post('fetch', 'Admin\JobOrder::fetch', ['as' => 'admin.job_order.fetch']);
+        $routes->post('delete', 'Admin\JobOrder::delete', ['as' => 'admin.job_order.delete']);
+        $routes->post('status', 'Admin\JobOrder::change', ['as' => 'admin.job_order.status']);
+    });
+    
+    // SCHEDULES
+    $routes->group('schedules', static function ($routes) {
+        $routes->get('/', 'Admin\Schedule::index', ['as' => 'admin.schedule.home']);
+        $routes->get('list', 'Admin\Schedule::list', ['as' => 'admin.schedule.list']);
+        $routes->post('save', 'Admin\Schedule::save', ['as' => 'admin.schedule.save']);
+        $routes->post('delete', 'Admin\Schedule::delete', ['as' => 'admin.schedule.delete']);
+    });
+    
+    // DISPATCH
+    $routes->group('dispatch', static function ($routes) {
+        $routes->get('/', 'Admin\Dispatch::index', ['as' => 'admin.dispatch.home']);
+        $routes->post('list', 'Admin\Dispatch::list', ['as' => 'admin.dispatch.list']);
+        $routes->post('save', 'Admin\Dispatch::save', ['as' => 'admin.dispatch.save']);
+        $routes->post('fetch', 'Admin\Dispatch::fetch', ['as' => 'admin.dispatch.fetch']);
+        $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'admin.dispatch.delete']);
+        $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'admin.dispatch.print']);
+    });
 });
 /* ADMIN */
 
-
 /* PURCHASING */
-// Common
 $routes->group('purchasing', ['filter' => 'checkauth'], static function ($routes) {
-    // Common
-    $routes->post('suppliers', 'Purchasing\Common::searchSuppliers', ['as' => 'purchasing.common.suppliers']);
-    $routes->post('rpf', 'Purchasing\Common::searchRpf', ['as' => 'purchasing.common.rpf']);
-});
-
-//SUPPLIERS
-$routes->group('suppliers', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Purchasing\Suppliers::index', ['as' => 'suppliers.home']);
-    $routes->post('list', 'Purchasing\Suppliers::list', ['as' => 'suppliers.list']);
-    $routes->post('save', 'Purchasing\Suppliers::save', ['as' => 'suppliers.save']);
-    $routes->post('edit', 'Purchasing\Suppliers::edit', ['as' => 'suppliers.edit']);
-    $routes->post('delete', 'Purchasing\Suppliers::delete', ['as' => 'suppliers.delete']);
-
-    $routes->group('brands', static function ($routes) {
-        $routes->get('list','Purchasing\SupplierBrands::list', ['as' => 'suppliers.brand.list']);
-        $routes->post('save','Purchasing\SupplierBrands::save', ['as' => 'suppliers.brand.save']);
-        $routes->post('edit','Purchasing\SupplierBrands::edit', ['as' => 'suppliers.brand.edit']);
-        $routes->post('delete','Purchasing\SupplierBrands::delete', ['as' => 'suppliers.brand.delete']);
+    // COMMON
+    $routes->group('common', static function ($routes) {
+        $routes->post('suppliers', 'Purchasing\Common::searchSuppliers', ['as' => 'purchasing.common.suppliers']);
+        $routes->post('rpf', 'Purchasing\Common::searchRpf', ['as' => 'purchasing.common.rpf']);
     });
 
-});
+    //SUPPLIERS
+    $routes->group('suppliers', static function ($routes) {
+        $routes->get('/', 'Purchasing\Suppliers::index', ['as' => 'purchasing.suppliers.home']);
+        $routes->post('list', 'Purchasing\Suppliers::list', ['as' => 'purchasing.suppliers.list']);
+        $routes->post('save', 'Purchasing\Suppliers::save', ['as' => 'purchasing.suppliers.save']);
+        $routes->post('edit', 'Purchasing\Suppliers::edit', ['as' => 'purchasing.suppliers.edit']);
+        $routes->post('delete', 'Purchasing\Suppliers::delete', ['as' => 'purchasing.suppliers.delete']);
+    
+        $routes->group('brands', static function ($routes) {
+            $routes->get('list','Purchasing\SupplierBrands::list', ['as' => 'purchasing.suppliers.brand.list']);
+            $routes->post('save','Purchasing\SupplierBrands::save', ['as' => 'purchasing.suppliers.brand.save']);
+            $routes->post('edit','Purchasing\SupplierBrands::edit', ['as' => 'purchasing.suppliers.brand.edit']);
+            $routes->post('delete','Purchasing\SupplierBrands::delete', ['as' => 'purchasing.suppliers.brand.delete']);
+        });    
+    });
+ 
+    // REQUEST TO PURCHASE FORMS
+    $routes->group('request-purchase-forms', static function ($routes) {
+        $routes->get('/', 'Purchasing\RequestPurchaseForm::index', ['as' => 'purchasing.rpf.home']);
+        $routes->post('list', 'Purchasing\RequestPurchaseForm::list', ['as' => 'purchasing.rpf.list']);
+        $routes->post('save', 'Purchasing\RequestPurchaseForm::save', ['as' => 'purchasing.rpf.save']);
+        $routes->post('fetch', 'Purchasing\RequestPurchaseForm::fetch', ['as' => 'purchasing.rpf.fetch']);
+        $routes->post('delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'purchasing.rpf.delete']);
+        $routes->post('change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'purchasing.rpf.change']);
+        $routes->get('print/(:num)', 'Purchasing\RequestPurchaseForm::print/$1', ['as' => 'purchasing.rpf.print']);
+    });
 
-// REQUEST TO PURCHASE FORMS
-$routes->group('', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('request-purchase-forms', 'Purchasing\RequestPurchaseForm::index', ['as' => 'rpf.home']);
-    $routes->post('rpf/list', 'Purchasing\RequestPurchaseForm::list', ['as' => 'rpf.list']);
-    $routes->post('rpf/save', 'Purchasing\RequestPurchaseForm::save', ['as' => 'rpf.save']);
-    $routes->post('rpf/fetch', 'Purchasing\RequestPurchaseForm::fetch', ['as' => 'rpf.fetch']);
-    $routes->post('rpf/delete', 'Purchasing\RequestPurchaseForm::delete', ['as' => 'rpf.delete']);
-    $routes->post('rpf/change', 'Purchasing\RequestPurchaseForm::change', ['as' => 'rpf.change']);
-    $routes->get('rpf/print/(:num)', 'Purchasing\RequestPurchaseForm::print/$1', ['as' => 'rpf.print']);
+    // PURCHASE ORDER / GENERATE PO
+    $routes->group('purchase-orders', static function ($routes) {
+        $routes->get('/', 'Purchasing\PurchaseOrder::index', ['as' => 'purchasing.purchase_order.home']);
+        $routes->post('list', 'Purchasing\PurchaseOrder::list', ['as' => 'purchasing.purchase_order.list']);
+        $routes->post('save', 'Purchasing\PurchaseOrder::save', ['as' => 'purchasing.purchase_order.save']);
+        $routes->post('fetch', 'Purchasing\PurchaseOrder::fetch', ['as' => 'purchasing.purchase_order.fetch']);
+        $routes->post('delete', 'Purchasing\PurchaseOrder::delete', ['as' => 'purchasing.purchase_order.delete']);
+        $routes->post('change', 'Purchasing\PurchaseOrder::change', ['as' => 'purchasing.purchase_order.change']);
+        $routes->get('print/(:num)', 'Purchasing\PurchaseOrder::print/$1', ['as' => 'purchasing.purchase_order.print']);
+    });
 });
-
-// PURCHASE ORDER / GENERATE PO
-$routes->group('purchase-orders', ['filter' => 'checkauth'], static function ($routes) {
-    $routes->get('/', 'Purchasing\PurchaseOrder::index', ['as' => 'purchase_order.home']);
-    $routes->post('list', 'Purchasing\PurchaseOrder::list', ['as' => 'purchase_order.list']);
-    $routes->post('save', 'Purchasing\PurchaseOrder::save', ['as' => 'purchase_order.save']);
-    $routes->post('fetch', 'Purchasing\PurchaseOrder::fetch', ['as' => 'purchase_order.fetch']);
-    $routes->post('delete', 'Purchasing\PurchaseOrder::delete', ['as' => 'purchase_order.delete']);
-    $routes->post('change', 'Purchasing\PurchaseOrder::change', ['as' => 'purchase_order.change']);
-    $routes->get('print/(:num)', 'Purchasing\PurchaseOrder::print/$1', ['as' => 'purchase_order.print']);
-});
-
 /* PURCHASING */
 
 /* REPORTS */
@@ -392,7 +388,7 @@ $routes->group('reports', ['filter' => 'checkauth'], static function ($routes) {
 
 /***************** PHASE 3 *****************/
 /* PAYROLL */
-$routes->group('payroll', ['filter' => 'checkauth'], static function ($routes) {
+$routes->group('hr/payroll', ['filter' => 'checkauth'], static function ($routes) {
     // SALARY RATES
     $routes->group('salary-rates', static function ($routes) {
         $routes->get('/', 'Payroll\SalaryRate::index', ['as' => 'payroll.salary_rate.home']);

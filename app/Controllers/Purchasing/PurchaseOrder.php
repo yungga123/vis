@@ -76,10 +76,10 @@ class PurchaseOrder extends BaseController
         $data['custom_js']      = ['purchasing/purchase_order/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'purchase_order' => [
-                'list'      => url_to('purchase_order.list'),
-                'fetch'     => url_to('purchase_order.fetch'),
-                'change'    => url_to('purchase_order.change'),
-                'delete'    => url_to('purchase_order.delete'),
+                'list'      => url_to('purchasing.purchase_order.list'),
+                'fetch'     => url_to('purchasing.purchase_order.fetch'),
+                'change'    => url_to('purchasing.purchase_order.change'),
+                'delete'    => url_to('purchasing.purchase_order.delete'),
             ],
             'purchasing'    => [
                 'common'    => [
@@ -87,7 +87,7 @@ class PurchaseOrder extends BaseController
                 ]
             ],
             'rpf'           => [
-                'fetch'     => url_to('rpf.fetch'),
+                'fetch'     => url_to('purchasing.rpf.fetch'),
             ],
         ]);
         $data['php_to_js_options'] = json_encode([

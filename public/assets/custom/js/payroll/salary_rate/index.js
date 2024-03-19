@@ -113,7 +113,7 @@ function _initSelect2Employees() {
 	select2AjaxInit(
 		"#employee_id",
 		"Select an employee",
-		router.hr.common.employees,
+		router.employee.common.search,
 		null,
 		null,
 		{ is_salary_rate: true }

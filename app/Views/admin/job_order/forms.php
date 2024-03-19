@@ -2,7 +2,7 @@
 <div class="modal fade" id="job_order_modal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="job_order_form" class="with-label-indicator" action="<?= url_to('job_order.save'); ?>" method="post" autocomplete="off">
+            <form id="job_order_form" class="with-label-indicator" action="<?= url_to('admin.job_order.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <div class="modal-header">
                     <h5 class="modal-title">Add Job Order</h5>
@@ -126,7 +126,7 @@
 <div class="modal fade" id="status_modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="status_form" class="with-label-indicator" action="<?= url_to('job_order.status'); ?>" method="post" autocomplete="off">
+            <form id="status_form" class="with-label-indicator" action="<?= url_to('admin.job_order.status'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>

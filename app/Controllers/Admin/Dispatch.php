@@ -74,10 +74,10 @@ class Dispatch extends BaseController
         $data['custom_js']      = ['admin/dispatch/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'dispatch' => [
-                'list'      => url_to('dispatch.list'),
-                'save'      => url_to('dispatch.save'),
-                'fetch'     => url_to('dispatch.fetch'),
-                'delete'    => url_to('dispatch.delete'),
+                'list'      => url_to('admin.dispatch.list'),
+                'save'      => url_to('admin.dispatch.save'),
+                'fetch'     => url_to('admin.dispatch.fetch'),
+                'delete'    => url_to('admin.dispatch.delete'),
             ],
             'admin' => [
                 'common' => [
