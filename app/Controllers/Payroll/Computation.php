@@ -127,10 +127,10 @@ class Computation extends BaseController
                     'govt_deductions'   => url_to('payroll.computation.govt_deductions'),
                 ],
             ],
-            'hr' => [
-                'common'    => [
-                    'employees' => url_to('hr.common.employees'),
-                ],
+            'employee' => [
+                'common' => [
+                    'search'            => url_to('employee.common.search'),
+                ]
             ],
         ]);
         $data['php_to_js_options'] = json_encode([

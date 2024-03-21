@@ -263,7 +263,7 @@ class PayrollModel extends Model
             $buttons .= dt_button_actions($row, $id, $permissions, false, ['exclude_edit']);
             
             // Print
-            $print_url  = site_url('payroll/payslip/print/') . $row[$id];
+            $print_url  = url_to('payroll.payslip.print', $row[$id]);
             $print      = <<<EOF
                 <a href="$print_url" class="btn btn-success btn-sm" target="_blank" title="Print Payslip"><i class="fas fa-print"></i></a>
             EOF;

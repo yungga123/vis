@@ -276,7 +276,7 @@ $approved_at 		= $purchase_order['approved_at'];
             <div class="modal-header">
                 <h5 class="modal-title">Generate PO</h5>
             </div>
-			<form id="print_po_form" class="with-label-indicator" action="<?= url_to('purchase_order.save'); ?>" method="post" autocomplete="off">
+			<form id="print_po_form" class="with-label-indicator" action="<?= url_to('purchasing.purchase_order.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
 				<div class="modal-body">
 					<div class="row">

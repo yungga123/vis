@@ -2,7 +2,7 @@
 <div class="modal fade" id="schedule_modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="schedule_form" class="with-label-indicator" action="<?= url_to('schedule.save'); ?>" method="post" autocomplete="off">
+            <form id="schedule_form" class="with-label-indicator" action="<?= url_to('admin.schedule.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>

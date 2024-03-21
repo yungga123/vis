@@ -2,7 +2,7 @@
 <div class="modal fade" id="dispatch_modal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="dispatch_form" class="with-label-indicator" action="<?= url_to('dispatch.save'); ?>" method="post" autocomplete="off">
+            <form id="dispatch_form" class="with-label-indicator" action="<?= url_to('admin.dispatch.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <input type="hidden" id="dispatch_id" name="id" readonly>
                 <div class="modal-header">

@@ -73,11 +73,11 @@ class JobOrder extends BaseController
         $data['custom_js']      = ['admin/job_order/index.js', 'customer/common.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'job_order' => [
-                'list'      => url_to('job_order.list'),
-                'save'      => url_to('job_order.save'),
-                'fetch'     => url_to('job_order.fetch'),
-                'delete'    => url_to('job_order.delete'),
-                'status'    => url_to('job_order.status'),
+                'list'      => url_to('admin.job_order.list'),
+                'save'      => url_to('admin.job_order.save'),
+                'fetch'     => url_to('admin.job_order.fetch'),
+                'delete'    => url_to('admin.job_order.delete'),
+                'status'    => url_to('admin.job_order.status'),
             ],
             'admin' => [
                 'common' => [

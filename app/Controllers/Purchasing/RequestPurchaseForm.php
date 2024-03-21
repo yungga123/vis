@@ -71,11 +71,11 @@ class RequestPurchaseForm extends BaseController
         $data['custom_js']      = ['purchasing/rpf/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'rpf' => [
-                'list'      => url_to('rpf.list'),
-                'save'      => url_to('rpf.save'),
-                'fetch'     => url_to('rpf.fetch'),
-                'delete'    => url_to('rpf.delete'),
-                'change'    => url_to('rpf.change'),
+                'list'      => url_to('purchasing.rpf.list'),
+                'save'      => url_to('purchasing.rpf.save'),
+                'fetch'     => url_to('purchasing.rpf.fetch'),
+                'delete'    => url_to('purchasing.rpf.delete'),
+                'change'    => url_to('purchasing.rpf.change'),
             ],
             'inventory' => [
                 'common' => [

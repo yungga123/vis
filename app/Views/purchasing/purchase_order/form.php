@@ -2,7 +2,7 @@
 <div class="modal fade" id="purchase_order_modal" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <form id="purchase_order_form" class="with-label-indicator" action="<?= url_to('purchase_order.save'); ?>" method="post" autocomplete="off">
+            <form id="purchase_order_form" class="with-label-indicator" action="<?= url_to('purchasing.purchase_order.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>                
                 <div class="modal-header">
                     <h5 class="modal-title">Add PO</h5>

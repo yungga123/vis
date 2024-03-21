@@ -73,9 +73,9 @@ class Schedule extends BaseController
         $data['custom_js']      = 'admin/schedule/index.js';
         $data['routes']         = json_encode([
             'schedule' => [
-                'list'      => url_to('schedule.list'),
-                'save'      => url_to('schedule.save'),
-                'delete'    => url_to('schedule.delete'),
+                'list'      => url_to('admin.schedule.list'),
+                'save'      => url_to('admin.schedule.save'),
+                'delete'    => url_to('admin.schedule.delete'),
             ],
             'admin' => [
                 'common' => [

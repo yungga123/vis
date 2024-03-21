@@ -100,24 +100,21 @@ trait HRTrait
         $fields = $fields ? $fields : "
             {$modelV->table}.employee_id AS id, {$modelV->table}.employee_name AS text
         ";
+        $salary = $options['is_salary_rate'] ?? null;
 
         if (
-            ($salary = $options['is_salary_rate'] ?? null) || 
-            ($computation = $options['is_payroll_computation'] ?? null)
+            $salary || ($computation = $options['is_payroll_computation'] ?? null)
         ) {
             $srModel    = new SalaryRateModel();
             $fields     .= ",
                 {$modelV->table}.employment_status,
                 {$modelV->table}.position,
                 {$srModel->table}.rate_type,
-                {$srModel->table}.salary_rate
+                {$srModel->table}.salary_rate,
+                {$srModel->table}.payout
             ";
             
             $modelV->join($srModel->table, "{$srModel->table}.employee_id = {$modelV->table}.employee_id", 'left');
-
-            if ($salary) {
-                $modelV->where("({$srModel->table}.rate_type = '' OR {$srModel->table}.rate_type IS NULL)");
-            }
         }
 
         $modelV->select($fields);
@@ -134,9 +131,14 @@ trait HRTrait
             $modelV->orLike("{$modelV->table}.employee_name", $q);
         }
 
+        if ($salary) {
+            $modelV->where("({$srModel->table}.salary_rate IS NULL OR {$srModel->table}.rate_type IS NULL)");
+        }
+
         $modelV->orderBy("{$modelV->table}.employee_name", 'ASC');
 
         $result = $modelV->paginate($options['perPage'], 'default', $options['page']);
+        log_msg((string) $modelV->getLastQuery());
         $total  = $modelV->countAllResults();
 
         return [

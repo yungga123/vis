@@ -70,10 +70,10 @@ class SalaryRate extends BaseController
                 'fetch'     => url_to('payroll.salary_rate.fetch'),
                 'delete'    => url_to('payroll.salary_rate.delete'),
             ],
-            'hr' => [
-                'common'    => [
-                    'employees' => url_to('hr.common.employees'),
-                ],
+            'employee' => [
+                'common' => [
+                    'search' => url_to('employee.common.search'),
+                ]
             ],
         ]);
 

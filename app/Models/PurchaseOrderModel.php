@@ -269,7 +269,7 @@ class PurchaseOrderModel extends Model
 
             if (check_permissions($permissions, 'PRINT') && in_array($row['status'], ['approved', 'received'])) {
                 // Print PO
-                $print_url  = url_to('purchase_order.print', $row[$id]);
+                $print_url  = url_to('purchasing.purchase_order.print', $row[$id]);
                 $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-dark btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
