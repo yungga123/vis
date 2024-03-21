@@ -72,11 +72,11 @@ class ProjectRequestForm extends BaseController
         $data['custom_js']      = ['inventory/prf/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
             'prf' => [
-                'list'      => url_to('prf.list'),
-                'save'      => url_to('prf.save'),
-                'fetch'     => url_to('prf.fetch'),
-                'delete'    => url_to('prf.delete'),
-                'change'    => url_to('prf.change'),
+                'list'      => url_to('inventory.prf.list'),
+                'save'      => url_to('inventory.prf.save'),
+                'fetch'     => url_to('inventory.prf.fetch'),
+                'delete'    => url_to('inventory.prf.delete'),
+                'change'    => url_to('inventory.prf.change'),
             ],
             'inventory' => [
                 'common' => [

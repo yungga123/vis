@@ -19,7 +19,7 @@ class PrfMailService extends BaseMailService implements MailServiceInterface
 
         $module     = 'Project Request Form';
         $title      = $data['status'] === 'pending' ? $module .' Created' : $module .' Accepted';
-        $url        = url_to('prf.home') . '?id='. $data['id'] .'&mail=true';
+        $url        = url_to('inventory.prf.home') . '?id='. $data['id'] .'&mail=true';
         $items      = '<a href="'.$url.'">Click here</a>';
         $info       = [
             'module'    => $module,
