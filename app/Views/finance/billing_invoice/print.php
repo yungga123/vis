@@ -171,7 +171,8 @@ $total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
 						</tr>
 					<?php endif; ?>
                     <tr style="font-size: 17px">
-                        <td class="text-bold text-right" colspan="4">Grand Total Vat Inclusive</td>
+						<?php $vat_text = $with_vat ? 'Inclusive' : 'Exclusive' ?>
+                        <td class="text-bold text-right" colspan="4">Grand Total Vat <?= $vat_text ?></td>
                         <td class="text-right total_amount">
 							₱ <span><?= number_format($total_amount, 2) ?></span>
 						</td>
