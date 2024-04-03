@@ -332,6 +332,11 @@ class Dashboard extends BaseController
                         'count' => $prfModel->countRecords('item_out'),
                         'bg'    => 'success',
                     ],
+                    'received' => [
+                        'icon'  => 'fas fa-calendar-check',
+                        'count' => $prfModel->countRecords('received'),
+                        'bg'    => 'info',
+                    ],
                     'filed' => [
                         'icon'  => 'fas fa-file-alt',
                         'count' => $prfModel->countRecords('filed'),
