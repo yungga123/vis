@@ -40,7 +40,6 @@ class InventoryExportService extends ExportService
             ".dt_sql_number_format("({$model->table}.stocks * {$model->table}.item_sdp)")." AS total_price,
             ".dt_sql_number_format("{$model->table}.item_srp")." AS item_srp,
             ".dt_sql_number_format("{$model->table}.project_price")." AS project_price,
-            ".dt_sql_date_format("{$model->table}.date_of_purchase")." AS date_of_purchase,
             {$model->table}.location,
             {$model->view}.created_by_name,
             ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at
@@ -70,7 +69,6 @@ class InventoryExportService extends ExportService
             'Total Price',
             'Retail Price',
             'Project Price',
-            'Date of Purchase',
             'Location',
             'Encoder',
             'Encoded At'

@@ -20,7 +20,7 @@ trait ExportTrait
      *
      * @param array $data       The query results to export
      * @param array $header     The title header for the csv
-     * @param array $filename   The file name of the csv
+     * @param string $filename   The file name of the csv
      * @param callable|null $callback   An optional loop callback function to use 
      * when you have to change/process data before putting to csv output
      * 
