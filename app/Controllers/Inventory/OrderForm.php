@@ -138,6 +138,8 @@ class OrderForm extends BaseController
             'accepted_at',
             'item_out_by',
             'item_out_at',
+            'received_by',
+            'received_at',
             'filed_by',
             'filed_at',
             'rejected_by',
@@ -383,11 +385,13 @@ class OrderForm extends BaseController
         $branchModel    = new CustomerBranchModel();
         $columns    = "
             {$this->_model->table}.id,
+            {$this->_model->table}.customer_id,
             {$customerModel->table}.name AS client_name,
             {$customerModel->table}.contact_person AS client_contact_person,
             {$customerModel->table}.contact_number AS client_contact_number,
             ".dt_sql_concat_client_address($customerModel->table, '')." AS client_address,
             {$customerModel->table}.telephone AS client_telephone,
+            {$this->_model->table}.customer_branch_id AS client_branch_id,
             {$branchModel->table}.branch_name AS client_branch_name,
             {$branchModel->table}.contact_person AS client_branch_contact_person,
             {$branchModel->table}.contact_number AS client_branch_contact_number,
@@ -407,13 +411,18 @@ class OrderForm extends BaseController
         $builder    = $this->_model->select($columns);
         
         $this->_model->joinCustomers($builder, $customerModel, '', true);
+
         $this->joinAccountView($builder, 'created_by', 'cb');
         $this->joinAccountView($builder, 'accepted_by', 'ab');
         $this->joinAccountView($builder, 'rejected_by', 'rb');
         $this->joinAccountView($builder, 'item_out_by', 'ib');
         $this->joinAccountView($builder, 'filed_by', 'fb');
 
+        $builder->where("{$this->_model->table}.id", $id);
+
         $order_form = $builder->first($id);
+
+        // d($builder->getLastQuery()); die;
 
         // For restriction
         if (empty($order_form)) {

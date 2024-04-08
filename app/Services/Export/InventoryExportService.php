@@ -2,19 +2,22 @@
 
 namespace App\Services\Export;
 
+use App\Models\CustomerBranchModel;
 use App\Models\InventoryModel;
 use App\Models\ProjectRequestFormModel;
 use App\Models\PRFItemModel;
 use App\Models\JobOrderModel;
 use App\Models\CustomerModel;
 use App\Models\InventoryLogsModel;
-use App\Models\TaskLeadView;
+use App\Models\OrderFormItemModel;
+use App\Models\OrderFormModel;
 use App\Traits\HRTrait;
+use App\Traits\InventoryTrait;
 
 class InventoryExportService extends ExportService
 {
     /* Declare trait here to use */
-    use HRTrait;
+    use HRTrait, InventoryTrait;
 
     /**
      * Exporting data to csv
@@ -277,6 +280,158 @@ class InventoryExportService extends ExportService
             'Created At',
         ];
         $filename   = 'PRF Items';
+
+        $this->logSelectQuery($builder, __METHOD__);
+
+        $this->exportToCsv($data, $header, $filename);
+    }
+
+    /**
+     * Exporting data to csv
+     *
+     * @param array $filters     The passed params or request
+     * @return void
+     */
+    public function orderForms($filters = [])
+    {
+        $model          = new OrderFormModel();
+        $customerModel  = new CustomerModel();
+        $branchModel    = new CustomerBranchModel();
+        $columns        = "
+            UPPER({$model->table}.status) AS status,
+            {$model->table}.id,
+            {$customerModel->table}.name AS client_name,
+            {$branchModel->table}.branch_name AS client_branch_name,
+            ".dt_sql_datetime_format("{$model->table}.purchase_at")." AS purchase_at,
+            ".dt_sql_number_format("{$model->table}.total_amount")." AS total_amount,
+            ".dt_sql_number_format("{$model->table}.total_discount")." AS total_discount,
+            IF({$model->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
+            ".dt_sql_number_format("{$model->table}.vat_amount")." AS vat_amount,
+            ".dt_sql_number_format("{$model->table}.grand_total")." AS grand_total,
+            {$model->table}.remarks,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at,
+            ab.employee_name AS accepted_by,
+            ".dt_sql_datetime_format("{$model->table}.accepted_at")." AS accepted_at,
+            rb.employee_name AS rejected_by,
+            ".dt_sql_datetime_format("{$model->table}.rejected_at")." AS rejected_at,
+            ib.employee_name AS item_out_by,
+            ".dt_sql_datetime_format("{$model->table}.item_out_at")." AS item_out_at,
+            rcb.employee_name AS received_by,
+            ".dt_sql_datetime_format("{$model->table}.received_at")." AS received_at,
+            fb.employee_name AS filed_by,
+            ".dt_sql_datetime_format("{$model->table}.filed_at")." AS filed_at,
+        ";
+        $builder    = $model->select($columns);
+
+        $model->joinCustomers($builder, $customerModel, '', true);
+
+        $this->joinAccountView($builder, 'created_by', 'cb');
+        $this->joinAccountView($builder, 'accepted_by', 'ab');
+        $this->joinAccountView($builder, 'rejected_by', 'rb');
+        $this->joinAccountView($builder, 'item_out_by', 'ib');
+        $this->joinAccountView($builder, 'received_by', 'rcb');
+        $this->joinAccountView($builder, 'filed_by', 'fb');
+
+        $builder->where("{$model->table}.deleted_at IS NULL");
+        $builder->orderBy("{$model->table}.id", 'DESC');
+        
+        // Process and add filters
+        $this->processFilters($model->table, $builder, $filters);
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Status',
+            'Order Form #',
+            'Client',
+            'Client Branch',
+            'Purchased At',
+            'Total Amount',
+            'Total Discount',
+            'With Vat?',
+            'Vat Amount',
+            'Grand Total (w/ Vat)',
+            'Remarks',
+            'Created By',
+            'Created At',
+            'Item Out By',
+            'Item Out At',
+            'Received By',
+            'Received At',
+            'Filed By',
+            'Filed At',
+            'Rejected By',
+            'Rejected At'
+        ];
+        $filename   = 'Order Forms';
+
+        $this->logSelectQuery($builder, __METHOD__);
+
+        $this->exportToCsv($data, $header, $filename);
+    }
+
+    /**
+     * Exporting data to csv
+     *
+     * @param array $filters     The passed params or request
+     * @return void
+     */
+    public function orderFormItems($filters = [])
+    {
+        $model          = new OrderFormModel();
+        $ofItemModel    = new OrderFormItemModel();
+        $inventoryModel = new InventoryModel();
+        $columns        = "
+            {$ofItemModel->table}.order_form_id,
+            {$ofItemModel->table}.inventory_id,
+            {$inventoryModel->view}.supplier_name,
+            {$inventoryModel->view}.category_name,
+            {$inventoryModel->table}.item_model,
+            {$inventoryModel->table}.item_description,
+            {$inventoryModel->view}.brand,
+            {$inventoryModel->view}.size,
+            {$inventoryModel->view}.unit,
+            {$inventoryModel->table}.stocks,
+            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
+            ".dt_sql_number_format("{$ofItemModel->table}.quantity")." AS quantity,
+            ".dt_sql_number_format("{$ofItemModel->table}.discount")." AS discount,
+            ".dt_sql_number_format("{$ofItemModel->table}.discount")." AS total_price,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at,
+        ";
+        $builder        = $ofItemModel->select($columns);
+
+        $ofItemModel->join($model->table, "{$model->table}.id = {$ofItemModel->table}.order_form_id", 'left');
+        
+        $this->joinInventory($ofItemModel->table, $builder, true);
+        $this->joinAccountView($builder, "{$model->table}.created_by", 'cb');
+
+        $builder->where("{$model->table}.deleted_at", null);
+        $builder->orderBy("{$ofItemModel->table}.order_form_id", 'ASC');
+        
+        // Process and add filters
+        $this->processFilters($model->table, $builder, $filters);
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Order Form #',
+            'Item #',
+            'Supplier',
+            'Category',
+            'Item Model',
+            'Item Description',
+            'Item Brand',
+            'Item Unit',
+            'Item Size',
+            'Current Stocks',
+            'Item Price',
+            'Quantity',
+            'Discount',
+            'Total Price',
+            'Created By',
+            'Created At',
+        ];
+        $filename   = 'Order Form Items';
 
         $this->logSelectQuery($builder, __METHOD__);
 

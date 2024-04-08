@@ -104,7 +104,7 @@ class OrderFormItemModel extends Model
         $builder->where('order_form_id', $order_form_id);
 
         if ($joinInv) {
-            $builder->joinInventory($this->table, $builder, true);
+            $this->joinInventory($this->table, $builder, true);
         }
 
         return $builder->findAll();

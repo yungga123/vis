@@ -462,6 +462,11 @@ class Dashboard extends BaseController
                         'count' => $orderFormModel->countRecords('item_out'),
                         'bg'    => 'success',
                     ],
+                    'received' => [
+                        'icon'  => 'fas fa-calendar-check',
+                        'count' => $orderFormModel->countRecords('received'),
+                        'bg'    => 'info',
+                    ],
                     'filed' => [
                         'icon'  => 'fas fa-file-alt',
                         'count' => $orderFormModel->countRecords('filed'),
