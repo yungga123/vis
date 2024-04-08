@@ -336,6 +336,11 @@ class ExportData extends BaseController
                 'name'      => 'Status',
                 'options'   => $prf_options,
             ],
+            'SALES_CUSTOMER_SUPPORTS'  => [
+                'type'      => 'multiple',
+                'name'      => 'Status',
+                'options'   => get_customer_support_status(),
+            ],
         ];
 
         if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_LEAVE'] ?? []))) {
@@ -423,6 +428,7 @@ class ExportData extends BaseController
             'FINANCE_BILLING_INVOICE'   => [new FinanceExportService(), 'billingInvoices'],
             'INVENTORY_ORDER_FORMS'     => [new InventoryExportService(), 'orderForms'],
             'INVENTORY_ORDER_FORM_ITEMS' => [new InventoryExportService(), 'orderFormItems'],
+            'SALES_CUSTOMER_SUPPORTS'   => [new SalesExportService(), 'customerSupports'],
         ];
 
         // Return the initailized service class and the method name
