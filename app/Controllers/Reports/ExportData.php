@@ -202,6 +202,11 @@ class ExportData extends BaseController
                         // Include the order form items
                         $modules['INVENTORY_ORDER_FORM_ITEMS'] = 'Order Form Items';
                     }
+
+                    if ($module === 'FINANCE_FUNDS') {
+                        // Rename value
+                        $modules['FINANCE_FUNDS'] = 'Funds History';
+                    }
                 }
             }
         }
@@ -341,6 +346,14 @@ class ExportData extends BaseController
                 'name'      => 'Status',
                 'options'   => get_customer_support_status(),
             ],
+            'FINANCE_FUNDS'  => [
+                'type'      => 'single',
+                'name'      => 'Transaction Type',
+                'options'   => [
+                    'incoming' => 'Incoming',
+                    'outgoing' => 'Outgoing',
+                ],
+            ],
         ];
 
         if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_LEAVE'] ?? []))) {
@@ -426,6 +439,7 @@ class ExportData extends BaseController
             'PAYROLL_TIMESHEETS'    => [new PayrollExportService(), 'timesheets'],
             'PAYROLL_SALARY_RATES'  => [new PayrollExportService(), 'salaryRates'],
             'FINANCE_BILLING_INVOICE'   => [new FinanceExportService(), 'billingInvoices'],
+            'FINANCE_FUNDS'         => [new FinanceExportService(), 'fundsHistory'],
             'INVENTORY_ORDER_FORMS'     => [new InventoryExportService(), 'orderForms'],
             'INVENTORY_ORDER_FORM_ITEMS' => [new InventoryExportService(), 'orderFormItems'],
             'SALES_CUSTOMER_SUPPORTS'   => [new SalesExportService(), 'customerSupports'],
