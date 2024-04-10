@@ -385,8 +385,8 @@ class ProjectRequestFormModel extends Model
                 in_array($row['status'], $allowedToPrint)
             ) {
                 // Print PRF
-                $print_url = site_url('prf/print/') . $row[$id];
-                $buttons .= <<<EOF
+                $print_url  = url_to('inventory.prf.print', $row[$id]);
+                $buttons    .= <<<EOF
                     <a href="$print_url" class="btn btn-info btn-sm" target="_blank" title="Print {$title}"><i class="fas fa-print"></i></a>
                 EOF;
             }

@@ -760,13 +760,44 @@ if (! function_exists('get_expenses'))
      */
 	function get_expenses(string $param = ''): string|array
 	{
-        $options = [
-            'Petty Cash'        => 'Petty Cash',
-            'Salary'            => 'Salary',
-            'Purchase Orders'   => 'Purchase Orders',
-            'Loans Payment'     => 'Loans Payment',
-            'Advances'          => 'Advances',
+        $list = [
+            'Allowances & Salaries - In-House',
+            'Sub Contractor Payment',
+            'Project Based Salary',
+            'Commissions',
+            'Cash Advance',
+            "Manager's Expenses - Cash Advances",
+            'Petty Cash',
+            'Marketing',
+            'Legal',
+            'Loans Payment',
+            'Loans (Cash)',
+            'Loans (Service Car)',
+            'Utility Bills - Electricity',
+            'Utility Bills - Internet & Communication',
+            'Utility Bills - Water',
+            'Utility Bills - Staffhouse',
+            'Government Mandatory Benefits',
+            'Marketing - BNI & Others',
+            'Repair & Maintenance - Office/Tools',
+            'Repair & Maintenance - Service Car',
+            'Rent - Office',
+            'Rent - Staffhouse',
+            'Stocks - Direct',
+            'Stocks - Indirect',
+            'Stocks - PPE',
+            'Tools and Equipment',
+            'Miscellaneous',
+            'Tax & Licenses',
+            'Transportation',
+            'Office Supplies',
+            'Fuel, Gas & Oil',
+            'Toll fee',
+            'Parking Fee',
         ];
+        
+        // Create the associative array where keys are the same as values
+        $options = array_combine($list, $list);
 
         return $options[$param] ?? $options;
 	}

@@ -20,14 +20,15 @@ function dropzoneInit(id, route, button, options) {
 		url: route,
 		paramName: inObjectReturn(options, "paramName") || "file",
 		// Max file size in MB
-		maxFilesize: inObjectReturn(options, "maxFilesize") || 15,
+		maxFilesize: inObjectReturn(options, "maxFilesize") || 50,
 		// How many files allowed to be selected/uploaded
-		maxFiles: inObjectReturn(options, "maxFiles") || 5,
+		maxFiles: inObjectReturn(options, "maxFiles") || 50,
 		dictDefaultMessage: _defaultMsgIcon + _defaultMsg,
 		acceptedFiles:
 			inObjectReturn(options, "acceptedFiles") || _defaultAcceptedFiles,
 		addRemoveLinks: inObjectReturn(options, "addRemoveLinks") || true,
-		dictRemoveFileConfirmation: "Are you sure you want to remove this file?",
+		dictRemoveFileConfirmation:
+			"Are you sure you want to remove this file?",
 		// Disable auto processing
 		autoProcessQueue: inObjectReturn(options, "autoProcessQueue") || false,
 		uploadMultiple: inObjectReturn(options, "uploadMultiple") || true,
@@ -216,7 +217,10 @@ function dzOnSuccessEvent(_dropzone, button, callback) {
 		}
 
 		// If error response status, reset the file to initial
-		if (inObjectReturn(response, "status") === "error" && files.length > 0) {
+		if (
+			inObjectReturn(response, "status") === "error" &&
+			files.length > 0
+		) {
 			files.forEach((file, i) => {
 				// Revert file to initial just like first selected file
 				file.previewElement.classList.remove("dz-processing");
@@ -391,7 +395,11 @@ function dzRemoveFileInServer(_dropzone, file, route, data) {
 			})
 			.catch((err) => catchErrMsg(err));
 	} else {
-		notifMsgSwal(TITLE.INFO, "Removed file hasn't uploaded yet!", STATUS.INFO);
+		notifMsgSwal(
+			TITLE.INFO,
+			"Removed file hasn't uploaded yet!",
+			STATUS.INFO
+		);
 	}
 }
 
@@ -411,7 +419,9 @@ function dzAddDownloadFileEvent(_dropzone, file) {
 
 		for (let node of file.previewElement.children) {
 			if (node.className === "dz-details") {
-				node.addEventListener("click", () => window.open(file.url, "_blank"));
+				node.addEventListener("click", () =>
+					window.open(file.url, "_blank")
+				);
 			}
 		}
 

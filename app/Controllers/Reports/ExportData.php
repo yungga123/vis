@@ -197,6 +197,16 @@ class ExportData extends BaseController
                         // Include the rpf items
                         $modules['PURCHASING_RPF_ITEMS'] = 'Request to Purchase Items';
                     }
+
+                    if ($module === 'INVENTORY_ORDER_FORMS') {
+                        // Include the order form items
+                        $modules['INVENTORY_ORDER_FORM_ITEMS'] = 'Order Form Items';
+                    }
+
+                    if ($module === 'FINANCE_FUNDS') {
+                        // Rename value
+                        $modules['FINANCE_FUNDS'] = 'Funds History';
+                    }
                 }
             }
         }
@@ -326,6 +336,24 @@ class ExportData extends BaseController
                 'name'      => 'Billing Status',
                 'options'   => get_billing_status(),
             ],
+            'INVENTORY_ORDER_FORMS'  => [
+                'type'      => 'multiple',
+                'name'      => 'Status',
+                'options'   => $prf_options,
+            ],
+            'SALES_CUSTOMER_SUPPORTS'  => [
+                'type'      => 'multiple',
+                'name'      => 'Status',
+                'options'   => get_customer_support_status(),
+            ],
+            'FINANCE_FUNDS'  => [
+                'type'      => 'single',
+                'name'      => 'Transaction Type',
+                'options'   => [
+                    'incoming' => 'Incoming',
+                    'outgoing' => 'Outgoing',
+                ],
+            ],
         ];
 
         if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_LEAVE'] ?? []))) {
@@ -410,7 +438,11 @@ class ExportData extends BaseController
             'PAYROLL_PAYSLIP'       => [new PayrollExportService(), 'payslip'],
             'PAYROLL_TIMESHEETS'    => [new PayrollExportService(), 'timesheets'],
             'PAYROLL_SALARY_RATES'  => [new PayrollExportService(), 'salaryRates'],
-            'FINANCE_BILLING_INVOICE'  => [new FinanceExportService(), 'billingInvoices'],
+            'FINANCE_BILLING_INVOICE'   => [new FinanceExportService(), 'billingInvoices'],
+            'FINANCE_FUNDS'         => [new FinanceExportService(), 'fundsHistory'],
+            'INVENTORY_ORDER_FORMS'     => [new InventoryExportService(), 'orderForms'],
+            'INVENTORY_ORDER_FORM_ITEMS' => [new InventoryExportService(), 'orderFormItems'],
+            'SALES_CUSTOMER_SUPPORTS'   => [new SalesExportService(), 'customerSupports'],
         ];
 
         // Return the initailized service class and the method name

@@ -127,7 +127,6 @@ class Home extends BaseController
             'total_price',
             'item_srp',
             'project_price',
-            'date_purchase',
             'location',
             'created_by_name',
             'created_at_formatted'

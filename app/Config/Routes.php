@@ -266,13 +266,13 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
 
     // PROJECT REQUEST FORMS
     $routes->group('project-request-forms', static function ($routes) {
-        $routes->get('/', 'Inventory\ProjectRequestForm::index', ['as' => 'prf.home']);
-        $routes->post('list', 'Inventory\ProjectRequestForm::list', ['as' => 'prf.list']);
-        $routes->post('save', 'Inventory\ProjectRequestForm::save', ['as' => 'prf.save']);
-        $routes->post('fetch', 'Inventory\ProjectRequestForm::fetch', ['as' => 'prf.fetch']);
-        $routes->post('delete', 'Inventory\ProjectRequestForm::delete', ['as' => 'prf.delete']);
-        $routes->post('change', 'Inventory\ProjectRequestForm::change', ['as' => 'prf.change']);
-        $routes->get('print/(:num)', 'Inventory\ProjectRequestForm::print/$1', ['as' => 'prf.print']);
+        $routes->get('/', 'Inventory\ProjectRequestForm::index', ['as' => 'inventory.prf.home']);
+        $routes->post('list', 'Inventory\ProjectRequestForm::list', ['as' => 'inventory.prf.list']);
+        $routes->post('save', 'Inventory\ProjectRequestForm::save', ['as' => 'inventory.prf.save']);
+        $routes->post('fetch', 'Inventory\ProjectRequestForm::fetch', ['as' => 'inventory.prf.fetch']);
+        $routes->post('delete', 'Inventory\ProjectRequestForm::delete', ['as' => 'inventory.prf.delete']);
+        $routes->post('change', 'Inventory\ProjectRequestForm::change', ['as' => 'inventory.prf.change']);
+        $routes->get('print/(:num)', 'Inventory\ProjectRequestForm::print/$1', ['as' => 'inventory.prf.print']);
     });
 
     // ORDER FORMS

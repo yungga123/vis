@@ -3,6 +3,7 @@
 namespace App\Services\Export;
 
 use App\Models\BillingInvoiceModel;
+use App\Models\FundsHistoryModel;
 use App\Models\TaskLeadView;
 
 class FinanceExportService extends ExportService
@@ -72,6 +73,62 @@ class FinanceExportService extends ExportService
             'Attention To',
             'With Vat?',
             'Vat Amount',
+            'Created By',
+            'Created At'
+        ];
+        $filename   = 'Billing Invoices';
+
+        $this->logSelectQuery($builder, __METHOD__);
+
+        $this->exportToCsv($data, $header, $filename);
+    }
+    /**
+     * Exporting data to csv
+     *
+     * @param array $filters     The passed params or request
+     * @return void
+     */
+    public function fundsHistory($filters = [])
+    {
+        $model      = new FundsHistoryModel();
+        $compute    = "
+            IF({$model->table}.transaction_type = 'outgoing', {$model->table}.current_funds - {$model->table}.transaction_amount, {$model->table}.current_funds + {$model->table}.transaction_amount)
+        ";
+        $columns    = "
+            {$model->table}.id,
+            UPPER({$model->table}.transaction_type) AS transaction_type,
+            ".dt_sql_number_format("{$model->table}.transaction_amount")." AS transaction_amount,
+            ".dt_sql_number_format("{$model->table}.current_funds")." AS previous_funds,
+            ".dt_sql_number_format("{$compute}")." AS current_funds,
+            {$model->table}.coming_from,
+            {$model->table}.expenses,
+            {$model->table}.remarks,
+            cb.employee_name AS created_by,
+            ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at
+        ";
+        $builder    = $model->select(new \CodeIgniter\Database\RawSql($columns));
+
+        // Join with other tables
+        $this->joinAccountView($builder, "{$model->table}.created_by", 'cb');
+
+        $builder->where("{$model->table}.deleted_at IS NULL");
+        $builder->orderBy("{$model->table}.id", 'DESC');
+
+        // Process and add filters
+        $this->processFilters($model->table, $builder, $filters, 'transaction_type');
+
+        $builder->orderBy("{$model->table}.id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'ID #',
+            'Transaction Type',
+            'Transaction Amount',
+            'Previous Funds',
+            'Running Funds',
+            'Coming From',
+            'Expenses',
+            'Remarks',
             'Created By',
             'Created At'
         ];
