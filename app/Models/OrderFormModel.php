@@ -280,6 +280,8 @@ class OrderFormModel extends Model
             ".dt_sql_datetime_format("{$this->table}.rejected_at")." AS rejected_at,
             ib.employee_name AS item_out_by,
             ".dt_sql_datetime_format("{$this->table}.item_out_at")." AS item_out_at,
+            rcb.employee_name AS received_by,
+            ".dt_sql_datetime_format("{$this->table}.received_at")." AS received_at,
             fb.employee_name AS filed_by,
             ".dt_sql_datetime_format("{$this->table}.filed_at")." AS filed_at,
         ";
@@ -292,6 +294,7 @@ class OrderFormModel extends Model
         $this->joinAccountView($builder, 'accepted_by', 'ab');
         $this->joinAccountView($builder, 'rejected_by', 'rb');
         $this->joinAccountView($builder, 'item_out_by', 'ib');
+        $this->joinAccountView($builder, 'received_by', 'rcb');
         $this->joinAccountView($builder, 'filed_by', 'fb');
         
         $this->filterParam($request, $builder);

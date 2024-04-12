@@ -323,14 +323,14 @@ $daily_rate     = floatval($payroll['daily_rate'] ?? 0);
                     </tr>
                         <td>Cash Advance</td>
                         <td colspan="3">
-                            <?php $cash_advance = $payroll['cash_advance'] ?? 0 ?>
+                            <?php $cash_advance = $deductions['cash_advance'] ?? 0 ?>
                             <?= number_format($cash_advance, 2) ?>
                         </td>
                     </tr>
                     <tr>
                         <td>Others</td>
                         <td colspan="3">
-                            <?php $others = $payroll['others'] ?? 0 ?>
+                            <?php $others = $deductions['others'] ?? 0 ?>
                             <?= number_format($others, 2) ?>
                         </td>
                     </tr>

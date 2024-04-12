@@ -2,7 +2,7 @@
 <div class="modal fade" id="prf_modal" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <form id="prf_form" class="with-label-indicator" action="<?= url_to('prf.save'); ?>" method="post" autocomplete="off">
+            <form id="prf_form" class="with-label-indicator" action="<?= url_to('inventory.prf.save'); ?>" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
                 <div class="modal-header">
                     <h5 class="modal-title">Add PRF</h5>

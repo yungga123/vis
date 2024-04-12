@@ -93,7 +93,8 @@ function filterData(reset = false) {
 		type: type,
 		source: source,
 	};
-	const condition = !isEmpty(new_client) || !isEmpty(type) || !isEmpty(source);
+	const condition =
+		!isEmpty(new_client) || !isEmpty(type) || !isEmpty(source);
 
 	filterParam(
 		router.customer.list,
@@ -132,7 +133,8 @@ function edit(id) {
 					if (res.data.unformatted_cn) {
 						$("#unformatted_cn").html(
 							"<strong>Previous unformatted contact number:</strong> " +
-								res.data.unformatted_cn || res.data.contact_number
+								res.data.unformatted_cn ||
+								res.data.contact_number
 						);
 					}
 
@@ -145,7 +147,9 @@ function edit(id) {
 						$("#telephone_only").prop("checked", true);
 					}
 
-					$.each(res.data, (key, value) => $("#" + key).val(value || ""));
+					$.each(res.data, (key, value) =>
+						$("#" + key).val(value || "")
+					);
 				}
 			} else {
 				notifMsgSwal(res.status, res.message, res.status);
@@ -190,9 +194,14 @@ function _dropzoneInit() {
 	const form = "upload_form";
 	const button = "#upload_modal .btn-upload";
 	const options = {
-		maxFiles: 20,
+		maxFiles: 5000,
 	};
 
-	_dropzone = dropzoneInit(form, router.customer.files.upload, button, options);
+	_dropzone = dropzoneInit(
+		form,
+		router.customer.files.upload,
+		button,
+		options
+	);
 	dzOnRemoveFileEvent(_dropzone, router.customer.files.remove);
 }

@@ -43,7 +43,7 @@
                     <th>ID</th>
                     <th>Transaction Amount</th>
                     <th>Previous Funds</th>
-                    <th>Current Funds</th>
+                    <th>Running Funds</th>
                     <th>Coming From</th>
                     <th>Expenses</th>
                     <th>Remarks</th>
