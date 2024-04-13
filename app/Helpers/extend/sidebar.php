@@ -6,7 +6,7 @@ if (! function_exists('get_user_modules'))
      */
 	function get_user_modules(?array $permissions = null): array 
 	{
-        if (session('access_level') === AAL_ADMIN) {
+        if (is_admin()) {
             return array_keys(MODULES);
         }
 
