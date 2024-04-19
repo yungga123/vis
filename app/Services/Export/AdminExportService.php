@@ -19,13 +19,11 @@ class AdminExportService extends ExportService
     {
         $model          = new DispatchModel();        
         $scheduleModel  = new ScheduleModel();
-        $customerModel  = new CustomerModel();
         $columns        = "
             {$model->table}.id,
             {$model->table}.schedule_id,
             {$scheduleModel->table}.title,
-            {$customerModel->table}.name AS client,
-            {$customerModel->table}.type AS client_type,
+            {$scheduleModel->table}.description,
             ".dt_sql_date_format("{$model->table}.dispatch_date")." AS dispatch_date,
             ".dt_sql_time_format("{$model->table}.dispatch_out")." AS dispatch_out,
             ".dt_sql_time_format("{$model->table}.time_in")." AS time_in,
@@ -45,10 +43,10 @@ class AdminExportService extends ExportService
         // Join with other tables
         $model->joinView($builder);
         $model->joinSchedule($builder);
-        $model->joinCustomer($builder);
 
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters);
+
         $builder->orderBy("{$model->table}.id", 'ASC');
 
         $data       = $builder->findAll();
@@ -56,8 +54,7 @@ class AdminExportService extends ExportService
             'Dispatch ID',
             'Schedule ID',
             'Schedule Title',
-            'Client',
-            'Client Type',
+            'Schedule Description',
             'Dispatch Date',
             'Dispatch Out',
             'Time In',
@@ -79,13 +76,16 @@ class AdminExportService extends ExportService
         $this->exportToCsv($data, $header, $filename, function($data, $output) {
             $i          = 0;
             $services   = get_dispatch_services();
+            
             while (isset($data[$i])) {
                 $row = $data[$i];
                 
-                if (isset($row['service_type']))
+                if (isset($row['service_type'])) {
                     $row['service_type'] = $services[$row['service_type']];
+                }
 
                 fputcsv($output, $row);
+
                 $i++;
             }
         });
