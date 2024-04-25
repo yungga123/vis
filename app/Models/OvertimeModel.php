@@ -311,7 +311,7 @@ class OvertimeModel extends Model
                 }
             }
 
-            if (check_permissions($permissions, 'APPROVED') && $status === 'processed') {
+            if (check_permissions($permissions, 'APPROVE') && $status === 'processed') {
                 // Approve Leave
                 $changeTo = 'approve';
                 $buttons .= dt_button_html([
