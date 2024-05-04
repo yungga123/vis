@@ -40,7 +40,7 @@
                                         <input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
                                     </td>
                                     <td>
-                                        <input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
+                                        <input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="0.5" step="0.01" required>
                                     </td>
                                     <td>
                                         <input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
