@@ -66,7 +66,7 @@
                                                 <div class="item-unit text-bold"></div>
                                             </td>
                                             <td>
-                                                <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
+                                                <input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="0.5" step="0.01" required>
                                             </td>
                                             <td>
                                                 <select type="text" class="form-control remarks" name="remarks[]">

@@ -209,7 +209,9 @@ function view(id, changeTo, status) {
 							<input type="hidden" name="remarks[]" value="${val.remarks}" class="form-control" readonly>
 						`;
 						const onkeyEvent =
-							'onkeyup="compute(' + parseFloat(val.quantity_out) + ', event)"';
+							'onkeyup="compute(' +
+							parseFloat(val.quantity_out) +
+							', event)"';
 						const returned_q = `
 							<input type="number" name="returned_q[]" id="returned_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${
 							val.quantity_out
@@ -310,9 +312,9 @@ function edit(id) {
 						const qelem = quantity_out[x];
 						const remarksElem = remarks[x];
 						const item = items[x];
-						const text = `${item.inventory_id} | ${item.item_model} | ${
-							item.item_description
-						} | ${item.size || "N/A"}`;
+						const text = `${item.inventory_id} | ${
+							item.item_model
+						} | ${item.item_description} | ${item.size || "N/A"}`;
 
 						// Store items in a variable with inventory_id as key
 						_fetchItems[item.inventory_id] = item;
@@ -329,7 +331,10 @@ function edit(id) {
 						// Get the parent next sibling td (which where the item_available input) each
 						const parentSiblingElem = $(elem).parent().next();
 						// Set available stocks each item
-						_populateAvailableItemStocks(parentSiblingElem[0], item.stocks);
+						_populateAvailableItemStocks(
+							parentSiblingElem[0],
+							item.stocks
+						);
 						// Display the item unit in each item
 						$(elem).parent().children(".item-unit").text(item.unit);
 						// Display the remarks in each item
@@ -436,7 +441,7 @@ function toggleItemField(row) {
 				<div class="item-unit text-bold"></div>
 			</td>
 			<td>
-				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="1" required>
+				<input type="number" name="quantity_out[]" class="form-control quantity_out" placeholder="Quantity" min="0.5" step="0.01" required>
 			</td>
 			<td>${_prfItemRemarks()}</td>
 			<td>
@@ -519,7 +524,12 @@ function _loadItemDetails(data) {
 		}
 
 		if (!isEmpty(stocks))
-			_populateAvailableItemStocks(parentSiblingElem, stocks, false, unit);
+			_populateAvailableItemStocks(
+				parentSiblingElem,
+				stocks,
+				false,
+				unit
+			);
 	}
 }
 
@@ -535,7 +545,9 @@ function _populateAvailableItemStocks(
 			$(parentSiblingElem).text(stock);
 			return;
 		}
-		$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
+		$(parentSiblingElem)
+			.children('input[name="item_available[]"]')
+			.val(stock);
 
 		$(parentSiblingElem)
 			.children(".item-unit")
