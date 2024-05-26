@@ -118,8 +118,10 @@ class BillingInvoice extends BaseController
             'bill_type',
             'payment_method',
             'billing_amount',
+            'receipt_number',
             'overdue_interest',
             'amount_paid',
+            'date_paid',
             'paid_at',
             'attention_to',
             'with_vat',
@@ -178,6 +180,7 @@ class BillingInvoice extends BaseController
                     'bill_type'         => $request['bill_type'] ?? null,
                     'payment_method'    => $request['payment_method'] ?? null,
                     'billing_amount'    => $request['billing_amount'] ?? null,
+                    'receipt_number'    => $request['receipt_number'] ?? null,
                     'amount_paid'       => $request['amount_paid'] ?? null,
                     'with_vat'          => $with_vat,
                     'vat_amount'        => $with_vat ? ($request['vat_amount'] ?? null) : null,
@@ -210,6 +213,7 @@ class BillingInvoice extends BaseController
 
                     if ($is_paid) {
                         $inputs['billing_status']   = 'paid';
+                        $inputs['date_paid']        = $request['date_paid'] ?? null;
                         $inputs['paid_by']          = session('username');
                         $inputs['paid_at']          = current_datetime();
     

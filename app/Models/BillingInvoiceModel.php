@@ -28,8 +28,10 @@ class BillingInvoiceModel extends Model
         'billing_amount',
         'payment_method',
         'amount_paid',
+        'date_paid',
         'paid_at',
         'paid_by',
+        'receipt_number',
         'attention_to',
         'with_vat',
         'vat_amount',
@@ -71,6 +73,10 @@ class BillingInvoiceModel extends Model
         'amount_paid'   => [
             'rules' => 'permit_empty|numeric',
             'label' => 'amount paid',
+        ],
+        'date_paid'   => [
+            'rules' => 'permit_empty',
+            'label' => 'date paid',
         ],
     ];
     protected $validationMessages   = [];
@@ -118,7 +124,8 @@ class BillingInvoiceModel extends Model
      */
     public function makeAmountPaidRequired()
     {
-        $this->validationRules['amount_paid']['rules'] = 'required|numeric';
+        $this->validationRules['amount_paid']['rules']  = 'required|numeric';
+        $this->validationRules['date_paid']['rules']    = 'required';
     }
 
     /**
@@ -136,7 +143,9 @@ class BillingInvoiceModel extends Model
             {$this->table}.billing_status,
             {$this->table}.payment_method,
             {$this->table}.amount_paid,
+            {$this->table}.date_paid,
             {$this->table}.paid_at,
+            {$this->table}.receipt_number,
             {$this->table}.attention_to,
             {$this->table}.with_vat,
             {$this->table}.vat_amount,
@@ -252,7 +261,9 @@ class BillingInvoiceModel extends Model
             {$this->table}.billing_status,
             {$this->table}.payment_method,
             ".dt_sql_number_format("{$this->table}.amount_paid")." AS amount_paid,
+            ".dt_sql_date_format("{$this->table}.date_paid")." AS date_paid,
             ".dt_sql_datetime_format("{$this->table}.paid_at")." AS paid_at,
+            {$this->table}.receipt_number,
             {$this->table}.attention_to,
             IF({$this->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
             ".dt_sql_number_format("{$this->table}.vat_amount")." AS vat_amount,
