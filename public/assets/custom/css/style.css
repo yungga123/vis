@@ -101,3 +101,14 @@ form.with-label-indicator .form-group label.not-include::after {
 	display: flex;
 	justify-content: center;
 }
+
+/* Checkbox */
+.form-check-input-lg {
+	width: 1rem;
+	height: 1rem;
+}
+
+table tr.table-row-line-through {
+	background-color: #6c757d36;
+	text-decoration: line-through;
+}

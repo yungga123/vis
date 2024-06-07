@@ -48,9 +48,10 @@
                                 <table class="table" id="item_field_table">
                                     <thead>
                                         <tr>
-                                            <th width="40%">Item Details</th>
+                                            <th width="30%">Item Details</th>
+                                            <th width="15%" class="text-center">Category</th>
                                             <th width="15%" class="text-center">Item Unit</th>
-                                            <th width="20%">Quantity Out</th>
+                                            <th width="15%">Quantity Out</th>
                                             <th width="20%">Remarks</th>
                                             <th width="5%">Button</th>
                                         </tr>
@@ -61,7 +62,8 @@
                                                 <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
                                                 <div class="original-item"></div>
                                             </td>
-                                            <td class="text-center items-center">
+                                            <td class="text-center items-center td-item-category td-item-category-0 text-bold"></td>
+                                            <td class="text-center items-center td-item-unit td-item-unit-0">
                                                 <input type="hidden" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
                                                 <div class="item-unit text-bold"></div>
                                             </td>

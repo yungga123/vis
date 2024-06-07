@@ -275,6 +275,7 @@ if (! function_exists('get_prf_status'))
             'receive'   => 'receive',
             'item_out'  => 'item_out',
             'file'      => 'file',
+            'partial_file'  => 'partial_file',
         ];
 
         $options_pt = [
@@ -284,6 +285,7 @@ if (! function_exists('get_prf_status'))
             'item_out'  => 'item_out',
             'received'  => 'received',
             'filed'     => 'filed',
+            'partial_filed' => 'partial_filed',
         ];
 
         $arr = $pass_tense ? $options_pt : $options;
@@ -310,6 +312,8 @@ if (! function_exists('set_prf_status'))
             'received'  => 'received',
             'file'      => 'filed',
             'filed'     => 'filed',
+            'partial_file'  => 'partial_filed',
+            'partial_filed' => 'partial_filed',
         ];
 
         if (is_null($param)) {

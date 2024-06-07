@@ -39,6 +39,10 @@ $(document).ready(function () {
 		$(".job-order-details").html("");
 		$(".item-row").remove();
 		$(".original-item").html("");
+		$(".td-item-category-0").text("");
+		$('.td-item-unit-0 input[name="item_available[]"]').val("");
+		$(".td-item-unit-0 .item-unit").text("");
+
 		clearSelect2Selection(joSelector);
 		clearSelect2Selection(invSelector);
 		clearAlertInForm(elems);
@@ -59,7 +63,11 @@ $(document).ready(function () {
 	// If select2 clear, set the item_available input next to it to empty
 	$(invSelector).on("select2:clear", function (e) {
 		const parentSiblingElem = e.target.parentElement.nextElementSibling;
-		_populateAvailableItemStocks(parentSiblingElem, "");
+
+		console.log(parentSiblingElem);
+
+		$(parentSiblingElem).text("");
+		_populateAvailableItemStocks($(parentSiblingElem).next(), "");
 	});
 
 	/* Form for saving record */
@@ -134,12 +142,13 @@ function filterData(reset = false) {
 }
 
 /* Get prf items */
-function view(id, changeTo, status) {
+function view(id, changeTo, status, isView) {
 	$(`#prf_items_modal .modal-title`).html("PRF Item Details");
 	$("#prf_items_modal .modal-footer .change-btn").html("");
 	$("#prf_items_modal #prf_id_text").text("PRF #: " + id);
 	$("#file_remarks").addClass("d-none");
 	$("#note_item_out").html("");
+	$(".file-note").addClass("d-none");
 
 	if (inArray(["accept", "item_out", "receive", "file"], changeTo)) {
 		let markAs = strUpper(_status[changeTo]);
@@ -155,6 +164,7 @@ function view(id, changeTo, status) {
 		}
 
 		if (changeTo === "file") {
+			$(".file-note").removeClass("d-none");
 			$("#prf_id_file").val(id);
 			$("#status_file").val(changeTo);
 			$("#file_remarks").removeClass("d-none");
@@ -189,24 +199,33 @@ function view(id, changeTo, status) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				let html = "";
+				let html = "",
+					toFile = changeTo === "file";
 
 				if (!isEmpty(res.data)) {
-					const returned_date = `
-						<input type="date" name="returned_date[]" id="returned_date_file" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
-					`;
-					$.each(res.data, (index, val) => {
+					$("#remarks").val(res.data.remarks);
+
+					$.each(res.data.items, (index, val) => {
+						const isFiled = val.is_filed == 1 && toFile;
+						const disable = isFiled ? 'disabled="true"' : "";
+						const checkbox = toFile
+							? `
+							<div class="custom-control custom-checkbox">
+								<input class="form-check-input form-check-input-lg position-static" type="checkbox" name="selected_items[]" value="${val.inventory_id}" ${disable}>
+							</div>
+						`
+							: "";
 						const inventory_id = `
-							<input type="hidden" name="inventory_id[]" value="${val.inventory_id}" class="form-control" readonly>
+							<input type="hidden" name="inventory_id[]" value="${val.inventory_id}" class="form-control" readonly ${disable}>
 						`;
 						const stocks = `
-							<input type="hidden" name="stocks[]" value="${val.stocks}" class="form-control" readonly>
+							<input type="hidden" name="stocks[]" value="${val.stocks}" class="form-control" readonly ${disable}>
 						`;
 						const quantity_out = `
-							<input type="hidden" name="quantity_out[]" value="${val.quantity_out}" class="form-control" readonly>
+							<input type="hidden" name="quantity_out[]" value="${val.quantity_out}" class="form-control" readonly ${disable}>
 						`;
 						const remarks = `
-							<input type="hidden" name="remarks[]" value="${val.remarks}" class="form-control" readonly>
+							<input type="hidden" name="remarks[]" value="${val.remarks}" class="form-control" readonly ${disable}>
 						`;
 						const onkeyEvent =
 							'onkeyup="compute(' +
@@ -215,10 +234,19 @@ function view(id, changeTo, status) {
 						const returned_q = `
 							<input type="number" name="returned_q[]" id="returned_q_file" class="form-control" placeholder="Quantity" ${onkeyEvent} max="${
 							val.quantity_out
-						}" value="${parseFloat(val.returned_q || 0)}">
+						}" value="${parseFloat(
+							val.returned_q || 0
+						)}" ${disable}>
 						`;
+						const returned_date = `
+							<input type="date" name="returned_date[]" id="returned_date_file" class="form-control" value="${currentDate()}" max="${currentDate()}" ${disable}>
+						`;
+						const lineThru = isFiled
+							? 'class="table-row-line-through"'
+							: "";
 						html += `
-							<tr>
+							<tr ${lineThru}>
+								<td>${checkbox}</td>
 								<td>
 									${val.inventory_id}
 									${inventory_id}
@@ -237,13 +265,9 @@ function view(id, changeTo, status) {
 									${val.quantity_out}
 									${quantity_out}
 								</td>
-								<td>${changeTo === "file" ? returned_q : val.returned_q || "0.00"}</td>
+								<td>${toFile ? returned_q : val.returned_q || "0.00"}</td>
 								<td>${val.consumed}</td>
-								<td>${
-									changeTo === "file"
-										? returned_date
-										: val.returned_date_formatted || "N/A"
-								}</td>
+								<td>${toFile ? returned_date : val.returned_date_formatted || "N/A"}</td>
 								<td>
 									${val.remarks || "N/A"}
 									${remarks}
@@ -318,8 +342,10 @@ function edit(id) {
 
 						// Store items in a variable with inventory_id as key
 						_fetchItems[item.inventory_id] = item;
+
 						// Set selected item in each select2
 						setSelect2AjaxSelection(elem, text, item.inventory_id);
+
 						// Display the selected item in a div under each select2
 						$(elem)
 							.parent()
@@ -328,13 +354,19 @@ function edit(id) {
 						// Set quantity_out in each input
 						$(qelem).val(parseInt(item.quantity_out));
 						// $(qelem).attr("max", parseInt(item.quantity_out));
+
 						// Get the parent next sibling td (which where the item_available input) each
 						const parentSiblingElem = $(elem).parent().next();
+
+						// Set category
+						parentSiblingElem.text(item.category_name);
+
 						// Set available stocks each item
 						_populateAvailableItemStocks(
 							parentSiblingElem[0],
 							item.stocks
 						);
+
 						// Display the item unit in each item
 						$(elem).parent().children(".item-unit").text(item.unit);
 						// Display the remarks in each item
@@ -400,6 +432,10 @@ function change(id, changeTo, status, proceed) {
 	`;
 	const data = { id: id, status: changeTo };
 
+	if (changeTo === "file") {
+		data.selected_item = $('input[name="selected_items"]').val();
+	}
+
 	swalNotifConfirm(
 		function () {
 			$.post(router.prf.change, data)
@@ -436,6 +472,7 @@ function toggleItemField(row) {
 				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
 				<div class="original-item"></div>
 			</td>
+			<td class="text-center items-center td-item-category text-bold"></td>
 			<td class="text-center items-center">
 				<input type="hidden" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
 				<div class="item-unit text-bold"></div>
@@ -523,13 +560,16 @@ function _loadItemDetails(data) {
 			unit = _fetchItems[data.id].unit;
 		}
 
-		if (!isEmpty(stocks))
+		if (!isEmpty(stocks)) {
 			_populateAvailableItemStocks(
-				parentSiblingElem,
+				$(parentSiblingElem).next(),
 				stocks,
 				false,
 				unit
 			);
+		}
+
+		$(parentSiblingElem).text(data.category_name);
 	}
 }
 
@@ -540,19 +580,16 @@ function _populateAvailableItemStocks(
 	noChild,
 	item_unit
 ) {
-	if (parentSiblingElem.tagName === "TD" && typeof stock !== "undefined") {
-		if (noChild) {
-			$(parentSiblingElem).text(stock);
-			return;
-		}
-		$(parentSiblingElem)
-			.children('input[name="item_available[]"]')
-			.val(stock);
-
-		$(parentSiblingElem)
-			.children(".item-unit")
-			.text(item_unit || "N/A");
+	if (noChild) {
+		$(parentSiblingElem).text(stock);
+		return;
 	}
+
+	$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
+
+	$(parentSiblingElem)
+		.children(".item-unit")
+		.text(item_unit || "N/A");
 }
 
 /* PRF item remarks select */
