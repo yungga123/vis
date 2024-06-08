@@ -11,7 +11,7 @@ $withholding_tax	= $billing_invoice['withholding_tax'] ?? 0;
 $with_vat 			= ($billing_invoice['with_vat'] ?? 0) != '0';
 $vat_amount			= $with_vat ? $subtotal_amount * $vat_percent : 0;
 $vat_amount1		= $subtotal_amount * $vat_percent;
-$total_amount		= $subtotal_amount + $vat_amount + $overdue_interest + $withholding_tax;
+$total_amount		= ($subtotal_amount + $vat_amount + $overdue_interest) - $withholding_tax;
 ?>
 <style>
 	.container-fluid { font-family: 'Courier New', Courier, monospace; }
@@ -151,7 +151,10 @@ $total_amount		= $subtotal_amount + $vat_amount + $overdue_interest + $withholdi
                     </tr>
 					<?php if (! empty(floatval($billing_invoice['withholding_tax']))): ?>
 						<tr>
-							<td class="text-bold text-right" colspan="4">Withholding Tax</td>
+							<td class="text-bold text-right" colspan="4">
+								Withholding Tax
+								<span>(<?= $billing_invoice['withholding_tax_percent'] ?? 0 ?>%)</span>
+							</td>
 							<td class="text-right">
 								₱ <span><?= number_format($billing_invoice['withholding_tax'], 2) ?></span>
 							</td>

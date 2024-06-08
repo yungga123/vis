@@ -12,6 +12,7 @@ $(document).ready(function () {
 		"billing_amount",
 		"payment_method",
 		"amount_paid",
+		"withholding_tax_percent",
 		"withholding_tax",
 	];
 	_interest = $pjOptions.overdue_interests;
@@ -79,9 +80,9 @@ $(document).ready(function () {
 			if (vat_amount) $("div.with_vat").removeClass("d-none");
 		}
 
-		const total = parseFloat(
-			billing_amount + vat_amount + overdue_interest + withholding_tax
-		).toFixed(2);
+		let total = billing_amount + vat_amount + overdue_interest;
+
+		total = parseFloat(total - withholding_tax).toFixed(2);
 
 		$("#grand_total").val(total);
 		$("#amount_paid").val(total);
@@ -105,13 +106,22 @@ $(document).ready(function () {
 			if (interest) $("div.with_interest").removeClass("d-none");
 		}
 
-		const total = parseFloat(
-			billing_amount + interest + vat_amount + withholding_tax
-		).toFixed(2);
+		let total = billing_amount + interest + vat_amount;
+
+		total = parseFloat(total - withholding_tax).toFixed(2);
 
 		$("#grand_total").val(total);
 		$("#amount_paid").val(total);
 		$("#overdue_interest").val(interest);
+	});
+
+	$("#withholding_tax_percent").on("keyup", function () {
+		let billing_amount = parseFloat($("#billing_amount").val() || 0);
+		let wt_percent = parseFloat($(this).val() || 0) / 100;
+		let withholding_tax = billing_amount * wt_percent;
+
+		$("#withholding_tax").val(withholding_tax);
+		$("#with_vat").trigger("change");
 	});
 
 	/* Form for saving record */
@@ -226,14 +236,15 @@ function edit(id, billing_status) {
 				$("#overdue_interest").val(res.data.overdue_interest || "");
 				$("#vat_amount").val(res.data.vat_amount || "");
 				$("#grand_total").val(res.data.grand_total || "");
-				$("#with_vat").prop(
-					"checked",
-					res.data.with_vat != 0 ? true : false
+				$("#withholding_tax_percent").val(
+					res.data.withholding_tax_percent || ""
 				);
+				$("#withholding_tax").val(res.data.withholding_tax || "");
+				$("#with_vat").prop("checked", res.data.with_vat != 0);
 				$("#with_vat").trigger("change");
 				$("#with_interest").prop(
 					"checked",
-					res.data.overdue_interest > 0 ? true : false
+					res.data.overdue_interest > 0
 				);
 				$("#with_interest").trigger("change");
 				$("#orig_tasklead").html(

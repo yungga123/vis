@@ -58,6 +58,20 @@
                                 </div>
                             </div>
                             <div class="row d-none with_vat">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="withholding_tax">Withholding Tax Percent & Amount</label>
+                                        <div class="row">
+                                            <div class="col-3 pr-1">
+                                                <input type="number" class="form-control" name="withholding_tax_percent" id="withholding_tax_percent" placeholder="2%" step="0.01">
+                                            </div>
+                                            <div class="col-9">
+                                                <input type="number" class="form-control" name="withholding_tax" id="withholding_tax" placeholder="00.00" step="0.01">
+                                            </div>
+                                        </div>
+                                        <small id="alert_withholding_tax" class="text-danger"></small>
+                                    </div>
+                                </div>
                                 <div class="col-sm-12 col-md-6">
                                     <div class="form-group">
                                         <label class="not-include" for="vat_amount">Vat Amount</label>
@@ -79,11 +93,6 @@
                                 <label for="receipt_number">Receipt Number</label>
                                 <input type="text" class="form-control" name="receipt_number" id="receipt_number" placeholder="Receipt Number">
                                 <small id="alert_receipt_number" class="text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="withholding_tax">Withholding Tax Amount</label>
-                                <input type="number" class="form-control" name="withholding_tax" id="withholding_tax" placeholder="00.00" step="0.01">
-                                <small id="alert_withholding_tax" class="text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label class="required" for="billing_amount">Total Due Amount</label>

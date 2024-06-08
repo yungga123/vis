@@ -183,6 +183,7 @@ class BillingInvoice extends BaseController
                     'billing_amount'    => $request['billing_amount'] ?? null,
                     'receipt_number'    => $request['receipt_number'] ?? null,
                     'amount_paid'       => $request['amount_paid'] ?? null,
+                    'withholding_tax_percent' => $request['withholding_tax_percent'] ?? null,
                     'withholding_tax'   => $request['withholding_tax'] ?? null,
                     'with_vat'          => $with_vat,
                     'vat_amount'        => $with_vat ? ($request['vat_amount'] ?? null) : null,
