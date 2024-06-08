@@ -77,7 +77,7 @@ class ProjectRequestFormModel extends Model
 
     // Custom variables
     // Restrict edit/delete action for this statuses
-    protected $restrictedStatuses   = ['rejected', 'item_out', 'received', 'filed'];
+    protected $restrictedStatuses   = ['rejected', 'item_out', 'received', 'partial_filed', 'filed'];
     // Get inserted ID
     protected $insertedID           = 0;
 
@@ -93,6 +93,8 @@ class ProjectRequestFormModel extends Model
     {
         if (isset($data['data']['status'])) {
             $status = $data['data']['status'];
+            $status = $status === 'partial_filed' ? 'filed' : $status;
+
             $data['data'][$status .'_by'] = session('username');
             $data['data'][$status .'_at'] = date('Y-m-d H:i:s');
         }
@@ -368,7 +370,7 @@ class ProjectRequestFormModel extends Model
                 ], $dropdown);
             }
 
-            if (check_permissions($permissions, 'FILE') && $row['status'] === 'received') {
+            if (check_permissions($permissions, 'FILE') && in_array($row['status'], ['received', 'partial_filed'])) {
                 // File PRF
                 $changeTo = 'file';
                 $buttons .= dt_button_html([
@@ -416,6 +418,7 @@ class ProjectRequestFormModel extends Model
                     $changeTo = 'receive';
                     break;
                 case 'received':
+                case 'partial_filed':
                     $changeTo = 'file';
                     break;
             }
@@ -431,13 +434,14 @@ class ProjectRequestFormModel extends Model
    // DataTable status formatter
    public function dtPRFStatusFormat()
    {
-       $closureFun = function($row) {
-           $text    = $row['status'] === 'item_out' ? 'Item Out' : ucwords(set_prf_status($row['status']));
-           $color   = $row['status'] === 'received' ? 'info' : dt_status_color($row['status']);
-           
-           return text_badge($color, $text);
-       };
-       
-       return $closureFun;
+        $closureFun = function($row) {
+            $status  = str_replace('_', ' ', $row['status']);
+            $text    = ucwords(set_prf_status($status));
+            $color   = $row['status'] === 'received' ? 'info' : dt_status_color($row['status']);
+            
+            return text_badge($color, $text);
+        };
+        
+        return $closureFun;
    }
 }

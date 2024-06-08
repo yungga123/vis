@@ -150,7 +150,7 @@ class OrderForm extends BaseController
             ->setSearch([
                 "{$this->_model->table}.id",
                 "{$customerModel->table}.name",
-                "{$branchModel->view}.branch_name",
+                "{$branchModel->table}.branch_name",
             ])
             ->setOrder(
                 array_merge(

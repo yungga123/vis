@@ -47,12 +47,31 @@
                                 <small id="alert_payment_method" class="text-danger"></small>
                             </div>
                             <div class="form-group">
+                                <label class="required" for="due_date">Due Date</label>
+                                <input type="date" class="form-control" name="due_date" id="due_date" placeholder="Due Date" value="<?= current_date() ?>">
+                                <small id="alert_due_date" class="text-danger"></small>
+                            </div>
+                            <div class="form-group">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" type="checkbox" name="with_vat" id="with_vat" value="1">
                                     <label for="with_vat" class="custom-control-label">With Vat<span></span>?</label>
                                 </div>
                             </div>
                             <div class="row d-none with_vat">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="withholding_tax">Withholding Tax Percent & Amount</label>
+                                        <div class="row">
+                                            <div class="col-3 pr-1">
+                                                <input type="number" class="form-control" name="withholding_tax_percent" id="withholding_tax_percent" placeholder="2%" step="0.01">
+                                            </div>
+                                            <div class="col-9">
+                                                <input type="number" class="form-control" name="withholding_tax" id="withholding_tax" placeholder="00.00" step="0.01">
+                                            </div>
+                                        </div>
+                                        <small id="alert_withholding_tax" class="text-danger"></small>
+                                    </div>
+                                </div>
                                 <div class="col-sm-12 col-md-6">
                                     <div class="form-group">
                                         <label class="not-include" for="vat_amount">Vat Amount</label>
@@ -71,19 +90,26 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="required" for="due_date">Due Date</label>
-                                <input type="date" class="form-control" name="due_date" id="due_date" placeholder="Due Date" value="<?= current_date() ?>">
-                                <small id="alert_due_date" class="text-danger"></small>
+                                <label for="receipt_number">Receipt Number</label>
+                                <input type="text" class="form-control" name="receipt_number" id="receipt_number" placeholder="Receipt Number">
+                                <small id="alert_receipt_number" class="text-danger"></small>
                             </div>
                             <div class="form-group">
-                                <label class="required" for="billing_amount">Billing Amount</label>
-                                <input type="number" class="form-control" name="billing_amount" id="billing_amount" placeholder="Billing Amount" step="0.01">
+                                <label class="required" for="billing_amount">Total Due Amount</label>
+                                <input type="number" class="form-control" name="billing_amount" id="billing_amount" placeholder="00.00" step="0.01">
                                 <small id="alert_billing_amount" class="text-danger"></small>
                             </div>
-                            <div class="form-group amount_paid d-none">
-                                <label for="amount_paid">Amount Paid</label>
-                                <input type="number" class="form-control" name="amount_paid" id="amount_paid" placeholder="Amount Paid" step="0.01">
-                                <small id="alert_amount_paid" class="text-danger"></small>
+                            <div class="wrapper_paid d-none">
+                                <div class="form-group amount_paid">
+                                    <label for="amount_paid">Amount Paid</label>
+                                    <input type="number" class="form-control" name="amount_paid" id="amount_paid" placeholder="Amount Paid" step="0.01">
+                                    <small id="alert_amount_paid" class="text-danger"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="required" for="date_paid">Date Paid</label>
+                                    <input type="date" class="form-control" name="date_paid" id="date_paid" placeholder="Date Paid" value="<?= current_date() ?>">
+                                    <small id="alert_date_paid" class="text-danger"></small>
+                                </div>
                             </div>
                             <div class="form-group with_interest-checkbox">
                                 <div class="custom-control custom-checkbox">

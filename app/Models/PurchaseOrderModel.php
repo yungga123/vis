@@ -256,7 +256,7 @@ class PurchaseOrderModel extends Model
                 }
             }
 
-            if (check_permissions($permissions, 'APPROVED') && $row['status'] === 'approved') {
+            if (check_permissions($permissions, 'RECEIVE') && $row['status'] === 'approved') {
                 // File PO
                 $changeTo = 'receive';
                 $buttons .= dt_button_html([

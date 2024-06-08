@@ -12,6 +12,8 @@ $(document).ready(function () {
 		"billing_amount",
 		"payment_method",
 		"amount_paid",
+		"withholding_tax_percent",
+		"withholding_tax",
 	];
 	_interest = $pjOptions.overdue_interests;
 	_vat_percent = $pjOptions.vat_percent;
@@ -34,7 +36,7 @@ $(document).ready(function () {
 		$("#overdue_interest").val("");
 		$("#orig_tasklead").html("");
 		$(".tasklead-details").html("");
-		$(".form-group.amount_paid").addClass("d-none");
+		$(".wrapper_paid").addClass("d-none");
 		$("div.with_vat").addClass("d-none");
 		$("div.with_interest").addClass("d-none");
 		$(".with_interest-checkbox").addClass("d-none");
@@ -55,7 +57,9 @@ $(document).ready(function () {
 
 		if (max < parseFloat($(this).val())) {
 			const error = {
-				billing_amount: `Value must not be greater than ${numberFormat(max)}!`,
+				billing_amount: `Value must not be greater than ${numberFormat(
+					max
+				)}!`,
 			};
 
 			showAlertInForm(["billing_amount"], error, STATUS.ERROR);
@@ -64,6 +68,7 @@ $(document).ready(function () {
 
 	$("#with_vat").on("change", function () {
 		let vat_amount = 0;
+		let withholding_tax = parseFloat($("#withholding_tax").val() || 0);
 		let billing_amount = parseFloat($("#billing_amount").val() || 0);
 		let overdue_interest = parseFloat($("#overdue_interest").val() || 0);
 
@@ -75,9 +80,9 @@ $(document).ready(function () {
 			if (vat_amount) $("div.with_vat").removeClass("d-none");
 		}
 
-		const total = parseFloat(
-			billing_amount + vat_amount + overdue_interest
-		).toFixed(2);
+		let total = billing_amount + vat_amount + overdue_interest;
+
+		total = parseFloat(total - withholding_tax).toFixed(2);
 
 		$("#grand_total").val(total);
 		$("#amount_paid").val(total);
@@ -86,6 +91,7 @@ $(document).ready(function () {
 
 	$("#with_interest").on("change", function () {
 		let interest = 0;
+		let withholding_tax = parseFloat($("#withholding_tax").val() || 0);
 		let billing_amount = parseFloat($("#billing_amount").val() || 0);
 		let vat_amount = parseFloat($("#vat_amount").val() || 0);
 
@@ -100,11 +106,22 @@ $(document).ready(function () {
 			if (interest) $("div.with_interest").removeClass("d-none");
 		}
 
-		const total = parseFloat(billing_amount + interest + vat_amount).toFixed(2);
+		let total = billing_amount + interest + vat_amount;
+
+		total = parseFloat(total - withholding_tax).toFixed(2);
 
 		$("#grand_total").val(total);
 		$("#amount_paid").val(total);
 		$("#overdue_interest").val(interest);
+	});
+
+	$("#withholding_tax_percent").on("keyup", function () {
+		let billing_amount = parseFloat($("#billing_amount").val() || 0);
+		let wt_percent = parseFloat($(this).val() || 0) / 100;
+		let withholding_tax = billing_amount * wt_percent;
+
+		$("#withholding_tax").val(withholding_tax);
+		$("#with_vat").trigger("change");
 	});
 
 	/* Form for saving record */
@@ -149,7 +166,9 @@ function filterData(reset = false) {
 		payment_method: payment_method,
 	};
 	const condition =
-		!isEmpty(billing_status) || !isEmpty(bill_type) || !isEmpty(payment_method);
+		!isEmpty(billing_status) ||
+		!isEmpty(bill_type) ||
+		!isEmpty(payment_method);
 
 	filterParam(
 		router.billing_invoice.list,
@@ -177,7 +196,7 @@ function edit(id, billing_status) {
 	$("#overdue_interest").val("");
 	$("#orig_tasklead").html("");
 	$(".tasklead-details").html("");
-	$(".form-group.amount_paid").removeClass("d-none");
+	$(".wrapper_paid").removeClass("d-none");
 	$(".form-group.amount_paid label:first-child").removeClass("required");
 	$(".with_interest-checkbox").addClass("d-none");
 
@@ -207,36 +226,49 @@ function edit(id, billing_status) {
 
 				$("#due_date").val(res.data.due_date);
 				$("#billing_amount").val(res.data.billing_amount);
+				$("#receipt_number").val(res.data.receipt_number);
 				$("#amount_paid").val(
-					billing_status ? res.data.billing_amount : res.data.amount_paid
+					billing_status
+						? res.data.billing_amount
+						: res.data.amount_paid
 				);
 				$("#days_overdue").val(res.data.days_overdue || "");
 				$("#overdue_interest").val(res.data.overdue_interest || "");
 				$("#vat_amount").val(res.data.vat_amount || "");
 				$("#grand_total").val(res.data.grand_total || "");
-				$("#with_vat").prop("checked", res.data.with_vat != 0 ? true : false);
+				$("#withholding_tax_percent").val(
+					res.data.withholding_tax_percent || ""
+				);
+				$("#withholding_tax").val(res.data.withholding_tax || "");
+				$("#with_vat").prop("checked", res.data.with_vat != 0);
 				$("#with_vat").trigger("change");
 				$("#with_interest").prop(
 					"checked",
-					res.data.overdue_interest > 0 ? true : false
+					res.data.overdue_interest > 0
 				);
 				$("#with_interest").trigger("change");
 				$("#orig_tasklead").html(
 					`Original Task/Lead: <strong>${text}</strong>`
 				);
 
-				setSelect2AjaxSelection("#tasklead_id", text, res.data.tasklead_id);
+				setSelect2AjaxSelection(
+					"#tasklead_id",
+					text,
+					res.data.tasklead_id
+				);
 				setTimeout(() => _loadTaskleadDetails(data), 200);
 
 				setOptionValue("#bill_type", res.data.bill_type);
 				setOptionValue("#payment_method", res.data.payment_method);
 
 				if (!billing_status && res.data.billing_status !== "paid") {
-					$(".form-group.amount_paid").addClass("d-none");
+					$(".wrapper_paid").addClass("d-none");
 				}
 
 				if (res.data.billing_status === "paid") {
-					$(".form-group.amount_paid label:first-child").addClass("required");
+					$(".form-group.amount_paid label:first-child").addClass(
+						"required"
+					);
 					$("#billing_status").val(res.data.billing_status);
 					$("#amount_paid").val(res.data.billing_amount);
 				}

@@ -10,12 +10,17 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body">   
+                    <div class="callout callout-info mb-3 file-note d-none">
+                        <strong>Note:</strong> 
+                        To FILE/RETURN all items, no need to check/select the checkbox/es. Otherwise, check/select the desired item/s only - not selected items will not be filed/returned. Row/s with <strong>line-through text and gray background</strong> means already FILED/RETURNED.
+                    </div>
                     <h5 class="text-center text-bold" id="prf_id_text"></h5>
                     <div class="table-responsive">
-                        <table class="table table-hover" id="prf_items_table">
+                        <table class="table" id="prf_items_table">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Item #</th>
                                     <th>Supplier</th>
                                     <th>Category</th>

@@ -155,8 +155,12 @@ function view(id, changeTo, status) {
 						totalAmountReceived = 0;
 
 					$.each(res.data, (index, val) => {
-						const totalCost = Math.floor(val.quantity_in * val.item_sdp);
-						const totalCostReceived = Math.floor(val.received_q * val.item_sdp);
+						const totalCost = Math.floor(
+							val.quantity_in * val.item_sdp
+						);
+						const totalCostReceived = Math.floor(
+							val.received_q * val.item_sdp
+						);
 
 						totalAmount = Math.floor(totalAmount + totalCost);
 						totalAmountReceived = Math.floor(
@@ -180,7 +184,9 @@ function view(id, changeTo, status) {
 						`;
 					});
 					$(`#total_amount`).text(numberFormat(totalAmount));
-					$(`#total_amount_received`).text(numberFormat(totalAmountReceived));
+					$(`#total_amount_received`).text(
+						numberFormat(totalAmountReceived)
+					);
 				} else {
 					html =
 						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';
@@ -235,11 +241,16 @@ function edit(id) {
 						// Get the parent next sibling td (which where the item_available input) each
 						const parentSiblingElem = $(elem).parent().next();
 						// Set available stocks each
-						_populateAvailableItemStocks(parentSiblingElem[0], item.stocks);
+						_populateAvailableItemStocks(
+							parentSiblingElem[0],
+							item.stocks
+						);
 					}
 				}
 
-				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+				$.each(res.data, (key, value) =>
+					$(`input[name="${key}"]`).val(value)
+				);
 				$(`#${modal}`).modal("show");
 			} else {
 				$(`#${modal}`).modal("hide");
@@ -327,7 +338,7 @@ function toggleItemField(row) {
 				<input type="number" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
 			</td>
 			<td>
-				<input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="1" required>
+				<input type="number" name="quantity_in[]" class="form-control quantity_in" placeholder="Qty" min="0.5" step="0.01" required>
 			</td>
 			<td>
 				<input type="text" name="purpose[]" class="form-control purpose" placeholder="Purpose">
@@ -387,6 +398,8 @@ function _populateAvailableItemStocks(parentSiblingElem, stock, noChild) {
 			$(parentSiblingElem).text(stock);
 			return;
 		}
-		$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
+		$(parentSiblingElem)
+			.children('input[name="item_available[]"]')
+			.val(stock);
 	}
 }

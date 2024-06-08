@@ -71,6 +71,7 @@ class PRFItemModel extends Model
             {$this->table}.returned_q,
             {$this->table}.returned_date,
             {$this->table}.remarks,
+            {$this->table}.is_filed,
             ".dt_sql_date_format("{$this->table}.returned_date")." AS returned_date_formatted,
             {$this->queryConsumed()}
         ";
@@ -178,24 +179,47 @@ class PRFItemModel extends Model
         $returned_date  = $data['returned_date'];
         $stocks         = $data['stocks'];
         $quantity_out   = $data['quantity_out'];
+        $selected_items = $data['selected_items'] ?? null;
         $remarks        = $data['remarks'] ?? null;
 
         if (! empty($data) && count($inventory_id)) {
             $arr        = [];
             $logs_data  = [];
             $action     = 'ITEM_IN';
+            $is_file    = $data['status'] === 'file';
 
-            for ($i=0; $i < count($inventory_id); $i++) { 
-                $arr[] = [
-                    'prf_id'        => (int)$prf_id,
-                    'inventory_id'  => $inventory_id[$i],
-                    'returned_q'    => $returned_q[$i],
-                    'returned_date' => $returned_date[$i],
-                    'quantity_out'  => $quantity_out[$i],
-                ];
+            for ($i=0; $i < count($inventory_id); $i++) {
+                $is_filed = false;
 
-                if ($data['status'] === 'file') {
-                    if (! empty($returned_q[$i]) && $returned_q[$i] > 0) {
+                if (! empty($selected_items) && $is_file) {
+                    // If not in the selected items, continue to the next loop
+                    if (! in_array($inventory_id[$i], $selected_items)) {
+                        continue;
+                    }
+                    
+                    $is_filed   = true;
+                    $arr[]      = [
+                        'prf_id'        => (int)$prf_id,
+                        'inventory_id'  => $inventory_id[$i],
+                        'returned_q'    => $returned_q[$i],
+                        'returned_date' => $returned_date[$i],
+                        'quantity_out'  => $quantity_out[$i],
+                        'is_filed'      => 1,
+                    ];
+                } else {
+                    $is_filed   = true;
+                    $arr[]      = [
+                        'prf_id'        => (int)$prf_id,
+                        'inventory_id'  => $inventory_id[$i],
+                        'returned_q'    => $returned_q[$i],
+                        'returned_date' => $returned_date[$i],
+                        'quantity_out'  => $quantity_out[$i],
+                        'is_filed'      => $is_file,
+                    ];
+                }
+
+                if ($is_file) {
+                    if (! empty($returned_q[$i]) && $returned_q[$i] > 0 && $is_filed) {
                         $this->traitUpdateInventoryStock($inventory_id[$i], $returned_q[$i], $action);
     
                         $logs_data[] = [
@@ -217,6 +241,10 @@ class PRFItemModel extends Model
 
             // Add inventory logs
             $this->saveInventoryLogs($logs_data);
+
+            log_msg(['request' => $data]);
+            log_msg(['arr' => $arr]);
+            log_msg(['logs_data' => $logs_data]);
 
             if (! empty($arr)) {
                 $constraint = ['prf_id', 'inventory_id'];

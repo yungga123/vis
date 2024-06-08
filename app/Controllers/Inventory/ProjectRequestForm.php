@@ -245,20 +245,23 @@ class ProjectRequestForm extends BaseController
         $response   = $this->customTryCatch(
             $data,
             function($data) {
-                $id  = $this->request->getVar('id');
+                $id     = $this->request->getVar('id');
+                $table  = $this->_model->table;
+
                 if (! $this->_model->exists($id)) {
                     $data['status']     = STATUS_ERROR;
                     $data['message']    = "<strong>PRF #: {$id}</strong> doesn't exists anymore!";
                     return $data;
                 }
 
-                if ($this->request->getVar('prf_items')) {                
-                    $data['data']       = $this->traitFetchPrfItems($id, true, true);
-                    $data['message']    = res_lang('success.retrieved', 'PRF Items');
+                if ($this->request->getVar('prf_items')) {
+                    $columns        = "{$table}.id, {$table}.remarks";
+
+                    $data['data']           = $this->_model->getProjectRequestForms($id, true, $columns);
+                    $data['data']['items']  = $this->traitFetchPrfItems($id, true, true);
+                    $data['message']        = res_lang('success.retrieved', 'PRF Items');
                 } else {
-                    $table          = $this->_model->table;
-                    $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";
-                    
+                    $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";                    
                     $record         = $this->_model->getProjectRequestForms($id, true, $columns);
                     $job_order      = $this->fetchJobOrders($record['job_order_id']);
                     $items          = $this->traitFetchPrfItems($id, true, true);
@@ -329,6 +332,15 @@ class ProjectRequestForm extends BaseController
 
                 if ($remarks) {
                     $inputs['remarks'] = trim($remarks);
+                }
+
+                $inventory_id   = $request['inventory_id'] ?? null;
+                $selected_items = $request['selected_items'] ?? null;
+
+                if (! empty($selected_items) && $status === 'filed') {
+                    if (count($inventory_id) != count($selected_items)) {
+                        $inputs['status'] = set_prf_status('partial_filed');
+                    }
                 }
 
                 // Prev ['accepted', 'item_out']
