@@ -81,8 +81,13 @@
                                 <small id="alert_receipt_number" class="text-danger"></small>
                             </div>
                             <div class="form-group">
-                                <label class="required" for="billing_amount">Billing Amount</label>
-                                <input type="number" class="form-control" name="billing_amount" id="billing_amount" placeholder="Billing Amount" step="0.01">
+                                <label for="withholding_tax">Withholding Tax Amount</label>
+                                <input type="number" class="form-control" name="withholding_tax" id="withholding_tax" placeholder="00.00" step="0.01">
+                                <small id="alert_withholding_tax" class="text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <label class="required" for="billing_amount">Total Due Amount</label>
+                                <input type="number" class="form-control" name="billing_amount" id="billing_amount" placeholder="00.00" step="0.01">
                                 <small id="alert_billing_amount" class="text-danger"></small>
                             </div>
                             <div class="wrapper_paid d-none">

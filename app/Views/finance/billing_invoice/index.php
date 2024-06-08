@@ -60,6 +60,7 @@
                                 <th>Billing Amount</th>
                                 <th>Receipt Number</th>
                                 <th>Overdue Interest</th>
+                                <th>Withholding Tax</th>
                                 <th>Amount Paid</th>
                                 <th>Date Paid</th>
                                 <th>Paid At</th>

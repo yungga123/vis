@@ -12,6 +12,7 @@ $(document).ready(function () {
 		"billing_amount",
 		"payment_method",
 		"amount_paid",
+		"withholding_tax",
 	];
 	_interest = $pjOptions.overdue_interests;
 	_vat_percent = $pjOptions.vat_percent;
@@ -66,6 +67,7 @@ $(document).ready(function () {
 
 	$("#with_vat").on("change", function () {
 		let vat_amount = 0;
+		let withholding_tax = parseFloat($("#withholding_tax").val() || 0);
 		let billing_amount = parseFloat($("#billing_amount").val() || 0);
 		let overdue_interest = parseFloat($("#overdue_interest").val() || 0);
 
@@ -78,7 +80,7 @@ $(document).ready(function () {
 		}
 
 		const total = parseFloat(
-			billing_amount + vat_amount + overdue_interest
+			billing_amount + vat_amount + overdue_interest + withholding_tax
 		).toFixed(2);
 
 		$("#grand_total").val(total);
@@ -88,6 +90,7 @@ $(document).ready(function () {
 
 	$("#with_interest").on("change", function () {
 		let interest = 0;
+		let withholding_tax = parseFloat($("#withholding_tax").val() || 0);
 		let billing_amount = parseFloat($("#billing_amount").val() || 0);
 		let vat_amount = parseFloat($("#vat_amount").val() || 0);
 
@@ -103,7 +106,7 @@ $(document).ready(function () {
 		}
 
 		const total = parseFloat(
-			billing_amount + interest + vat_amount
+			billing_amount + interest + vat_amount + withholding_tax
 		).toFixed(2);
 
 		$("#grand_total").val(total);

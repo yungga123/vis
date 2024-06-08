@@ -120,6 +120,7 @@ class BillingInvoice extends BaseController
             'billing_amount',
             'receipt_number',
             'overdue_interest',
+            'withholding_tax',
             'amount_paid',
             'date_paid',
             'paid_at',
@@ -182,6 +183,7 @@ class BillingInvoice extends BaseController
                     'billing_amount'    => $request['billing_amount'] ?? null,
                     'receipt_number'    => $request['receipt_number'] ?? null,
                     'amount_paid'       => $request['amount_paid'] ?? null,
+                    'withholding_tax'   => $request['withholding_tax'] ?? null,
                     'with_vat'          => $with_vat,
                     'vat_amount'        => $with_vat ? ($request['vat_amount'] ?? null) : null,
                     'grand_total'       => $request['grand_total'] ?? null,
@@ -376,14 +378,14 @@ class BillingInvoice extends BaseController
             {$tlVModel->table}.customer_id AS client_id,
             ".dt_sql_concat_client_address('', 'client_address')."
         ";
-        $builder                = $this->_model->select($columns);
+        $builder    = $this->_model->select($columns);
 
         $this->_model->joinBookedTasklead($builder, $tlVModel);
         $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
         $this->joinAccountView($builder, "{$this->_model->table}.approved_by", 'ab');
         $builder->join($custModel->table, "{$tlVModel->table}.customer_id = {$custModel->table}.id", 'left');
 
-        $billing_invoice         = $builder->where("{$this->_model->table}.id", $id)->first();
+        $billing_invoice = $builder->where("{$this->_model->table}.id", $id)->first();
 
         // For restriction
         if (empty($billing_invoice)) {
