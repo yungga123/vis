@@ -334,7 +334,7 @@ class ProjectRequestForm extends BaseController
                     $inputs['remarks'] = trim($remarks);
                 }
 
-                $inventory_id   = $request['inventory_id'];
+                $inventory_id   = $request['inventory_id'] ?? null;
                 $selected_items = $request['selected_items'] ?? null;
 
                 if (! empty($selected_items) && $status === 'filed') {
