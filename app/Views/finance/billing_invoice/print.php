@@ -7,10 +7,11 @@ $overdue_interest	= $billing_invoice['overdue_interest'] ?? 0;
 $vat_percent 		= floatval($general_info['vat_percent'] ?? 12);
 $vat_percent 		= $vat_percent / 100;
 $subtotal_amount	= $billing_invoice['billing_amount'] ?? 0;
+$withholding_tax	= $billing_invoice['withholding_tax'] ?? 0;
 $with_vat 			= ($billing_invoice['with_vat'] ?? 0) != '0';
 $vat_amount			= $with_vat ? $subtotal_amount * $vat_percent : 0;
 $vat_amount1		= $subtotal_amount * $vat_percent;
-$total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
+$total_amount		= ($subtotal_amount + $vat_amount + $overdue_interest) - $withholding_tax;
 ?>
 <style>
 	.container-fluid { font-family: 'Courier New', Courier, monospace; }
@@ -26,7 +27,7 @@ $total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
                 <tbody>
                     <tr class="text-bold text-center">
                         <td colspan="2">
-							BILLING INVOICE - <?= strtoupper($billing_invoice['billing_status']) ?>
+							BILLING INVOICE
 						</td>
                     </tr>
                     <tr class="text-bold text-center">
@@ -148,6 +149,17 @@ $total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
 							₱ <span><?= number_format($vat_amount, 2) ?></span>
 						</td>
                     </tr>
+					<?php if (! empty(floatval($billing_invoice['withholding_tax']))): ?>
+						<tr>
+							<td class="text-bold text-right" colspan="4">
+								Withholding Tax
+								<span>(<?= $billing_invoice['withholding_tax_percent'] ?? 0 ?>%)</span>
+							</td>
+							<td class="text-right">
+								₱ <span><?= number_format($billing_invoice['withholding_tax'], 2) ?></span>
+							</td>
+						</tr>
+					<?php endif; ?>
 					<?php if (! empty(floatval($overdue_interest))): ?>
 						<tr>
 							<td class="text-bold text-right" colspan="4">Overdue Interest</td>
@@ -164,8 +176,8 @@ $total_amount		= $subtotal_amount + $vat_amount + $overdue_interest;
                     </tr>
 					<?php if (! empty(floatval($billing_invoice['amount_paid']))): ?>
 						<tr>
-							<td class="text-bold text-right" colspan="4">Amount Less</td>
-							<td class="text-right overdue_interest">
+							<td class="text-bold text-right" colspan="4">Amount Paid</td>
+							<td class="text-right">
 								₱ <span><?= number_format($billing_invoice['amount_paid'], 2) ?></span>
 							</td>
 						</tr>

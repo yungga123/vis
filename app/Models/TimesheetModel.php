@@ -302,6 +302,7 @@ class TimesheetModel extends Model
             ".dt_sql_time_format("{$this->table}.early_out", '%H:%i')." AS early_out,
             ".dt_sql_time_format("{$this->table}.overtime", '%H:%i')." AS overtime,
             IF({$this->table}.is_manual != 0, 'Manual', 'Clock In/Out') AS clock_type,
+            {$this->table}.is_manual,
             {$this->table}.remark,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
         ";
@@ -346,7 +347,9 @@ class TimesheetModel extends Model
         $id         = $this->primaryKey;
         $closureFun = function($row) use($id, $permissions) {
             $employee_id    = $row['employee_id'];
-            $buttons        = dt_button_actions($row, $id, $permissions);
+            $is_manual      = !empty($row['is_manual']) || $row['is_manual'] != 0;
+            $options        = ($is_manual || $employee_id === DEVELOPER_ACCOUNT) ? [] : ['exclude_edit'];
+            $buttons        = dt_button_actions($row, $id, $permissions, false, $options);
 
             return session('employee_id') === $employee_id
                 ? $buttons : '~~N/A~~';

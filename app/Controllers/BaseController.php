@@ -98,7 +98,9 @@ abstract class BaseController extends Controller
      */
     protected function isAdmin()
     {
-        return session('access_level') === AAL_ADMIN;
+        $access_level = session('access_level') ?? '';
+
+        return strtoupper($access_level) === strtoupper(AAL_ADMIN);
     }
 
     /**

@@ -30,7 +30,7 @@
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="customer_type" id="residential" value="residential">
-                                        <label class="form-check-label" for="residential">Residentail</label>
+                                        <label class="form-check-label" for="residential">Residential</label>
                                     </div>
                                 </div>
                                 <select class="custom-select" id="customer_id" name="customer_id" style="width: 100%;"></select>

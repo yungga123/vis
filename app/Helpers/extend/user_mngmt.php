@@ -33,7 +33,9 @@ if (! function_exists('is_admin'))
 	 */
 	function is_admin(): bool
 	{
-        return strtoupper(session('access_level')) === strtoupper(AAL_ADMIN);
+		$access_level = session('access_level') ?? '';
+
+        return strtoupper($access_level) === strtoupper(AAL_ADMIN);
 	}
 }
 
@@ -197,7 +199,7 @@ if (! function_exists('get_module_codes'))
 	 */
 	function get_module_codes(string|null $param = null): string|array
 	{
-		$module_codes = MODULE_CODES;
+		$module_codes 	= MODULE_CODES;
 		$param			= $param ? strtolower($param) : $param;
 
 		return $param 
