@@ -152,7 +152,9 @@ function view(id, changeTo, status) {
 						let totalPrice = parseFloat(val.total_price || 0);
 
 						if (totalPrice == 0) {
-							totalPrice = parseFloat(val.item_price * val.quantity);
+							totalPrice = parseFloat(
+								val.item_price * val.quantity
+							);
 							totalPrice = parseFloat(totalPrice - val.discount);
 						}
 
@@ -248,7 +250,10 @@ function edit(id) {
 			$("#remarks").val(res.data.remarks);
 			$("#grand_total").val(res.data.grand_total);
 			$("#vat_amount").val(res.data.vat_amount);
-			$("#with_vat").prop("checked", res.data.with_vat != 0 ? true : false);
+			$("#with_vat").prop(
+				"checked",
+				res.data.with_vat != 0 ? true : false
+			);
 
 			if (!isEmpty(res.data.items)) {
 				const items = res.data.items;
@@ -269,7 +274,9 @@ function edit(id) {
 					let totalPrice = parseFloat(item.total_price || 0);
 
 					if (totalPrice == 0) {
-						totalPrice = parseFloat(item.item_price * item.quantity);
+						totalPrice = parseFloat(
+							item.item_price * item.quantity
+						);
 						totalPrice = parseFloat(totalPrice - item.discount);
 					}
 
@@ -300,7 +307,9 @@ function edit(id) {
 					$(`#${modal} tr#${trId} td.item_price span`).text(
 						numberFormat(item.item_price)
 					);
-					$(`#${modal} tr#${trId} td.total_price input`).val(totalPrice);
+					$(`#${modal} tr#${trId} td.total_price input`).val(
+						totalPrice
+					);
 					$(`#${modal} tr#${trId} td.total_price span`).text(
 						numberFormat(totalPrice)
 					);
@@ -430,12 +439,14 @@ function calculate(val, trId, field) {
 		const quantity = parseFloat(
 			(isQty
 				? val
-				: $(`#${modal} tr#${trId} td.quantity input.quantity`).val()) || 0
+				: $(`#${modal} tr#${trId} td.quantity input.quantity`).val()) ||
+				0
 		);
 		const discount = parseFloat(
 			(!isQty
 				? val
-				: $(`#${modal} tr#${trId} td.discount input.discount`).val()) || 0
+				: $(`#${modal} tr#${trId} td.discount input.discount`).val()) ||
+				0
 		);
 		let total_price = parseFloat(item_price * quantity);
 		total_price = parseFloat(total_price - discount);
@@ -448,7 +459,9 @@ function calculate(val, trId, field) {
 		$(`#${modal} tr#${trId} td.total_price span`).text(
 			numberFormat(total_price)
 		);
-		$(`#${modal} tr#${trId} td.item_price span`).text(numberFormat(item_price));
+		$(`#${modal} tr#${trId} td.item_price span`).text(
+			numberFormat(item_price)
+		);
 
 		calculateGrandTotals();
 	}
@@ -530,7 +543,8 @@ function _loadItemDetails(data) {
 		let item_stocks = data.stocks;
 		let item_price = parseFloat(data.item_price);
 
-		const trParentElem = data.element.parentElement.parentElement.parentElement;
+		const trParentElem =
+			data.element.parentElement.parentElement.parentElement;
 		const trId = $(trParentElem).attr("id");
 		const quantityElem = $(`tr#${trId} td.quantity input.quantity`);
 		const discountElem = $(`tr#${trId} td.discount input.discount`);
@@ -539,12 +553,14 @@ function _loadItemDetails(data) {
 		discount = parseFloat(discountElem.val() || 0);
 		total_price = item_price * quantity - discount;
 
-		quantityElem.attr("max", item_stocks);
+		// quantityElem.attr("max", item_stocks);
 		quantityElem.attr("data-tr_id", trId);
 		discountElem.attr("data-tr_id", trId);
 
 		$(`#${modal} tr#${trId} td.item_stocks`).text(item_stocks);
-		$(`#${modal} tr#${trId} td.item_price span`).text(numberFormat(item_price));
+		$(`#${modal} tr#${trId} td.item_price span`).text(
+			numberFormat(item_price)
+		);
 		$(`#${modal} tr#${trId} td.total_price span`).text(
 			numberFormat(total_price)
 		);

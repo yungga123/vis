@@ -5,7 +5,8 @@ var table,
 	invSelector,
 	supSelector,
 	itemFieldTable,
-	_status;
+	_status,
+	_vat_percent;
 
 $(document).ready(function () {
 	table = "rpf_table";
@@ -23,6 +24,7 @@ $(document).ready(function () {
 	supSelector = ".supplier_id";
 	itemFieldTable = $("#item_field_table tbody");
 	_status = $pjOptions.rpf_status;
+	_vat_percent = $pjOptions.vat_percent;
 
 	/* Load dataTable */
 	loadDataTable(table, router.rpf.list, METHOD.POST);
@@ -151,21 +153,33 @@ function view(id, changeTo, status) {
 				let html = "";
 
 				if (!isEmpty(res.data)) {
-					let totalAmount = 0,
-						totalAmountReceived = 0;
+					let totalCostAmt = 0,
+						totalAmount = 0,
+						totalAmountReceived = 0,
+						totalVat = 0,
+						grandTotalVat = 0;
 
 					$.each(res.data, (index, val) => {
-						const totalCost = Math.floor(
-							val.quantity_in * val.item_sdp
+						const vatAmount = parseFloat(
+							val.item_sdp * _vat_percent
 						);
-						const totalCostReceived = Math.floor(
+						const totalVatAmt = parseFloat(
+							vatAmount * val.quantity_in
+						);
+						const totalCost = parseFloat(
+							val.quantity_in * val.item_sdp + vatAmount
+						);
+						const totalCostReceived = parseFloat(
 							val.received_q * val.item_sdp
 						);
 
-						totalAmount = Math.floor(totalAmount + totalCost);
-						totalAmountReceived = Math.floor(
+						totalCostAmt = parseFloat(totalAmount + val.item_sdp);
+						totalAmount = parseFloat(totalAmount + totalCost);
+						totalAmountReceived = parseFloat(
 							totalAmountReceived + totalCostReceived
 						);
+						totalVat = parseFloat(totalVat + vatAmount);
+						grandTotalVat = parseFloat(grandTotalVat + totalVatAmt);
 						html += `
 							<tr>
 								<td>${val.inventory_id}</td>
@@ -178,15 +192,21 @@ function view(id, changeTo, status) {
 								<td>${val.stocks}</td>
 								<td>${val.quantity_in}</td>
 								<td>${numberFormat(val.item_sdp)}</td>
+								<td>${numberFormat(vatAmount)}</td>
 								<td>${numberFormat(totalCost)}</td>
+								<td>${numberFormat(totalVatAmt)}</td>
 								<td>${val.purpose || "N/A"}</td>
 							</tr>
 						`;
 					});
+
+					$(`#total_cost`).text(numberFormat(totalCostAmt));
 					$(`#total_amount`).text(numberFormat(totalAmount));
 					$(`#total_amount_received`).text(
 						numberFormat(totalAmountReceived)
 					);
+					$(`#total_vat`).text(numberFormat(totalVat));
+					$(`#grand_total_vat`).text(numberFormat(grandTotalVat));
 				} else {
 					html =
 						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';
@@ -196,6 +216,7 @@ function view(id, changeTo, status) {
 				$(`#rpf_items_modal`).modal("show");
 			} else {
 				$(`#rpf_items_modal`).modal("hide");
+
 				notifMsgSwal(res.status, res.message, res.status);
 			}
 		})

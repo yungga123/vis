@@ -234,7 +234,10 @@ function edit(id) {
 				setSelect2AjaxSelection(rpfSelector, text, res.data.rpf_id);
 
 				// Toggle and populate rpf details
-				toggleRpfDetails(res.data.rpf.date_needed, res.data.rpf.requested_at);
+				toggleRpfDetails(
+					res.data.rpf.date_needed,
+					res.data.rpf.requested_at
+				);
 				populateRpfItems(res.data.items);
 
 				// Show attention_to field
@@ -321,7 +324,9 @@ function populateRpfItems(items, itemId, changeTo) {
 				<input type="hidden" name="quantity_in[]" value="${val.quantity_in}" class="form-control" readonly>
 			`;
 			const onkeyEvent =
-				'onkeyup="validate(event, ' + parseFloat(val.quantity_in) + ')"';
+				'onkeyup="validate(event, ' +
+				parseFloat(val.quantity_in) +
+				')"';
 			const received_q = `
 				<input type="number" name="received_q[]" id="received_q_${index}" class="form-control" placeholder="Qty" ${onkeyEvent} value="${val.quantity_in}" max="${val.quantity_in}" data-item_cost="${val.item_sdp}">
 			`;
@@ -337,13 +342,15 @@ function populateRpfItems(items, itemId, changeTo) {
 				`
 				: "";
 
-			let totalCost = Math.floor(val.quantity_in * val.item_sdp);
-			let totalCostReceived = Math.floor(val.received_q * val.item_sdp);
+			let totalCost = parseFloat(val.quantity_in * val.item_sdp);
+			let totalCostReceived = parseFloat(val.received_q * val.item_sdp);
 
 			totalCostAvg += parseFloat(val.item_sdp || 0);
 			totalDiscountAvg += parseFloat(val.discount || 0);
 			totalAmount = parseFloat(totalAmount + totalCost);
-			totalAmountReceived = parseFloat(totalAmountReceived + totalCostReceived);
+			totalAmountReceived = parseFloat(
+				totalAmountReceived + totalCostReceived
+			);
 
 			let discount = `
 				<input type="number" name="discount[]" id="discount_${index}" class="form-control" 
@@ -401,7 +408,8 @@ function populateRpfItems(items, itemId, changeTo) {
 				: ""
 		);
 	} else {
-		html = '<tr><td colspan="15" class="center">No PO items found...</td></tr>';
+		html =
+			'<tr><td colspan="15" class="center">No PO items found...</td></tr>';
 	}
 
 	itemId = itemId || "rpf_item_details";
@@ -434,7 +442,9 @@ function validate(evt, quantity_in, itemCost, isDiscount = false) {
 		$(totalCostTdElem).text(numberFormat(totalCost - value || 0));
 		$(totalCostTdElem).attr("data-value", totalCost - value || 0);
 
-		const totalDiscountElem = $("#rpf_item_details table td.total_discount");
+		const totalDiscountElem = $(
+			"#rpf_item_details table td.total_discount"
+		);
 		const totalAmountElem = $("#rpf_item_details table td.total_amount");
 		const inputDiscountElems = $(
 			"#rpf_item_details table input[name='discount[]']"

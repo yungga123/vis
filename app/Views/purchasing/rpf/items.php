@@ -25,7 +25,9 @@
                                 <th>Current Stocks</th>
                                 <th>Qty In</th>
                                 <th>Cost</th>
-                                <th>Total Cost</th>
+                                <th>Vat Amount</th>
+                                <th>Total Cost + Vat</th>
+                                <th>Total Vat Amount</th>
                                 <th>Purpose</th>
                             </tr>
                         </thead>
@@ -40,9 +42,11 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
                                 <td><strong>Total Amount</strong></td>
+                                <td><strong class="text-danger" id="total_cost"></strong></td>
+                                <td><strong class="text-danger" id="total_vat"></strong></td>
                                 <td><strong class="text-danger" id="total_amount"></strong></td>
+                                <td><strong class="text-danger" id="grand_total_vat"></strong></td>
                                 <td></td>
                             </tr>
                         </tfoot>
