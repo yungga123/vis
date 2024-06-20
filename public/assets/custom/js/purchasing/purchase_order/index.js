@@ -5,7 +5,8 @@ var table,
 	itemFieldTable,
 	rpfSelector,
 	poItemModal,
-	_status;
+	_status,
+	_vat_percent;
 
 $(document).ready(function () {
 	table = "purchase_order_table";
@@ -16,6 +17,7 @@ $(document).ready(function () {
 	rpfSelector = "#rpf_id";
 	poItemModal = "po_items_modal";
 	_status = $pjOptions.po_status;
+	_vat_percent = $pjOptions.vat_percent;
 
 	/* Load dataTable */
 	loadDataTable(table, router.purchase_order.list, METHOD.POST);
@@ -311,6 +313,7 @@ function populateRpfItems(items, itemId, changeTo) {
 		let totalCostAvg = 0,
 			totalDiscountAvg = 0,
 			totalAmount = 0,
+			totalVatAvg = 0,
 			totalAmountReceived = 0;
 
 		$.each(items, (index, val) => {
@@ -343,11 +346,13 @@ function populateRpfItems(items, itemId, changeTo) {
 				: "";
 
 			let totalCost = parseFloat(val.quantity_in * val.item_sdp);
+			let vatAmount = parseFloat(totalCost * _vat_percent);
 			let totalCostReceived = parseFloat(val.received_q * val.item_sdp);
 
 			totalCostAvg += parseFloat(val.item_sdp || 0);
 			totalDiscountAvg += parseFloat(val.discount || 0);
 			totalAmount = parseFloat(totalAmount + totalCost);
+			totalVatAvg = parseFloat(totalVatAvg + vatAmount);
 			totalAmountReceived = parseFloat(
 				totalAmountReceived + totalCostReceived
 			);
@@ -387,22 +392,26 @@ function populateRpfItems(items, itemId, changeTo) {
 						<small class="text-danger"></small>
 					</td>
 					<td class="total_cost" data-value="${totalCost}">${numberFormat(totalCost)}</td>
+					<td>${numberFormat(parseFloat(totalCost + vatAmount))}</td>
 					${receivedQtyDate}
 					<td>${val.purpose || "N/A"}</td>
 				</tr>
 			`;
 		});
 
-		$(`.total_cost`)
+		$(`#po_items_table .total_cost`)
 			.text(numberFormat(totalCostAvg))
 			.attr("data-value", totalCostAvg);
-		$(`.total_discount`)
+		$(`#po_items_table .total_discount`)
 			.text(numberFormat(totalDiscountAvg))
 			.attr("data-value", totalDiscountAvg);
-		$(`.total_amount`)
+		$(`#po_items_table .total_amount`)
 			.text(numberFormat(totalAmount - totalDiscountAvg))
 			.attr("data-value", totalAmount);
-		$(`#total_amount_received`).text(
+		$(`#po_items_table .total_amount_with_vat`).text(
+			numberFormat(totalAmount + totalVatAvg - totalDiscountAvg)
+		);
+		$(`#po_items_table #total_amount_received`).text(
 			totalAmountReceived
 				? numberFormat(totalAmountReceived - totalDiscountAvg || 0)
 				: ""

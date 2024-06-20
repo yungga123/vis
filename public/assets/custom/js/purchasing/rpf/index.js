@@ -154,32 +154,27 @@ function view(id, changeTo, status) {
 
 				if (!isEmpty(res.data)) {
 					let totalCostAmt = 0,
-						totalAmount = 0,
-						totalAmountReceived = 0,
-						totalVat = 0,
+						grandTotalCost = 0,
+						grandTotalCostReceived = 0,
 						grandTotalVat = 0;
 
 					$.each(res.data, (index, val) => {
-						const vatAmount = parseFloat(
-							val.item_sdp * _vat_percent
-						);
-						const totalVatAmt = parseFloat(
-							vatAmount * val.quantity_in
-						);
 						const totalCost = parseFloat(
-							val.quantity_in * val.item_sdp + vatAmount
+							val.quantity_in * val.item_sdp
 						);
+						const vatAmount = parseFloat(totalCost * _vat_percent);
 						const totalCostReceived = parseFloat(
 							val.received_q * val.item_sdp
 						);
 
-						totalCostAmt = parseFloat(totalAmount + val.item_sdp);
-						totalAmount = parseFloat(totalAmount + totalCost);
-						totalAmountReceived = parseFloat(
-							totalAmountReceived + totalCostReceived
+						totalCostAmt = parseFloat(
+							grandTotalCost + val.item_sdp
 						);
-						totalVat = parseFloat(totalVat + vatAmount);
-						grandTotalVat = parseFloat(grandTotalVat + totalVatAmt);
+						grandTotalCost = parseFloat(grandTotalCost + totalCost);
+						grandTotalVat = parseFloat(grandTotalVat + vatAmount);
+						grandTotalCostReceived = parseFloat(
+							grandTotalCostReceived + totalCostReceived
+						);
 						html += `
 							<tr>
 								<td>${val.inventory_id}</td>
@@ -192,21 +187,21 @@ function view(id, changeTo, status) {
 								<td>${val.stocks}</td>
 								<td>${val.quantity_in}</td>
 								<td>${numberFormat(val.item_sdp)}</td>
-								<td>${numberFormat(vatAmount)}</td>
 								<td>${numberFormat(totalCost)}</td>
-								<td>${numberFormat(totalVatAmt)}</td>
+								<td>${numberFormat(vatAmount + totalCost)}</td>
 								<td>${val.purpose || "N/A"}</td>
 							</tr>
 						`;
 					});
 
 					$(`#total_cost`).text(numberFormat(totalCostAmt));
-					$(`#total_amount`).text(numberFormat(totalAmount));
-					$(`#total_amount_received`).text(
-						numberFormat(totalAmountReceived)
+					$(`#total_amount`).text(numberFormat(grandTotalCost));
+					$(`#total_amount_with_vat`).text(
+						numberFormat(grandTotalVat + grandTotalCost)
 					);
-					$(`#total_vat`).text(numberFormat(totalVat));
-					$(`#grand_total_vat`).text(numberFormat(grandTotalVat));
+					$(`#total_amount_received`).text(
+						numberFormat(grandTotalCostReceived)
+					);
 				} else {
 					html =
 						'<tr><td colspan="11" align="center">No rpf items found...</td></tr>';
