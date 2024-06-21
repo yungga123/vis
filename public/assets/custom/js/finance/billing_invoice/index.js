@@ -240,6 +240,9 @@ function edit(id, billing_status) {
 					res.data.withholding_tax_percent || ""
 				);
 				$("#withholding_tax").val(res.data.withholding_tax || "");
+				$("#additional_description").val(
+					res.data.additional_description || ""
+				);
 				$("#with_vat").prop("checked", res.data.with_vat != 0);
 				$("#with_vat").trigger("change");
 				$("#with_interest").prop(

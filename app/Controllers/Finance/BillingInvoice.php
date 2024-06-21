@@ -127,6 +127,7 @@ class BillingInvoice extends BaseController
             'attention_to',
             'with_vat',
             'vat_amount',
+            'additional_description',
             'created_by',
             'created_at',
             'approved_by',
@@ -189,6 +190,7 @@ class BillingInvoice extends BaseController
                     'vat_amount'        => $with_vat ? ($request['vat_amount'] ?? null) : null,
                     'grand_total'       => $request['grand_total'] ?? null,
                     'overdue_interest'  => $request['overdue_interest'] ?? null,
+                    'additional_description'  => $request['additional_description'] ?? null,
                 ];
                 $is_paid        = ($request['billing_status'] ?? '') === 'paid';
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;

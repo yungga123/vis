@@ -124,6 +124,11 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="additional_description">Additional Description</label>
+                        <textarea name="additional_description" id="additional_description" class="form-control" cols="3" rows="3" placeholder="Additional Description"></textarea>
+                        <small id="alert_additional_description" class="text-danger"></small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
