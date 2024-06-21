@@ -11,6 +11,8 @@ $contact_number = empty($order_form['client_branch_id'])
 	? $order_form['client_contact_number'] : $order_form['client_branch_contact_number'];
 $address		= empty($order_form['client_branch_id']) 
 	? $order_form['client_address'] : $order_form['client_branch_address'];
+$vat_amount 	= $order_form['vat_amount'] ?? 0;
+$with_vat		= $vat_amount !== 0;
 ?>
 <div class="container-fluid">
 	<div class="row">		
@@ -101,18 +103,18 @@ $address		= empty($order_form['client_branch_id'])
 					if (! empty($items)):
 						foreach ($items as $item):
 							$item_stocks	= $item['stocks'] ?? 0;
-							$item_price		= $item['item_price'] ?? 0;
+							$selling_price	= $item['selling_price'] ?? 0;
 							$quantity		= $item['quantity'] ?? 0;
 							$discount		= $item['discount'] ?? 0;
 							$total_price 	= $item['total_price'] ?? 0;
 
 							if (empty($total_price)) {
-								$total_price = $item_price * $quantity;
+								$total_price = $selling_price * $quantity;
 								$total_price = $total_price - $discount;
 							}
 
 							$grand_item_stocks 	+= $item_stocks;
-							$grand_item_price 	+= $item_price;
+							$grand_item_price 	+= $selling_price;
 							$grand_quantity 	+= $quantity;
 							$grand_discount 	+= $discount;
 							$grand_total_price 	+= $total_price;
@@ -125,7 +127,7 @@ $address		= empty($order_form['client_branch_id'])
 								<td><?= $item['size'] ?? 'N/A' ?></td>
 								<td><?= $item['unit'] ?? 'N/A' ?></td>
 								<td><?= number_format($item_stocks, 2) ?></td>
-								<td><?= number_format($item_price, 2) ?></td>
+								<td><?= number_format($selling_price, 2) ?></td>
 								<td><?= number_format($quantity, 2) ?></td>
 								<td><?= number_format($discount, 2) ?></td>
 								<td><?= number_format($total_price, 2) ?></td>
@@ -133,8 +135,6 @@ $address		= empty($order_form['client_branch_id'])
 					<?php
 						endforeach;
 					endif; ?>
-				</tbody>
-				<tfoot>
 					<tr class="text-bold">
 						<td colspan="6" class="text-right">Grand Totals</td>
 						<td class="text-danger"><?= number_format($grand_item_stocks, 2) ?></td>
@@ -143,7 +143,29 @@ $address		= empty($order_form['client_branch_id'])
 						<td class="text-danger"><?= number_format($grand_discount, 2) ?></td>
 						<td class="text-danger"><?= number_format($grand_total_price, 2) ?></td>
 					</tr>
-				</tfoot>
+					<tr>
+						<td colspan="10" class="text-right" colspan="2">
+							<div>SUB TOTAL AMOUNT</div>
+							<div>PLUS 12% VAT</div>
+						</td>
+						<td class="text-right" colspan="2">
+							<div>₱ <?= number_format($grand_total_price, 2) ?></div>
+							<div>₱ <?= number_format($with_vat ? $vat_amount : 0, 2) ?></div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="10" class="text-bold text-right" colspan="2">
+							GRAND TOTAL AMOUNT
+							<span>(<?= $with_vat ? 'Vat Inc.' : 'Vat Ex.' ?>)</span>
+						</td>
+						<td class="text-bold text-right text-danger" colspan="2">
+							₱ 
+							<span class="total_amount">
+								<?= number_format($grand_total_price + $vat_amount, 2) ?>
+							</span>
+						</td>
+					</tr>
+				</tbody>
 			</table>
 		</div>
 	</div>

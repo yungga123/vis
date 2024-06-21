@@ -48,7 +48,9 @@ $(document).ready(function () {
 	/* Masterlist select2 via ajax data source */
 	_initInventorySelect2();
 
-	$("#with_vat").on("change", () => _computeVat(this));
+	$("#with_vat").on("change", function () {
+		_computeVat(this);
+	});
 
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -144,11 +146,16 @@ function view(id, changeTo, status) {
 
 				if (!isEmpty(res.data)) {
 					let totalItemPrice = 0;
+					let totalSellingPrice = 0;
 					let totalQuantity = 0;
 					let totalDiscount = 0;
 					let grandTotalPrice = 0;
 
 					$.each(res.data, (index, val) => {
+						let itemPrice = parseFloat(val.item_price || 0);
+						let sellingPrice = parseFloat(val.selling_price || 0);
+						let finalItemPrice =
+							sellingPrice == 0 ? itemPrice : sellingPrice;
 						let totalPrice = parseFloat(val.total_price || 0);
 
 						if (totalPrice == 0) {
@@ -167,14 +174,16 @@ function view(id, changeTo, status) {
 								<td>${val.unit || "N/A"}</td>
 								<td>${val.size || "N/A"}</td>
 								<td>${val.stocks}</td>
-								<td>${val.item_price}</td>
+								<td>${numberFormat(itemPrice)}</td>
+								<td>${numberFormat(finalItemPrice)}</td>
 								<td>${val.quantity}</td>
 								<td>${numberFormat(val.discount)}</td>
 								<td>${numberFormat(totalPrice)}</td>
 							</tr>
 						`;
 
-						totalItemPrice += parseFloat(val.item_price);
+						totalItemPrice += itemPrice;
+						totalSellingPrice += finalItemPrice;
 						totalQuantity += parseFloat(val.quantity);
 						totalDiscount += parseFloat(val.discount);
 						grandTotalPrice += parseFloat(totalPrice);
@@ -183,6 +192,9 @@ function view(id, changeTo, status) {
 					$(`#order_form_items_table tfoot`).removeClass("d-none");
 					$(`#order_form_items_table td.total_item_price`).text(
 						numberFormat(totalItemPrice)
+					);
+					$(`#order_form_items_table td.total_selling_price`).text(
+						numberFormat(totalSellingPrice)
 					);
 					$(`#order_form_items_table td.total_quantity`).text(
 						numberFormat(totalQuantity)
@@ -271,17 +283,23 @@ function edit(id) {
 						item.item_description
 					} | ${item.size || "N/A"}`;
 					const trId = "row_" + x;
+					let itemPrice = parseFloat(item.item_price || 0);
+					let sellingPrice = parseFloat(item.selling_price || 0);
+					let finalItemPrice =
+						sellingPrice == 0 ? itemPrice : sellingPrice;
 					let totalPrice = parseFloat(item.total_price || 0);
 
 					if (totalPrice == 0) {
-						totalPrice = parseFloat(
-							item.item_price * item.quantity
-						);
+						totalPrice = parseFloat(finalItemPrice * item.quantity);
 						totalPrice = parseFloat(totalPrice - item.discount);
 					}
 
 					// Store items in a variable with inventory_id as key
 					_currentFetchItems[trId] = item;
+					_currentFetchItems[trId].selling_price = itemPrice;
+					_currentFetchItems[trId].selling_price = finalItemPrice;
+					_currentFetchItems[trId].quantity = item.quantity;
+					_currentFetchItems[trId].discount = item.discount;
 					_currentFetchItems[trId].total_price = totalPrice;
 
 					// Set selected item in each select2
@@ -294,18 +312,21 @@ function edit(id) {
 						.html(`Original Item: <strong>${text}</strong>`);
 
 					// Set value and text
-					$(`#${modal} tr#${trId} td.quantity input.quantity`).val(
-						parseFloat(item.quantity)
-					);
-					$(`#${modal} tr#${trId} td.discount input.discount`).val(
-						parseFloat(item.discount)
-					);
 					$(`#${modal} tr#${trId} td.item_stocks`).text(item.stocks);
 					$(`#${modal} tr#${trId} td.item_price input`).text(
 						numberFormat(item.item_price)
 					);
 					$(`#${modal} tr#${trId} td.item_price span`).text(
 						numberFormat(item.item_price)
+					);
+					$(
+						`#${modal} tr#${trId} td.selling_price input.selling_price`
+					).val(parseFloat(finalItemPrice));
+					$(`#${modal} tr#${trId} td.quantity input.quantity`).val(
+						parseFloat(item.quantity)
+					);
+					$(`#${modal} tr#${trId} td.discount input.discount`).val(
+						parseFloat(item.discount)
 					);
 					$(`#${modal} tr#${trId} td.total_price input`).val(
 						totalPrice
@@ -318,11 +339,14 @@ function edit(id) {
 				}
 			}
 
+			// No discount
+			_grandTotals.totalAmount = parseFloat(
+				res.data.total_amount + res.data.total_discount
+			);
+
 			$("#total_amount").val(res.data.total_amount);
 			$("#total_discount").val(res.data.total_discount);
-			$("#total_amount_no_discount").val(
-				parseFloat(res.data.total_amount + res.data.total_discount)
-			);
+			$("#total_amount_no_discount").val(_grandTotals.totalAmount);
 			$(`#${modal}`).modal("show");
 		} else {
 			$(`#${modal}`).modal("hide");
@@ -409,6 +433,9 @@ function toggleItemField(row) {
 				<span></span>
 				<input type="hidden" name="item_price[]" readonly>
 			</td>
+			<td class="selling_price">
+				<input type="number" name="selling_price[]" class="form-control selling_price" placeholder="Selling Price" step="0.01" onkeyup="calculate(this.value, '${trId}', 'selling_price')">
+			</td>
 			<td class="quantity">
 				<input type="number" name="quantity[]" class="form-control quantity" placeholder="Quantity" min="1" step="0.5" onkeyup="calculate(this.value, '${trId}', 'quantity')" required>
 			</td>
@@ -434,23 +461,30 @@ function toggleItemField(row) {
 /* Toggle item field */
 function calculate(val, trId, field) {
 	if (!isEmpty(_currentFetchItems)) {
-		const isQty = field === "quantity";
 		const item_price = parseFloat(_currentFetchItems[trId].item_price || 0);
+		const selling_price = parseFloat(
+			(field === "selling_price"
+				? val
+				: $(
+						`#${modal} tr#${trId} td.selling_price input.selling_price`
+				  ).val()) || item_price
+		);
 		const quantity = parseFloat(
-			(isQty
+			(field === "quantity"
 				? val
 				: $(`#${modal} tr#${trId} td.quantity input.quantity`).val()) ||
 				0
 		);
 		const discount = parseFloat(
-			(!isQty
+			(field === "discount"
 				? val
 				: $(`#${modal} tr#${trId} td.discount input.discount`).val()) ||
 				0
 		);
-		let total_price = parseFloat(item_price * quantity);
+		let total_price = parseFloat(selling_price * quantity);
 		total_price = parseFloat(total_price - discount);
 
+		_currentFetchItems[trId].selling_price = selling_price;
 		_currentFetchItems[trId].quantity = quantity;
 		_currentFetchItems[trId].discount = discount;
 		_currentFetchItems[trId].total_price = total_price;
@@ -470,29 +504,34 @@ function calculate(val, trId, field) {
 /* Calculate grand totals and display */
 function calculateGrandTotals() {
 	let totalItemPrice = 0,
+		totalSellingPrice = 0,
 		totalQuantity = 0,
 		totalDiscount = 0,
 		totalPriceAmount = 0;
 
 	$.each(_currentFetchItems, function (key, val) {
 		totalItemPrice += parseFloat(val.item_price || 0);
+		totalSellingPrice += parseFloat(val.selling_price || 0);
 		totalQuantity += parseFloat(val.quantity || 0);
 		totalDiscount += parseFloat(val.discount || 0);
 		totalPriceAmount += parseFloat(val.total_price || 0);
 	});
 
 	_grandTotals.totalItemPrice = totalItemPrice;
+	_grandTotals.totalSellingPrice = totalSellingPrice;
 	_grandTotals.totalQuantity = totalQuantity;
 	_grandTotals.totalDiscount = totalDiscount;
 	_grandTotals.totalPriceAmount = totalPriceAmount;
 	_grandTotals.totalAmount = parseFloat(totalPriceAmount + totalDiscount); // Without discount
 
 	$(`#${modal} td.total_item_price`).text(numberFormat(totalItemPrice));
+	$(`#${modal} td.total_selling_price`).text(numberFormat(totalSellingPrice));
 	$(`#${modal} td.total_quantity`).text(numberFormat(totalQuantity));
 	$(`#${modal} td.total_discount`).text(numberFormat(totalDiscount));
 	$(`#${modal} td.grand_total`).text(numberFormat(totalPriceAmount));
 
 	$("#total_amount").val(totalPriceAmount || "");
+	$("#total_selling_price").val(totalSellingPrice || "");
 	$("#total_discount").val(totalDiscount || "");
 	$("#grand_total").val(_grandTotals.totalAmount || "");
 	$("#total_amount_no_discount").val(_grandTotals.totalAmount || "");
@@ -518,6 +557,7 @@ function _initInventorySelect2() {
 		$(`#${modal} tr#${trId} td.item_stocks`).text("");
 		$(`#${modal} tr#${trId} td.item_price span`).text("");
 		$(`#${modal} tr#${trId} td.quantity input.quantity`).val("");
+		$(`#${modal} tr#${trId} td.discount input.selling_price`).val("");
 		$(`#${modal} tr#${trId} td.discount input.discount`).val("");
 		$(`#${modal} tr#${trId} td.total_price span`).text("");
 
@@ -525,6 +565,7 @@ function _initInventorySelect2() {
 			_currentFetchItems[trId].item_stocks = 0;
 			_currentFetchItems[trId].item_price = 0;
 			_currentFetchItems[trId].quantity = 0;
+			_currentFetchItems[trId].selling_price = 0;
 			_currentFetchItems[trId].discount = 0;
 			_currentFetchItems[trId].total_price = 0;
 		}
@@ -537,6 +578,7 @@ function _initInventorySelect2() {
 function _loadItemDetails(data) {
 	let total_price = 0;
 	let quantity = 0;
+	let selling_price = 0;
 	let discount = 0;
 
 	if (data.item_price) {
@@ -546,12 +588,16 @@ function _loadItemDetails(data) {
 		const trParentElem =
 			data.element.parentElement.parentElement.parentElement;
 		const trId = $(trParentElem).attr("id");
+		const sellingPriceElem = $(
+			`tr#${trId} td.selling_price input.selling_price`
+		);
 		const quantityElem = $(`tr#${trId} td.quantity input.quantity`);
 		const discountElem = $(`tr#${trId} td.discount input.discount`);
 
+		selling_price = item_price;
 		quantity = parseFloat(quantityElem.val() || 0);
 		discount = parseFloat(discountElem.val() || 0);
-		total_price = item_price * quantity - discount;
+		total_price = selling_price * quantity - discount;
 
 		// quantityElem.attr("max", item_stocks);
 		quantityElem.attr("data-tr_id", trId);
@@ -565,9 +611,11 @@ function _loadItemDetails(data) {
 			numberFormat(total_price)
 		);
 		$(`#${modal} tr#${trId} td.total_price input`).val(total_price);
+		$(`#${modal} tr#${trId} td.selling_price input`).val(selling_price);
 
 		_currentFetchItems[trId] = data;
 		_currentFetchItems[trId].item_price = item_price;
+		_currentFetchItems[trId].selling_price = selling_price;
 		_currentFetchItems[trId].total_price = total_price;
 	}
 }
@@ -575,9 +623,9 @@ function _loadItemDetails(data) {
 /* Compute vat */
 function _computeVat(elem) {
 	let vat_amount = 0;
-	let total_amount =
-		_grandTotals.totalAmount ||
-		parseFloat($("#total_amount_no_discount").val() || 0);
+	let total_amount = parseFloat(
+		$("#total_amount_no_discount").val() || _grandTotals.totalAmount
+	);
 
 	$("div.row.with_vat").addClass("d-none");
 
@@ -587,10 +635,10 @@ function _computeVat(elem) {
 		$("div.row.with_vat").removeClass("d-none");
 	}
 
-	const grand_total = parseFloat(total_amount + vat_amount).toFixed(2);
+	const grand_total = decimalFormat(total_amount + vat_amount);
 
 	$("#grand_total").val(grand_total);
-	$("#vat_amount").val(parseFloat(vat_amount).toFixed(2));
+	$("#vat_amount").val(decimalFormat(vat_amount));
 }
 
 /* Reset form */
@@ -602,13 +650,16 @@ function _clearForm() {
 	$(".item-row").remove();
 	$(".original-item").html("");
 	$("#client_branch_wrapper").addClass("d-none");
+	$("#with_vat").prop("checked", false);
 
 	$(`#${modal} td.item_stocks`).text("");
 	$(`#${modal} td.item_price span`).text("");
+	$(`#${modal} td.quantity input.selling_price`).val("");
 	$(`#${modal} td.quantity input.quantity`).val("");
 	$(`#${modal} td.discount input.discount`).val("");
 	$(`#${modal} td.total_price span`).text("");
 	$(`#${modal} td.total_item_price`).text("");
+	$(`#${modal} td.total_selling_price`).text("");
 	$(`#${modal} td.total_quantity`).text("");
 	$(`#${modal} td.total_discount`).text("");
 	$(`#${modal} td.grand_total`).text("");

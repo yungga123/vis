@@ -193,7 +193,9 @@ function showAlertInForm(elems, errors, status, prefix = "alert", swal = true) {
 
 	if (isObject(errors) && !isEmpty(errors)) {
 		$.each(errors, (key, value) => {
-			let select2 = $("#" + key).hasClass("select2") ? " select2-success" : "";
+			let select2 = $("#" + key).hasClass("select2")
+				? " select2-success"
+				: "";
 			let select2Err = $("#" + key).hasClass("select2")
 				? " select2-danger"
 				: "";
@@ -221,7 +223,9 @@ function clearAlertInForm(elems, status, prefix = "alert") {
 	if (Array.isArray(elems) && !isEmpty(elems)) {
 		for (let i = 0; i < elems.length; i++) {
 			const elem = elems[i];
-			let select2 = $("#" + elem).hasClass("select2") ? " select2-success" : "";
+			let select2 = $("#" + elem).hasClass("select2")
+				? " select2-success"
+				: "";
 			let select2Err = $("#" + elem).hasClass("select2")
 				? " select2-danger"
 				: "";
@@ -292,7 +296,12 @@ function formSubmit(
 			}
 		}
 
-		swalNotifConfirm(sendRequest, TITLE.CONFIRM, confirmMsg, STATUS.QUESTION);
+		swalNotifConfirm(
+			sendRequest,
+			TITLE.CONFIRM,
+			confirmMsg,
+			STATUS.QUESTION
+		);
 	});
 }
 
@@ -314,7 +323,8 @@ function fetchRecord(route, data, modal, callback) {
 			if (callback) return callback(res);
 
 			if (res.status === STATUS.ERROR) {
-				if (modal && $(`#${modal}`).length) $(`#${modal}`).modal("hide");
+				if (modal && $(`#${modal}`).length)
+					$(`#${modal}`).modal("hide");
 
 				notifMsgSwal(res.status, res.message, res.status);
 
@@ -513,7 +523,9 @@ function isString(param) {
 /* Check if Object key exist */
 function inObject(obj, key) {
 	if (isEmpty(obj)) return false;
-	return isObject(obj) ? Object.prototype.hasOwnProperty.call(obj, key) : false;
+	return isObject(obj)
+		? Object.prototype.hasOwnProperty.call(obj, key)
+		: false;
 
 	/* Another methods */
 	// return (key in obj); // Using 'in'
@@ -724,6 +736,17 @@ function numberFormat(number, decimal) {
 function numberToFixed(number, decimal = 2) {
 	number = parseFloat(number);
 	return number.toFixed(decimal);
+}
+
+/**
+ * Decimal format of the number
+ *
+ * @param {integer} number 	the number to format
+ * @param {integer} decimal	identifier on how many decimals - default 2
+ * @returns {integer}
+ */
+function decimalFormat(number, decimal = 2) {
+	return parseFloat(number).toFixed(decimal);
 }
 
 /**

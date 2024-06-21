@@ -72,7 +72,8 @@
                                             <td widtd="40%">Item Details</td>
                                             <td class="text-center">Current Stocks</td>
                                             <td class="text-center">Item Price</td>
-                                            <td>Quantity</td>
+                                            <td>Selling Price</td>
+                                            <td>Qty</td>
                                             <td>Discount</td>
                                             <td>Total Price</td>
                                             <td>Button</td>
@@ -89,8 +90,11 @@
                                                 <span></span>
                                                 <input type="hidden" name="item_price[]" readonly>
                                             </td>
+                                            <td class="selling_price">
+                                                <input type="number" name="selling_price[]" class="form-control selling_price" placeholder="Selling Price" step="0.01" onkeyup="calculate(this.value, 'row_0', 'selling_price')">
+                                            </td>
                                             <td class="quantity">
-                                                <input type="number" name="quantity[]" class="form-control quantity" placeholder="Quantity" min="1" step="0.5" onkeyup="calculate(this.value, 'row_0', 'quantity')" required>
+                                                <input type="number" name="quantity[]" class="form-control quantity" placeholder="Qty" min="1" step="0.5" onkeyup="calculate(this.value, 'row_0', 'quantity')" required>
                                             </td>
                                             <td class="discount">
                                                 <input type="number" name="discount[]" class="form-control discount" placeholder="Discount" step="0.01" onkeyup="calculate(this.value, 'row_0', 'discount')">
@@ -110,6 +114,7 @@
                                         <tr>
                                             <td colspan="2" class="text-right text-bold">Grand Totals</td>
                                             <td class="total_item_price text-bold text-danger"></td>
+                                            <td class="total_selling_price text-bold text-danger"></td>
                                             <td class="total_quantity text-bold text-danger"></td>
                                             <td class="total_discount text-bold text-danger"></td>
                                             <td class="grand_total text-bold text-danger"></td>
