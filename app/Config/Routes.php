@@ -189,6 +189,12 @@ $routes->group('sales', ['filter' => 'checkauth'], static function($routes) {
         $routes->post('delete', 'Sales\CustomerSupport::delete', ['as' => 'sales.customer_support.delete']);
         $routes->post('change', 'Sales\CustomerSupport::change', ['as' => 'sales.customer_support.change']);
         $routes->get('print/(:num)', 'Sales\CustomerSupport::print/$1', ['as' => 'sales.customer_support.print']);
+
+        // LOGS
+        $routes->group('logs', static function ($routes) {
+            $routes->match(['get', 'post'], '/', 'Sales\CustomerSupportLog::fetch', ['as' => 'sales.customer_support_logs.fetch']);
+            $routes->post('save', 'Sales\CustomerSupportLog::save', ['as' => 'sales.customer_support_logs.save']);
+        });
     });
 });
 /* SALES */

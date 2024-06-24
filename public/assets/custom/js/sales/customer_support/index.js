@@ -33,6 +33,7 @@ $(document).ready(function () {
 		$(`#${modal}`).removeClass("edit").addClass("add");
 		$(`#${modal} .modal-title`).text("Add a Record");
 
+		initSelect2Customers(router.clients.common.customers);
 		_clearForm();
 	});
 
@@ -87,6 +88,31 @@ $(document).ready(function () {
 				$("#_id").val("");
 				$("#_remarks").val("");
 				$("#customer_support_change_modal").modal("hide");
+			}
+
+			if (res.errors) notifMsg(res.message, res.status);
+
+			showAlertInForm(elems, message, res.status);
+		}
+	);
+
+	/* Form for adding log */
+	formSubmit(
+		$("#customer_support_logs_form"),
+		"continue",
+		function (res, self) {
+			const elems = [
+				"logs_findings",
+				"logs_action",
+				"logs_troubleshooting",
+			];
+			const message = res.errors ?? res.message;
+
+			if (res.status !== STATUS.ERROR) {
+				notifMsgSwal(res.status, res.message, res.status);
+
+				$("#logs_id").val("");
+				$("#customer_support_logs_modal").modal("hide");
 			}
 
 			if (res.errors) notifMsg(res.message, res.status);
@@ -161,12 +187,20 @@ function edit(id) {
 					$("#client_branch_wrapper").removeClass("d-none");
 				}
 
-				setOptionValue("#security_ict_system", res.data.security_ict_system);
+				setOptionValue(
+					"#security_ict_system",
+					res.data.security_ict_system
+				);
 				setOptionValue("#priority", res.data.priority);
-				_setSelect2Specialists(res.data.specialist_ids, res.data.specialists);
+				_setSelect2Specialists(
+					res.data.specialist_ids,
+					res.data.specialists
+				);
 
 				$("#ticket_number").val(res.data.ticket_number);
-				$("#security_ict_system_other").val(res.data.security_ict_system_other);
+				$("#security_ict_system_other").val(
+					res.data.security_ict_system_other
+				);
 				$("#due_date").val(res.data.due_date);
 				$("#follow_up_date").val(res.data.follow_up_date);
 				$("#issue").val(res.data.issue);
@@ -189,8 +223,6 @@ function remove(id) {
 
 /* Change status record */
 function change(id, status) {
-	console.log(id, status);
-
 	const modal = "customer_support_change_modal";
 	const data = { id: id, status: status };
 
@@ -202,6 +234,82 @@ function change(id, status) {
 		$('#status option[value="' + status + '"]').attr("disabled", true);
 		$("#" + modal).modal("show");
 	});
+}
+
+/* Add log */
+function addLog(id) {
+	let modal = "customer_support_logs_modal";
+
+	$("#logs_id").val(id);
+	$("#" + modal).modal("show");
+
+	_toggleLogs(id);
+}
+
+/* View logs */
+function viewLogs(id, params) {
+	let record = "",
+		logs = "";
+	const modal = "customer_support_logs_modal";
+
+	params = JSON.parse(params);
+	record = `
+		<tr>
+			<td>${params.client_name || "N/A"}</td>
+			<td>${params.client_branch_name || "N/A"}</td>
+			<td>${params.ticket_number || "N/A"}</td>
+			<td>${params.security_ict_system || "N/A"}</td>
+			<td>${params.priority || "N/A"}</td>
+			<td>${params.due_date || "N/A"}</td>
+			<td>${params.follow_up_date || "N/A"}</td>
+			<td>${params.issue || "N/A"}</td>
+			<td>${params.remarks || "N/A"}</td>
+			<td>${params.specialists || "N/A"}</td>
+			<td>${params.created_by || "N/A"}</td>
+			<td>${params.created_at || "N/A"}</td>
+		</tr>
+	`;
+	logs = `
+		<tr>
+			<td>${params.initial_log.findings || "N/A"}</td>
+			<td>${params.initial_log.action || "N/A"}</td>
+			<td>${params.initial_log.troubleshooting || "N/A"}</td>
+			<td>${params.initial_log.logged_by || "N/A"}</td>
+			<td>${params.initial_log.logged_at || "N/A"}</td>
+		</tr>
+	`;
+
+	$("#logs_id").val(id);
+	$("#" + modal).modal("show");
+	$(`#${modal} .logs table.record tbody`).html(record);
+
+	_toggleLogs(id, false);
+
+	if (!isEmpty(id)) {
+		fetchRecord(router.customer_support.logs, { id: id }, modal, (res) => {
+			if (!isEmpty(res.data)) {
+				let rows = "";
+
+				$.each(res.data, (index, val) => {
+					rows += `
+						<tr>
+							<td>${val.findings || "N/A"}</td>
+							<td>${val.action || "N/A"}</td>
+							<td>${val.troubleshooting || "N/A"}</td>
+							<td>${val.logged_by || "N/A"}</td>
+							<td>${val.logged_at || "N/A"}</td>
+						</tr>
+					`;
+				});
+
+				logs = rows + logs;
+			}
+
+			$(`#${modal} .logs table.logs tbody`).html(logs);
+		});
+	} else {
+		$(`#${modal} .logs table.logs tbody`).html(logs);
+	}
 }
 
 /* Init select2 specialists */
@@ -235,5 +343,25 @@ function _setSelect2Specialists(specialist_ids, specialists) {
 		$.each(specialist_ids, (key, val) =>
 			setSelect2AjaxSelection("#specialists", specialists[key], val)
 		);
+	}
+}
+
+/* Toggle logs */
+function _toggleLogs(id, isForm = true) {
+	const modal = "customer_support_logs_modal";
+	const form = "customer_support_logs_form";
+	const text = ` for <strong>ID #: ${id}</strong>`;
+
+	if (isForm) {
+		$(`#${modal} .modal-title`).html("Add Log" + text);
+		$(`#${modal} .modal-footer .btn-success`).removeClass("d-none");
+		$(`#${modal} #${form}`)[0].reset();
+		$(`#${modal} #${form} .form`).removeClass("d-none");
+		$(`#${modal} .logs`).addClass("d-none");
+	} else {
+		$(`#${modal} .modal-title`).html("View Logs" + text);
+		$(`#${modal} .modal-footer .btn-success`).addClass("d-none");
+		$(`#${modal} #${form} .form`).addClass("d-none");
+		$(`#${modal} .logs`).removeClass("d-none");
 	}
 }

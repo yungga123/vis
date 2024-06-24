@@ -252,6 +252,8 @@ define('ACTIONS', [
         ],
         'SALES_CUSTOMER_SUPPORTS'     => [
             'CHANGE'        => 'Change Status',
+            'ADD_LOG'       => 'Add Log',
+            'VIEW_LOGS'     => 'View Logs',
         ],
     ],
 ]);
