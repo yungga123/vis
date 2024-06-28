@@ -238,7 +238,11 @@ function edit(id) {
 			// Set selected client in select2
 			$("#" + customer_type).prop("checked", true);
 
-			initSelect2Customers(customer_type);
+			initSelect2Customers(
+				router.clients.common.customers,
+				customer_type
+			);
+			onChangeCustomerType();
 			setSelect2AjaxSelection(
 				clientSelector,
 				res.data.customer_name,
@@ -249,11 +253,11 @@ function edit(id) {
 				!isEmpty(res.data.customer_branch_id) &&
 				customer_type === "commercial"
 			) {
-				_initSelect2CustomerBranches(
+				initSelect2CustomerBranches(
+					router.clients.common.customer_branches,
 					res.data.customer_id,
 					res.data.customer_branch_id
 				);
-				$("#client_branch_wrapper").removeClass("d-none");
 			}
 
 			$("#id").val(id);

@@ -207,6 +207,11 @@ class ExportData extends BaseController
                         // Rename value
                         $modules['FINANCE_FUNDS'] = 'Funds History';
                     }
+
+                    if ($module === 'ADMIN_SERVICE_REPORTS') {
+                        // Rename value
+                        $modules['ADMIN_SERVICE_REPORT_ITEMS'] = 'Service Report Units & Items';
+                    }
                 }
             }
         }
@@ -354,6 +359,11 @@ class ExportData extends BaseController
                     'outgoing' => 'Outgoing',
                 ],
             ],
+            'ADMIN_SERVICE_REPORTS'  => [
+                'type'      => 'multiple',
+                'name'      => 'Status',
+                'options'   => get_service_types(),
+            ],
         ];
 
         if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_LEAVE'] ?? []))) {
@@ -443,6 +453,8 @@ class ExportData extends BaseController
             'INVENTORY_ORDER_FORMS'     => [new InventoryExportService(), 'orderForms'],
             'INVENTORY_ORDER_FORM_ITEMS' => [new InventoryExportService(), 'orderFormItems'],
             'SALES_CUSTOMER_SUPPORTS'   => [new SalesExportService(), 'customerSupports'],
+            'ADMIN_SERVICE_REPORTS' => [new AdminExportService(), 'serviceReports'],
+            'ADMIN_SERVICE_REPORT_ITEMS' => [new AdminExportService(), 'serviceReportUnitsNItems'],
         ];
 
         // Return the initailized service class and the method name

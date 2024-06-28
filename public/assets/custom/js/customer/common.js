@@ -39,7 +39,9 @@ function initSelect2CustomerBranches(route, customer_id, branch_id, selector) {
 			select2Reinit(selector, "Please select a branch", res.data);
 
 			if (branch_id) {
-				setSelect2Selection(selector, branch_id);
+				setTimeout(() => {
+					setSelect2Selection(selector, branch_id);
+				}, 300);
 			}
 		})
 		.catch((err) => catchErrMsg(err));

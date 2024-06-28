@@ -255,6 +255,11 @@ define('ACTIONS', [
             'ADD_LOG'       => 'Add Log',
             'VIEW_LOGS'     => 'View Logs',
         ],
+        'ADMIN_SERVICE_REPORTS'     => [
+            'ACCEPT'        => 'Accept',
+            'FILE'          => 'File',
+            'PRINT'         => 'Print',
+        ],
     ],
 ]);
 
@@ -325,6 +330,7 @@ define('MODULES', [
     'FINANCE_FUNDS'         => 'Funds',
     'INVENTORY_ORDER_FORMS' => 'Order Forms',
     'SALES_CUSTOMER_SUPPORTS' => 'Customer Supports',
+    'ADMIN_SERVICE_REPORTS' => 'Service Reports',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -363,6 +369,7 @@ define('MODULE_CODES', [
     'funds'                 => 'FINANCE_FUNDS',
     'order_forms'           => 'INVENTORY_ORDER_FORMS',
     'customer_supports'     => 'SALES_CUSTOMER_SUPPORTS',
+    'service_reports'       => 'ADMIN_SERVICE_REPORTS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
@@ -399,3 +406,6 @@ define('ROOT_FILE_UPLOAD_DIR', '');
 
 // Billing Invoice Form Code
 define('COMPANY_BILLING_INVOICE_FORM_CODE', 'F07');
+
+// Service Report Form Code
+define('COMPANY_SERVICE_REPORT_FORM_CODE', 'F09');

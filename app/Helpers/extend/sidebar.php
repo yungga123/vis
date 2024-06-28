@@ -76,7 +76,8 @@ if (! function_exists('get_nav_menus'))
         $is_admin       = (
             url_is('admin/job-orders') || 
             url_is('admin/schedules') || 
-            url_is('admin/dispatch')
+            url_is('admin/dispatch') || 
+            url_is('admin/service-reports')
         );
         
 		$menu           = [
@@ -357,6 +358,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('sales.customer_support.home'),
                 'class'     => (url_is('sales/customer-supports') ? 'active' : ''),
                 'icon'      => 'fas fa-headset',
+            ],
+            'ADMIN_SERVICE_REPORTS'        => [
+                'menu'      => 'ADMIN', // Leave empty if none
+                'name'      => get_modules('ADMIN_SERVICE_REPORTS'),
+                'url'       => url_to('admin.service_report.home'),
+                'class'     => (url_is('admin/service-reports') ? 'active' : ''),
+                'icon'      => 'fas fa-book',
             ],
         ];
         

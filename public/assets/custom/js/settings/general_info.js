@@ -43,7 +43,9 @@ $(document).ready(function () {
 			"company_name",
 			"company_address",
 			"company_contact_number",
+			"company_telephone_number",
 			"company_email_address",
+			"company_tin",
 			"company_bank_name",
 			"company_bank_account_name",
 			"company_bank_account_number",
@@ -60,7 +62,11 @@ $(document).ready(function () {
 	/* Form for saving data */
 	formSubmit($("#form_form_codes"), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
-		const elems = ["purchase_order_form_code", "billing_invoice_form_code"];
+		const elems = [
+			"purchase_order_form_code",
+			"billing_invoice_form_code",
+			"service_report_form_code",
+		];
 
 		if (res.status !== STATUS.ERROR) {
 			notifMsgSwal(res.status, message, res.status);
@@ -125,5 +131,8 @@ function _dropzoneInit() {
 	};
 
 	_dropzone = dropzoneInit(form, null, button, options);
-	dzGetFiles(_dropzone, router.general_info.fetch + "?q=" + options.paramName);
+	dzGetFiles(
+		_dropzone,
+		router.general_info.fetch + "?q=" + options.paramName
+	);
 }

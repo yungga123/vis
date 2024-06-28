@@ -328,6 +328,17 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'admin.dispatch.delete']);
         $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'admin.dispatch.print']);
     });
+    
+    // SERVICE REPORTS
+    $routes->group('service-reports', static function ($routes) {
+        $routes->get('/', 'Admin\ServiceReport::index', ['as' => 'admin.service_report.home']);
+        $routes->post('list', 'Admin\ServiceReport::list', ['as' => 'admin.service_report.list']);
+        $routes->post('save', 'Admin\ServiceReport::save', ['as' => 'admin.service_report.save']);
+        $routes->post('fetch', 'Admin\ServiceReport::fetch', ['as' => 'admin.service_report.fetch']);
+        $routes->post('delete', 'Admin\ServiceReport::delete', ['as' => 'admin.service_report.delete']);
+        $routes->post('change', 'Admin\ServiceReport::change', ['as' => 'admin.service_report.change']);
+        $routes->get('print/(:num)', 'Admin\ServiceReport::print/$1', ['as' => 'admin.service_report.print']);
+    });
 });
 /* ADMIN */
 

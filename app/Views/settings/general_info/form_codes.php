@@ -20,6 +20,11 @@
                 <input type="text" name="billing_invoice_form_code" id="billing_invoice_form_code" class="form-control" placeholder="Ex. F07">
                 <small id="alert_billing_invoice_form_code" class="text-danger"></small>
             </div>
+            <div class="form-group">
+                <label class="required" for="service_report_form_code">Service Report</label>
+                <input type="text" name="service_report_form_code" id="service_report_form_code" class="form-control" placeholder="Ex. F09">
+                <small id="alert_service_report_form_code" class="text-danger"></small>
+            </div>
             <?= $this->include('settings/general_info/button-save'); ?>
         </form>
     </div>

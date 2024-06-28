@@ -25,6 +25,7 @@ use App\Models\PurchaseOrderModel;
 use App\Models\RolesModel;
 use App\Models\PermissionModel;
 use App\Models\SalaryRateModel;
+use App\Models\ServiceReportModel;
 use App\Models\TimesheetModel;
 use App\Traits\AdminTrait;
 use App\Traits\PayrollSettingTrait;
@@ -257,6 +258,7 @@ class Dashboard extends BaseController
         $billingModel       = new BillingInvoiceModel();
         $orderFormModel     = new OrderFormModel();
         $custmrSupportModel = new CustomerSupportModel();
+        $serviceReportModel = new ServiceReportModel();
 
         // Count all queries
         $accountCount           = $accountModel->where('deleted_at IS NULL');
@@ -497,6 +499,26 @@ class Dashboard extends BaseController
                     ],
                     'create job order' => [
                         'count' => $custmrSupportModel->countRecords('create-jo'),
+                    ],
+                ]
+            ],
+            'ADMIN_SERVICE_REPORTS'         => [
+                'count'     => $serviceReportModel->countRecords(),
+                'more_info' => [
+                    'pending'   => [
+                        'icon'  => 'far fa-clock',
+                        'count' => $serviceReportModel->countRecords('pending'),
+                        'bg'    => 'warning',
+                    ],
+                    'accepted'  => [
+                        'icon'  => 'fas fa-check-circle',
+                        'count' => $serviceReportModel->countRecords('accepted'),
+                        'bg'    => 'primary',
+                    ],
+                    'filed'  => [
+                        'icon'  => 'fas fa-file-import',
+                        'count' => $serviceReportModel->countRecords('filed'),
+                        'bg'    => 'success',
                     ],
                 ]
             ],

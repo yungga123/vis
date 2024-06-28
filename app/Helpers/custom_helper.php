@@ -120,7 +120,7 @@ if (! function_exists('format_datetime'))
     /**
      * Format datetime - default format 'M d, Y h:i A' (ex. Jan 1, 2023 12:00 PM)
      */
-	function format_datetime(string $datetime, string $format = 'M d, Y h:i A'): string
+	function format_datetime(string $datetime, string $format = 'M d, Y | h:i A'): string
 	{
         if (! is_date_valid($datetime)) return '';
         return !empty($datetime) ? date($format, strtotime($datetime)) : '';
@@ -720,5 +720,16 @@ if (! function_exists('get_acronymns'))
         }
         
         return mb_strtoupper(implode('', $results));
+    }
+}
+
+if (! function_exists('log_db_query'))
+{
+    /**
+     * Log db query string
+     * 
+     */
+	function log_db_query() {
+        \CodeIgniter\Events\Events::trigger('log_db_query');
     }
 }

@@ -70,7 +70,7 @@ class Schedule extends BaseController
         $data['moment']         = true;
         $data['date_range_picker'] = true;
         $data['full_calendar']  = true;
-        $data['custom_js']      = 'admin/schedule/index.js';
+        $data['custom_js']      = ['admin/schedule/index.js', 'admin/common.js'];
         $data['routes']         = json_encode([
             'schedule' => [
                 'list'      => url_to('admin.schedule.list'),

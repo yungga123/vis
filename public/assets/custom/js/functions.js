@@ -268,6 +268,12 @@ function formSubmit(
 			callback();
 		}
 
+		function _showValidationMsgViaToast(res) {
+			if (res.status === STATUS.ERROR && isObject(res.errors ?? null)) {
+				if (isToastrLoaded()) notifMsg(res.message, res.status);
+			}
+		}
+
 		function sendRequest() {
 			showLoading();
 
@@ -275,6 +281,7 @@ function formSubmit(
 				// Default request type method
 				$.post(route, data)
 					.then((res) => {
+						_showValidationMsgViaToast(res);
 						responseFunc(res, self);
 						closeLoading();
 					})
@@ -289,6 +296,7 @@ function formSubmit(
 					cache: false,
 					processData: false,
 					success: function (res) {
+						_showValidationMsgViaToast(res);
 						responseFunc(res, self);
 						closeLoading();
 					},
@@ -311,7 +319,7 @@ function formSubmit(
  * @param {string} route            	- The backend delete route/url
  * @param {object} data     			- Object of data to pass - like {id: id}
  * @param {string} modal   				- Modal name
- * @param {CallableFunction} callback 	- A callable to handle the response
+ * @param {callable} callback 	- A callable to handle the response
  */
 function fetchRecord(route, data, modal, callback) {
 	showLoading();
@@ -345,17 +353,18 @@ function fetchRecord(route, data, modal, callback) {
 /**
  * Shorcut for fetching record via ajax post request
  *
- * @param {string} route            	- The backend delete route/url
- * @param {object} data     			- Object of data to pass - like {id: id}
- * @param {string} title   				- The swal/message title
- * @param {string} table   				- The DataTable table name
- * @param {string} modal   				- Modal name
- * @param {CallableFunction} callback 	- An optional callable to handle the response
+ * @param {string} route    	- The backend delete route/url
+ * @param {object} data     	- Object of data to pass - like {id: id}
+ * @param {string} title   		- The swal/message title
+ * @param {string} table   		- The DataTable table name
+ * @param {string} modal   		- Modal name
+ * @param {callable} callback 	- An optional callable to handle the response
  */
 function changeRecord(route, data, title, table, modal, callback) {
 	let swalMsg = data.id ? `<div>ID #: <strong>${data.id}</strong></div>` : "";
 	let change = data.status ? data.status : "change";
 
+	title = title || TITLE.WARNING;
 	change = strUpper(change);
 	swalMsg = `
 		${swalMsg} <div>Are you sure you want to <strong>${change}</strong> this record?</div>
@@ -377,7 +386,7 @@ function changeRecord(route, data, title, table, modal, callback) {
 
 					if (res.status !== STATUS.ERROR) {
 						if (table) refreshDataTable($("#" + table));
-						if (modal) $(`#${modal}`).modal("hide");
+						if (modal) $("#" + modal).modal("hide");
 					}
 				})
 				.catch((err) => catchErrMsg(err));
@@ -394,7 +403,7 @@ function changeRecord(route, data, title, table, modal, callback) {
  * @param {string} route            	- The backend delete route/url
  * @param {object} data     			- Object of data to pass - like {id: id}
  * @param {string} table   				- The DataTable table name
- * @param {CallableFunction} callback 	- An optional callable to handle the response
+ * @param {callable} callback 	- An optional callable to handle the response
  */
 function deleteRecord(route, data, table, callback) {
 	const swalMsg = "delete";
@@ -785,7 +794,7 @@ function isPageReloaded() {
  * Check if there's a query paramaters
  * Intended if from mail notif
  *
- * @returns {bool}
+ * @returns {void}
  */
 function showItemsIfRedirectedFromMail() {
 	const query = getQueryStringInUrl();
