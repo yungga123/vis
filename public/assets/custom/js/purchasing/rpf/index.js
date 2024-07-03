@@ -167,8 +167,8 @@ function view(id, changeTo, status) {
 							val.received_q * val.item_sdp
 						);
 
-						totalCostAmt = parseFloat(
-							grandTotalCost + val.item_sdp
+						totalCostAmt += parseFloat(
+							val.item_sdp
 						);
 						grandTotalCost = parseFloat(grandTotalCost + totalCost);
 						grandTotalVat = parseFloat(grandTotalVat + vatAmount);
@@ -311,8 +311,8 @@ function change(id, changeTo, status, proceed) {
 	const swalMsg = `
 		<div>RPF #: <strong>${id}</strong></div>
 		<div>Are you sure you want to <strong>${strUpper(
-			changeTo
-		)}</strong> this RPF?</div>
+		changeTo
+	)}</strong> this RPF?</div>
 	`;
 	const data = { id: id, status: changeTo };
 
