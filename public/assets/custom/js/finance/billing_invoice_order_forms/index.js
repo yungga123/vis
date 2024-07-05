@@ -1,11 +1,11 @@
-var table, modal, form, elems, _interest, _vat_percent;
+var table, modal, form, elems, _interest, _vat_percent, _items;
 
 $(document).ready(function () {
-	table = "billing_invoice_table";
-	modal = "billing_invoice_modal";
-	form = "billing_invoice_form";
+	table = "billing_invoice_order_forms_table";
+	modal = "billing_invoice_order_forms_modal";
+	form = "billing_invoice_order_forms_form";
 	elems = [
-		"tasklead_id",
+		"order_form_id",
 		"status",
 		"due_date",
 		"bill_type",
@@ -17,36 +17,25 @@ $(document).ready(function () {
 	];
 	_interest = $pjOptions.overdue_interests;
 	_vat_percent = $pjOptions.vat_percent;
+	_items = [];
 
 	select2Init("#filter_billing_status");
 	select2Init("#filter_bill_type");
 	select2Init("#filter_payment_method");
 
 	/* Load dataTable */
-	loadDataTable(table, router.billing_invoice.list, METHOD.POST);
+	loadDataTable(table, router.billing_invoice_order_forms.list, METHOD.POST);
 
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
 		$(`#${modal} .modal-title`).text("Create Billing Invoice");
-		$(`#${form}`)[0].reset();
-		$("#id").val("");
-		$("#billing_status").val("");
-		$("#days_overdue").val("");
-		$("#overdue_interest").val("");
-		$("#orig_tasklead").html("");
-		$(".tasklead-details").html("");
-		$(".wrapper_paid").addClass("d-none");
-		$("div.with_vat").addClass("d-none");
-		$("div.with_interest").addClass("d-none");
-		$(".with_interest-checkbox").addClass("d-none");
 
-		clearSelect2Selection("#tasklead_id");
-		clearAlertInForm(elems);
+		_clearForm();
 	});
 
 	/* Quotation via ajax data source */
-	_initTasklead();
+	_initOrderForms();
 
 	$("#billing_amount").on("keyup", function () {
 		$("#with_vat").trigger("change");
@@ -129,18 +118,7 @@ $(document).ready(function () {
 		const message = res.errors ?? res.message;
 
 		if (res.status !== STATUS.ERROR) {
-			$("#id").val("");
-			$("#billing_status").val("");
-			$("#days_overdue").val("");
-			$("#orig_tasklead").html("");
-			$(".tasklead-details").html("");
-			$("div.with_vat").addClass("d-none");
-			$("div.with_interest").addClass("d-none");
-			$(".with_interest-checkbox").addClass("d-none");
-			$(".with_interest-checkbox label > span").html("");
-
-			self[0].reset();
-			clearSelect2Selection("#tasklead_id");
+			_clearForm();
 			refreshDataTable($("#" + table));
 			notifMsgSwal(res.status, res.message, res.status);
 
@@ -171,7 +149,7 @@ function filterData(reset = false) {
 		!isEmpty(payment_method);
 
 	filterParam(
-		router.billing_invoice.list,
+		router.billing_invoice_order_forms.list,
 		table,
 		params,
 		condition,
@@ -187,18 +165,13 @@ function filterData(reset = false) {
 /* Get record details */
 function edit(id, billing_status) {
 	let title = "Edit Billing Invoice";
+	let route = router.billing_invoice_order_forms.fetch;
+
+	_clearForm();
+	clearSelect2Selection("#order_form_id");
 
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Billing Invoice");
-	$("#id").val(id);
-	$("#billing_status").val("");
-	$("#days_overdue").val("");
-	$("#overdue_interest").val("");
-	$("#orig_tasklead").html("");
-	$(".tasklead-details").html("");
-	$(".wrapper_paid").removeClass("d-none");
-	$(".form-group.amount_paid label:first-child").removeClass("required");
-	$(".with_interest-checkbox").addClass("d-none");
 
 	if (billing_status && billing_status != "paid") {
 		title = "Mark Billing Invoice as PAID";
@@ -209,21 +182,14 @@ function edit(id, billing_status) {
 
 	$(`#${modal} .modal-title`).text(title);
 
-	clearAlertInForm(elems);
-	clearSelect2Selection("#tasklead_id");
-
-	fetchRecord(router.billing_invoice.fetch, { id: id }, modal, (res) => {
+	fetchRecord(route, { id: id }, modal, (res) => {
 		if (res.status === STATUS.SUCCESS) {
 			if (inObject(res, "data") && !isEmpty(res.data)) {
-				const text = `${res.data.tasklead_id} | ${res.data.quotation} | ${res.data.client}`;
-				const data = {
-					client: res.data.client,
-					manager: res.data.manager,
-					project: res.data.project,
-					project_amount: res.data.project_amount,
-					type: res.data.type,
-				};
+				const text = `${res.data.order_form_id} | ${
+					res.data.client_name
+				} | ${res.data.client_branch_name || "N/A"}`;
 
+				$("#id").val(id);
 				$("#due_date").val(res.data.due_date);
 				$("#billing_amount").val(res.data.billing_amount);
 				$("#receipt_number").val(res.data.receipt_number);
@@ -250,22 +216,22 @@ function edit(id, billing_status) {
 					res.data.overdue_interest > 0
 				);
 				$("#with_interest").trigger("change");
-				$("#orig_tasklead").html(
-					`Original Task/Lead: <strong>${text}</strong>`
+				$("#orig_order_form").html(
+					`Original Order Form: <strong>${text}</strong>`
 				);
 
 				setSelect2AjaxSelection(
-					"#tasklead_id",
+					"#order_form_id",
 					text,
-					res.data.tasklead_id
+					res.data.order_form_id
 				);
-				setTimeout(() => _loadTaskleadDetails(data), 200);
+				setTimeout(() => _displayOrderForm(res.data), 200);
 
 				setOptionValue("#bill_type", res.data.bill_type);
 				setOptionValue("#payment_method", res.data.payment_method);
 
-				if (!billing_status && res.data.billing_status !== "paid") {
-					$(".wrapper_paid").addClass("d-none");
+				if (billing_status && res.data.billing_status !== "paid") {
+					$(".wrapper_paid").removeClass("d-none");
 				}
 
 				if (res.data.billing_status === "paid") {
@@ -288,7 +254,7 @@ function edit(id, billing_status) {
 
 /* Delete record */
 function remove(id) {
-	deleteRecord(router.billing_invoice.delete, { id: id }, table);
+	deleteRecord(router.billing_invoice_order_forms.delete, { id: id }, table);
 }
 
 /* Change status record */
@@ -296,53 +262,188 @@ function change(id, changeTo, status) {
 	const data = { id: id, status: changeTo };
 	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
 
-	changeRecord(router.billing_invoice.change, data, title, table);
+	changeRecord(router.billing_invoice_order_forms.change, data, title, table);
 }
 
 /* Quotation via ajax data source */
-function _initTasklead() {
+function _initOrderForms() {
 	select2AjaxInit(
-		"#tasklead_id",
-		"Search & select a tasklead",
-		router.admin.common.quotations,
-		["id", "quotation", "client"],
-		_loadTaskleadDetails,
-		{ search_in: ["quotation", "client"] }
+		"#order_form_id",
+		"Search & select an order form",
+		router.inventory.common.order_forms,
+		"text",
+		_loadOrderFormDetails
 	);
 }
 
-/* Load selected tasklead/quotation details */
-function _loadTaskleadDetails(data) {
-	let html = "",
-		amount = 0;
+/* Load selected order_form/quotation details */
+function _loadOrderFormDetails(data) {
+	$(".order_form .initial").html("");
 
-	if (data.client) {
-		html = `
-			<h5 class="text-center">Task/Lead Details</h5>
-			<table class="table table-bordered">
-				<thead>
-					<tr>
-						<th>Client</th>
-						<th>Manger</th>
-						<th>Project</th>
-						<th>Amount</th>
-						<th>Quotation Type</th>
-					</tr>
-				</thead>
-				<tbody>				
-					<tr>					
-						<td>${data.client}</td>
-						<td>${data.manager}</td>
-						<td>${data.project}</td>
-						<td>${numberFormat(data.project_amount)}</td>
-						<td>${data.type || "N/A"}</td>
-					</tr>
-				</tbody>
-			</table>
-		`;
-		amount = data.project_amount || 0;
+	if (data && !isEmpty(data.id)) {
+		_fetchOrderFormItems(data.id);
+		_displayOrderForm(data);
+	}
+}
+
+/* Display order_form details */
+function _displayOrderForm(data) {
+	let amount = 0;
+
+	if (data.total_amount) {
+		amount = parseFloat(data.total_amount || 0);
+
+		let vatText = isEmpty(data.vat_amount) ? "Vat Ex." : "Vat Inc.";
+		let vat = parseFloat(data.vat_amount || data.of_vat_amount || 0);
+		let total = parseFloat(data.grand_total || data.of_grand_total || 0);
+		let html = `
+				<div>
+					<table class="table table-bordered">
+						<thead>
+							<tr class="text-bold">
+								<td>Purchased At</td>
+								<td>Total Discount</td>
+								<td>Total Amount</td>
+								<td>Vat Amount</td>
+								<td>Grand Total (${vatText})</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="text-bold text-danger">${data.purchase_at}</td>
+								<td class="text-bold text-danger">${numberFormat(data.total_discount || 0)}</td>
+								<td class="text-bold text-danger">${numberFormat(data.total_amount || 0)}</td>
+								<td class="text-bold text-danger">${numberFormat(vat)}</td>
+								<td class="text-bold text-danger">${numberFormat(total)}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			`;
+
+		$(".order_form .initial").html(html);
 	}
 
 	$("#billing_amount").attr("max", amount);
-	$(".tasklead-details").html(html);
+}
+
+/* Display order form items */
+function _displayOrderFormItems(id, data) {
+	let html = "";
+
+	if (!isEmpty(data)) {
+		let rows = "";
+		let totalItemPrice = 0;
+		let totalSellingPrice = 0;
+		let totalQuantity = 0;
+		let totalDiscount = 0;
+		let grandTotalPrice = 0;
+
+		$.each(data, (index, val) => {
+			let itemPrice = parseFloat(val.item_price || 0);
+			let sellingPrice = parseFloat(val.selling_price || 0);
+			let finalItemPrice = sellingPrice == 0 ? itemPrice : sellingPrice;
+			let totalPrice = parseFloat(val.total_price || 0);
+
+			if (totalPrice == 0) {
+				totalPrice = parseFloat(val.item_price * val.quantity);
+				totalPrice = parseFloat(totalPrice - val.discount);
+			}
+
+			rows += `
+				<tr>
+					<td>${val.inventory_id}</td>
+					<td>${val.supplier_name}</td>
+					<td>${val.item_model}</td>
+					<td>${val.item_description}</td>
+					<td>${val.unit || "N/A"}</td>
+					<td>${val.size || "N/A"}</td>
+					<td>${val.stocks}</td>
+					<td>${numberFormat(itemPrice)}</td>
+					<td>${numberFormat(finalItemPrice)}</td>
+					<td>${val.quantity}</td>
+					<td>${numberFormat(val.discount)}</td>
+					<td>${numberFormat(totalPrice)}</td>
+				</tr>
+			`;
+
+			totalItemPrice += itemPrice;
+			totalSellingPrice += finalItemPrice;
+			totalQuantity += parseFloat(val.quantity);
+			totalDiscount += parseFloat(val.discount);
+			grandTotalPrice += parseFloat(totalPrice);
+		});
+
+		html = `
+			<h5 class="text-center">Order Form <strong>#${id}</strong> Items</h5>
+			<table class="table table-bordered">
+				<thead>
+					<tr class="text-bold">
+						<td>Item #</td>
+						<td>Supplier</td>
+						<td>Item Model</td>
+						<td>Item Description</td>
+						<td>Item Unit</td>
+						<td>Item Size</td>
+						<td>Current Stocks</td>
+						<td>Item Price</td>
+						<td>Selling Price</td>
+						<td>Quantity</td>
+						<td>Discount</td>
+						<td>Total Price</td>
+					</tr>
+				</thead>
+				<tbody>${rows}</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="7" class="text-right text-bold">Grand Totals</td>
+						<td class="text-bold text-danger">${numberFormat(totalItemPrice)}</td>
+						<td class="text-bold text-danger">${numberFormat(totalSellingPrice)}</td>
+						<td class="text-bold text-danger">${numberFormat(totalQuantity)}</td>
+						<td class="text-bold text-danger">${numberFormat(totalDiscount)}</td>
+						<td class="text-bold text-danger">${numberFormat(grandTotalPrice)}</td>
+					</tr>
+				</tfoot>
+			</table>
+		`;
+	}
+
+	$(".order_form .items").html(html);
+}
+
+/* Fetch order form items by id */
+function _fetchOrderFormItems(id) {
+	if (_items[id]) {
+		_displayOrderFormItems(id, _items[id]);
+	}
+
+	const data = {
+		id: id,
+		items: true,
+	};
+
+	fetchRecord(router.inventory.order_form.fetch, data, modal, (res) => {
+		_items[id] = res.data;
+
+		_displayOrderFormItems(id, res.data);
+	});
+}
+
+/* Quotation via ajax data source */
+function _clearForm() {
+	$(`#${form}`)[0].reset();
+	$("#id").val("");
+	$("#billing_status").val("");
+	$("#days_overdue").val("");
+	$("#overdue_interest").val("");
+	$("#orig_order_form").html("");
+	$(".order_form .initial").html("");
+	$(".order_form .items").html("");
+	$(".wrapper_paid").addClass("d-none");
+	$("div.with_vat").addClass("d-none");
+	$("div.with_interest").addClass("d-none");
+	$(".with_interest-checkbox").addClass("d-none");
+
+	clearSelect2Selection("#order_form_id");
+	clearAlertInForm(elems);
 }

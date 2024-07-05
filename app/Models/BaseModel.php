@@ -24,10 +24,10 @@ class BaseModel extends Model
         if (isset($data['data']['status'])) {
             $status = $data['data']['status'];
 
-            $data['data'][$status .'_by'] = session('username');
-            $data['data'][$status .'_at'] = date('Y-m-d H:i:s');
+            $data['data'][$status . '_by'] = session('username');
+            $data['data'][$status . '_at'] = date('Y-m-d H:i:s');
         }
-        
+
         return $data;
     }
 
@@ -50,11 +50,11 @@ class BaseModel extends Model
     {
         $builder = $this->where('deleted_at IS NULL');
 
-        if (! $param) return $builder->countAllResults();
+        if (!$param) return $builder->countAllResults();
 
         return $builder->where('status', strtolower($param))->countAllResults();
-        
     }
+
     /**
      * Join other table with customers 
      * based on the params pass
@@ -67,16 +67,16 @@ class BaseModel extends Model
      * @return object|array|null        Return the builder
      */
     public function joinCustomers($builder, $table = null, $branch = false, $type = 'left')
-    {      
+    {
         $cmodel = new CustomerModel();
         $table  ??= $builder->getTable();
-        $table  = empty(explode('.', $table)) ? "{$table}.customer_id" : $table;
+        $table1 = (strpos('.', $table) === FALSE) ? "{$table}.customer_id" : $table;
 
-        $builder->join($cmodel->table, "{$table} = {$cmodel->table}.id", $type);
+        $builder->join($cmodel->table, "{$table1} = {$cmodel->table}.id", $type);
 
         if ($branch) {
             $branchModel = new CustomerBranchModel();
-            $branchTable = is_string($branch) && ! empty(explode('.', $table))
+            $branchTable = is_string($branch) && (strpos('.', $branch) !== FALSE)
                 ? $branch : "{$table}.customer_branch_id";
 
             $builder->join($branchModel->table, "({$branchTable} = {$branchModel->table}.id AND {$branchTable} IS NOT NULL)", 'left');
@@ -84,5 +84,4 @@ class BaseModel extends Model
 
         return $builder;
     }
-
 }

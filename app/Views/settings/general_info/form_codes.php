@@ -16,9 +16,14 @@
                 <small id="alert_purchase_order_form_code" class="text-danger"></small>
             </div>
             <div class="form-group">
-                <label class="required" for="billing_invoice_form_code">Billing Invoice</label>
+                <label class="required" for="billing_invoice_form_code">Billing Invoice (Task/Leads)</label>
                 <input type="text" name="billing_invoice_form_code" id="billing_invoice_form_code" class="form-control" placeholder="Ex. F07">
                 <small id="alert_billing_invoice_form_code" class="text-danger"></small>
+            </div>
+            <div class="form-group">
+                <label class="required" for="billing_invoice_order_forms_form_code">Billing Invoice (Order Forms)</label>
+                <input type="text" name="billing_invoice_order_forms_form_code" id="billing_invoice_order_forms_form_code" class="form-control" placeholder="Ex. F08">
+                <small id="alert_billing_invoice_order_forms_form_code" class="text-danger"></small>
             </div>
             <div class="form-group">
                 <label class="required" for="service_report_form_code">Service Report</label>

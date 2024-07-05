@@ -25,6 +25,7 @@ class FundsHistoryModel extends Model
         'transaction_amount',
         'current_funds',
         'coming_from',
+        'module_code',
         'expenses',
         'remarks',
     ];
@@ -38,6 +39,10 @@ class FundsHistoryModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'billing_invoice_id'     => [
+            'rules' => 'permit_empty',
+            'label' => 'billing invoice id',
+        ],
         'transaction_type'     => [
             'rules' => 'required',
             'label' => 'type',
@@ -90,7 +95,7 @@ class FundsHistoryModel extends Model
     /**
      * For dataTables
      */
-    public function noticeTable($request) 
+    public function noticeTable($request)
     {
         $builder    = $this->db->table($this->table);
         $compute    = "
@@ -99,14 +104,14 @@ class FundsHistoryModel extends Model
         $columns    = "
             {$this->table}.id,
             {$this->table}.transaction_type,
-            ".dt_sql_number_format("{$this->table}.transaction_amount")." AS transaction_amount,
-            ".dt_sql_number_format("{$this->table}.current_funds")." AS previous_funds,
-            ".dt_sql_number_format("{$compute}")." AS current_funds,
+            " . dt_sql_number_format("{$this->table}.transaction_amount") . " AS transaction_amount,
+            " . dt_sql_number_format("{$this->table}.current_funds") . " AS previous_funds,
+            " . dt_sql_number_format("{$compute}") . " AS current_funds,
             {$this->table}.coming_from,
             {$this->table}.expenses,
             {$this->table}.remarks,
             cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at
+            " . dt_sql_datetime_format("{$this->table}.created_at") . " AS created_at
         ";
 
         $builder->select(new \CodeIgniter\Database\RawSql($columns));
@@ -116,7 +121,7 @@ class FundsHistoryModel extends Model
 
         // Filters
         $this->filterParam($request, $builder, 'transaction_type', 'transaction_type');
-        $this->filterParam($request, $builder, 'coming_from', 'coming_from');
+        $this->filterParam($request, $builder, 'module_code', 'module_code');
         $this->filterParam($request, $builder, 'expenses', 'expenses');
 
         $builder->where("{$this->table}.deleted_at IS NULL");
@@ -130,13 +135,13 @@ class FundsHistoryModel extends Model
      */
     public function dtTransactionTypeFormat()
     {
-        $closureFun = function($row) {
+        $closureFun = function ($row) {
             $text    = ucwords($row['transaction_type']);
             $color   = $row['transaction_type'] === 'incoming' ? 'success' : 'danger';
 
             return text_badge($color, $text);
         };
-        
+
         return $closureFun;
     }
 }

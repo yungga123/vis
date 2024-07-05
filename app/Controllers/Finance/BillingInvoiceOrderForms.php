@@ -3,8 +3,11 @@
 namespace App\Controllers\Finance;
 
 use App\Controllers\BaseController;
-use App\Models\BillingInvoiceModel;
+use App\Models\BillingInvoiceOrderFormModel;
+use App\Models\CustomerBranchModel;
 use App\Models\CustomerModel;
+use App\Models\OrderFormItemModel;
+use App\Models\OrderFormModel;
 use App\Models\TaskLeadView;
 use App\Traits\CommonTrait;
 use App\Traits\FinanceTrait;
@@ -12,7 +15,7 @@ use App\Traits\GeneralInfoTrait;
 use App\Traits\HRTrait;
 use monken\TablesIgniter;
 
-class BillingInvoice extends BaseController
+class BillingInvoiceOrderForms extends BaseController
 {
     /* Declare trait here to use */
     use CommonTrait, HRTrait, GeneralInfoTrait, FinanceTrait;
@@ -52,8 +55,8 @@ class BillingInvoice extends BaseController
      */
     public function __construct()
     {
-        $this->_model           = new BillingInvoiceModel(); // Current model
-        $this->_module_code     = MODULE_CODES['billing_invoice']; // Current module
+        $this->_model           = new BillingInvoiceOrderFormModel(); // Current model
+        $this->_module_code     = MODULE_CODES['billing_invoice_order_forms']; // Current module
         $this->_module_title    = MODULES[$this->_module_code]; // Current module title
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
@@ -78,18 +81,21 @@ class BillingInvoice extends BaseController
         $data['sweetalert2']    = true;
         $data['toastr']         = true;
         $data['select2']        = true;
-        $data['custom_js']      = ['finance/billing_invoice/index.js', 'dt_filter.js'];
+        $data['custom_js']      = ['finance/billing_invoice_order_forms/index.js', 'dt_filter.js'];
         $data['routes']         = json_encode([
-            'billing_invoice' => [
-                'list'      => url_to('finance.billing_invoice.list'),
-                'fetch'     => url_to('finance.billing_invoice.fetch'),
-                'delete'    => url_to('finance.billing_invoice.delete'),
-                'change'    => url_to('finance.billing_invoice.change'),
+            'billing_invoice_order_forms' => [
+                'list'      => url_to('finance.billing_invoice_order_forms.list'),
+                'fetch'     => url_to('finance.billing_invoice_order_forms.fetch'),
+                'delete'    => url_to('finance.billing_invoice_order_forms.delete'),
+                'change'    => url_to('finance.billing_invoice_order_forms.change'),
             ],
-            'admin' => [
+            'inventory' => [
                 'common' => [
-                    'quotations' => url_to('admin.common.quotations'),
-                ]
+                    'order_forms'   => url_to('inventory.common.order_forms'),
+                ],
+                'order_form' => [
+                    'fetch'         => url_to('inventory.order_form.fetch'),
+                ],
             ]
         ]);
         $data['php_to_js_options'] = json_encode([
@@ -97,10 +103,10 @@ class BillingInvoice extends BaseController
             'vat_percent'       => $this->getVatPercent(),
         ]);
 
-        // Check overdue billing invoices
+        // Check overdue billing invoice (Order Forms)
         $this->_model->checkOverdues();
 
-        return view('finance/billing_invoice/index', $data);
+        return view('finance/billing_invoice_order_forms/index', $data);
     }
 
     /**
@@ -110,17 +116,16 @@ class BillingInvoice extends BaseController
      */
     public function list()
     {
-        $tlVModel   = new TaskLeadView();
+        $custModel  = new CustomerModel();
+        $cbModel    = new CustomerBranchModel();
         $table      = new TablesIgniter();
         $request    = $this->request->getVar();
         $builder    = $this->_model->noticeTable($request, $this->_permissions);
         $fields     = [
             'id',
-            'tasklead_id',
-            'quotation',
+            'order_form_id',
             'client',
-            'manager',
-            'quotation_type',
+            'client_branch',
             'due_date',
             'bill_type',
             'payment_method',
@@ -144,9 +149,8 @@ class BillingInvoice extends BaseController
         $table->setTable($builder)
             ->setSearch([
                 "{$this->_model->table}.id",
-                "{$tlVModel->table}.quotation_num",
-                "{$tlVModel->table}.customer_name",
-                "{$tlVModel->table}.employee_name",
+                "{$custModel->table}.name",
+                "{$cbModel->table}.branch_name",
             ])
             ->setOrder(array_merge([null, null, null, null], $fields))
             ->setOutput(
@@ -183,7 +187,7 @@ class BillingInvoice extends BaseController
                 $with_vat       = ($request['with_vat'] ?? 0) == 1;
                 $inputs         = [
                     'id'                => $id,
-                    'tasklead_id'       => $request['tasklead_id'] ?? null,
+                    'order_form_id'     => $request['order_form_id'] ?? null,
                     'due_date'          => $request['due_date'] ?? null,
                     'bill_type'         => $request['bill_type'] ?? null,
                     'payment_method'    => $request['payment_method'] ?? null,
@@ -201,6 +205,10 @@ class BillingInvoice extends BaseController
                 $is_paid        = ($request['billing_status'] ?? '') === 'paid';
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
                 $action         = $is_paid ? 'MARK_PAID' : $action;
+
+                if ($id) {
+                    $data['message']    = res_lang('success.updated', $this->_module_title);
+                }
 
                 if (!empty($request['attention_to'] ?? '')) {
                     $inputs     = [
@@ -233,6 +241,8 @@ class BillingInvoice extends BaseController
                         // Update funds
                         $this->saveCompanyFunds($request['amount_paid']);
 
+                        log_msg($id);
+
                         // Save funds transaction history
                         $params = [
                             'billing_invoice_id'    => $id,
@@ -243,13 +253,11 @@ class BillingInvoice extends BaseController
                             'module_code'           => $this->_module_code,
                         ];
                         $this->saveFundTransaction($params);
+
+                        $data['message'] = res_lang('success.paid', $this->_module_title);
                     } else {
                         $inputs['amount_paid'] = 0;
                     }
-                }
-
-                if ($id) {
-                    $data['message']    = res_lang('success.updated', $this->_module_title);
                 }
 
                 if (!$this->_model->save($inputs)) {
@@ -282,14 +290,17 @@ class BillingInvoice extends BaseController
                 $id         = $this->request->getVar('id');
                 $record     = $this->_model->fetch($id, true);
                 $compare_to = $record['billing_status'] === 'paid' ? $record['paid_at'] : null;
-
-                $overdues = $this->checkNCalculateOverdues($record['billing_amount'], $record['due_date'], $compare_to);
+                $overdues   = $this->checkNCalculateOverdues($record['billing_amount'], $record['due_date'], $compare_to);
 
                 if (!empty($overdues)) {
                     $record['days_overdue']   = $overdues['days'];
                 }
 
-                $data['data'] = $record;
+                $ofItems    = new OrderFormItemModel();
+                $items      = $ofItems->getItems($id, true);
+
+                $data['data']           = $record;
+                $data['data']['items']  = $items;
 
                 return $data;
             },
@@ -332,7 +343,7 @@ class BillingInvoice extends BaseController
     }
 
     /**
-     * Changing status of billing invoice
+     * Changing status of billing invoice (Order Forms)
      *
      * @return json
      */
@@ -378,22 +389,34 @@ class BillingInvoice extends BaseController
         // Check role & action if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
 
-        $tlVModel   = new TaskLeadView();
+        $ofModel    = new OrderFormModel();
         $custModel  = new CustomerModel();
-        $columns    = $this->_model->columns(true) . ",
+        $branchModel = new CustomerBranchModel();
+
+        $columns    = array_merge([$this->_model->primaryKey], $this->_model->allowedFields);
+        $columns    = array_map(function ($column) {
+            return "{$this->_model->table}.{$column}";
+        }, $columns);
+
+        $columns    = implode(',', $columns);
+        $columns    .= ",
+            {$this->_model->table}.created_at,
+            {$this->_model->table}.approved_at,
+            {$custModel->table}.name AS client,
+            {$branchModel->table}.branch_name AS client_branch,
             cb.employee_name AS created_by,
             ab.employee_name AS approved_by,
             cb.position AS created_by_position,
             ab.position AS approved_by_position,
-            {$tlVModel->table}.customer_id AS client_id,
+            {$ofModel->table}.customer_id AS client_id,
             " . dt_sql_concat_client_address('', 'client_address') . "
         ";
         $builder    = $this->_model->select($columns);
 
-        $this->_model->joinBookedTasklead($builder, $tlVModel);
+        $this->_model->joinOrderForms($builder, null, true);
+
         $this->joinAccountView($builder, "{$this->_model->table}.created_by", 'cb');
         $this->joinAccountView($builder, "{$this->_model->table}.approved_by", 'ab');
-        $builder->join($custModel->table, "{$tlVModel->table}.customer_id = {$custModel->table}.id", 'left');
 
         $billing_invoice = $builder->where("{$this->_model->table}.id", $id)->first();
 
@@ -405,7 +428,7 @@ class BillingInvoice extends BaseController
         // Get general info
         $keys = [
             'vat_percent',
-            'billing_invoice_form_code',
+            'billing_invoice_order_forms_form_code',
         ];
         $keys = array_merge($this->getCompanyInfo([], true), $keys);
         $info = $this->getGeneralInfo($keys, true);
@@ -413,7 +436,7 @@ class BillingInvoice extends BaseController
         $data['billing_invoice'] = $billing_invoice;
         $data['general_info']   = $info;
         $data['company_info']   = $this->getCompanyInfo($info);
-        $data['title']          = 'Print Billing Invoice';
+        $data['title']          = 'Print Billing Invoice (Order Forms)';
         $data['disable_auto_print'] = true;
         $data['sweetalert2']    = true;
         $data['custom_js']      = [

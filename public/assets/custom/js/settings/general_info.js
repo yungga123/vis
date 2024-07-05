@@ -65,6 +65,7 @@ $(document).ready(function () {
 		const elems = [
 			"purchase_order_form_code",
 			"billing_invoice_form_code",
+			"billing_invoice_order_forms_form_code",
 			"service_report_form_code",
 		];
 

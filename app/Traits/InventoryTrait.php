@@ -2,13 +2,19 @@
 
 namespace App\Traits;
 
+use App\Models\CustomerBranchModel;
+use App\Models\CustomerModel;
 use App\Models\PRFItemModel;
 use App\Models\InventoryModel;
 use App\Models\InventoryLogsModel;
 use App\Models\JobOrderModel;
+use App\Models\OrderFormModel;
 
 trait InventoryTrait
 {
+    /* Declare trait here to use */
+    use GeneralInfoTrait;
+
     /**
      * Fetching/searching job order by quotation number
      *
@@ -241,5 +247,61 @@ trait InventoryTrait
         $builder->join($inventoryModel->table, "{$table}.inventory_id = {$inventoryModel->table}.id", 'left');
         // Then join inventory with inventory_View
         if ($withView) $inventoryModel->joinView($builder);
+    }
+
+    /**
+     * Fetching/searching order fomrs
+     *
+     * @param string $q         The query to search for
+     * @param array $options    Identifier for the options - pagination or not
+     * @param string $fields    Columns or fields in the select
+     * @return array            The results of the search
+     */
+    public function fetchOrderForms($q, $options = [], $fields = '')
+    {
+        $model          = new OrderFormModel();
+        $customerModel  = new CustomerModel();
+        $branchModel    = new CustomerBranchModel();
+        $branchField    = "IF({$branchModel->table}.branch_name IS NULL OR {$branchModel->table}.branch_name = '', 'N/A', {$branchModel->table}.branch_name)";
+        $fields         = $fields ? $fields : "
+            {$model->table}.id,
+            CONCAT_WS(' | ', {$model->table}.id, {$customerModel->table}.name, {$branchField}) AS text,
+            {$customerModel->table}.name AS customer_name,
+            {$customerModel->table}.type AS customer_type,
+            {$branchModel->table}.branch_name AS customer_branch_name,
+            ".dt_sql_datetime_format("{$model->table}.purchase_at")." AS purchase_at,
+            {$model->table}.total_amount,
+            {$model->table}.total_discount,
+            {$model->table}.vat_amount,
+            {$model->table}.grand_total
+        ";
+        $builder        = $model->select($fields);
+        
+        $model->joinCustomers($builder, $customerModel, 'left', true);
+
+        if (! empty($q)) {
+            if (empty($options)) {                
+                $builder->where("{$model->table}.id", $q);
+
+                return $builder->find();
+            }
+
+            if (is_numeric($q)) {
+                $builder->like("{$model->table}.id", $q);
+            } else {
+                $builder->like("{$customerModel->table}.name", $q);
+                $builder->orLike("{$branchModel->table}.branch_name", $q);
+            }
+        }
+
+        $builder->orderBy("{$model->table}.id", 'DESC');
+
+        $result = $builder->paginate($options['perPage'], 'default', $options['page']);
+        $total  = $builder->countAllResults();
+
+        return [
+            'data'  => $result,
+            'total' => $total
+        ];     
     }
 }
