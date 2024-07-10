@@ -77,5 +77,6 @@
 </div>
 <?= $this->include('sales/customer_support/form'); ?>
 <?= $this->include('sales/customer_support/change'); ?>
+<?= $this->include('sales/customer_support/logs'); ?>
 <?= $this->include('templates/loading'); ?>
 <?=$this->endSection();?>

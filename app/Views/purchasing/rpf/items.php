@@ -26,6 +26,7 @@
                                 <th>Qty In</th>
                                 <th>Cost</th>
                                 <th>Total Cost</th>
+                                <th>Total Cost + Vat</th>
                                 <th>Purpose</th>
                             </tr>
                         </thead>
@@ -40,9 +41,10 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
                                 <td><strong>Total Amount</strong></td>
+                                <td><strong class="text-danger" id="total_cost"></strong></td>
                                 <td><strong class="text-danger" id="total_amount"></strong></td>
+                                <td><strong class="text-danger" id="total_amount_with_vat"></strong></td>
                                 <td></td>
                             </tr>
                         </tfoot>

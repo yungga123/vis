@@ -41,4 +41,20 @@ class Common extends BaseController
             $this->logExceptionError($e, __METHOD__);
         }
     }
+
+    /* Search order forms by id, client name or client branch name */
+    public function searchOrderForms()
+    {
+        try {
+            $options = $this->request->getVar('options') ?? [];
+            $results = $this->fetchOrderForms(
+                $this->request->getVar('q'),
+                $options
+            );
+
+            return $this->response->setJSON($results);
+        } catch (\Exception $e) {
+            $this->logExceptionError($e, __METHOD__);
+        }
+    }
 }

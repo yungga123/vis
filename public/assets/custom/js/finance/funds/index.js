@@ -7,7 +7,7 @@ $(document).ready(function () {
 	elems = ["transaction_amount", "expenses", "remarks"];
 
 	select2Init("#filter_transaction_type");
-	select2Init("#filter_coming_from");
+	select2Init("#filter_module_code");
 	select2Init("#filter_expenses");
 
 	/* Load dataTable */
@@ -53,15 +53,17 @@ function btnReleaseFund(funds, canRelease) {
 /* For filtering and reseting */
 function filterData(reset = false) {
 	const transaction_type = getSelect2Selection("#filter_transaction_type");
-	const coming_from = getSelect2Selection("#filter_coming_from");
+	const module_code = getSelect2Selection("#filter_module_code");
 	const expenses = getSelect2Selection("#filter_expenses");
 	const params = {
 		transaction_type: transaction_type,
-		coming_from: coming_from,
+		module_code: module_code,
 		expenses: expenses,
 	};
 	const condition =
-		!isEmpty(transaction_type) || !isEmpty(coming_from) || !isEmpty(expenses);
+		!isEmpty(transaction_type) ||
+		!isEmpty(module_code) ||
+		!isEmpty(expenses);
 
 	filterParam(
 		router.funds.list,
@@ -70,7 +72,7 @@ function filterData(reset = false) {
 		condition,
 		() => {
 			clearSelect2Selection("#filter_transaction_type");
-			clearSelect2Selection("#filter_coming_from");
+			clearSelect2Selection("#filter_module_code");
 			clearSelect2Selection("#filter_expenses");
 		},
 		reset

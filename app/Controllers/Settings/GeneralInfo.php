@@ -134,6 +134,7 @@ class GeneralInfo extends BaseController
                     $data ['errors']    = $this->validator->getErrors();
                     $data['status']     = res_lang('status.error');
                     $data ['message']   = res_lang('error.validation');
+
                     return $data;
                 } 
                 
@@ -165,10 +166,12 @@ class GeneralInfo extends BaseController
                 if (! empty($curFilename)) {
                     // Remove the previous file
                     $filepath = $this->fullFilePathLogo() . $curFilename;
+
                     $this->removeFile($filepath);
                 }
                 
                 $data['files'] = $file;
+
                 return $data;
             }
         );
@@ -206,6 +209,7 @@ class GeneralInfo extends BaseController
                     $data['data']       = $this->_model->fetchAll();
                     $data['base_url']   = base_url();
                 }
+                
                 return $data;
             }
         );

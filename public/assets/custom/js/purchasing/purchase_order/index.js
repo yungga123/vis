@@ -5,7 +5,8 @@ var table,
 	itemFieldTable,
 	rpfSelector,
 	poItemModal,
-	_status;
+	_status,
+	_vat_percent;
 
 $(document).ready(function () {
 	table = "purchase_order_table";
@@ -16,6 +17,7 @@ $(document).ready(function () {
 	rpfSelector = "#rpf_id";
 	poItemModal = "po_items_modal";
 	_status = $pjOptions.po_status;
+	_vat_percent = $pjOptions.vat_percent;
 
 	/* Load dataTable */
 	loadDataTable(table, router.purchase_order.list, METHOD.POST);
@@ -234,7 +236,10 @@ function edit(id) {
 				setSelect2AjaxSelection(rpfSelector, text, res.data.rpf_id);
 
 				// Toggle and populate rpf details
-				toggleRpfDetails(res.data.rpf.date_needed, res.data.rpf.requested_at);
+				toggleRpfDetails(
+					res.data.rpf.date_needed,
+					res.data.rpf.requested_at
+				);
 				populateRpfItems(res.data.items);
 
 				// Show attention_to field
@@ -308,6 +313,7 @@ function populateRpfItems(items, itemId, changeTo) {
 		let totalCostAvg = 0,
 			totalDiscountAvg = 0,
 			totalAmount = 0,
+			totalVatAvg = 0,
 			totalAmountReceived = 0;
 
 		$.each(items, (index, val) => {
@@ -321,7 +327,9 @@ function populateRpfItems(items, itemId, changeTo) {
 				<input type="hidden" name="quantity_in[]" value="${val.quantity_in}" class="form-control" readonly>
 			`;
 			const onkeyEvent =
-				'onkeyup="validate(event, ' + parseFloat(val.quantity_in) + ')"';
+				'onkeyup="validate(event, ' +
+				parseFloat(val.quantity_in) +
+				')"';
 			const received_q = `
 				<input type="number" name="received_q[]" id="received_q_${index}" class="form-control" placeholder="Qty" ${onkeyEvent} value="${val.quantity_in}" max="${val.quantity_in}" data-item_cost="${val.item_sdp}">
 			`;
@@ -337,13 +345,17 @@ function populateRpfItems(items, itemId, changeTo) {
 				`
 				: "";
 
-			let totalCost = Math.floor(val.quantity_in * val.item_sdp);
-			let totalCostReceived = Math.floor(val.received_q * val.item_sdp);
+			let totalCost = parseFloat(val.quantity_in * val.item_sdp);
+			let vatAmount = parseFloat(totalCost * _vat_percent);
+			let totalCostReceived = parseFloat(val.received_q * val.item_sdp);
 
 			totalCostAvg += parseFloat(val.item_sdp || 0);
 			totalDiscountAvg += parseFloat(val.discount || 0);
 			totalAmount = parseFloat(totalAmount + totalCost);
-			totalAmountReceived = parseFloat(totalAmountReceived + totalCostReceived);
+			totalVatAvg = parseFloat(totalVatAvg + vatAmount);
+			totalAmountReceived = parseFloat(
+				totalAmountReceived + totalCostReceived
+			);
 
 			let discount = `
 				<input type="number" name="discount[]" id="discount_${index}" class="form-control" 
@@ -380,28 +392,33 @@ function populateRpfItems(items, itemId, changeTo) {
 						<small class="text-danger"></small>
 					</td>
 					<td class="total_cost" data-value="${totalCost}">${numberFormat(totalCost)}</td>
+					<td>${numberFormat(parseFloat(totalCost + vatAmount))}</td>
 					${receivedQtyDate}
 					<td>${val.purpose || "N/A"}</td>
 				</tr>
 			`;
 		});
 
-		$(`.total_cost`)
+		$(`#po_items_table .total_cost`)
 			.text(numberFormat(totalCostAvg))
 			.attr("data-value", totalCostAvg);
-		$(`.total_discount`)
+		$(`#po_items_table .total_discount`)
 			.text(numberFormat(totalDiscountAvg))
 			.attr("data-value", totalDiscountAvg);
-		$(`.total_amount`)
+		$(`#po_items_table .total_amount`)
 			.text(numberFormat(totalAmount - totalDiscountAvg))
 			.attr("data-value", totalAmount);
-		$(`#total_amount_received`).text(
+		$(`#po_items_table .total_amount_with_vat`).text(
+			numberFormat(totalAmount + totalVatAvg - totalDiscountAvg)
+		);
+		$(`#po_items_table #total_amount_received`).text(
 			totalAmountReceived
 				? numberFormat(totalAmountReceived - totalDiscountAvg || 0)
 				: ""
 		);
 	} else {
-		html = '<tr><td colspan="15" class="center">No PO items found...</td></tr>';
+		html =
+			'<tr><td colspan="15" class="center">No PO items found...</td></tr>';
 	}
 
 	itemId = itemId || "rpf_item_details";
@@ -434,7 +451,9 @@ function validate(evt, quantity_in, itemCost, isDiscount = false) {
 		$(totalCostTdElem).text(numberFormat(totalCost - value || 0));
 		$(totalCostTdElem).attr("data-value", totalCost - value || 0);
 
-		const totalDiscountElem = $("#rpf_item_details table td.total_discount");
+		const totalDiscountElem = $(
+			"#rpf_item_details table td.total_discount"
+		);
 		const totalAmountElem = $("#rpf_item_details table td.total_amount");
 		const inputDiscountElems = $(
 			"#rpf_item_details table input[name='discount[]']"

@@ -89,7 +89,8 @@ class RequestPurchaseForm extends BaseController
             ],
         ]);
         $data['php_to_js_options'] = json_encode([
-            'rpf_status'  => set_rpf_status()
+            'rpf_status'    => set_rpf_status(),
+            'vat_percent'   => $this->getVatPercent(),
         ]);
 
         return view('purchasing/rpf/index', $data);
@@ -332,6 +333,7 @@ class RequestPurchaseForm extends BaseController
         $data['rpf_items']      = $items;
         $data['title']          = 'Print Requisition Form';
         $data['company_logo']   = $this->getCompanyLogo();
+        $data['vat_percent']    = $this->getVatPercent();
 
         return view('purchasing/rpf/print', $data);
     }

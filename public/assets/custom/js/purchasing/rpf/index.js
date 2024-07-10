@@ -5,7 +5,8 @@ var table,
 	invSelector,
 	supSelector,
 	itemFieldTable,
-	_status;
+	_status,
+	_vat_percent;
 
 $(document).ready(function () {
 	table = "rpf_table";
@@ -23,6 +24,7 @@ $(document).ready(function () {
 	supSelector = ".supplier_id";
 	itemFieldTable = $("#item_field_table tbody");
 	_status = $pjOptions.rpf_status;
+	_vat_percent = $pjOptions.vat_percent;
 
 	/* Load dataTable */
 	loadDataTable(table, router.rpf.list, METHOD.POST);
@@ -151,20 +153,27 @@ function view(id, changeTo, status) {
 				let html = "";
 
 				if (!isEmpty(res.data)) {
-					let totalAmount = 0,
-						totalAmountReceived = 0;
+					let totalCostAmt = 0,
+						grandTotalCost = 0,
+						grandTotalCostReceived = 0,
+						grandTotalVat = 0;
 
 					$.each(res.data, (index, val) => {
-						const totalCost = Math.floor(
+						const totalCost = parseFloat(
 							val.quantity_in * val.item_sdp
 						);
-						const totalCostReceived = Math.floor(
+						const vatAmount = parseFloat(totalCost * _vat_percent);
+						const totalCostReceived = parseFloat(
 							val.received_q * val.item_sdp
 						);
 
-						totalAmount = Math.floor(totalAmount + totalCost);
-						totalAmountReceived = Math.floor(
-							totalAmountReceived + totalCostReceived
+						totalCostAmt += parseFloat(
+							val.item_sdp
+						);
+						grandTotalCost = parseFloat(grandTotalCost + totalCost);
+						grandTotalVat = parseFloat(grandTotalVat + vatAmount);
+						grandTotalCostReceived = parseFloat(
+							grandTotalCostReceived + totalCostReceived
 						);
 						html += `
 							<tr>
@@ -179,13 +188,19 @@ function view(id, changeTo, status) {
 								<td>${val.quantity_in}</td>
 								<td>${numberFormat(val.item_sdp)}</td>
 								<td>${numberFormat(totalCost)}</td>
+								<td>${numberFormat(vatAmount + totalCost)}</td>
 								<td>${val.purpose || "N/A"}</td>
 							</tr>
 						`;
 					});
-					$(`#total_amount`).text(numberFormat(totalAmount));
+
+					$(`#total_cost`).text(numberFormat(totalCostAmt));
+					$(`#total_amount`).text(numberFormat(grandTotalCost));
+					$(`#total_amount_with_vat`).text(
+						numberFormat(grandTotalVat + grandTotalCost)
+					);
 					$(`#total_amount_received`).text(
-						numberFormat(totalAmountReceived)
+						numberFormat(grandTotalCostReceived)
 					);
 				} else {
 					html =
@@ -196,6 +211,7 @@ function view(id, changeTo, status) {
 				$(`#rpf_items_modal`).modal("show");
 			} else {
 				$(`#rpf_items_modal`).modal("hide");
+
 				notifMsgSwal(res.status, res.message, res.status);
 			}
 		})
@@ -295,8 +311,8 @@ function change(id, changeTo, status, proceed) {
 	const swalMsg = `
 		<div>RPF #: <strong>${id}</strong></div>
 		<div>Are you sure you want to <strong>${strUpper(
-			changeTo
-		)}</strong> this RPF?</div>
+		changeTo
+	)}</strong> this RPF?</div>
 	`;
 	const data = { id: id, status: changeTo };
 

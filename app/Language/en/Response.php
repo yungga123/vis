@@ -13,6 +13,7 @@ return [
         'changed'   => '{title} has been {status}!',
         'uploaded'  => '{title} has been uploaded!',
         'removed'   => '{title} has been removed!',
+        'paid'      => '{title} has been paid!',
     ],
     'error' => [
         'validation'    => 'Validation error!',

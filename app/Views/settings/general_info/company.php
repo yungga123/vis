@@ -33,9 +33,19 @@
                                 <small id="alert_company_contact_number" class="text-danger"></small>
                             </div>
                             <div class="form-group">
+                                <label class="required" for="company_telephone_number">Telephone Number</label>
+                                <input type="text" name="company_telephone_number" id="company_telephone_number" class="form-control" placeholder="Telephone Number">
+                                <small id="alert_company_telephone_number" class="text-danger"></small>
+                            </div>
+                            <div class="form-group">
                                 <label class="required" for="company_email_address">Email Addess</label>
                                 <input type="text" name="company_email_address" id="company_email_address" class="form-control" placeholder="Email Addess">
                                 <small id="alert_company_email_address" class="text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <label class="required" for="company_tin">Tax Identification Number (TIN)</label>
+                                <input type="text" name="company_tin" id="company_tin" class="form-control" placeholder="TIN">
+                                <small id="alert_company_tin" class="text-danger"></small>
                             </div>
                         </div>
                     </div>

@@ -204,6 +204,7 @@ class CustomerSupportModel extends Model
             ".dt_sql_date_format("{$this->table}.due_date")." AS due_date,
             ".dt_sql_date_format("{$this->table}.follow_up_date")." AS follow_up_date,
             {$this->table}.remarks,
+            {$this->view}.specialists,
             {$this->view}.specialists_formatted,
             {$this->view}.created_by,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at,
@@ -245,8 +246,54 @@ class CustomerSupportModel extends Model
                 EOF;
                 $buttons .= dt_button_html([
                     'text'      => $dropdown ? 'Change' : '',
-                    'button'    => 'btn-primary',
+                    'button'    => 'btn-success',
                     'icon'      => 'fas fa-exchange-alt',
+                    'condition' => $onclick,
+                ], $dropdown);
+            }
+
+            if (check_permissions($permissions, 'ADD_LOG') && $row['status'] === 'pending') {
+                $onclick = <<<EOF
+                    onclick="addLog({$row[$id]})" title="Add Log"
+                EOF;
+                $buttons .= dt_button_html([
+                    'text'      => $dropdown ? 'Add Log' : '',
+                    'button'    => 'btn-primary',
+                    'icon'      => 'fas fa-calendar-plus',
+                    'condition' => $onclick,
+                ], $dropdown);
+            }
+
+            if (check_permissions($permissions, 'VIEW_LOGS')) {
+                $initial_log    = [
+                    'client_name'           => $row['client_name'],
+                    'client_branch_name'    => $row['client_branch_name'],
+                    'ticket_number'         => $row['ticket_number'],
+                    'security_ict_system'   => $row['security_ict_system'],
+                    'priority'              => $row['priority'],
+                    'due_date'              => $row['due_date'],
+                    'follow_up_date'        => $row['follow_up_date'],
+                    'issue'                 => $row['issue'],
+                    'remarks'               => $row['remarks'],
+                    'specialists'           => $row['specialists'],
+                    'created_by'            => $row['created_by'],
+                    'created_at'            => $row['created_at'],
+                    'initial_log'           => [
+                        'findings'          => $row['findings'],
+                        'action'            => $row['action'],
+                        'troubleshooting'   => $row['troubleshooting'],
+                        'logged_by'         => $row['created_by'],
+                        'logged_at'         => $row['created_at'],
+                    ],
+                ];
+                $initial_log    = htmlspecialchars(json_encode($initial_log));
+                $onclick        = <<<EOF
+                    onclick="viewLogs({$row[$id]}, '{$initial_log}')" title="View Logs"
+                EOF;
+                $buttons        .= dt_button_html([
+                    'text'      => $dropdown ? 'View Logs' : '',
+                    'button'    => 'btn-info',
+                    'icon'      => 'fas fa-history',
                     'condition' => $onclick,
                 ], $dropdown);
             }

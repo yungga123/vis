@@ -71,12 +71,14 @@ if (! function_exists('get_nav_menus'))
         );
         $is_finance     = (
             url_is('finance/billing-invoice') ||
+            url_is('finance/billing-invoice/order-forms') ||
             url_is('finance/funds')
         );
         $is_admin       = (
             url_is('admin/job-orders') || 
             url_is('admin/schedules') || 
-            url_is('admin/dispatch')
+            url_is('admin/dispatch') || 
+            url_is('admin/service-reports')
         );
         
 		$menu           = [
@@ -337,6 +339,13 @@ if (! function_exists('setup_modules'))
                 'class'     => (url_is('finance/billing-invoice') ? 'active' : ''),
                 'icon'      => 'fas fa-file-invoice',
             ],
+            'FINANCE_BILLING_INVOICE_ORDER_FORMS'  => [
+                'menu'      => 'FINANCE', // Leave empty if none
+                'name'      => get_modules('FINANCE_BILLING_INVOICE_ORDER_FORMS'),
+                'url'       => url_to('finance.billing_invoice_order_forms.home'),
+                'class'     => (url_is('finance/billing-invoice/order-forms') ? 'active' : ''),
+                'icon'      => 'fas fa-file-alt',
+            ],
             'FINANCE_FUNDS'  => [
                 'menu'      => 'FINANCE', // Leave empty if none
                 'name'      => get_modules('FINANCE_FUNDS'),
@@ -357,6 +366,13 @@ if (! function_exists('setup_modules'))
                 'url'       => url_to('sales.customer_support.home'),
                 'class'     => (url_is('sales/customer-supports') ? 'active' : ''),
                 'icon'      => 'fas fa-headset',
+            ],
+            'ADMIN_SERVICE_REPORTS'        => [
+                'menu'      => 'ADMIN', // Leave empty if none
+                'name'      => get_modules('ADMIN_SERVICE_REPORTS'),
+                'url'       => url_to('admin.service_report.home'),
+                'class'     => (url_is('admin/service-reports') ? 'active' : ''),
+                'icon'      => 'fas fa-book',
             ],
         ];
         

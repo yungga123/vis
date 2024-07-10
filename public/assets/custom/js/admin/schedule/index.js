@@ -8,6 +8,9 @@ $(document).ready(function () {
 	dateRangeformat = "MMM DD, YYYY hh:mm A";
 	startEndDateFormat = "YYYY-MM-DD HH:mm:ss";
 
+	/* Set job order label to optional */
+	toggleJobOrderLabel(false);
+
 	/* Toggle modal */
 	$("#btn_add_record").on("click", function () {
 		$(`#${modal}`).modal("show");
@@ -83,10 +86,9 @@ $(document).ready(function () {
 	$calendar = initFullCalendar("calendar", router.schedule.list, options);
 
 	/* Job Orders select2 via ajax data source */
-	select2AjaxInit(
-		"#job_order_id",
-		"Search and select a job order",
+	initSelect2JobOrders(
 		router.admin.common.job_orders,
+		"#job_order_id",
 		"text",
 		(data) => {
 			if (data.client) {
@@ -159,7 +161,8 @@ function remove() {
 			$.post(router.schedule.delete, { id: id })
 				.then((res) => {
 					const message = res.errors ?? res.message;
-					if (res.status === STATUS.SUCCESS) refreshFullCalendar($calendar);
+					if (res.status === STATUS.SUCCESS)
+						refreshFullCalendar($calendar);
 
 					$(`#${modal}`).modal("hide");
 					notifMsgSwal(res.status, message, res.status);

@@ -24,7 +24,7 @@ class Funds extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
     /**
      * Use to get current permissions
      * @var array
@@ -110,9 +110,8 @@ class Funds extends BaseController
                 [$this->_model->dtTransactionTypeFormat()],
                 $fields
             ));
-        
-        return $table->getDatatable();
 
+        return $table->getDatatable();
     }
 
     /**
@@ -120,7 +119,7 @@ class Funds extends BaseController
      *
      * @return json
      */
-    public function save() 
+    public function save()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -128,7 +127,7 @@ class Funds extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $this->checkRoleActionPermissions($this->_module_code, 'RELEASE', true);
 
                 $request    = $this->request->getVar();
@@ -140,13 +139,14 @@ class Funds extends BaseController
                     'remarks'               => $request['remarks'],
                     'transaction_type'      => 'outgoing',
                     'coming_from'           => 'Expenses',
+                    'module_code'           => $this->_module_code,
                 ];
 
                 if ($this->getCompanyFunds() < $amount) {
                     throw new \Exception("Can't release fund! Current fund is less than the release amount.", 1);
                 }
 
-                if (! $this->_model->save($inputs)) {
+                if (!$this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
@@ -170,7 +170,7 @@ class Funds extends BaseController
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -178,7 +178,7 @@ class Funds extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id         = $this->request->getVar('id');
                 $record     = $this->_model->fetch($id, true);
 

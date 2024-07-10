@@ -189,6 +189,12 @@ $routes->group('sales', ['filter' => 'checkauth'], static function($routes) {
         $routes->post('delete', 'Sales\CustomerSupport::delete', ['as' => 'sales.customer_support.delete']);
         $routes->post('change', 'Sales\CustomerSupport::change', ['as' => 'sales.customer_support.change']);
         $routes->get('print/(:num)', 'Sales\CustomerSupport::print/$1', ['as' => 'sales.customer_support.print']);
+
+        // LOGS
+        $routes->group('logs', static function ($routes) {
+            $routes->match(['get', 'post'], '/', 'Sales\CustomerSupportLog::fetch', ['as' => 'sales.customer_support_logs.fetch']);
+            $routes->post('save', 'Sales\CustomerSupportLog::save', ['as' => 'sales.customer_support_logs.save']);
+        });
     });
 });
 /* SALES */
@@ -261,8 +267,11 @@ $routes->group('inventory', ['filter' => 'checkauth'], static function ($routes)
     $routes->post('logs/list', 'Inventory\Logs::list', ['as' => 'inventory.logs.list']);
 
     // Common
-    $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
-    $routes->post('job-orders', 'Inventory\Common::searchJobOrders', ['as' => 'inventory.common.joborders']);
+    $routes->group('common', static function ($routes) {
+        $routes->post('masterlist', 'Inventory\Common::searchMasterlist', ['as' => 'inventory.common.masterlist']);
+        $routes->post('job-orders', 'Inventory\Common::searchJobOrders', ['as' => 'inventory.common.joborders']);
+        $routes->post('order-forms', 'Inventory\Common::searchOrderForms', ['as' => 'inventory.common.order_forms']);
+    });
 
     // PROJECT REQUEST FORMS
     $routes->group('project-request-forms', static function ($routes) {
@@ -321,6 +330,17 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('fetch', 'Admin\Dispatch::fetch', ['as' => 'admin.dispatch.fetch']);
         $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'admin.dispatch.delete']);
         $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'admin.dispatch.print']);
+    });
+    
+    // SERVICE REPORTS
+    $routes->group('service-reports', static function ($routes) {
+        $routes->get('/', 'Admin\ServiceReport::index', ['as' => 'admin.service_report.home']);
+        $routes->post('list', 'Admin\ServiceReport::list', ['as' => 'admin.service_report.list']);
+        $routes->post('save', 'Admin\ServiceReport::save', ['as' => 'admin.service_report.save']);
+        $routes->post('fetch', 'Admin\ServiceReport::fetch', ['as' => 'admin.service_report.fetch']);
+        $routes->post('delete', 'Admin\ServiceReport::delete', ['as' => 'admin.service_report.delete']);
+        $routes->post('change', 'Admin\ServiceReport::change', ['as' => 'admin.service_report.change']);
+        $routes->get('print/(:num)', 'Admin\ServiceReport::print/$1', ['as' => 'admin.service_report.print']);
     });
 });
 /* ADMIN */
@@ -463,7 +483,7 @@ $routes->group('hr/payroll', ['filter' => 'checkauth'], static function ($routes
 
 /* FINANCE */
 $routes->group('finance', ['filter' => 'checkauth'], static function ($routes) {
-    // BILLING INVOICE
+    // BILLING INVOICE (TASK/LEADS)
     $routes->group('billing-invoice', static function ($routes) {
         $routes->get('/', 'Finance\BillingInvoice::index', ['as' => 'finance.billing_invoice.home']);
         $routes->post('list', 'Finance\BillingInvoice::list', ['as' => 'finance.billing_invoice.list']);
@@ -472,6 +492,17 @@ $routes->group('finance', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('delete', 'Finance\BillingInvoice::delete', ['as' => 'finance.billing_invoice.delete']);
         $routes->post('change', 'Finance\BillingInvoice::change', ['as' => 'finance.billing_invoice.change']);
         $routes->get('print/(:num)', 'Finance\BillingInvoice::print/$1', ['as' => 'finance.billing_invoice.print']);
+    });
+
+    // BILLING INVOICE (ORDER FORMS)
+    $routes->group('billing-invoice/order-forms', static function ($routes) {
+        $routes->get('/', 'Finance\BillingInvoiceOrderForms::index', ['as' => 'finance.billing_invoice_order_forms.home']);
+        $routes->post('list', 'Finance\BillingInvoiceOrderForms::list', ['as' => 'finance.billing_invoice_order_forms.list']);
+        $routes->post('save', 'Finance\BillingInvoiceOrderForms::save', ['as' => 'finance.billing_invoice_order_forms.save']);
+        $routes->post('fetch', 'Finance\BillingInvoiceOrderForms::fetch', ['as' => 'finance.billing_invoice_order_forms.fetch']);
+        $routes->post('delete', 'Finance\BillingInvoiceOrderForms::delete', ['as' => 'finance.billing_invoice_order_forms.delete']);
+        $routes->post('change', 'Finance\BillingInvoiceOrderForms::change', ['as' => 'finance.billing_invoice_order_forms.change']);
+        $routes->get('print/(:num)', 'Finance\BillingInvoiceOrderForms::print/$1', ['as' => 'finance.billing_invoice_order_forms.print']);
     });
 
     // FUNDS

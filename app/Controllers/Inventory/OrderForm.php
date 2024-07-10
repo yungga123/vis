@@ -422,8 +422,6 @@ class OrderForm extends BaseController
 
         $order_form = $builder->first($id);
 
-        // d($builder->getLastQuery()); die;
-
         // For restriction
         if (empty($order_form)) {
             return $this->redirectTo404Page();

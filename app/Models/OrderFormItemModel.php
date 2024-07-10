@@ -21,6 +21,7 @@ class OrderFormItemModel extends Model
     protected $allowedFields    = [
         'order_form_id',
         'inventory_id',
+        'selling_price',
         'quantity',
         'discount',
         'total_price',
@@ -42,6 +43,10 @@ class OrderFormItemModel extends Model
         'inventory_id' => [
             'rules' => 'required|if_exist|numeric',
             'label' => 'inventory id'
+        ],
+        'selling_price' => [
+            'rules' => 'required|if_exist|numeric',
+            'label' => 'selling price'
         ],
         'quantity' => [
             'rules' => 'required|if_exist|numeric',
@@ -82,6 +87,7 @@ class OrderFormItemModel extends Model
             $columns = "
                 {$this->table}.order_form_id,
                 {$this->table}.inventory_id,
+                {$this->table}.selling_price,
                 {$this->table}.quantity,
                 {$this->table}.discount,
                 {$this->table}.total_price
@@ -116,6 +122,8 @@ class OrderFormItemModel extends Model
     public function saveItems($request, $order_form_id) 
     {
         $inventory_ids  = $request['inventory_id'];
+        $item_prices    = $request['item_price'] ?? '';
+        $selling_prices = $request['selling_price'] ?? '';
         $quantities     = $request['quantity'] ?? '';
         $discounts      = $request['discount'] ?? '';
         $total_prices   = $request['total_price'] ?? '';
@@ -130,6 +138,7 @@ class OrderFormItemModel extends Model
                 $arr[] = [
                     'order_form_id' => (int)$order_form_id,
                     'inventory_id'  => $inventory_ids[$i],
+                    'selling_price' => $selling_prices[$i] == 0 ? $item_prices[$i] : $selling_prices[$i],
                     'quantity'      => $quantities[$i],
                     'discount'      => $discounts[$i],
                     'total_price'   => $total_prices[$i],
@@ -146,6 +155,8 @@ class OrderFormItemModel extends Model
     public function updateItems($request, $order_form_id) 
     {
         $inventory_id   = $request['inventory_id'];
+        $item_price     = $request['item_prices'] ?? '';
+        $selling_price  = $request['selling_price'] ?? '';
         $quantity       = $request['quantity'] ?? '';
         $discount       = $request['discount'] ?? '';
         $total_price    = $request['total_price'] ?? '';
@@ -156,6 +167,7 @@ class OrderFormItemModel extends Model
                 $arr[] = [
                     'order_form_id' => (int)$order_form_id,
                     'inventory_id'  => $inventory_id,
+                    'selling_price' => $selling_price == 0 ? $item_price : $selling_price,
                     'quantity'      => $quantity,
                     'discount'      => $discount,
                     'total_price'   => $total_price,
@@ -164,6 +176,7 @@ class OrderFormItemModel extends Model
 
             if (! empty($arr)) {
                 $constraint = ['order_form_id', 'inventory_id'];
+                
                 return $this->db->table($this->table)->updateBatch($arr, $constraint);
             }
         }

@@ -193,7 +193,9 @@ function showAlertInForm(elems, errors, status, prefix = "alert", swal = true) {
 
 	if (isObject(errors) && !isEmpty(errors)) {
 		$.each(errors, (key, value) => {
-			let select2 = $("#" + key).hasClass("select2") ? " select2-success" : "";
+			let select2 = $("#" + key).hasClass("select2")
+				? " select2-success"
+				: "";
 			let select2Err = $("#" + key).hasClass("select2")
 				? " select2-danger"
 				: "";
@@ -221,7 +223,9 @@ function clearAlertInForm(elems, status, prefix = "alert") {
 	if (Array.isArray(elems) && !isEmpty(elems)) {
 		for (let i = 0; i < elems.length; i++) {
 			const elem = elems[i];
-			let select2 = $("#" + elem).hasClass("select2") ? " select2-success" : "";
+			let select2 = $("#" + elem).hasClass("select2")
+				? " select2-success"
+				: "";
 			let select2Err = $("#" + elem).hasClass("select2")
 				? " select2-danger"
 				: "";
@@ -264,6 +268,12 @@ function formSubmit(
 			callback();
 		}
 
+		function _showValidationMsgViaToast(res) {
+			if (res.status === STATUS.ERROR && isObject(res.errors ?? null)) {
+				if (isToastrLoaded()) notifMsg(res.message, res.status);
+			}
+		}
+
 		function sendRequest() {
 			showLoading();
 
@@ -271,6 +281,7 @@ function formSubmit(
 				// Default request type method
 				$.post(route, data)
 					.then((res) => {
+						_showValidationMsgViaToast(res);
 						responseFunc(res, self);
 						closeLoading();
 					})
@@ -285,6 +296,7 @@ function formSubmit(
 					cache: false,
 					processData: false,
 					success: function (res) {
+						_showValidationMsgViaToast(res);
 						responseFunc(res, self);
 						closeLoading();
 					},
@@ -292,7 +304,12 @@ function formSubmit(
 			}
 		}
 
-		swalNotifConfirm(sendRequest, TITLE.CONFIRM, confirmMsg, STATUS.QUESTION);
+		swalNotifConfirm(
+			sendRequest,
+			TITLE.CONFIRM,
+			confirmMsg,
+			STATUS.QUESTION
+		);
 	});
 }
 
@@ -302,7 +319,7 @@ function formSubmit(
  * @param {string} route            	- The backend delete route/url
  * @param {object} data     			- Object of data to pass - like {id: id}
  * @param {string} modal   				- Modal name
- * @param {CallableFunction} callback 	- A callable to handle the response
+ * @param {callable} callback 	- A callable to handle the response
  */
 function fetchRecord(route, data, modal, callback) {
 	showLoading();
@@ -314,7 +331,8 @@ function fetchRecord(route, data, modal, callback) {
 			if (callback) return callback(res);
 
 			if (res.status === STATUS.ERROR) {
-				if (modal && $(`#${modal}`).length) $(`#${modal}`).modal("hide");
+				if (modal && $(`#${modal}`).length)
+					$(`#${modal}`).modal("hide");
 
 				notifMsgSwal(res.status, res.message, res.status);
 
@@ -335,17 +353,18 @@ function fetchRecord(route, data, modal, callback) {
 /**
  * Shorcut for fetching record via ajax post request
  *
- * @param {string} route            	- The backend delete route/url
- * @param {object} data     			- Object of data to pass - like {id: id}
- * @param {string} title   				- The swal/message title
- * @param {string} table   				- The DataTable table name
- * @param {string} modal   				- Modal name
- * @param {CallableFunction} callback 	- An optional callable to handle the response
+ * @param {string} route    	- The backend delete route/url
+ * @param {object} data     	- Object of data to pass - like {id: id}
+ * @param {string} title   		- The swal/message title
+ * @param {string} table   		- The DataTable table name
+ * @param {string} modal   		- Modal name
+ * @param {callable} callback 	- An optional callable to handle the response
  */
 function changeRecord(route, data, title, table, modal, callback) {
 	let swalMsg = data.id ? `<div>ID #: <strong>${data.id}</strong></div>` : "";
 	let change = data.status ? data.status : "change";
 
+	title = title || TITLE.WARNING;
 	change = strUpper(change);
 	swalMsg = `
 		${swalMsg} <div>Are you sure you want to <strong>${change}</strong> this record?</div>
@@ -367,7 +386,7 @@ function changeRecord(route, data, title, table, modal, callback) {
 
 					if (res.status !== STATUS.ERROR) {
 						if (table) refreshDataTable($("#" + table));
-						if (modal) $(`#${modal}`).modal("hide");
+						if (modal) $("#" + modal).modal("hide");
 					}
 				})
 				.catch((err) => catchErrMsg(err));
@@ -384,7 +403,7 @@ function changeRecord(route, data, title, table, modal, callback) {
  * @param {string} route            	- The backend delete route/url
  * @param {object} data     			- Object of data to pass - like {id: id}
  * @param {string} table   				- The DataTable table name
- * @param {CallableFunction} callback 	- An optional callable to handle the response
+ * @param {callable} callback 	- An optional callable to handle the response
  */
 function deleteRecord(route, data, table, callback) {
 	const swalMsg = "delete";
@@ -513,7 +532,9 @@ function isString(param) {
 /* Check if Object key exist */
 function inObject(obj, key) {
 	if (isEmpty(obj)) return false;
-	return isObject(obj) ? Object.prototype.hasOwnProperty.call(obj, key) : false;
+	return isObject(obj)
+		? Object.prototype.hasOwnProperty.call(obj, key)
+		: false;
 
 	/* Another methods */
 	// return (key in obj); // Using 'in'
@@ -727,6 +748,17 @@ function numberToFixed(number, decimal = 2) {
 }
 
 /**
+ * Decimal format of the number
+ *
+ * @param {integer} number 	the number to format
+ * @param {integer} decimal	identifier on how many decimals - default 2
+ * @returns {integer}
+ */
+function decimalFormat(number, decimal = 2) {
+	return parseFloat(number).toFixed(decimal);
+}
+
+/**
  * Check key in object if exist then return
  *
  * @param {object} obj 	the object to search from
@@ -762,7 +794,7 @@ function isPageReloaded() {
  * Check if there's a query paramaters
  * Intended if from mail notif
  *
- * @returns {bool}
+ * @returns {void}
  */
 function showItemsIfRedirectedFromMail() {
 	const query = getQueryStringInUrl();

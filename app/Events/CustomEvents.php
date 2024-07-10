@@ -45,3 +45,15 @@ Events::on('send_mail_notif_rpf', static function ($data) {
     $service = new \App\Services\Mail\RpfMailService();
     $service->send($data);
 });
+
+Events::on(
+    'log_db_query',
+    static function () {
+        Events::on(
+            'DBQuery',
+            static function (\CodeIgniter\Database\Query $query) {
+                log_message('info', (string) $query);
+            }
+        );
+    }
+);

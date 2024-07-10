@@ -880,3 +880,71 @@ if (! function_exists('get_customer_support_status'))
         return $options[$param] ?? $options;
 	}
 }
+
+if (! function_exists('get_unit_condition_items'))
+{
+    /**
+     * Unit condition items for Admin/Service Reports module
+     */
+	function get_unit_condition_items(string $param = ''): string|array
+	{
+        $options = [
+            'CCTV'                  => 'CCTV',
+            'BIOMETRICS'            => 'BIOMETRICS',
+            'VEHICLE CCTV'          => 'VEHICLE CCTV',
+            'NETWORK CABLES'        => 'NETWORK CABLES',
+            'INTERNET CONNECTION'   => 'INTERNET CONNECTION',
+            'E-FENCE'               => 'E-FENCE',
+            'WIRELESS CONNECTION'   => 'WIRELESS CONNECTION',
+            'PABX'                  => 'PABX',
+            'FDAS'                  => 'FDAS',
+            'GPS'                   => 'GPS',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
+if (! function_exists('get_service_types'))
+{
+    /**
+     * Service types for Admin/Service Reports module
+     */
+	function get_service_types(string $param = ''): string|array
+	{
+        $options = [
+            'Warranty'          => 'Warranty',
+            'Installation'      => 'Installation',
+            'Training'          => 'Training',
+            'Emergency Repair'  => 'Emergency Repair',
+            'Repair'            => 'Repair',
+        ];
+
+        return $options[$param] ?? $options;
+	}
+}
+
+if (! function_exists('get_service_report_status'))
+{
+    /**
+     * Get status of Service Reports module
+     */
+	function get_service_report_status(string $param = '', bool $pass_tense = false): string|array
+	{
+        $options = [
+            'pending'   => 'pending',
+            'accept'    => 'accept',
+            'file'      => 'file',
+        ];
+
+        $options_pt = [
+            'pending'   => 'pending',
+            'accepted'  => 'accepted',
+            'filed'     => 'filed',
+        ];
+
+        $arr = $pass_tense ? $options_pt : $options;
+
+        return $param ? $arr[strtolower($param)] : $arr;
+	}
+}

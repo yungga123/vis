@@ -9,8 +9,12 @@ if (! function_exists('dt_button_html'))
         $wfull  = $dropdown ? 'w-100' : '';
         $btn    = isset($options['link']) ? 'a' : 'button';
         $link   = isset($options['link']) ? 'href="'.$options['link'].'" target="_blank"' : '';
+        $data   = isset($options['data']) ? htmlspecialchars(json_encode(['data' => $options['data']])) : '';
+        $data   = empty($data) ? $data : <<<EOF
+            data-custom="'{$data}'"
+        EOF;
         $html   = <<<EOF
-            <{$btn} class="btn btn-sm {$options['button']} {$wfull}" {$options['condition']} {$link}>
+            <{$btn} class="btn btn-sm {$options['button']} {$wfull}" {$options['condition']} {$link} {$data}>
                 <i class="{$options['icon']}"></i> {$options['text']}
             </{$btn}>
         EOF;
