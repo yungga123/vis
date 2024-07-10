@@ -55,16 +55,16 @@
                                 <th>Due Date</th>
                                 <th>Bill Type</th>
                                 <th>Payment Method</th>
-                                <th>Billing Amount</th>
                                 <th>Receipt Number</th>
+                                <th>Billing Amount</th>
                                 <th>Overdue Interest</th>
+                                <th>Vat Amount</th>
                                 <th>Withholding Tax</th>
                                 <th>Amount Paid</th>
                                 <th>Date Paid</th>
                                 <th>Paid At</th>
-                                <th>Attention To</th>
                                 <th>With Vat?</th>
-                                <th>Vat Amount</th>
+                                <th>Attention To</th>
                                 <th>Additional Description</th>
                                 <th>Created By</th>
                                 <th>Created At</th>

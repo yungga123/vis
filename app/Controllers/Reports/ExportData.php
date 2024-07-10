@@ -20,19 +20,19 @@ class ExportData extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
     /**
      * Use to get current permissions
      * @var array
      */
     private $_permissions;
-    
+
     /**
      * Use to get current permissions
      * @var bool
      */
     private $_can_generate;
-    
+
     /**
      * Use to get all permissions
      * @var array
@@ -77,22 +77,22 @@ class ExportData extends BaseController
      *
      * @return void
      */
-    public function export() 
+    public function export()
     {
         $this->_get_modules();
 
         try {
             $rules = $this->_validationRules();
-    
-            if (! $this->validate($rules)) {
+
+            if (!$this->validate($rules)) {
                 // If the validation fails, redirect back
                 return redirect()->back()->withInput();
             }
-    
+
             // Get request filters
             $request    = $this->request->getVar();
             $module     = $request['module'];
-    
+
             // Get the specific export service
             $service = $this->_getExportService($module);
 
@@ -106,7 +106,7 @@ class ExportData extends BaseController
                 }
 
                 $request['permissions'] = $this->_perms[$module] ?? [];
-                
+
                 // Call the export function
                 $class->$method($request);
             }
@@ -117,7 +117,7 @@ class ExportData extends BaseController
             return redirect()->back()->withInput()->with('error', $error);
         }
     }
-    
+
     /**
      * Get user modules with data to export
      * 
@@ -143,21 +143,21 @@ class ExportData extends BaseController
 
         // Modules to be displayed will be based
         // on if user has an access to that said module
-        if (! empty($this->modules)) {
+        if (!empty($this->modules)) {
             foreach ($this->modules as $module) {
-                if (! in_array($module, $excludes)) {
+                if (!in_array($module, $excludes)) {
                     $_perms = isset($permissions[$module]) ? $permissions[$module] : get_generic_modules_actions($module);
                     $_perms = is_array($_perms) ? $_perms : explode(',', $_perms);
 
                     // Check if actions VIEW OR VIEW_ALL are in the $_perms
                     $value  = array_intersect([ACTION_VIEW, ACTION_VIEW_ALL], $_perms);
-    
+
                     // If user is not an admin and has no VIEW permission
                     // for this module, then continue to the next loop
-                    if (! is_admin() && empty($value)) {
+                    if (!is_admin() && empty($value)) {
                         continue;
                     }
-    
+
                     $this->_perms[$module] = $_perms;
 
                     $module_name        = get_modules($module);
@@ -221,7 +221,7 @@ class ExportData extends BaseController
 
         return $modules;
     }
-    
+
     /**
      * Get modules options
      * 
@@ -412,7 +412,7 @@ class ExportData extends BaseController
 
         return $options;
     }
-    
+
     /**
      * Get the export service
      * 
@@ -455,12 +455,13 @@ class ExportData extends BaseController
             'SALES_CUSTOMER_SUPPORTS'   => [new SalesExportService(), 'customerSupports'],
             'ADMIN_SERVICE_REPORTS' => [new AdminExportService(), 'serviceReports'],
             'ADMIN_SERVICE_REPORT_ITEMS' => [new AdminExportService(), 'serviceReportUnitsNItems'],
+            'FINANCE_BILLING_INVOICE_ORDER_FORMS' => [new FinanceExportService(), 'billingInvoicesOrderForms'],
         ];
 
         // Return the initailized service class and the method name
         return $services[$module];
     }
-    
+
     /**
      * Validation rules
      * 
