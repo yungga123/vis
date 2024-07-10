@@ -31,7 +31,7 @@ class ClientExportService extends ExportService
             {$model->table}.notes,
             {$model->table}.referred_by,
             cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at
+            " . dt_sql_datetime_format("{$model->table}.created_at") . " AS created_at
         ";
         $builder    = $model->select($columns);
 
@@ -76,7 +76,7 @@ class ClientExportService extends ExportService
     {
         $model      = new CustomerBranchModel();
         $datetimeFormat = dt_sql_datetime_format();
-        $address    = dt_sql_concat_client_address();
+        $address    = dt_sql_concat_client_address($model->table);
         $columns    = "
             {$model->table}.id,
             {$model->table}.customer_id,
@@ -90,9 +90,11 @@ class ClientExportService extends ExportService
             DATE_FORMAT({$model->table}.created_at, '{$datetimeFormat}') AS created_at
         ";
         $builder    = $model->select($columns);
+
         $this->joinAccountView($builder, "{$model->table}.created_by", 'cb');
-        $builder->where("deleted_at IS NULL")->orderBy('id', 'DESC');
-        
+
+        $builder->where("{$model->table}.deleted_at IS NULL")->orderBy('id', 'DESC');
+
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters, 'type');
 

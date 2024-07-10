@@ -22,6 +22,7 @@ class FinanceExportService extends ExportService
         $tlVModel   = new TaskLeadView();
         $model      = new BillingInvoiceModel();
         $columns    = "
+            UPPER({$model->table}.status) AS status,
             UPPER({$model->table}.billing_status) AS billing_status,
             {$model->table}.id,
             {$model->table}.tasklead_id,
@@ -57,6 +58,7 @@ class FinanceExportService extends ExportService
 
         $data       = $builder->findAll();
         $header     = [
+            'Status',
             'Billing Status',
             'Billing ID',
             'Tasklead ID',

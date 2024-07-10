@@ -364,6 +364,11 @@ class ExportData extends BaseController
                 'name'      => 'Status',
                 'options'   => get_service_types(),
             ],
+            'FINANCE_BILLING_INVOICE_ORDER_FORMS'  => [
+                'type'      => 'multiple',
+                'name'      => 'Billing Status',
+                'options'   => get_billing_status(),
+            ],
         ];
 
         if (is_admin() || in_array(ACTION_VIEW_ALL, ($this->_perms['PAYROLL_LEAVE'] ?? []))) {
