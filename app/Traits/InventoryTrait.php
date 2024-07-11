@@ -32,8 +32,8 @@ trait InventoryTrait
 
         $builder->joinWithOtherTables($builder);
 
-        if (! empty($q)) {
-            if (empty($options)) {                
+        if (!empty($q)) {
+            if (empty($options)) {
                 $builder->where("{$table}.id", $q);
                 return $builder->first();
             }
@@ -42,7 +42,7 @@ trait InventoryTrait
                 $builder->like("{$table}.id", $q);
             } else {
                 $builder->orLike("{$model->view}.quotation", $q);
-            }            
+            }
         }
 
         $builder->whereIn("{$table}.status", ['accepted', 'filed']);
@@ -54,7 +54,7 @@ trait InventoryTrait
         return [
             'data'   => $result,
             'total'  => $total
-        ];     
+        ];
     }
 
     /**
@@ -71,6 +71,7 @@ trait InventoryTrait
         $fields = $fields ? $fields : "
             {$model->table}.id,
             CONCAT_WS(' | ', {$model->table}.id, {$model->table}.item_model, {$model->table}.item_description, IF({$model->view}.size IS NULL, 'N/A', {$model->view}.size)) AS text,
+            {$model->table}.category,
             {$model->table}.item_model,
             {$model->table}.item_description,
             {$model->table}.stocks,
@@ -83,12 +84,13 @@ trait InventoryTrait
             {$model->table}.item_sdp AS item_price
         ";
         $builder = $model->select($fields);
-        
+
         $model->joinView($builder);
 
-        if (! empty($q)) {
-            if (empty($options)) {                
+        if (!empty($q)) {
+            if (empty($options)) {
                 $builder->where('id', $q);
+
                 return $builder->find();
             }
 
@@ -101,6 +103,14 @@ trait InventoryTrait
             }
         }
 
+        if (!empty($options)) {
+            $category = $options['category'] ?? null;
+
+            if ($category) {
+                $builder->where("{$model->table}.category", $category);
+            }
+        }
+
         $builder->orderBy("{$model->table}.id", 'ASC');
 
         $result = $builder->paginate($options['perPage'], 'default', $options['page']);
@@ -109,7 +119,7 @@ trait InventoryTrait
         return [
             'data'  => $result,
             'total' => $total
-        ];     
+        ];
     }
 
     /**
@@ -125,14 +135,18 @@ trait InventoryTrait
     {
         $model      = new PRFItemModel();
         $fields     = $fields ? $fields : $model->columns();
-        $fields     = $join && $fields ? $fields .','. $model->inventoryColumns($with_view) : $fields;
+        $fields     = $join && $fields ? $fields . ',' . $model->inventoryColumns($with_view) : $fields;
         $builder    = $model->select($fields);
 
-        if ($join) $this->joinInventory($model->table, $builder, $with_view);
-        if ($id && is_array($id)) 
-            return $builder->whereIn($model->table.'.prf_id', $id)->findAll();
+        if ($join) {
+            $this->joinInventory($model->table, $builder, $with_view);
+        }
 
-        return $builder->where($model->table.'.prf_id', $id)->findAll();
+        if ($id && is_array($id)) {
+            return $builder->whereIn($model->table . '.prf_id', $id)->findAll();
+        }
+
+        return $builder->where($model->table . '.prf_id', $id)->findAll();
     }
 
     /**
@@ -145,12 +159,12 @@ trait InventoryTrait
      */
     public function traitUpdateInventoryStock($id, $stock, $action)
     {
-        if ($id && ! empty($stock)) {
+        if ($id && !empty($stock)) {
             $model      = new InventoryModel();
             $sign       = $action === 'ITEM_OUT' ? '-' : '+';
             $builder    = $model->db->table($model->table);
-    
-            $builder->set('stocks', "stocks {$sign} ". $stock, false);
+
+            $builder->set('stocks', "stocks {$sign} " . $stock, false);
             $builder->where('id', $id)->update();
         }
     }
@@ -164,14 +178,15 @@ trait InventoryTrait
      */
     public function traitIsStocksLessThanQuantityOut($available, $quantity_out)
     {
-       if (is_array($available)) {
-            for ($i=0; $i < count($available); $i++) { 
-                if (floatval($available[$i]) < floatval($quantity_out[$i]))
+        if (is_array($available)) {
+            for ($i = 0; $i < count($available); $i++) {
+                if (floatval($available[$i]) < floatval($quantity_out[$i])) {
                     return true;
+                }
             }
-       } 
-       
-       return floatval($available) < floatval($quantity_out);
+        }
+
+        return floatval($available) < floatval($quantity_out);
     }
 
     /**
@@ -182,13 +197,13 @@ trait InventoryTrait
      */
     public function saveInventoryLogs($data)
     {
-        if (! empty($data)) {
+        if (!empty($data)) {
             // Add inventory logs
             $invLogModel = new InventoryLogsModel();
             // Check if $data is multi-dimesional array
             // and use insert batch, otherwise
-            is_array_multi_dimen($data) ? $invLogModel->insertBatch($data) 
-                    : $invLogModel->insert($data);
+            is_array_multi_dimen($data) ? $invLogModel->insertBatch($data)
+                : $invLogModel->insert($data);
         }
     }
 
@@ -206,8 +221,14 @@ trait InventoryTrait
         $columns    = $columns ? $columns : $model->columns($joinView, true);
         $builder    = $model->select($columns);
 
-        if ($joinView) $model->joinView($builder);
-        if ($id && is_array($id)) return $builder->whereIn('id', $id)->findAll();
+        if ($joinView) {
+            $model->joinView($builder);
+        }
+
+        if ($id && is_array($id)) {
+            return $builder->whereIn('id', $id)->findAll();
+        }
+
         return $id ? $builder->find($id) : $builder->findAll();
     }
 
@@ -221,11 +242,12 @@ trait InventoryTrait
     {
         $columns    = "prf_items.quantity_out, inventory.stocks";
         $items      = $this->traitFetchPrfItems($id, true, false, $columns);
-        
-        if (! empty($items)) {
+
+        if (!empty($items)) {
             foreach ($items as $val) {
-                if (floatval($val['stocks']) < floatval($val['quantity_out']))
+                if (floatval($val['stocks']) < floatval($val['quantity_out'])) {
                     return true;
+                }
             }
         }
 
@@ -242,11 +264,13 @@ trait InventoryTrait
      */
     public function joinInventory($table, $builder, $withView = false)
     {
-        $inventoryModel = new InventoryModel();        
+        $inventoryModel = new InventoryModel();
         // Join with inventory table
         $builder->join($inventoryModel->table, "{$table}.inventory_id = {$inventoryModel->table}.id", 'left');
         // Then join inventory with inventory_View
-        if ($withView) $inventoryModel->joinView($builder);
+        if ($withView) {
+            $inventoryModel->joinView($builder);
+        }
     }
 
     /**
@@ -269,18 +293,18 @@ trait InventoryTrait
             {$customerModel->table}.name AS customer_name,
             {$customerModel->table}.type AS customer_type,
             {$branchModel->table}.branch_name AS customer_branch_name,
-            ".dt_sql_datetime_format("{$model->table}.purchase_at")." AS purchase_at,
+            " . dt_sql_datetime_format("{$model->table}.purchase_at") . " AS purchase_at,
             {$model->table}.total_amount,
             {$model->table}.total_discount,
             {$model->table}.vat_amount,
             {$model->table}.grand_total
         ";
         $builder        = $model->select($fields);
-        
+
         $model->joinCustomers($builder, $customerModel, 'left', true);
 
-        if (! empty($q)) {
-            if (empty($options)) {                
+        if (!empty($q)) {
+            if (empty($options)) {
                 $builder->where("{$model->table}.id", $q);
 
                 return $builder->find();
@@ -302,6 +326,6 @@ trait InventoryTrait
         return [
             'data'  => $result,
             'total' => $total
-        ];     
+        ];
     }
 }

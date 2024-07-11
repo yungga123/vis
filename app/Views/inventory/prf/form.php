@@ -6,13 +6,13 @@
                 <?= csrf_field(); ?>
                 <div class="modal-header">
                     <h5 class="modal-title">Add PRF</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">                    
+                <div class="modal-body">
                     <div class="callout callout-info mb-3">
-                        <strong>Note:</strong> 
+                        <strong>Note:</strong>
                         If not empty, initial dropdowns of <strong>Job Order & Inventory Masterlist</strong> are by 10. Type the <strong>QUOTATION NUMBER and ITEM MODEL & DESCRIPTION</strong> to search if not in the options and then, click to select.
                     </div>
                     <div class="row">
@@ -48,8 +48,8 @@
                                 <table class="table" id="item_field_table">
                                     <thead>
                                         <tr>
+                                            <th width="15%">Category</th>
                                             <th width="30%">Item Details</th>
-                                            <th width="15%" class="text-center">Category</th>
                                             <th width="15%" class="text-center">Item Unit</th>
                                             <th width="15%">Quantity Out</th>
                                             <th width="20%">Remarks</th>
@@ -58,11 +58,18 @@
                                     </thead>
                                     <tbody>
                                         <tr>
+                                            <td class="text-center items-center td-item-category td-item-category-0 text-bold">
+                                                <select class="custom-select item_category" name="item_category[]" id="item_category_0" style="width: 100%;">
+                                                    <option value="">Select a category</option>
+                                                    <?= $item_categories ?>
+                                                </select>
+                                            </td>
                                             <td>
-                                                <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
+                                                <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;">
+                                                    <option value="" selected>Select a category first</option>
+                                                </select>
                                                 <div class="original-item"></div>
                                             </td>
-                                            <td class="text-center items-center td-item-category td-item-category-0 text-bold"></td>
                                             <td class="text-center items-center td-item-unit td-item-unit-0">
                                                 <input type="hidden" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
                                                 <div class="item-unit text-bold"></div>
@@ -73,7 +80,7 @@
                                             <td>
                                                 <select type="text" class="form-control remarks" name="remarks[]">
                                                     <option value="">Select a remarks</option>
-                                                    <?php foreach (get_prf_item_remarks() as $val => $text): ?>
+                                                    <?php foreach (get_prf_item_remarks() as $val => $text) : ?>
                                                         <option value="<?= $val ?>"><?= $text ?></option>
                                                     <?php endforeach; ?>
                                                 </select>

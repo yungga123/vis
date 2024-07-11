@@ -7,7 +7,9 @@ var table,
 	itemFieldTable,
 	_fetchItems,
 	_status,
-	_remarks;
+	_remarks,
+	_categories,
+	_categoriesOpts;
 
 $(document).ready(function () {
 	table = "prf_table";
@@ -20,6 +22,8 @@ $(document).ready(function () {
 	_fetchItems = [];
 	_status = $pjOptions.prf_status;
 	_remarks = $pjOptions.prf_remarks;
+	_categories = $pjOptions.item_categories;
+	_categoriesOpts = "";
 
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
@@ -32,20 +36,8 @@ $(document).ready(function () {
 		$(`#${modal}`).modal("show");
 		$(`#${modal}`).removeClass("edit").addClass("add");
 		$(`#${modal} .modal-title`).text("Add PRF");
-		$(`#${form}`)[0].reset();
-		$("#prf_id").val("");
-		$("#orig_job_order").addClass("d-none");
-		$("#orig_item").addClass("d-none");
-		$(".job-order-details").html("");
-		$(".item-row").remove();
-		$(".original-item").html("");
-		$(".td-item-category-0").text("");
-		$('.td-item-unit-0 input[name="item_available[]"]').val("");
-		$(".td-item-unit-0 .item-unit").text("");
 
-		clearSelect2Selection(joSelector);
-		clearSelect2Selection(invSelector);
-		clearAlertInForm(elems);
+		_clearForm();
 	});
 
 	/* Job Order select2 via ajax data source */
@@ -57,14 +49,23 @@ $(document).ready(function () {
 		_loadJobOrderDetails
 	);
 
-	/* Masterlist select2 via ajax data source */
-	_initInventorySelect2();
+	/* Format item categories options */
+	_itemCategoriesOpts();
 
-	// If select2 clear, set the item_available input next to it to empty
+	/* On change event */
+	_itemCategoriesOnChangeEvt();
+
+	/* If select2 clear, set the item_available input next to it to empty */
 	$(invSelector).on("select2:clear", function (e) {
 		const parentSiblingElem = e.target.parentElement.nextElementSibling;
 
-		console.log(parentSiblingElem);
+		$(parentSiblingElem).text("");
+		_populateAvailableItemStocks($(parentSiblingElem).next(), "");
+	});
+
+	/* If select2 clear, set the item_available input next to it to empty */
+	$(invSelector).on("select2:clear", function (e) {
+		const parentSiblingElem = e.target.parentElement.nextElementSibling;
 
 		$(parentSiblingElem).text("");
 		_populateAvailableItemStocks($(parentSiblingElem).next(), "");
@@ -295,119 +296,95 @@ function view(id, changeTo, status, isView) {
 function edit(id) {
 	_fetchItems = [];
 
+	_clearForm();
+
 	$("#prf_items_modal").modal("hide");
 	$(`#${modal}`).removeClass("add").addClass("edit");
 	$(`#${modal} .modal-title`).text("Edit Item");
 	$("#prf_id").val(id);
-	$(".quantity_out").val("");
-	$(".item-row").remove();
-	$(".original-item").html("");
 
-	clearSelect2Selection(joSelector);
-	clearSelect2Selection(invSelector);
-	clearAlertInForm(elems);
-	showLoading();
+	fetchRecord(router.prf.fetch, { id: id }, modal, (res) => {
+		if (res.status === STATUS.SUCCESS) {
+			// Set selected job order in select2
+			setSelect2AjaxSelection(
+				joSelector,
+				res.data.job_order.option_text,
+				res.data.job_order_id
+			);
 
-	$.post(router.prf.fetch, { id: id })
-		.then((res) => {
-			closeLoading();
+			if (!isEmpty(res.data.items)) {
+				const items = res.data.items;
 
-			if (res.status === STATUS.SUCCESS) {
-				// Set selected job order in select2
-				setSelect2AjaxSelection(
-					joSelector,
-					res.data.job_order.option_text,
-					res.data.job_order_id
-				);
+				// Add item fields
+				for (let i = 1; i < items.length; i++) toggleItemField();
 
-				if (!isEmpty(res.data.items)) {
-					const items = res.data.items;
+				// Populate data
+				const categoryElems = $(".item_category");
+				const itemElems = $(".inventory_id");
+				const itemUnitTds = $(".td-item-unit");
+				const qtyOutElems = $(".quantity_out");
+				const remarksElems = $(".remarks");
 
-					// Add item fields
-					for (let i = 1; i < items.length; i++) toggleItemField();
+				for (let x = 0; x < itemElems.length; x++) {
+					const categoryElem = categoryElems[x];
+					const itemElem = itemElems[x];
+					const itemUnitTd = itemUnitTds[x];
+					const qtyOutElem = qtyOutElems[x];
+					const remarksElem = remarksElems[x];
+					const item = items[x];
+					const text = `${item.inventory_id} | ${item.item_model} | ${
+						item.item_description
+					} | ${item.size || "N/A"}`;
 
-					// Populate data
-					const itemFields = $(".inventory_id");
-					const quantity_out = $(".quantity_out");
-					const remarks = $(".remarks");
+					// Store items in a variable with inventory_id as key
+					_fetchItems[item.inventory_id] = item;
 
-					for (let x = 0; x < itemFields.length; x++) {
-						const elem = itemFields[x];
-						const qelem = quantity_out[x];
-						const remarksElem = remarks[x];
-						const item = items[x];
-						const text = `${item.inventory_id} | ${
-							item.item_model
-						} | ${item.item_description} | ${item.size || "N/A"}`;
+					// Set category
+					$(categoryElem).val(item.category);
 
-						// Store items in a variable with inventory_id as key
-						_fetchItems[item.inventory_id] = item;
+					// Set selected item in each select2
+					setSelect2AjaxSelection(itemElem, text, item.inventory_id);
 
-						// Set selected item in each select2
-						setSelect2AjaxSelection(elem, text, item.inventory_id);
+					// Display the selected item in a div under each select2
+					$(itemElem)
+						.parent()
+						.children(".original-item")
+						.html(`Original Item: <strong>${text}</strong>`);
+					// Set quantity_out in each input
+					$(qtyOutElem).val(parseInt(item.quantity_out));
+					// $(qtyOutElem).attr("max", parseInt(item.quantity_out));
 
-						// Display the selected item in a div under each select2
-						$(elem)
-							.parent()
-							.children(".original-item")
-							.html(`Original Item: <strong>${text}</strong>`);
-						// Set quantity_out in each input
-						$(qelem).val(parseInt(item.quantity_out));
-						// $(qelem).attr("max", parseInt(item.quantity_out));
-
-						// Get the parent next sibling td (which where the item_available input) each
-						const parentSiblingElem = $(elem).parent().next();
-
-						// Set category
-						parentSiblingElem.text(item.category_name);
-
-						// Set available stocks each item
-						_populateAvailableItemStocks(
-							parentSiblingElem[0],
-							item.stocks
-						);
-
-						// Display the item unit in each item
-						$(elem).parent().children(".item-unit").text(item.unit);
-						// Display the remarks in each item
-						$(remarksElem).val(item.remarks).change();
-					}
-				}
-
-				$("#process_date").val(res.data.process_date);
-				$("#orig_job_order")
-					.removeClass()
-					.html(
-						`Original JO: <strong>${res.data.job_order.option_text}</strong>`
+					// Set available stocks and unit each item
+					_populateAvailableItemStocks(
+						itemUnitTd,
+						item.stocks,
+						null,
+						item.unit
 					);
-				$(`#${modal}`).modal("show");
-			} else {
-				$(`#${modal}`).modal("hide");
 
-				notifMsgSwal(res.status, res.message, res.status);
+					// Display the remarks in each item
+					$(remarksElem).val(item.remarks).change();
+				}
 			}
-		})
-		.catch((err) => catchErrMsg(err));
+
+			$("#process_date").val(res.data.process_date);
+			$("#orig_job_order")
+				.removeClass()
+				.html(
+					`Original JO: <strong>${res.data.job_order.option_text}</strong>`
+				);
+			$(`#${modal}`).modal("show");
+		} else {
+			$(`#${modal}`).modal("hide");
+
+			notifMsgSwal(res.status, res.message, res.status);
+		}
+	});
 }
 
 /* Delete record */
 function remove(id) {
-	const swalMsg = "delete";
-	swalNotifConfirm(
-		function () {
-			$.post(router.prf.delete, { id: id })
-				.then((res) => {
-					const message = res.errors ?? res.message;
-
-					refreshDataTable($("#" + table));
-					notifMsgSwal(res.status, message, res.status);
-				})
-				.catch((err) => catchErrMsg(err));
-		},
-		TITLE.WARNING,
-		swalMsg,
-		STATUS.WARNING
-	);
+	deleteRecord(router.prf.delete, { id: id }, table);
 }
 
 /* Change status record */
@@ -420,41 +397,19 @@ function change(id, changeTo, status, proceed) {
 
 		// Display the items details
 		view(id, changeTo, status);
+
 		return;
 	}
 
-	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
-	const swalMsg = `
-		<div>PRF #: <strong>${id}</strong></div>
-		<div>Are you sure you want to <strong>${strUpper(
-			changeTo
-		)}</strong> this PRF?</div>
-	`;
 	const data = { id: id, status: changeTo };
+	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
+	const _modal = "prf_items_modal";
 
 	if (changeTo === "file") {
-		data.selected_item = $('input[name="selected_items"]').val();
+		data.selected_items = $('input[name="selected_items"]').val();
 	}
 
-	swalNotifConfirm(
-		function () {
-			$.post(router.prf.change, data)
-				.then((res) => {
-					const message = res.errors ?? res.message;
-
-					notifMsgSwal(res.status, message, res.status);
-
-					if (res.status !== STATUS.ERROR) {
-						refreshDataTable($("#" + table));
-						$("#prf_items_modal").modal("hide");
-					}
-				})
-				.catch((err) => catchErrMsg(err));
-		},
-		title,
-		swalMsg,
-		STATUS.WARNING
-	);
+	changeRecord(router.prf.change, data, title, table, _modal);
 }
 
 /* Toggle item field */
@@ -463,17 +418,22 @@ function toggleItemField(row) {
 
 	if (row) {
 		itemFieldTable.children("tr#row_" + row).remove();
+
 		return;
 	}
 
 	const html = `
 		<tr class="item-row" id="row_${itemFieldCount}">
+			<td class="text-center items-center td-item-category">
+				${_itemCategoriesOpts(itemFieldCount)}
+			</td>
 			<td>
-				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;"></select>
+				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;">
+					<option value="" selected>Select a category first</option>
+				</select>
 				<div class="original-item"></div>
 			</td>
-			<td class="text-center items-center td-item-category text-bold"></td>
-			<td class="text-center items-center">
+			<td class="text-center td-item-unit items-center">
 				<input type="hidden" name="item_available[]" class="form-control item_available" placeholder="Stock" readonly>
 				<div class="item-unit text-bold"></div>
 			</td>
@@ -490,27 +450,33 @@ function toggleItemField(row) {
 	`;
 
 	itemFieldTable.append(html);
-	_initInventorySelect2();
+
+	_itemCategoriesOnChangeEvt("#item_category_" + itemFieldCount);
 }
 
 /* Toggle item field */
 function compute(quantity_out, evt) {
 	const returned = parseFloat(evt.target.value);
+
 	if (isNumber(returned)) {
 		const consumed = parseFloat(quantity_out) - returned;
 		const parentSiblingElem = evt.target.parentElement.nextElementSibling;
+
 		_populateAvailableItemStocks(parentSiblingElem, consumed, true);
 	}
 }
 
-/* Masterlist select2 via ajax data source */
-function _initInventorySelect2() {
+/* Item Masterlist select2 via ajax data source */
+function _initInventorySelect2(category) {
+	const options = { category: category };
+
 	select2AjaxInit(
 		invSelector,
 		"Search & select an item",
 		router.inventory.common.masterlist,
 		"text",
-		_loadItemDetails
+		_loadItemDetails,
+		options
 	);
 }
 
@@ -562,14 +528,12 @@ function _loadItemDetails(data) {
 
 		if (!isEmpty(stocks)) {
 			_populateAvailableItemStocks(
-				$(parentSiblingElem).next(),
+				$(parentSiblingElem),
 				stocks,
 				false,
 				unit
 			);
 		}
-
-		$(parentSiblingElem).text(data.category_name);
 	}
 }
 
@@ -588,7 +552,7 @@ function _populateAvailableItemStocks(
 	$(parentSiblingElem).children('input[name="item_available[]"]').val(stock);
 
 	$(parentSiblingElem)
-		.children(".item-unit")
+		.children("div.item-unit")
 		.text(item_unit || "N/A");
 }
 
@@ -610,4 +574,57 @@ function _prfItemRemarks(val) {
 	`;
 
 	return html;
+}
+
+/* Invetory item categories options */
+function _itemCategoriesOpts(row, val) {
+	_categoriesOpts = "";
+	row ||= 0;
+
+	$.each(_categories, (key, value) => {
+		_categoriesOpts += `
+			<option value="${value.dropdown_id}" ${
+			val === value.dropdown_id ? "selected" : ""
+		}>${value.dropdown}</option>
+		`;
+	});
+
+	_categoriesOpts = `
+		<select class="form-control item_category" name="item_category[]" id="item_category_${row}" style="width: 100%;">
+			<option value="">Select a category</option>
+			${_categoriesOpts}
+		</select>
+	`;
+
+	return _categoriesOpts;
+}
+
+/* Invetory item categories on change */
+function _itemCategoriesOnChangeEvt(selector) {
+	selector ||= "#item_category_0";
+
+	$(selector).on("change", function (e) {
+		const category = $(this).val();
+
+		if (!isEmpty(category)) {
+			_initInventorySelect2(category);
+		}
+	});
+}
+
+/* Clear forms */
+function _clearForm() {
+	$(`#${form}`)[0].reset();
+	$("#prf_id").val("");
+	$("#orig_job_order").addClass("d-none");
+	$("#orig_item").addClass("d-none");
+	$(".job-order-details").html("");
+	$(".item-row").remove();
+	$(".original-item").html("");
+	$('.td-item-unit-0 input[name="item_available[]"]').val("");
+	$(".td-item-unit-0 div.item-unit").text("");
+
+	clearSelect2Selection(joSelector);
+	clearSelect2Selection(invSelector);
+	clearAlertInForm(elems);
 }
