@@ -138,7 +138,7 @@ trait HRTrait
         $modelV->orderBy("{$modelV->table}.employee_name", 'ASC');
 
         $result = $modelV->paginate($options['perPage'], 'default', $options['page']);
-        log_msg((string) $modelV->getLastQuery());
+        
         $total  = $modelV->countAllResults();
 
         return [

@@ -67,6 +67,7 @@
                                 <th>Attention To</th>
                                 <th>With Vat?</th>
                                 <th>Vat Amount</th>
+                                <th>Additional Description</th>
                                 <th>Created By</th>
                                 <th>Created At</th>
                                 <th>Approved By</th>

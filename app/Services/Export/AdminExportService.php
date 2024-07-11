@@ -6,6 +6,9 @@ use App\Models\DispatchModel;
 use App\Models\ScheduleModel;
 use App\Models\CustomerModel;
 use App\Models\JobOrderModel;
+use App\Models\ServiceReportItemModel;
+use App\Models\ServiceReportModel;
+use App\Models\ServiceReportUnitModel;
 
 class AdminExportService extends ExportService
 {
@@ -170,6 +173,7 @@ class AdminExportService extends ExportService
         
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters, 'type');
+
         $builder->orderBy("{$model->table}.id", 'ASC');
 
         $data       = $builder->findAll();
@@ -200,5 +204,149 @@ class AdminExportService extends ExportService
                 $i++;
             }
         });
+    }
+
+    /**
+     * Exporting data to csv
+     *
+     * @param array $filters     The passed params or request
+     * @return void
+     */
+    public function serviceReports($filters = [])
+    {
+        $model      = new ServiceReportModel();
+        $builder    = $model->select($model->dtColumns(true));
+
+        $model->joinJobOrders($builder, null, true);
+
+        $this->joinAccountView($builder, 'created_by', 'cb');
+        $this->joinAccountView($builder, 'accepted_by', 'ab');
+        $this->joinAccountView($builder, 'filed_by', 'fb');
+
+        // Process and add filters
+        $this->processFilters($model->table, $builder, $filters);
+
+        $builder->where("{$model->table}.deleted_at IS NULL");
+        $builder->orderBy("{$model->table}.id", 'ASC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'Status',
+            'SR #',
+            'JO #',
+            'Client',
+            'Client Branch',
+            'Area',
+            'Serial Number',
+            'Server Type',
+            'Service Type',
+            'Arrival At',
+            'Error Description',
+            'Corrective Action',
+            'Remarks',
+            'Labor (Hrs)',
+            'Travel Time (Hrs)',
+            'Time Out',
+            'Created By',
+            'Created At',
+            'Accepted By',
+            'Accepted At',
+            'Filed By',
+            'Filed At'
+        ];
+        $filename   = 'Service Reports Masterlist';
+
+        $this->logSelectQuery($builder, __METHOD__);
+
+        $this->exportToCsv($data, $header, $filename);
+    }
+
+    /**
+     * Exporting data to csv
+     *
+     * @param array $filters     The passed params or request
+     * @return void
+     */
+    public function serviceReportUnitsNItems($filters = [])
+    {
+        $model      = new ServiceReportModel();
+        $unitModel  = new ServiceReportUnitModel();
+        $columns    = "
+            {$model->table}.id,
+            {$unitModel->table}.item,
+            {$unitModel->table}.status,
+            {$unitModel->table}.defective_description
+        ";
+        $builder    = $model->select($columns);
+
+        $builder->join($unitModel->table, "{$model->table}.id = {$unitModel->table}.service_report_id");
+
+        // Process and add filters
+        $this->processFilters($model->table, $builder, $filters);
+
+        $builder->where("{$model->table}.deleted_at IS NULL");
+        $builder->orderBy("{$model->table}.id", 'DESC');
+
+        $data       = $builder->findAll();
+        $header     = [
+            'SERVICE REPORT #',
+            'ITEMS',
+            'STATUS',
+            'If defective please specify:',
+        ];
+        $filename   = 'Service Report Units';
+
+        $this->logSelectQuery($builder, __METHOD__);
+
+        $this->exportToCsv($data, $header, $filename, null, false);
+        
+        $this->_serviceReportItems($filters);
+    }
+
+    /**
+     * Exporting data to csv
+     *
+     * @param array $filters     The passed params or request
+     * @return void|array
+     */
+    public function _serviceReportItems($filters = [], $array = false)
+    {
+        $model      = new ServiceReportModel();
+        $itemModel  = new ServiceReportItemModel();
+        $columns    = "
+            {$model->table}.id AS sr_id,
+            {$itemModel->table}.item_no,
+            {$itemModel->table}.item_description,
+            {$itemModel->table}.item_qty,
+            ".dt_sql_number_format("{$itemModel->table}.item_unit_price")." AS item_unit_price,
+            ".dt_sql_number_format("{$itemModel->table}.item_total_price")." AS item_total_price
+        ";
+        $builder    = $model->select($columns);
+
+        $builder->join($itemModel->table, "{$model->table}.id = {$itemModel->table}.service_report_id");
+
+        // Process and add filters
+        $this->processFilters($model->table, $builder, $filters);
+
+        $builder->where("{$model->table}.deleted_at IS NULL");
+        $builder->orderBy("{$model->table}.id", 'DESC');
+
+        $data       = $builder->findAll();
+
+        if ($array) return $data;
+
+        $header     = [
+            'SERVICE REPORT #',
+            'ITEM NO',
+            'ITEM DESCRIPTION',
+            'ITEM QTY',
+            'ITEM UNIT PRICE',
+            'ITEM TOTAL PRICE',
+        ];
+        $filename   = 'Service Report Items';
+
+        $this->logSelectQuery($builder, __METHOD__);
+
+        $this->exportToCsv($data, $header, $filename);
     }
 }

@@ -39,6 +39,7 @@ class BillingInvoiceModel extends Model
         'vat_amount',
         'overdue_interest',
         'grand_total',
+        'additional_description',
         'approved_at',
         'approved_by',
     ];
@@ -155,6 +156,7 @@ class BillingInvoiceModel extends Model
             {$this->table}.vat_amount,
             {$this->table}.overdue_interest,
             {$this->table}.grand_total,
+            {$this->table}.additional_description,
             {$this->table}.created_by,
             {$this->table}.created_at,
             {$this->table}.approved_by,
@@ -272,6 +274,7 @@ class BillingInvoiceModel extends Model
             {$this->table}.attention_to,
             IF({$this->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
             ".dt_sql_number_format("{$this->table}.vat_amount")." AS vat_amount,
+            {$this->table}.additional_description,
             cb.employee_name AS created_by,
             ab.employee_name AS approved_by,
             ".dt_sql_datetime_format("{$this->table}.created_at")." AS created_at,

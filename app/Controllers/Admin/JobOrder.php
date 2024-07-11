@@ -4,10 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\JobOrderModel;
-use App\Models\EmployeeModel;
 use App\Models\TaskLeadView;
-use App\Models\CustomerModel;
-use App\Models\CustomerBranchModel;
 use App\Traits\HRTrait;
 use monken\TablesIgniter;
 

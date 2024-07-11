@@ -23,10 +23,11 @@ trait ExportTrait
      * @param string $filename   The file name of the csv
      * @param callable|null $callback   An optional loop callback function to use 
      * when you have to change/process data before putting to csv output
+     * @param boolean $exit
      * 
      * @return \Exception|void
      */
-    public function exportToCsv($data, $header, $filename, $callback = null)
+    public function exportToCsv($data, $header, $filename, $callback = null, $exit = true)
     {
         try {
             // Start the output buffer.
@@ -71,7 +72,8 @@ trait ExportTrait
             header("Content-Type: text/csv");
 
             echo $csv;
-            exit;
+            
+            if ($exit) exit;
         } catch (\Exception $e) {
             log_message('error', '[EXPORT ERROR] {exception}', ['exception' => $e]);
             return redirect()->back();

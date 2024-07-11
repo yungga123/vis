@@ -30,5 +30,7 @@ class AllViews extends Seeder
         $this->call('ChangeRPFStatus');
         $this->call('ChangePOStatus');
         $this->call('CustomerSupportsView');
+        $this->call('UpdateDataInFundsHistoryTable');
+        $this->call('PRFItemsFiledUpdate');
     }
 }

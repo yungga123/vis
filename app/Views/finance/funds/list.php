@@ -1,3 +1,15 @@
+<?php
+$bi_tasklead_code   = MODULE_CODES['billing_invoice'];
+$bi_orderform_code  = MODULE_CODES['billing_invoice_order_forms'];
+$funds_code         = MODULE_CODES['funds'];
+
+$options            = [
+    "{$bi_tasklead_code}"   => MODULES[$bi_tasklead_code],
+    "{$bi_orderform_code}"  => MODULES[$bi_orderform_code],
+    "{$funds_code}"         => 'Expenses',
+];
+?>
+
 <div class="card">
     <div class="card-header">
         <div class="mr-2 mb-2">
@@ -12,15 +24,16 @@
                 </select>
             </div>
             <div class="mr-2 flex-fill mb-2 mb-md-0">
-                <select class="custom-select select2" id="filter_coming_from" data-placeholder="Coming from?" style="width: 100%;">
+                <select class="custom-select select2" id="filter_module_code" data-placeholder="Coming from?" style="width: 100%;">
                     <option value=""></option>
-                    <option value="Billing Invoice">Billing Invoice</option>
-                    <option value="Expenses">Expenses</option>
-                </select>   
+                    <?php foreach ($options as $val => $text) : ?>
+                        <option value="<?= $val ?>"><?= $text ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="mr-2 flex-fill mb-2 mb-md-0">
                 <select class="custom-select select2" id="filter_expenses" data-placeholder="Select an expense" multiple style="width: 100%;">
-                    <?php foreach (get_expenses() as $val => $text): ?>
+                    <?php foreach (get_expenses() as $val => $text) : ?>
                         <option value="<?= $val ?>"><?= $text ?></option>
                     <?php endforeach; ?>
                 </select>

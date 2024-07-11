@@ -242,10 +242,6 @@ class PRFItemModel extends Model
             // Add inventory logs
             $this->saveInventoryLogs($logs_data);
 
-            log_msg(['request' => $data]);
-            log_msg(['arr' => $arr]);
-            log_msg(['logs_data' => $logs_data]);
-
             if (! empty($arr)) {
                 $constraint = ['prf_id', 'inventory_id'];
                 return $this->db->table($this->table)->updateBatch($arr, $constraint);

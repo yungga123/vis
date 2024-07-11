@@ -21,26 +21,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-lg-6">
-                            <div class="form-group">
-                                <label class="required" for="customer_id">Client</label>
-                                <div class="mb-2">                                    
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="customer_type" id="commercial" value="commercial" checked>
-                                        <label class="form-check-label" for="commercial">Commercial</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="customer_type" id="residential" value="residential">
-                                        <label class="form-check-label" for="residential">Residential</label>
-                                    </div>
-                                </div>
-                                <select class="custom-select" id="customer_id" name="customer_id" style="width: 100%;"></select>
-                                <small id="alert_customer_id" class="text-danger"></small>
-                            </div>
-                            <div class="form-group d-none" id="client_branch_wrapper">
-                                <label for="customer_branch_id">Client Branch</label>
-                                <select class="custom-select" id="customer_branch_id" name="customer_branch_id" style="width: 100%;"></select>
-                                <small id="alert_customer_branch_id" class="text-danger"></small>
-                            </div>
+                            <?= $this->include('customer/components/field'); ?>
                         </div>
                         <div class="col-sm-12 col-lg-6">
                             <div class="row">
@@ -72,7 +53,8 @@
                                             <td widtd="40%">Item Details</td>
                                             <td class="text-center">Current Stocks</td>
                                             <td class="text-center">Item Price</td>
-                                            <td>Quantity</td>
+                                            <td>Selling Price</td>
+                                            <td>Qty</td>
                                             <td>Discount</td>
                                             <td>Total Price</td>
                                             <td>Button</td>
@@ -89,8 +71,11 @@
                                                 <span></span>
                                                 <input type="hidden" name="item_price[]" readonly>
                                             </td>
+                                            <td class="selling_price">
+                                                <input type="number" name="selling_price[]" class="form-control selling_price" placeholder="Selling Price" step="0.01" onkeyup="calculate(this.value, 'row_0', 'selling_price')">
+                                            </td>
                                             <td class="quantity">
-                                                <input type="number" name="quantity[]" class="form-control quantity" placeholder="Quantity" min="1" step="0.5" onkeyup="calculate(this.value, 'row_0', 'quantity')" required>
+                                                <input type="number" name="quantity[]" class="form-control quantity" placeholder="Qty" min="1" step="0.5" onkeyup="calculate(this.value, 'row_0', 'quantity')" required>
                                             </td>
                                             <td class="discount">
                                                 <input type="number" name="discount[]" class="form-control discount" placeholder="Discount" step="0.01" onkeyup="calculate(this.value, 'row_0', 'discount')">
@@ -110,6 +95,7 @@
                                         <tr>
                                             <td colspan="2" class="text-right text-bold">Grand Totals</td>
                                             <td class="total_item_price text-bold text-danger"></td>
+                                            <td class="total_selling_price text-bold text-danger"></td>
                                             <td class="total_quantity text-bold text-danger"></td>
                                             <td class="total_discount text-bold text-danger"></td>
                                             <td class="grand_total text-bold text-danger"></td>

@@ -20,7 +20,7 @@ class PurchasingExportService extends ExportService
      */
     public function purchaseOrders($filters = [])
     {
-        $model          = new PurchaseOrderModel();        
+        $model          = new PurchaseOrderModel();
         $supplierModel  = new SuppliersModel();
         $rpfModel       = new RequestPurchaseFormModel();
         $columns        = "
@@ -31,13 +31,13 @@ class PurchasingExportService extends ExportService
             {$model->table}.attention_to,
             IF({$model->table}.with_vat = 0, 'NO', 'YES') AS with_vat,
             {$rpfModel->view}.created_by_name AS requested_by,
-            ".dt_sql_datetime_format("{$rpfModel->table}.created_at")." AS requested_at,
+            " . dt_sql_datetime_format("{$rpfModel->table}.created_at") . " AS requested_at,
             cb.employee_name AS generated_by,
-            ".dt_sql_datetime_format("{$model->table}.created_at")." AS generated_at,
+            " . dt_sql_datetime_format("{$model->table}.created_at") . " AS generated_at,
             ab.employee_name AS approved_by,
-            ".dt_sql_datetime_format("{$model->table}.approved_at")." AS approved_at,
-            fb.employee_name AS filed_by,
-            ".dt_sql_datetime_format("{$model->table}.filed_at")." AS filed_at
+            " . dt_sql_datetime_format("{$model->table}.approved_at") . " AS approved_at,
+            rb.employee_name AS received_by,
+            " . dt_sql_datetime_format("{$model->table}.received_at") . " AS received_at
         ";
         $builder    = $model->select($columns);
 
@@ -46,14 +46,14 @@ class PurchasingExportService extends ExportService
         $model->joinRpf($builder, $rpfModel, true);
         $this->joinAccountView($builder, "{$model->table}.created_by", 'cb');
         $this->joinAccountView($builder, "{$model->table}.approved_by", 'ab');
-        $this->joinAccountView($builder, "{$model->table}.filed_by", 'fb');
+        $this->joinAccountView($builder, "{$model->table}.received_by", 'rb');
 
         $builder->where("{$model->table}.deleted_at", null);
         $builder->orderBy("{$model->table}.id", 'ASC');
 
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters);
-        
+
         $data       = $builder->findAll();
         $header     = [
             'Status',
@@ -68,8 +68,8 @@ class PurchasingExportService extends ExportService
             'Generated At',
             'Approved By',
             'Approved At',
-            'Filed By',
-            'Filed At',
+            'Received By',
+            'Received At',
         ];
         $filename   = 'Purchase Orders';
 
@@ -85,7 +85,7 @@ class PurchasingExportService extends ExportService
      */
     public function poItems($filters = [])
     {
-        $model          = new PurchaseOrderModel();        
+        $model          = new PurchaseOrderModel();
         $poItemModel    = new POItemModel();
         $rpfItemModel   = new RPFItemModel();
         $inventoryModel = new InventoryModel();
@@ -101,15 +101,15 @@ class PurchasingExportService extends ExportService
             {$inventoryModel->view}.size,
             {$inventoryModel->view}.unit,
             {$rpfItemModel->table}.quantity_in,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_price,
+            " . dt_sql_number_format("{$inventoryModel->table}.item_sdp") . " AS item_price,
+            " . dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in") . " AS total_price,
             UPPER({$model->table}.status) AS status,
             cb.employee_name AS created_by,
-            ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at,
+            " . dt_sql_datetime_format("{$model->table}.created_at") . " AS created_at,
             ab.employee_name AS approved_by,
-            ".dt_sql_datetime_format("{$model->table}.approved_at")." AS approved_at,
-            fb.employee_name AS filed_by,
-            ".dt_sql_datetime_format("{$model->table}.filed_at")." AS filed_at
+            " . dt_sql_datetime_format("{$model->table}.approved_at") . " AS approved_at,
+            rb.employee_name AS received_by,
+            " . dt_sql_datetime_format("{$model->table}.received_at") . " AS received_at
         ";
         $builder        = $model->select($columns);
 
@@ -120,14 +120,14 @@ class PurchasingExportService extends ExportService
 
         $this->joinAccountView($builder, "{$model->table}.created_by", 'cb');
         $this->joinAccountView($builder, "{$model->table}.approved_by", 'ab');
-        $this->joinAccountView($builder, "{$model->table}.filed_by", 'fb');
+        $this->joinAccountView($builder, "{$model->table}.received_by", 'rb');
 
         $builder->where("{$model->table}.deleted_at", null);
         $builder->orderBy("{$poItemModel->table}.po_id", 'ASC');
 
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters);
-        
+
         $data       = $builder->findAll();
         $header     = [
             'PO #',
@@ -148,10 +148,10 @@ class PurchasingExportService extends ExportService
             'Generated At',
             'Approved By',
             'Approved At',
-            'Filed By',
-            'Filed At',
+            'Received By',
+            'Received At',
         ];
-        $filename   = 'RPF Items';
+        $filename   = 'PO Items';
 
         $this->logSelectQuery($builder, __METHOD__);
 
@@ -171,7 +171,7 @@ class PurchasingExportService extends ExportService
 
         $this->joinAccountView($builder, "{$model->table}.created_by", 'cb');
         $builder->where("{$model->table}.deleted_at IS NULL")->orderBy('id', 'ASC');
-        
+
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters, 'supplier_type');
 
@@ -217,7 +217,7 @@ class PurchasingExportService extends ExportService
             {$supplierModel->table}.supplier_name,
             {$supplierModel->table}.supplier_type,
             {$model->table}.id AS brand_id,
-        ". $model->dtColumns();
+        " . $model->dtColumns();
         $builder        = $model->select($columns);
 
         $model->joinSupplier(null, $supplierModel);
@@ -225,7 +225,7 @@ class PurchasingExportService extends ExportService
 
         $builder->where("{$model->table}.deleted_at IS NULL");
         $builder->orderBy("{$model->table}.id", 'ASC');
-        
+
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters, 'supplier_type');
 
@@ -265,19 +265,17 @@ class PurchasingExportService extends ExportService
         $columns    = "
             UPPER({$model->table}.status) AS status,
             {$model->table}.id,
-            ".dt_sql_date_format("{$model->table}.date_needed")." AS date_needed,
+            " . dt_sql_date_format("{$model->table}.date_needed") . " AS date_needed,
             {$model->view}.created_by_name,
-            ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at,
+            " . dt_sql_datetime_format("{$model->table}.created_at") . " AS created_at,
             {$model->view}.accepted_by_name,
-            ".dt_sql_datetime_format("{$model->table}.accepted_at")." AS accepted_at,
+            " . dt_sql_datetime_format("{$model->table}.accepted_at") . " AS accepted_at,
             {$model->view}.rejected_by_name,
-            ".dt_sql_datetime_format("{$model->table}.rejected_at")." AS rejected_at,
+            " . dt_sql_datetime_format("{$model->table}.rejected_at") . " AS rejected_at,
             {$model->view}.reviewed_by_name,
-            ".dt_sql_datetime_format("{$model->table}.reviewed_at")." AS reviewed_at,
-            {$model->view}.received_by_name,
-            ".dt_sql_datetime_format("{$model->table}.received_at")." AS received_at
+            " . dt_sql_datetime_format("{$model->table}.reviewed_at") . " AS reviewed_at
         ";
-        
+
         // Process and add filters
         $this->processFilters($model->table, $model, $filters);
 
@@ -292,8 +290,6 @@ class PurchasingExportService extends ExportService
             'Accepted At',
             'Reviewed By',
             'Reviewed At',
-            'Received By',
-            'Received At',
             'Rejected By',
             'Rejected At'
         ];
@@ -326,14 +322,14 @@ class PurchasingExportService extends ExportService
             {$inventoryModel->view}.unit,
             {$inventoryModel->table}.stocks,
             {$rpfItemModel->table}.quantity_in,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp")." AS item_price,
-            ".dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in")." AS total_price,
+            " . dt_sql_number_format("{$inventoryModel->table}.item_sdp") . " AS item_price,
+            " . dt_sql_number_format("{$inventoryModel->table}.item_sdp * {$rpfItemModel->table}.quantity_in") . " AS total_price,
             {$rpfItemModel->table}.received_q,
-            ".dt_sql_date_format("{$rpfItemModel->table}.received_date")." AS received_date,
+            " . dt_sql_date_format("{$rpfItemModel->table}.received_date") . " AS received_date,
             UPPER({$model->table}.status) AS status,
             {$rpfItemModel->table}.purpose,
             {$model->view}.created_by_name,
-            ".dt_sql_datetime_format("{$model->table}.created_at")." AS created_at
+            " . dt_sql_datetime_format("{$model->table}.created_at") . " AS created_at
         ";
         $builder        = $rpfItemModel->select($columns);
 
@@ -344,7 +340,7 @@ class PurchasingExportService extends ExportService
 
         $builder->where("{$model->table}.deleted_at", null);
         $builder->orderBy("{$rpfItemModel->table}.rpf_id", 'ASC');
-        
+
         // Process and add filters
         $this->processFilters($model->table, $builder, $filters);
 

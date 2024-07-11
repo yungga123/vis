@@ -44,6 +44,7 @@
 						<th>Unit</th>
 						<th>Cost</th>
 						<th>Total Cost</th>
+						<th>Total Cost + Vat</th>
 						<th>Supplier</th>
 						<th>Stocks</th>
 					</tr>
@@ -52,17 +53,24 @@
 					<?php 
 					if (! empty($rpf_items)): 
 						$count = 1;
-						foreach ($rpf_items as $item): ?>
+						
+						foreach ($rpf_items as $item): 
+							$quantity_in = $item['quantity_in'] ?? 0;
+							$vat_amount = floatval($item['item_sdp'] * $vat_percent);
+							$total_vat 	= floatval($vat_amount * $quantity_in);
+							$total_cost = floatval(($item['item_sdp'] * $quantity_in));
+					?>
 							<tr>
 								<!-- <td><?= $item['inventory_id'] ?? '' ?></td> -->
 								<td><?= $count ?></td>
 								<td><?= $item['item_description'] ?? '' ?></td>
 								<td><?= $item['item_model'] ?? '' ?></td>
-								<td><?= $item['quantity_in'] ? number_format($item['quantity_in'], 2) : '' ?></td>
+								<td><?= $quantity_in ? number_format($quantity_in, 2) : '' ?></td>
 								<td><?= $item['received_q'] ?? '' ?></td>
 								<td><?= $item['unit'] ?? '' ?></td>
 								<td><?= number_format($item['item_sdp'], 2) ?></td>
-								<td><?= $item['item_sdp'] ? number_format(floatval($item['item_sdp'] * $item['quantity_in']), 2) : '' ?></td>
+								<td><?= number_format($total_cost, 2) ?></td>
+								<td><?= number_format($total_cost + $total_vat, 2) ?></td>
 								<td><?= $item['supplier_name'] ?? '' ?></td>
 								<td><?= $item['stocks'] ? number_format($item['stocks'], 2) : '' ?></td>
 							</tr>

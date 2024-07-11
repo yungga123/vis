@@ -240,6 +240,9 @@ function edit(id, billing_status) {
 					res.data.withholding_tax_percent || ""
 				);
 				$("#withholding_tax").val(res.data.withholding_tax || "");
+				$("#additional_description").val(
+					res.data.additional_description || ""
+				);
 				$("#with_vat").prop("checked", res.data.with_vat != 0);
 				$("#with_vat").trigger("change");
 				$("#with_interest").prop(
@@ -289,35 +292,11 @@ function remove(id) {
 }
 
 /* Change status record */
-
 function change(id, changeTo, status) {
-	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
-	const swalMsg = `
-		<div>Billing #: <strong>${id}</strong></div>
-		<div>Are you sure you want to <strong>${strUpper(
-			changeTo
-		)}</strong> this Billing Invoice?</div>
-	`;
 	const data = { id: id, status: changeTo };
+	const title = `${strUpper(status)} to ${strUpper(changeTo)}!`;
 
-	swalNotifConfirm(
-		function () {
-			$.post(router.billing_invoice.change, data)
-				.then((res) => {
-					const message = res.errors ?? res.message;
-
-					if (res.status !== STATUS.ERROR) {
-						refreshDataTable($("#" + table));
-					}
-
-					notifMsgSwal(res.status, message, res.status);
-				})
-				.catch((err) => catchErrMsg(err));
-		},
-		title,
-		swalMsg,
-		STATUS.WARNING
-	);
+	changeRecord(router.billing_invoice.change, data, title, table);
 }
 
 /* Quotation via ajax data source */

@@ -252,6 +252,18 @@ define('ACTIONS', [
         ],
         'SALES_CUSTOMER_SUPPORTS'     => [
             'CHANGE'        => 'Change Status',
+            'ADD_LOG'       => 'Add Log',
+            'VIEW_LOGS'     => 'View Logs',
+        ],
+        'ADMIN_SERVICE_REPORTS'     => [
+            'ACCEPT'        => 'Accept',
+            'FILE'          => 'File',
+            'PRINT'         => 'Print',
+        ],
+        'FINANCE_BILLING_INVOICE_ORDER_FORMS' => [
+            'APPROVE'   => 'Approve',
+            'PRINT'     => 'Print',
+            'MARK_PAID' => 'Mark as Paid',
         ],
     ],
 ]);
@@ -319,10 +331,12 @@ define('MODULES', [
     'PAYROLL_OVERTIME'      => 'Overtime',
     'PAYROLL_SETTINGS'      => 'Settings',
     'PAYROLL_TIMESHEETS'    => 'Timesheets',
-    'FINANCE_BILLING_INVOICE'   => 'Billing Invoices',
+    'FINANCE_BILLING_INVOICE'   => 'Billing Invoices (Task/Leads)',
+    'FINANCE_BILLING_INVOICE_ORDER_FORMS' => 'Billing Invoices (Order Forms)',
     'FINANCE_FUNDS'         => 'Funds',
     'INVENTORY_ORDER_FORMS' => 'Order Forms',
     'SALES_CUSTOMER_SUPPORTS' => 'Customer Supports',
+    'ADMIN_SERVICE_REPORTS' => 'Service Reports',
 ]);
 
 // Modules code based on the specific identifier you set
@@ -358,9 +372,11 @@ define('MODULE_CODES', [
     'payroll_settings'      => 'PAYROLL_SETTINGS',
     'timesheets'            => 'PAYROLL_TIMESHEETS',
     'billing_invoice'       => 'FINANCE_BILLING_INVOICE',
+    'billing_invoice_order_forms' => 'FINANCE_BILLING_INVOICE_ORDER_FORMS',
     'funds'                 => 'FINANCE_FUNDS',
     'order_forms'           => 'INVENTORY_ORDER_FORMS',
     'customer_supports'     => 'SALES_CUSTOMER_SUPPORTS',
+    'service_reports'       => 'ADMIN_SERVICE_REPORTS',
 ]);
 
 // Modules with access to generic actions (VIEW, ADD, EDIT, DELETE)
@@ -396,4 +412,8 @@ define('COMPANY_PURCHASE_ORDER_FORM_CODE', 'F06');
 define('ROOT_FILE_UPLOAD_DIR', '');
 
 // Billing Invoice Form Code
-define('COMPANY_BILLING_INVOICE_FORM_CODE', 'F07');
+define('COMPANY_BILLING_INVOICE_FORM_CODE', 'F07'); // Task/Leads
+define('COMPANY_BILLING_INVOICE_ORDER_FORMS_FORM_CODE', 'F08'); // Order Forms
+
+// Service Report Form Code
+define('COMPANY_SERVICE_REPORT_FORM_CODE', 'F09');

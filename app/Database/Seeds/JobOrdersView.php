@@ -22,7 +22,7 @@ class JobOrdersView extends Seeder
             SELECT
                 {$table}.id AS job_order_id,
                 IF({$table}.is_manual = 0, tl.customer_id, {$table}.customer_id) AS client_id,
-                IF({$table}.is_manual = 0, ctl.name, cjo.name) AS client_name,
+                TRIM(IF({$table}.is_manual = 0, ctl.name, cjo.name)) AS client_name,
                 IF({$table}.is_manual = 0, ctl.type, cjo.type) AS client_type,
                 IF({$table}.is_manual = 0, tl.branch_id, {$table}.customer_branch_id) AS client_branch_id,
                 cbjo.branch_name AS client_branch_name,

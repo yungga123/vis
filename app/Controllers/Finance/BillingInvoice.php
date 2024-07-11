@@ -5,9 +5,9 @@ namespace App\Controllers\Finance;
 use App\Controllers\BaseController;
 use App\Models\BillingInvoiceModel;
 use App\Models\CustomerModel;
-use App\Models\FundsHistoryModel;
 use App\Models\TaskLeadView;
 use App\Traits\CommonTrait;
+use App\Traits\FinanceTrait;
 use App\Traits\GeneralInfoTrait;
 use App\Traits\HRTrait;
 use monken\TablesIgniter;
@@ -15,7 +15,7 @@ use monken\TablesIgniter;
 class BillingInvoice extends BaseController
 {
     /* Declare trait here to use */
-    use CommonTrait, HRTrait, GeneralInfoTrait;
+    use CommonTrait, HRTrait, GeneralInfoTrait, FinanceTrait;
 
     /**
      * Use to initialize model class
@@ -28,7 +28,13 @@ class BillingInvoice extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
+    /**
+     * Use to get current module title
+     * @var string
+     */
+    private $_module_title;
+
     /**
      * Use to get current permissions
      * @var array
@@ -48,6 +54,7 @@ class BillingInvoice extends BaseController
     {
         $this->_model           = new BillingInvoiceModel(); // Current model
         $this->_module_code     = MODULE_CODES['billing_invoice']; // Current module
+        $this->_module_title    = MODULES[$this->_module_code]; // Current module title
         $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
         $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
@@ -62,8 +69,8 @@ class BillingInvoice extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $data['title']          = 'Finance | Billing Invoices';
-        $data['page_title']     = 'Finance | Billing Invoices';
+        $data['title']          = 'Finance | ' . $this->_module_title;
+        $data['page_title']     = 'Finance | ' . $this->_module_title;
         $data['btn_add_lbl']    = 'Create Billing Invoice';
         $data['can_add']        = $this->_can_add;
         $data['with_dtTable']   = true;
@@ -86,7 +93,7 @@ class BillingInvoice extends BaseController
             ]
         ]);
         $data['php_to_js_options'] = json_encode([
-            'overdue_interests' => $this->_overdueInterests(),
+            'overdue_interests' => $this->overdueInterests(),
             'vat_percent'       => $this->getVatPercent(),
         ]);
 
@@ -127,6 +134,7 @@ class BillingInvoice extends BaseController
             'attention_to',
             'with_vat',
             'vat_amount',
+            'additional_description',
             'created_by',
             'created_at',
             'approved_by',
@@ -144,17 +152,16 @@ class BillingInvoice extends BaseController
             ->setOutput(
                 array_merge(
                     [
-                        dt_empty_col(), 
+                        dt_empty_col(),
                         $this->_model->buttons($this->_permissions),
                         $this->_model->dtStatusFormat(),
                         $this->_model->dtBillingStatusFormat(),
-                    ], 
+                    ],
                     $fields
                 )
             );
-        
-        return $table->getDatatable();
 
+        return $table->getDatatable();
     }
 
     /**
@@ -162,15 +169,15 @@ class BillingInvoice extends BaseController
      *
      * @return json
      */
-    public function save() 
+    public function save()
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.added', 'Billing Invoice')
+            'message'   => res_lang('success.added', $this->_module_title)
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id             = $this->request->getVar('id');
                 $request        = $this->request->getVar();
                 $with_vat       = ($request['with_vat'] ?? 0) == 1;
@@ -189,12 +196,13 @@ class BillingInvoice extends BaseController
                     'vat_amount'        => $with_vat ? ($request['vat_amount'] ?? null) : null,
                     'grand_total'       => $request['grand_total'] ?? null,
                     'overdue_interest'  => $request['overdue_interest'] ?? null,
+                    'additional_description'  => $request['additional_description'] ?? null,
                 ];
                 $is_paid        = ($request['billing_status'] ?? '') === 'paid';
                 $action         = empty($id) ? ACTION_ADD : ACTION_EDIT;
-                $action         = $is_paid ? 'MARK_PAID': $action;
- 
-                if (! empty($request['attention_to'] ?? '')) {
+                $action         = $is_paid ? 'MARK_PAID' : $action;
+
+                if (!empty($request['attention_to'] ?? '')) {
                     $inputs     = [
                         'id'            => $id,
                         'attention_to'  => $request['attention_to'] ?? null,
@@ -203,14 +211,14 @@ class BillingInvoice extends BaseController
                     $this->checkRoleActionPermissions($this->_module_code, $action, true);
                     $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
 
-                    $overdues = $this->_checkNCalculateOverdues($request['billing_amount'], $request['due_date']);
+                    $overdues = $this->checkNCalculateOverdues($request['billing_amount'], $request['due_date']);
 
-                    if (! empty($overdues) && empty($id)) {
+                    if (!empty($overdues) && empty($id)) {
                         $inputs['billing_status']   = 'overdue';
                         $inputs['overdue_interest'] = 0;
                     }
 
-                    if (empty($request['with_interest'] ?? null)) {             
+                    if (empty($request['with_interest'] ?? null)) {
                         $inputs['overdue_interest'] = 0;
                     }
 
@@ -219,31 +227,32 @@ class BillingInvoice extends BaseController
                         $inputs['date_paid']        = $request['date_paid'] ?? null;
                         $inputs['paid_by']          = session('username');
                         $inputs['paid_at']          = current_datetime();
-    
+
                         $this->_model->makeAmountPaidRequired();
 
                         // Update funds
                         $this->saveCompanyFunds($request['amount_paid']);
-                        
+
                         // Save funds transaction history
-                        $fundHModel = new FundsHistoryModel();
-                        $fundHModel->save([
-                            'billing_invoiced_id'   => $id,
+                        $params = [
+                            'billing_invoice_id'    => $id,
                             'current_funds'         => $this->getCompanyFunds(),
                             'transaction_amount'    => $request['amount_paid'],
                             'transaction_type'      => 'incoming',
-                            'coming_from'           => 'Billing Invoice',
-                        ]); 
+                            'coming_from'           => $this->_module_title,
+                            'module_code'           => $this->_module_code,
+                        ];
+                        $this->saveFundTransaction($params);
                     } else {
                         $inputs['amount_paid'] = 0;
                     }
                 }
-    
+
                 if ($id) {
-                    $data['message']    = res_lang('success.updated', 'Billing Invoice');
+                    $data['message']    = res_lang('success.updated', $this->_module_title);
                 }
 
-                if (! $this->_model->save($inputs)) {
+                if (!$this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
@@ -261,22 +270,22 @@ class BillingInvoice extends BaseController
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.retrieved', 'Billing Invoice')
+            'message'   => res_lang('success.retrieved', $this->_module_title)
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id         = $this->request->getVar('id');
                 $record     = $this->_model->fetch($id, true);
                 $compare_to = $record['billing_status'] === 'paid' ? $record['paid_at'] : null;
 
-                $overdues = $this->_checkNCalculateOverdues($record['billing_amount'], $record['due_date'], $compare_to);
+                $overdues = $this->checkNCalculateOverdues($record['billing_amount'], $record['due_date'], $compare_to);
 
-                if (! empty($overdues)) {                        
+                if (!empty($overdues)) {
                     $record['days_overdue']   = $overdues['days'];
                 }
 
@@ -295,22 +304,22 @@ class BillingInvoice extends BaseController
      *
      * @return json
      */
-    public function delete() 
+    public function delete()
     {
         $data = [
             'status'    => res_lang('status.success'),
-            'message'   => res_lang('success.deleted', 'Billing Invoice')
+            'message'   => res_lang('success.deleted', $this->_module_title)
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id = $this->request->getVar('id');
 
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
                 $this->checkRecordRestrictionViaStatus($id, $this->_model, 'billing_status');
                 $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
-                if (! $this->_model->delete($id)) {
+                if (!$this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
@@ -327,12 +336,12 @@ class BillingInvoice extends BaseController
      *
      * @return json
      */
-    public function change() 
+    public function change()
     {
         $data       = [];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id         = $this->request->getVar('id');
                 $status     = 'approved';
                 $inputs     = [
@@ -342,14 +351,14 @@ class BillingInvoice extends BaseController
                 ];
 
                 $this->checkRoleActionPermissions($this->_module_code, 'approve', true);
-    
-                if (! $this->_model->update($id, $inputs)) {
+
+                if (!$this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 } else {
                     $data['status']     = res_lang('status.success');
-                    $data['message']    = res_lang('success.changed', ['Billing Invoice', strtoupper($status)]);
+                    $data['message']    = res_lang('success.changed', [$this->_module_title, strtoupper($status)]);
                 }
 
                 return $data;
@@ -364,11 +373,11 @@ class BillingInvoice extends BaseController
      *
      * @return view
      */
-    public function print($id) 
+    public function print($id)
     {
         // Check role & action if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
-        
+
         $tlVModel   = new TaskLeadView();
         $custModel  = new CustomerModel();
         $columns    = $this->_model->columns(true) . ",
@@ -377,7 +386,7 @@ class BillingInvoice extends BaseController
             cb.position AS created_by_position,
             ab.position AS approved_by_position,
             {$tlVModel->table}.customer_id AS client_id,
-            ".dt_sql_concat_client_address('', 'client_address')."
+            " . dt_sql_concat_client_address('', 'client_address') . "
         ";
         $builder    = $this->_model->select($columns);
 
@@ -414,47 +423,5 @@ class BillingInvoice extends BaseController
         ];
 
         return view('finance/billing_invoice/print', $data);
-    }
-
-    /**
-     * Get overdue interests
-     *
-     * @return array
-     */
-    private function _overdueInterests() 
-    {
-        $keys   = [
-            'billing_invoice_overdue_interest_per_day',
-			'billing_invoice_overdue_interest_per_month',
-        ];
-        $arr    = $this->getGeneralInfo($keys, true);
-        $arr    = [
-            'per_day'   => (isset($arr[$keys[0]]) && $arr[$keys[0]] ? $arr[$keys[0]] : 0.23) / 100,
-            'per_month' => (isset($arr[$keys[1]]) && $arr[$keys[1]] ? $arr[$keys[1]] : 7) / 100,
-        ];
-        
-        return $arr;
-    }
-
-    /**
-     * Get overdue interests
-     *
-     * @return array
-     */
-    private function _checkNCalculateOverdues($billing_amount, $overdue_date, $compare_to = null) 
-    {
-        $arr        = [];
-        $compare_to ??= current_date();
-
-        if (compare_dates($overdue_date, $compare_to, '<')) {
-            $interval       = get_date_diff($overdue_date, $compare_to);
-            $days_overdue   = $interval->days;
-            $interest       = $this->_overdueInterests()['per_day'];
-
-            $arr['days']    = $days_overdue;
-            $arr['amount']  = $billing_amount * $interest;
-        }
-        
-        return $arr;
     }
 }

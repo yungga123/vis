@@ -75,6 +75,7 @@ class CustomerSupport extends BaseController
                 'list'      => url_to('sales.customer_support.list'),
                 'fetch'     => url_to('sales.customer_support.fetch'),
                 'delete'    => url_to('sales.customer_support.delete'),
+                'logs'      => url_to('sales.customer_support_logs.fetch'),
             ],
             'clients' => [
                 'common' => [

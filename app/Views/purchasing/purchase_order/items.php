@@ -29,6 +29,7 @@
                                     <th>Cost</th>
                                     <th>Discount</th>
                                     <th>Total Cost</th>
+                                    <th>Total Cost + Vat</th>
                                     <th>Received Qty</th>
                                     <th>Received Date</th>
                                     <th>Purpose</th>
@@ -41,6 +42,7 @@
                                     <td class="text-danger total_cost"></td>
                                     <td class="text-danger total_discount"></td>
                                     <td class="text-danger total_amount"></td>
+                                    <td class="text-danger total_amount_with_vat"></td>
                                     <td colspan="2">
                                         <div class="text-danger" id="total_amount_received"></div>
                                         <small class="text-danger" id="alert_received_q"></small>

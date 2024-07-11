@@ -26,6 +26,7 @@
                                     <th>Item Size</th>
                                     <th>Current Stocks</th>
                                     <th>Item Price</th>
+                                    <th>Selling Price</th>
                                     <th>Quantity</th>
                                     <th>Discount</th>
                                     <th>Total Price</th>
@@ -36,6 +37,7 @@
                                 <tr>
                                     <td colspan="7" class="text-right text-bold">Grand Totals</td>
                                     <td class="total_item_price text-bold text-danger"></td>
+                                    <td class="total_selling_price text-bold text-danger"></td>
                                     <td class="total_quantity text-bold text-danger"></td>
                                     <td class="total_discount text-bold text-danger"></td>
                                     <td class="grand_total text-bold text-danger"></td>
