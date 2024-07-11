@@ -107,7 +107,9 @@ trait InventoryTrait
             $category = $options['category'] ?? null;
 
             if ($category) {
-                $builder->where("{$model->table}.category", $category);
+                $field = is_numeric($category) ? "{$model->table}.category" : "{$model->view}.category_name";
+
+                $builder->where($field, $category);
             }
         }
 
