@@ -17,23 +17,23 @@ class TaskLeadBookedFile extends BaseController
      */
     private $_model;
 
-     /**
-      * The root directory to save the uploaded files
-      * @var string
-      */
-     private $_rootDirPath;
- 
-     /**
-      * The initial file path after the root path
-      * @var string
-      */
-     private $_initialFilePath;
- 
-     /**
-      * The full file path
-      * @var string
-      */
-     private $_fullFilePath;
+    /**
+     * The root directory to save the uploaded files
+     * @var string
+     */
+    private $_rootDirPath;
+
+    /**
+     * The initial file path after the root path
+     * @var string
+     */
+    private $_initialFilePath;
+
+    /**
+     * The full file path
+     * @var string
+     */
+    private $_fullFilePath;
 
     /**
      * Class constructor
@@ -59,8 +59,8 @@ class TaskLeadBookedFile extends BaseController
     {
         $record         = $this->_model->getTaskleadFiles($id);
         $filenames      = empty($record) ? [] : json_decode($record['filenames']);
-        $directory       = $this->_fullFilePath . $id;
-        $downloadUrl    = site_url('tasklead/booked/files/download/') . $id;
+        $directory      = $this->_fullFilePath . $id;
+        $downloadUrl    = url_to('tasklead.booked.files.download', $id);
         $files          = $this->getFiles($id, $filenames, $directory, $downloadUrl);
 
         return $this->response->setJSON(['files' => $files]);
@@ -79,16 +79,16 @@ class TaskLeadBookedFile extends BaseController
         ];
         $response       = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $rules = $this->validationFileRules('file', null, 15);
-            
-                if (! $this->validate($rules)) {
+
+                if (!$this->validate($rules)) {
                     $data['status']     = res_lang('status.error');
                     $data['errors']     = $this->validator->getErrors();
                     $data['message']    = res_lang('error.validation');
 
                     return $data;
-                } 
+                }
 
                 $id             = $this->request->getVar('id');
                 $files          = $this->request->getFiles();
@@ -97,8 +97,8 @@ class TaskLeadBookedFile extends BaseController
                 $newFiles       = [];
 
                 foreach ($files['file'] as $file) {
-                    $filename       = time() .'-'. $file->getClientName();
-                    $downloadUrl    = site_url('tasklead/booked/files/download/') . $id .'/'. $filename;
+                    $filename       = time() . '-' . $file->getClientName();
+                    $downloadUrl    = site_url('tasklead/booked/files/download/') . $id . '/' . $filename;
                     $newFiles[]     = $this->uploadFile($id, $file, $filename, $filepath, $downloadUrl);
                     $filenames[]    = $filename;
                 }
@@ -107,9 +107,9 @@ class TaskLeadBookedFile extends BaseController
                 $data['files']      = $newFiles;
                 $data['id']         = $id;
 
-                if (! empty($filenames)) {
+                if (!empty($filenames)) {
                     $record     = $this->_model->getTaskleadFiles($id);
-                    $fileNames  = ! empty($record) ? json_decode($record['filenames']) : [];
+                    $fileNames  = !empty($record) ? json_decode($record['filenames']) : [];
                     $inputs     = [
                         'tasklead_id'   => $id,
                         'filenames'    => json_encode(array_merge($fileNames, $filenames)),
@@ -117,7 +117,7 @@ class TaskLeadBookedFile extends BaseController
                     ];
 
                     // Insert or update if $id exists
-                    if (! $this->_model->upsert($inputs)) {
+                    if (!$this->_model->upsert($inputs)) {
                         $data['errors']     = $this->_model->errors();
                         $data['status']     = res_lang('status.error');
                         $data['message']    = res_lang('error.validation');
@@ -140,7 +140,8 @@ class TaskLeadBookedFile extends BaseController
      */
     public function download($id, $filename)
     {
-        $filepath   = $this->_fullFilePath . $id .'/'. $filename;
+        $filepath   = $this->_fullFilePath . $id . '/' . $filename;
+
         return $this->response->download($filepath, null);
     }
 
@@ -157,44 +158,46 @@ class TaskLeadBookedFile extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id             = $this->request->getVar('id');
                 $filename       = $this->request->getVar('filename');
-        
+
                 $record         = $this->_model->getTaskleadFiles($id);
                 $filenames      = empty($record) ? [] : json_decode($record['filenames']);
                 $newFilenames   = [];
-                
-                if (count($filenames) > 1) {                    
+
+                if (count($filenames) > 1) {
                     foreach ($filenames as $_filename) {
-                        if ($_filename != $filename) 
+                        if ($_filename != $filename) {
                             $newFilenames[] = $_filename;
+                        }
                     }
                 }
 
-                if (! empty($newFilenames) || count($filenames) === 1) {
+                if (!empty($newFilenames) || count($filenames) === 1) {
                     $inputs = [
                         'tasklead_id'   => $id,
-                        'filenames'    => json_encode($newFilenames),
+                        'filenames'     => json_encode($newFilenames),
                         'created_by'    => session('username')
                     ];
-        
+
                     // Insert or update if $id exists
-                    if (! $this->_model->upsert($inputs)) {
+                    if (!$this->_model->upsert($inputs)) {
                         $data['errors']     = $this->_model->errors();
                         $data['status']     = res_lang('status.error');
                         $data['message']    = res_lang('error.validation');
+
                         return $data;
                     }
-        
+
                     // Remove previous uploaded file
-                    $file = $this->_fullFilePath . $id .'/'. $filename;
+                    $file = $this->_fullFilePath . $id . '/' . $filename;
+
                     $this->removeFile($file);
                 }
-                
+
                 return $data;
-            },
-            true
+            }
         );
 
         return $response;
