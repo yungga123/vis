@@ -89,16 +89,18 @@ class InventoryDropdownModel extends Model
 
         return $data;
     }
-    
+
     // Saving dropdowns
-    public function saveDropdowns($inputs) 
+    public function saveDropdowns($inputs)
     {
         $dropdowns = explode(',', $inputs['dropdown']);
-        if (! empty($inputs['is_category']) || count($dropdowns) <= 1) {
+
+        if (!empty($inputs['is_category']) || count($dropdowns) <= 1) {
             return $this->save(clean_param($inputs));
         } else {
             if (count($dropdowns) > 1) {
                 $data = [];
+
                 foreach ($dropdowns as $key => $val) {
                     $data[$key] = [
                         'dropdown'      => trim($val),
@@ -109,17 +111,17 @@ class InventoryDropdownModel extends Model
 
                 return $this->insertBatch($data);
             }
-        }        
+        }
     }
-    
+
     // Save  other category types
-    public function saveOtherCategoryTypes($inputs) 
+    public function saveOtherCategoryTypes($inputs)
     {
         $id         = 0;
         $other_type = strtoupper($inputs['other_category_type']);
         $record     = $this->select('dropdown_id, dropdown')
-                        ->where('TRIM(other_category_type)', trim($other_type))
-                        ->where('parent_id', 0)->first();
+            ->where('TRIM(other_category_type)', trim($other_type))
+            ->where('parent_id', 0)->first();
 
         if (empty($record)) {
             $this->save([
@@ -130,9 +132,12 @@ class InventoryDropdownModel extends Model
             ]);
 
             $id = $this->insertID;
-        } else $id = $record['dropdown_id'];
+        } else {
+            $id = $record['dropdown_id'];
+        }
 
         $dropdowns  = explode(',', $inputs['dropdown']);
+
         if (count($dropdowns) <= 1) {
             $data = [
                 'dropdown'              => $inputs['dropdown'],
@@ -140,9 +145,11 @@ class InventoryDropdownModel extends Model
                 'other_category_type'   => trim($other_type),
                 'parent_id'             => $id,
             ];
+
             return $this->save($data);
         } else {
             $data = [];
+
             foreach ($dropdowns as $key => $val) {
                 $data[$key] = [
                     'dropdown'              => trim($val),
@@ -151,92 +158,109 @@ class InventoryDropdownModel extends Model
                     'parent_id'             => $id,
                 ];
             }
+
             return $this->insertBatch($data);
         }
     }
-    
+
     // Get specific dropdown base on type
-    public function getDropdowns($param, $columns = null, $all_categories = false) 
+    public function getDropdowns($param, $columns = null, $all_categories = false)
     {
         $param          = remove_string($param, 'other__');
         $is_category    = ($param === 'CATEGORY' || $param == 0);
-        $columns        = $columns ?? 'dropdown_id, '.dt_sql_trim('dropdown', 'dropdown').'';
+        $columns        = $columns ?? 'dropdown_id, ' . dt_sql_trim('dropdown', 'dropdown') . '';
         $field          = is_numeric($param) ? 'parent_id' : 'dropdown_type';
         $builder        = $this->select($columns);
-        
-        if(is_array($param)) {
+
+        if (is_array($param)) {
             $field = is_numeric($param[0]) ? 'parent_id' : $field;
             $builder->whereIn($field, $param);
+        } else {
+            $builder->where($field, $param);
         }
-        else $builder->where($field, $param);
-        
-        if ($is_category && !$all_categories) $builder->where('other_category_type', '');            
+
+        if ($is_category && !$all_categories) {
+            $builder->where('other_category_type', '');
+        }
+
         return $builder->findAll();
     }
-    
-   // Get unique dropdown types
-    public function getDropdownTypes($param = null) 
+
+    // Get the categories
+    public function getCategories($all_categories = false)
     {
-        $columns = ''.dt_sql_trim('dropdown_type', 'dropdown_type').', parent_id';
+        $param = 'CATEGORY';
+
+        return $this->getDropdowns($param, null, $all_categories);
+    }
+
+    // Get unique dropdown types
+    public function getDropdownTypes($param = null)
+    {
+        $columns = '' . dt_sql_trim('dropdown_type', 'dropdown_type') . ', parent_id';
+
         if ($param) {
             $field      = is_numeric($param) ? 'parent_id' : 'dropdown_type';
             $builder    = $this->select($columns)->where($field, $param);
-        } else
+        } else {
             $builder    = $this->select($columns);
-        
-            
+        }
+
         $builder->orderBy('parent_id')->distinct();
+
         return $builder->findAll();
     }
-    
+
     // Get the other category type dropdown base on type or all
-    public function getOtherCategoryTypes($param = null, $columns = null) 
+    public function getOtherCategoryTypes($param = null, $columns = null)
     {
         $columns = $columns ?? $this->defaultColumns();
         $builder = $this->select($columns);
-        
-        if($param) {
+
+        if ($param) {
             $builder->where("other_category_type", $param);
             $builder->where("parent_id != 0");
-        } else
+        } else {
             $builder->where("other_category_type IS NOT NULL OR other_category_type != ''");
+        }
 
         return $builder->findAll();
-   }
-    
+    }
+
     // Get specific dropdown base on type
-    public function categoryHasDropdowns($param, $columns = null) 
+    public function categoryHasDropdowns($param, $columns = null)
     {
         $columns    = $columns ?? $this->defaultColumns();
         $field      = is_numeric($param) ? 'parent_id' : 'dropdown_type';
         $builder    = $this->select($columns)->where($field, $param);
-            
+
         return $builder->findAll();
-   }
-    
+    }
+
     // For DataTables
-    public function noticeTable($filter) 
+    public function noticeTable($filter)
     {
         $builder = $this->db->table($this->table);
         $builder->select($this->defaultColumns());
-            
+
         if ($filter) {
             $builder->whereIn('parent_id', $filter);
         }
 
         $builder->where('deleted_at', null);
-            
-        return $builder;
-   }
 
-   public function buttons($permissions)
-   {
-        $id = $this->primaryKey;
-        $closureFun = function($row) use($id, $permissions) {
+        return $builder;
+    }
+
+    public function buttons($permissions)
+    {
+        $id         = $this->primaryKey;
+        $closureFun = function ($row) use ($id, $permissions) {
             $buttons = dt_button_actions($row, $id, $permissions);
+
             return $buttons;
         };
-        
+
         return $closureFun;
-   }
+    }
 }

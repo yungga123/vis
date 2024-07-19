@@ -3,6 +3,7 @@
 namespace App\Controllers\Inventory;
 
 use App\Controllers\BaseController;
+use App\Models\InventoryDropdownModel;
 use App\Models\ProjectRequestFormModel;
 use App\Models\PRFItemModel;
 use App\Models\JobOrderModel;
@@ -27,7 +28,13 @@ class ProjectRequestForm extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
+    /**
+     * Use to get current module title
+     * @var string
+     */
+    private $_module_title;
+
     /**
      * Use to get current permissions
      * @var array
@@ -45,10 +52,11 @@ class ProjectRequestForm extends BaseController
      */
     public function __construct()
     {
-        $this->_model       = new ProjectRequestFormModel(); // Current model
-        $this->_module_code = MODULE_CODES['inventory_prf']; // Current module
-        $this->_permissions = $this->getSpecificPermissions($this->_module_code);
-        $this->_can_add     = $this->checkPermissions($this->_permissions, ACTION_ADD);
+        $this->_model           = new ProjectRequestFormModel(); // Current model
+        $this->_module_code     = MODULE_CODES['inventory_prf']; // Current module
+        $this->_module_title    = MODULES[$this->_module_code]; // Current module title
+        $this->_permissions     = $this->getSpecificPermissions($this->_module_code);
+        $this->_can_add         = $this->checkPermissions($this->_permissions, ACTION_ADD);
     }
 
     /**
@@ -61,8 +69,12 @@ class ProjectRequestForm extends BaseController
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
 
-        $data['title']          = 'Project Request Forms';
-        $data['page_title']     = 'Project Request Forms';
+        $itemDModel             = new InventoryDropdownModel();
+        $item_categories        = $itemDModel->getCategories();
+        $item_categories_opts   = inventory_categories_options($itemDModel, false);
+
+        $data['title']          = $this->_module_title;
+        $data['page_title']     = $this->_module_title;
         $data['can_add']        = $this->_can_add;
         $data['btn_add_lbl']    = 'Add Project Request Form';
         $data['with_dtTable']   = true;
@@ -91,9 +103,11 @@ class ProjectRequestForm extends BaseController
             ]
         ]);
         $data['php_to_js_options'] = json_encode([
-            'prf_status'    => set_prf_status(),
-            'prf_remarks'   => get_prf_item_remarks(),
+            'prf_status'        => set_prf_status(),
+            'prf_remarks'       => get_prf_item_remarks(),
+            'item_categories'   => $item_categories,
         ]);
+        $data['item_categories']    = $item_categories_opts;
 
         return view('inventory/prf/index', $data);
     }
@@ -143,7 +157,7 @@ class ProjectRequestForm extends BaseController
             ])
             ->setOrder(
                 array_merge(
-                    [null, null, null, null], 
+                    [null, null, null, null],
                     $fields
                 )
             )
@@ -154,7 +168,7 @@ class ProjectRequestForm extends BaseController
                         $this->_model->buttons($this->_permissions),
                         $this->_model->dtViewPrfItems(),
                         $this->_model->dtPRFStatusFormat(),
-                    ], 
+                    ],
                     $fields
                 )
             );
@@ -167,7 +181,7 @@ class ProjectRequestForm extends BaseController
      *
      * @return json
      */
-    public function save() 
+    public function save()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -175,7 +189,7 @@ class ProjectRequestForm extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $action = ACTION_ADD;
                 $id     = $this->request->getVar('id');
                 $inv_id = $this->request->getVar('inventory_id');
@@ -185,7 +199,7 @@ class ProjectRequestForm extends BaseController
                     $q_out
                 );
 
-                if (! empty(get_array_duplicate($inv_id))) {
+                if (!empty(get_array_duplicate($inv_id))) {
                     throw new \Exception("There are <strong>duplicate items</strong> in the list! Please double check and remove the duplicate one.", 2);
                 }
 
@@ -199,8 +213,8 @@ class ProjectRequestForm extends BaseController
                         'id'            => $id,
                         'job_order_id'  => $this->request->getVar('job_order_id'),
                         'process_date'  => $this->request->getVar('process_date'),
-                        'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id)) 
-                            ? (!has_empty_value($q_out) && count($inv_id) === count($q_out) ? $inv_id : null) 
+                        'inventory_id'  => (isset($inv_id) && !has_empty_value($inv_id))
+                            ? (!has_empty_value($q_out) && count($inv_id) === count($q_out) ? $inv_id : null)
                             : null,
                         'quantity_out'  => !has_empty_value($q_out) ? $q_out : null,
                     ];
@@ -212,14 +226,14 @@ class ProjectRequestForm extends BaseController
 
                     $this->checkRoleActionPermissions($this->_module_code, $action, true);
 
-                    if (! $this->_model->save($inputs)) {
+                    if (!$this->_model->save($inputs)) {
                         $data['errors']     = $this->_model->errors();
                         $data['status']     = res_lang('status.error');
                         $data['message']    = res_lang('error.validation');
                     } else {
                         $prfItemModel   = new PRFItemModel();
                         $prf_id         = $id ? $id : $this->_model->insertedID;
-                        
+
                         $prfItemModel->savePrfItems($this->request->getVar(), $prf_id);
                     }
                 }
@@ -230,13 +244,13 @@ class ProjectRequestForm extends BaseController
 
         return $response;
     }
-    
+
     /**
      * For fetching record using the id or other
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -244,13 +258,14 @@ class ProjectRequestForm extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id     = $this->request->getVar('id');
                 $table  = $this->_model->table;
 
-                if (! $this->_model->exists($id)) {
+                if (!$this->_model->exists($id)) {
                     $data['status']     = STATUS_ERROR;
                     $data['message']    = "<strong>PRF #: {$id}</strong> doesn't exists anymore!";
+
                     return $data;
                 }
 
@@ -261,7 +276,7 @@ class ProjectRequestForm extends BaseController
                     $data['data']['items']  = $this->traitFetchPrfItems($id, true, true);
                     $data['message']        = res_lang('success.retrieved', 'PRF Items');
                 } else {
-                    $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";                    
+                    $columns        = "{$table}.id, {$table}.job_order_id, {$table}.process_date";
                     $record         = $this->_model->getProjectRequestForms($id, true, $columns);
                     $job_order      = $this->fetchJobOrders($record['job_order_id']);
                     $items          = $this->traitFetchPrfItems($id, true, true);
@@ -270,8 +285,9 @@ class ProjectRequestForm extends BaseController
                     $data['data']['job_order']  = $job_order;
                     $data['data']['items']      = $items;
                 }
+
                 return $data;
-            }, 
+            },
             false
         );
 
@@ -283,7 +299,7 @@ class ProjectRequestForm extends BaseController
      *
      * @return json
      */
-    public function delete() 
+    public function delete()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -291,18 +307,19 @@ class ProjectRequestForm extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id = $this->request->getVar('id');
 
                 // Check restriction
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
                 $this->checkRecordRestrictionViaStatus($id, $this->_model);
 
-                if (! $this->_model->delete($id)) {
+                if (!$this->_model->delete($id)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 }
+
                 return $data;
             }
         );
@@ -315,12 +332,12 @@ class ProjectRequestForm extends BaseController
      *
      * @return json
      */
-    public function change() 
+    public function change()
     {
         $data       = [];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $request    = $this->request->getVar();
                 $id         = $request['id'];
                 $_status    = $request['status'];
@@ -337,7 +354,7 @@ class ProjectRequestForm extends BaseController
                 $inventory_id   = $request['inventory_id'] ?? null;
                 $selected_items = $request['selected_items'] ?? null;
 
-                if (! empty($selected_items) && $status === 'filed') {
+                if (!empty($selected_items) && $status === 'filed') {
                     if (count($inventory_id) != count($selected_items)) {
                         $inputs['status'] = set_prf_status('partial_filed');
                     }
@@ -352,14 +369,14 @@ class ProjectRequestForm extends BaseController
                     }
                 }
 
-                if (! $this->_model->update($id, $inputs)) {
+                if (!$this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
                 } else {
                     $data['status']     = res_lang('status.success');
                     $data['message']    = res_lang('success.changed', ['PRF', strtoupper($status)]);
-                    
+
                     if ($status === 'filed') {
                         $prfItemModel = new PRFItemModel();
                         $prfItemModel->updatePrfItems($request, $id);
@@ -382,15 +399,15 @@ class ProjectRequestForm extends BaseController
      *
      * @return view
      */
-    public function print($id) 
+    public function print($id)
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
-        
+
         $columns    = $this->_model->columns(true, true);
-        $columns    .= ','. $this->_model->jobOrderColumns(false, true);
+        $columns    .= ',' . $this->_model->jobOrderColumns(false, true);
         $builder    = $this->_model->select($columns);
-        
+
         $this->_model->joinView($builder);
         $this->_model->joinJobOrder($builder);
 
@@ -400,7 +417,7 @@ class ProjectRequestForm extends BaseController
         if (empty($prf)) {
             return $this->redirectTo404Page();
         }
-        
+
         $data['prf']            = $prf;
         $data['prf_items']      = $builder->traitFetchPrfItems($id, true, true);
         $data['title']          = 'Print Project Request Form';

@@ -10,13 +10,13 @@
                 <input type="hidden" id="total_amount_no_discount" readonly>
                 <div class="modal-header">
                     <h5 class="modal-title">Add PRF</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">                    
+                <div class="modal-body">
                     <div class="callout callout-info mb-3">
-                        <strong>Note:</strong> 
+                        <strong>Note:</strong>
                         If not empty, initial dropdowns of <strong>Client</strong> is by 10. Type the <strong>CLIENT NAME or ID</strong> to search if not in the options and then, click to select.
                     </div>
                     <div class="row">
@@ -44,7 +44,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label class="required text-center">Masterlist Items</label>
-                                <div>Format: Item # | Model | Description | Size</div>
+                                <div>Format: Item # | Sub-Category | Brand | Model | Description | Size</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table" id="item_field_table">

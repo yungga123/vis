@@ -283,10 +283,13 @@ function edit(id) {
 				for (let x = 0; x < itemFields.length; x++) {
 					const itemElem = itemFields[x];
 					const item = items[x];
-					const text = `${item.inventory_id} | ${item.item_model} | ${
+					const trId = "row_" + x;
+					const text = `${item.inventory_id} | ${
+						item.subcategory_name
+					} | ${item.brand} | ${item.item_model} | ${
 						item.item_description
 					} | ${item.size || "N/A"}`;
-					const trId = "row_" + x;
+
 					let itemPrice = parseFloat(item.item_price || 0);
 					let sellingPrice = parseFloat(item.selling_price || 0);
 					let finalItemPrice =
@@ -375,6 +378,7 @@ function change(id, changeTo, status, proceed) {
 
 		// Display the items details
 		view(id, changeTo, status);
+
 		return;
 	}
 
@@ -545,12 +549,22 @@ function calculateGrandTotals() {
 
 /* Masterlist select2 via ajax data source */
 function _initInventorySelect2() {
+	const options = { category: "DIRECT" };
+
 	select2AjaxInit(
 		invSelector,
 		"Search & select an item",
 		router.inventory.common.masterlist,
-		"text",
-		_loadItemDetails
+		[
+			"id",
+			"subcategory_name",
+			"brand",
+			"item_model",
+			"item_description",
+			"size",
+		],
+		_loadItemDetails,
+		options
 	);
 
 	// If select2 clear, set the item_available input next to it to empty
