@@ -66,11 +66,10 @@ class GeneralInfo extends BaseController
         $data['custom_js']      = ['settings/general_info.js', 'dropzone.js'];
         $data['routes']         = json_encode([
             'general_info' => [
-                'fetch' => url_to('general_info.fetch'),
+                'fetch'     => url_to('general_info.fetch'),
+                'upload'    => url_to('general_info.upload'),
             ],
         ]);
-
-        log_msg(session()->get('company_info'));
 
         return view('settings/general_info/index', $data);
     }

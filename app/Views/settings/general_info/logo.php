@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
         <p class="text-bold">Upload Logo</p>
-        <form id="form_company_logo" class="dropzone rounded border border-primary" method="post" enctype="multipart/form-data" action="<?= url_to('general_info.upload') ?>">
+        <form id="form_company_logo" class="dropzone rounded border border-primary" method="post" enctype="multipart/form-data">
             <?= csrf_field(); ?>
             <div class="fallback">
                 <input name="file" type="file" />

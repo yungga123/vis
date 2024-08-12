@@ -12,8 +12,20 @@ function dropzoneInit(id, route, button, options) {
 	const _defaultAcceptedFiles =
 		".jpg, .jpeg, .png, .pdf, .doc, .docx, xls, .xlsx, .csv";
 	let _defaultMsg = `Drop files here or click to upload.`;
+	let addRemoveLinks = true;
+	let autoProcessQueue = false;
+	let uploadMultiple = true;
 
 	_defaultMsg = inObjectReturn(options, "dictDefaultMessage") || _defaultMsg;
+	addRemoveLinks = inObject(options, "addRemoveLinks")
+		? options.addRemoveLinks
+		: addRemoveLinks;
+	autoProcessQueue = inObject(options, "autoProcessQueue")
+		? options.autoProcessQueue
+		: autoProcessQueue;
+	uploadMultiple = inObject(options, "uploadMultiple")
+		? options.uploadMultiple
+		: uploadMultiple;
 
 	const _options = {
 		// The route or url to upload to
@@ -26,12 +38,12 @@ function dropzoneInit(id, route, button, options) {
 		dictDefaultMessage: _defaultMsgIcon + _defaultMsg,
 		acceptedFiles:
 			inObjectReturn(options, "acceptedFiles") || _defaultAcceptedFiles,
-		addRemoveLinks: inObjectReturn(options, "addRemoveLinks") || true,
+		addRemoveLinks: addRemoveLinks,
 		dictRemoveFileConfirmation:
 			"Are you sure you want to remove this file?",
 		// Disable auto processing
-		autoProcessQueue: inObjectReturn(options, "autoProcessQueue") || false,
-		uploadMultiple: inObjectReturn(options, "uploadMultiple") || true,
+		autoProcessQueue: autoProcessQueue,
+		uploadMultiple: uploadMultiple,
 		parallelUploads: inObjectReturn(options, "parallelUploads") || 10,
 		// Added a custom option attribute/key
 		// An identifier whether to remove

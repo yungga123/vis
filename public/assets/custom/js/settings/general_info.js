@@ -18,25 +18,6 @@ $(document).ready(function () {
 	});
 
 	/* Form for saving data */
-	formSubmit(
-		$("#form_company_logo"),
-		"continue",
-		function (res, self) {
-			const message = res.errors ?? res.message;
-			const elems = ["file"];
-
-			if (res.status !== STATUS.ERROR) {
-				notifMsgSwal(res.status, message, res.status);
-			}
-
-			closeLoading();
-			showAlertInForm(elems, message, res.status);
-		},
-		METHOD.AJAX,
-		true
-	);
-
-	/* Form for saving data */
 	formSubmit($("#form_company_info"), "continue", function (res, self) {
 		const message = res.errors ?? res.message;
 		const elems = [
@@ -90,17 +71,6 @@ $(document).ready(function () {
 
 		showAlertInForm(elems, message, res.status);
 	});
-
-	$("#company_logo").on("change", function (e) {
-		if (!isEmpty($(this).val())) {
-			const preview = $("#preview_logo");
-
-			preview.attr("src", URL.createObjectURL(e.target.files[0]));
-			preview.on("load", function () {
-				URL.revokeObjectURL(preview.attr("src")); // free memory
-			});
-		}
-	});
 });
 
 function initLoadData() {
@@ -128,11 +98,11 @@ function _dropzoneInit() {
 		maxFilesize: 15,
 		maxFiles: 1,
 		uploadMultiple: false,
-		addRemoveLinks: true,
+		addRemoveLinks: false,
 		parallelUploads: 1,
 	};
 
-	_dropzone = dropzoneInit(form, null, button, options);
+	_dropzone = dropzoneInit(form, router.general_info.upload, button, options);
 
 	dzGetFiles(
 		_dropzone,
