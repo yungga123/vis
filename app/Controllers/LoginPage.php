@@ -5,9 +5,13 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\AccountModel;
 use App\Models\EmployeeModel;
+use App\Traits\GeneralInfoTrait;
 
 class LoginPage extends BaseController
 {
+    /* Declare trait here to use */
+    use GeneralInfoTrait;
+
     public function index()
     {
         $data['title']          = "Welcome to M.I.S.";
@@ -19,13 +23,13 @@ class LoginPage extends BaseController
     public function login()
     {
         $data = [];
-        
+
         try {
             $rules = [
                 'username' => 'required|min_length[4]|max_length[20]',
                 'password' => 'required|min_length[8]|max_length[20]'
             ];
-            
+
             if ($this->validate($rules)) {
                 $accountsModel  = new AccountModel();
                 $username       = $this->request->getVar('username');
@@ -44,7 +48,7 @@ class LoginPage extends BaseController
                         email_address
                     ';
                     $employee       = $employeesModel->select($fields)
-                                        ->where('employee_id', $user['employee_id'])->first();
+                        ->where('employee_id', $user['employee_id'])->first();
 
                     $session = session();
                     $session->set([
@@ -53,10 +57,11 @@ class LoginPage extends BaseController
                         'access_level'  => $user['access_level'],
                         'access'        => $user['access_level'],
                         'employee_id'   => $employee['employee_id'],
-                        'name'          => $employee['firstname'].' '.$employee['lastname'],
+                        'name'          => $employee['firstname'] . ' ' . $employee['lastname'],
                         'gender'        => $employee['gender'],
                         'email_address' => $employee['email_address'],
                         'logged_at'     => date('Y-m-d H:i:s'),
+                        'company_info'  => $this->getCompanyInfo(),
                     ]);
 
                     $data['status']     = res_lang('status.success');
@@ -70,12 +75,12 @@ class LoginPage extends BaseController
             }
         } catch (\Exception $e) {
             $this->logExceptionError($e, __METHOD__);
-            
+
             $data['status']     = res_lang('status.error');
-            $data ['message']   = res_lang('error.process');
+            $data['message']   = res_lang('error.process');
         }
 
-        return $this->response->setJSON($data); 
+        return $this->response->setJSON($data);
     }
 
     public function logout()

@@ -37,7 +37,6 @@ abstract class BaseController extends Controller
      */
     protected $helpers = ['url', 'form', 'formatter', 'custom'];
 
-
     /**
      * Add custom properties accessible throughout all controllers
      */
@@ -111,7 +110,7 @@ abstract class BaseController extends Controller
      * @return string|array|bool
      */
     protected function getSpecificPermissions($module_code)
-	{
+    {
         helper('custom');
 
         if ($this->isAdmin()) {
@@ -124,9 +123,9 @@ abstract class BaseController extends Controller
         $generic    = get_generic_modules_actions($module_code);
 
         if (empty($perms)) return $generic;
-        
-		return array_merge($generic, explode(',', $perms['permissions']));
-	}
+
+        return array_merge($generic, explode(',', $perms['permissions']));
+    }
 
     /**
      * Get specific permissions from $this->permissions based on module code
@@ -136,7 +135,7 @@ abstract class BaseController extends Controller
      * @return array
      */
     protected function getSpecificActionsByModule($module_code)
-	{
+    {
         helper('custom');
 
         // Get the generic action, if there's any
@@ -149,7 +148,7 @@ abstract class BaseController extends Controller
             return array_merge($actions, $generic);
         }
 
-        if (! empty($this->permissions)) {
+        if (!empty($this->permissions)) {
             foreach ($this->permissions as $permission) {
                 if ($permission['module_code'] === $module_code) {
                     // Get the permissions
@@ -159,9 +158,9 @@ abstract class BaseController extends Controller
                 }
             }
         }
-        
-		return $generic;
-	}
+
+        return $generic;
+    }
 
     /**
      * Check permissions based on the passed needle
@@ -172,14 +171,14 @@ abstract class BaseController extends Controller
      * @return bool
      */
     protected function checkPermissions($permissions, $needle)
-	{
+    {
         if ($this->isAdmin()) return true;
         if ($permissions) {
-		    return in_array($needle, $permissions);
+            return in_array($needle, $permissions);
         }
 
         return false;
-	}
+    }
 
     /**
      * Check role permissions based on the passed arguments
@@ -191,13 +190,13 @@ abstract class BaseController extends Controller
      * @return void|view
      */
     public function checkRolePermissions($module, $action = null)
-	{
+    {
         if ($this->isAdmin()) return true;
         if ($action) $this->checkRoleActionPermissions($module, $action);
-		if (! in_array($module, $this->modules)) {
+        if (!in_array($module, $this->modules)) {
             $this->redirectToAccessDenied();
         }
-	}
+    }
 
     /**
      * Check role & action permissions based on the passed argument
@@ -210,9 +209,9 @@ abstract class BaseController extends Controller
      * @return void|view|\Exception
      */
     public function checkRoleActionPermissions($module, $action, $throwException = false)
-	{
+    {
         $module     = $module ? strtoupper($module) : $module;
-		$this->checkRolePermissions($module);
+        $this->checkRolePermissions($module);
         // If has access in the module, then check 
         // if user has the specific permission/action
         // Ex. User has access to Dispatch but don't have permission for printing
@@ -233,7 +232,7 @@ abstract class BaseController extends Controller
 
             $this->redirectToAccessDenied();
         }
-	}
+    }
 
     /**
      * Redirect to access denied page
@@ -241,13 +240,13 @@ abstract class BaseController extends Controller
      * @return string|view
      */
     public function redirectToAccessDenied()
-	{
-		$data['title']          = 'Access Denied';
+    {
+        $data['title']          = 'Access Denied';
         $data['page_title']     = 'Access Denied!';
 
         echo view('errors/custom/denied', $data);
         exit;
-	}
+    }
 
     /**
      * Redirect to 404 page
@@ -255,13 +254,13 @@ abstract class BaseController extends Controller
      * @return string|view
      */
     public function redirectTo404Page()
-	{
-		$data['title']          = '404 Page Not Found';
+    {
+        $data['title']          = '404 Page Not Found';
         $data['page_title']     = '404 Page Not Found!';
 
         echo view('errors/custom/404', $data);
         exit;
-	}
+    }
 
     /**
      * The custom try catch function for handling error
@@ -273,7 +272,7 @@ abstract class BaseController extends Controller
      * @return array|object         The passed/response $data variable
      */
     public function customTryCatch($data, $callback, $dbTrans = true)
-	{
+    {
         // Using DB Transaction
         if ($dbTrans) $this->transBegin();
 
@@ -288,7 +287,7 @@ abstract class BaseController extends Controller
         }
 
         return $this->response->setJSON($data);
-	}
+    }
 
     /**
      * The common try catch exception method in handling error
@@ -299,18 +298,18 @@ abstract class BaseController extends Controller
      * @return array        The passed $data variable
      */
     public function tryCatchException($data, $e, $dbTrans = true)
-	{
+    {
         // Rollback transaction if there's an error
         if ($dbTrans) $this->transRollback();
 
-		$this->logExceptionError($e, __METHOD__);
-        
+        $this->logExceptionError($e, __METHOD__);
+
         $data['status']     = res_lang('status.error');
-        $data['message']    = $e->getCode() > 0 
+        $data['message']    = $e->getCode() > 0
             ? $e->getMessage() : res_lang('error.process');
 
         return $data;
-	}
+    }
 
     /**
      * Log the exception error
@@ -321,10 +320,10 @@ abstract class BaseController extends Controller
      * @return void 
      */
     public function logExceptionError($exception, $method = null)
-	{
-		log_msg(
-            "Exception Error: {exception} \nMethod: '{method}'", 
+    {
+        log_msg(
+            "Exception Error: {exception} \nMethod: '{method}'",
             ['exception' => $exception, 'method' => $method ?? __METHOD__]
         );
-	}
+    }
 }

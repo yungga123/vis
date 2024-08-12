@@ -11,17 +11,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/fontawesome-free/css/all.min.css">
-    <?= $this->include('templates/styles') ;?>
+    <?= $this->include('templates/styles'); ?>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         <!-- Navbar -->
-        <?= $this->include('templates/navbar') ;?>
+        <?= $this->include('templates/navbar'); ?>
         <!-- /.navbar -->
 
         <!-- SideBar -->
-        <?= $this->include('templates/sidebar') ;?>
+        <?= $this->include('templates/sidebar'); ?>
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
@@ -34,8 +34,8 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <div class="d-flex justify-content-end">
-                                <?php if (isset($can_add) && $can_add): ?>
-                                <button type="button" class="btn btn-primary" id="btn_add_record"><?= $btn_add_lbl ?? 'Add New Record' ?></button>
+                                <?php if (isset($can_add) && $can_add) : ?>
+                                    <button type="button" class="btn btn-primary" id="btn_add_record"><?= $btn_add_lbl ?? 'Add New Record' ?></button>
                                 <?php endif; ?>
                             </div>
                         </div><!-- /.col -->
@@ -43,25 +43,25 @@
                 </div><!-- /.container-fluid -->
             </div>
             <!-- /.content-header -->
-            
+
             <section class="content">
                 <?= $this->renderSection('content') ?>
             </section>
         </div>
 
-    <footer class="main-footer">
-        <strong>Copyright &copy; 2022 <a href="#">Vinculum Technologies</a>.</strong>
-        All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 3.0
-        </div>
-    </footer>
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2022 <a href="#"><?= session_company_info('company_name') ?></a>.</strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 3.0
+            </div>
+        </footer>
 
-    <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-    </aside>
-    <!-- /.control-sidebar -->
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">
             <!-- Control sidebar content goes here -->
@@ -70,6 +70,7 @@
     </div>
     <!-- ./wrapper -->
 
-    <?= $this->include('templates/javascripts') ;?>
+    <?= $this->include('templates/javascripts'); ?>
 </body>
+
 </html>

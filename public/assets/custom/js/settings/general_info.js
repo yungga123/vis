@@ -23,7 +23,7 @@ $(document).ready(function () {
 		"continue",
 		function (res, self) {
 			const message = res.errors ?? res.message;
-			const elems = ["company_logo"];
+			const elems = ["file"];
 
 			if (res.status !== STATUS.ERROR) {
 				notifMsgSwal(res.status, message, res.status);
@@ -94,6 +94,7 @@ $(document).ready(function () {
 	$("#company_logo").on("change", function (e) {
 		if (!isEmpty($(this).val())) {
 			const preview = $("#preview_logo");
+
 			preview.attr("src", URL.createObjectURL(e.target.files[0]));
 			preview.on("load", function () {
 				URL.revokeObjectURL(preview.attr("src")); // free memory
@@ -124,14 +125,15 @@ function _dropzoneInit() {
 		paramName: "company_logo",
 		acceptedFiles: ".jpg, .jpeg, .png",
 		dictDefaultMessage: "Drop file or click to upload.",
-		maxFilesize: 5,
+		maxFilesize: 15,
 		maxFiles: 1,
 		uploadMultiple: false,
-		addRemoveLinks: false,
-		parallelUploads: 2,
+		addRemoveLinks: true,
+		parallelUploads: 1,
 	};
 
 	_dropzone = dropzoneInit(form, null, button, options);
+
 	dzGetFiles(
 		_dropzone,
 		router.general_info.fetch + "?q=" + options.paramName

@@ -32,13 +32,14 @@ trait GeneralInfoTrait
     {
         $model = new GeneralInfoModel();
 
-        if(is_array($param)) {            
-            return $format ? 
-                format_results($model->fetchAll($param)) 
+        if (is_array($param)) {
+            return $format ?
+                format_results($model->fetchAll($param))
                 : $model->fetchAll($param);
         }
-        
+
         $result = $model->fetch($param);
+
         return $result ? $result['value'] : null;
     }
 
@@ -53,17 +54,17 @@ trait GeneralInfoTrait
     public function getCompanyInfo($info = [], $keys = false)
     {
         $_keys = [
-			'company_logo',
-			'company_name',
-			'company_address',
-			'company_contact_number',
-			'company_telephone_number',
-			'company_email_address',
-			'company_tin',
-			'company_bank_name',
-			'company_bank_account_name',
-			'company_bank_account_number',
-			'company_bank_branch',
+            'company_logo',
+            'company_name',
+            'company_address',
+            'company_contact_number',
+            'company_telephone_number',
+            'company_email_address',
+            'company_tin',
+            'company_bank_name',
+            'company_bank_account_name',
+            'company_bank_account_number',
+            'company_bank_branch',
         ];
 
         if ($keys) return $_keys;
@@ -72,12 +73,25 @@ trait GeneralInfoTrait
 
         $info['company_logo']       = ($info['company_logo'] ?? null)
             ? base_url($this->initialFilePathLogo . $info['company_logo']) : '';
-        $info['company_name']       = ($info['company_name'] ?? null) 
+        $info['company_name']       = ($info['company_name'] ?? null)
             ? $info['company_name'] : COMPANY_NAME;
-        $info['company_address']    = ($info['company_address'] ?? null) 
+        $info['company_address']    = ($info['company_address'] ?? null)
             ? $info['company_address'] : COMPANY_ADDRESS;
 
         return $info;
+    }
+
+    /**
+     * Get company name
+     * 
+     * @return array
+     */
+    public function getCompanyName()
+    {
+        $key    = 'company_name';
+        $name   = $this->getGeneralInfo($key, true);
+
+        return empty($name) ? COMPANY_NAME : $name;
     }
 
     /**
@@ -87,13 +101,13 @@ trait GeneralInfoTrait
      * 
      * @return string           The full path of the logo
      */
-    public function getCompanyLogo($filename = '') 
+    public function getCompanyLogo($filename = '')
     {
         if (empty($filename)) {
             $filename = $this->getGeneralInfo('company_logo');
         }
 
-        return empty($filename) 
+        return empty($filename)
             ? '' : base_url($this->initialFilePathLogo . $filename);
     }
 
@@ -102,7 +116,7 @@ trait GeneralInfoTrait
      *
      * @return float    The current funds amount
      */
-    public function getCompanyFunds() 
+    public function getCompanyFunds()
     {
         return floatval($this->getGeneralInfo('company_funds', true) ?? 0);
     }
@@ -115,7 +129,7 @@ trait GeneralInfoTrait
      *
      * @return array|bool|null
      */
-    public function saveCompanyFunds($funds, $plus = true) 
+    public function saveCompanyFunds($funds, $plus = true)
     {
         $model  = new GeneralInfoModel();
         $curr   = $this->getCompanyFunds();
@@ -126,7 +140,7 @@ trait GeneralInfoTrait
             'updated_by'    => session('username'),
         ];
 
-        if (! $plus && $curr < $funds) return false;
+        if (!$plus && $curr < $funds) return false;
 
         return $model->singleSave($data);
     }
@@ -136,7 +150,7 @@ trait GeneralInfoTrait
      *
      * @return string
      */
-    public function fullFilePathLogo() 
+    public function fullFilePathLogo()
     {
         return $this->rootDirPath . $this->initialFilePathLogo;
     }
@@ -151,7 +165,7 @@ trait GeneralInfoTrait
         $percent = floatval($this->getGeneralInfo('vat_percent', true) ?? 12);
         $percent = empty($percent) ? 12 : $percent; // Default value is 12% VAT.
 
-        if (! $decimal) return $percent;
+        if (!$decimal) return $percent;
 
         return $percent / 100;
     }

@@ -23,7 +23,7 @@ class GeneralInfo extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
     /**
      * Use to get current permissions
      * @var string
@@ -57,7 +57,7 @@ class GeneralInfo extends BaseController
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
-        
+
         $data['title']          = 'Settings | General Info';
         $data['page_title']     = 'Settings | General Info';
         $data['can_save']       = $this->_can_save;
@@ -70,6 +70,8 @@ class GeneralInfo extends BaseController
             ],
         ]);
 
+        log_msg(session()->get('company_info'));
+
         return view('settings/general_info/index', $data);
     }
 
@@ -78,7 +80,7 @@ class GeneralInfo extends BaseController
      *
      * @return json
      */
-    public function save() 
+    public function save()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -86,11 +88,12 @@ class GeneralInfo extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
 
                 $inputs     = [];
                 $request    = $this->request->getVar();
+
                 unset($request['csrf_test_name']);
 
                 foreach ($request as $key => $value) {
@@ -100,8 +103,12 @@ class GeneralInfo extends BaseController
                         'updated_by' => session('username'),
                     ];
                 }
-                
+
                 $this->_model->singleSave($inputs);
+
+                if ($request['company_name'] ?? null) {
+                    $this->_resetCompanyInfoSession();
+                }
 
                 return $data;
             }
@@ -115,7 +122,7 @@ class GeneralInfo extends BaseController
      *
      * @return json
      */
-    public function upload() 
+    public function upload()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -123,23 +130,23 @@ class GeneralInfo extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_SAVE, true);
 
                 $fileName   = 'company_logo';
                 $allowed    = implode(',', $this->imgExtensions);
                 $validate = $this->validationFileRules($fileName, $allowed);
 
-                if (! $this->validate($validate)) {
-                    $data ['errors']    = $this->validator->getErrors();
+                if (!$this->validate($validate)) {
+                    $data['errors']    = $this->validator->getErrors();
                     $data['status']     = res_lang('status.error');
-                    $data ['message']   = res_lang('error.validation');
+                    $data['message']   = res_lang('error.validation');
 
                     return $data;
-                } 
-                
+                }
+
                 $img            = $this->request->getFile($fileName);
-                $newName        = $img->getRandomName();
+                $newName        = $img->getRandomName() ?? $fileName;
                 $downloadUrl    = base_url($this->initialFilePathLogo . $newName);
                 // Upload image and get formatted file info
                 $file           = $this->uploadFile($fileName, $img, $newName, $this->fullFilePathLogo(), $downloadUrl);
@@ -153,9 +160,9 @@ class GeneralInfo extends BaseController
 
                 // Get the current record/ filename
                 $curFilename = $this->getGeneralInfo($fileName);
-            
+
                 // Save or update file path to database
-                if (! $this->_model->upsert($inputs)) {
+                if (!$this->_model->upsert($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
                     $data['message']    = res_lang('error.validation');
@@ -163,14 +170,16 @@ class GeneralInfo extends BaseController
                     return $data;
                 }
 
-                if (! empty($curFilename)) {
+                if (!empty($curFilename)) {
                     // Remove the previous file
                     $filepath = $this->fullFilePathLogo() . $curFilename;
 
                     $this->removeFile($filepath);
                 }
-                
+
                 $data['files'] = $file;
+
+                $this->_resetCompanyInfoSession(true);
 
                 return $data;
             }
@@ -184,7 +193,7 @@ class GeneralInfo extends BaseController
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -192,12 +201,12 @@ class GeneralInfo extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 if ($q = $this->request->getVar('q')) {
                     $files              = [];
                     $filename           = $this->getGeneralInfo($q);
 
-                    if (! empty($filename)) {
+                    if (!empty($filename)) {
                         $nfilename          = strpos($filename, '/') ? explode('/', $filename) : $filename;
                         $nfilename          = is_array($nfilename) ? array_pop($nfilename) : $nfilename;
                         $downloadUrl        = base_url($this->initialFilePathLogo . $nfilename);
@@ -209,11 +218,32 @@ class GeneralInfo extends BaseController
                     $data['data']       = $this->_model->fetchAll();
                     $data['base_url']   = base_url();
                 }
-                
+
                 return $data;
             }
         );
 
         return $response;
+    }
+
+    /**
+     * Reset company info session
+     *
+     * @return void
+     */
+    public function _resetCompanyInfoSession($isLogo = false)
+    {
+        if ($isLogo) {
+            $company_logo = $this->getCompanyLogo();
+            $company_info = session()->get('company_info');
+
+            $company_info['company_logo'] = $company_logo;
+        } else {
+            $company_info = $this->getCompanyInfo();
+        }
+
+        session()->set('company_info', $company_info);
+
+        log_msg(session()->get('company_info'));
     }
 }

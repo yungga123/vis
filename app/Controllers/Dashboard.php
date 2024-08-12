@@ -34,7 +34,7 @@ class Dashboard extends BaseController
 {
     /* Declare trait here to use */
     use AdminTrait, PayrollSettingTrait;
-    
+
     /**
      * Use to get the permissions
      * @var array
@@ -83,7 +83,7 @@ class Dashboard extends BaseController
         $modules        = $this->modules;
         $permissions    = format_results($this->permissions, 'module_code', 'permissions');
 
-        if (! empty($modules) && is_array($modules)) {
+        if (!empty($modules) && is_array($modules)) {
             // Sort modules ascending
             sort($modules);
 
@@ -100,7 +100,7 @@ class Dashboard extends BaseController
 
                 // If user is not an admin and has no VIEW permission
                 // for this module, then continue to the next loop
-                if (! is_admin() && empty($value)) {
+                if (!is_admin() && empty($value)) {
                     continue;
                 }
 
@@ -116,9 +116,9 @@ class Dashboard extends BaseController
                     $header         = $module['header'] ?? '';
                     $_header        = '';
 
-                    if (! empty($header) && ! in_array($header, $headers)) {
+                    if (!empty($header) && !in_array($header, $headers)) {
                         $headers[$header]   = $header;
-                        $_header            = '<h5 class="mt-3">'.strtoupper($header).'</h5>';
+                        $_header            = '<h5 class="mt-3">' . strtoupper($header) . '</h5>';
                     }
 
                     if (isset($record_counts[$val])) {
@@ -154,7 +154,7 @@ class Dashboard extends BaseController
                     }
 
                     $action = "href='{$module['url']}'";
-                    if (! empty($more_info)) {
+                    if (!empty($more_info)) {
                         $more_info = <<<EOF
                             <div class="d-none bg-white px-3 pt-3 pb-1" id="{$val}_MORE_INFO">
                                 {$more_info}
@@ -200,7 +200,7 @@ class Dashboard extends BaseController
      */
     private function _cardHtml($arr)
     {
-        $html = '';    
+        $html = '';
 
         if (!empty($arr)) {
             $modules = get_modules();
@@ -221,7 +221,7 @@ class Dashboard extends BaseController
                         </div>
                     </div>	
                 EOF;
-           }
+            }
         } else $html = '<h2>No module card to be displayed!</h2>';
 
         return $html;
@@ -271,7 +271,7 @@ class Dashboard extends BaseController
         $rolesCount             = $rolesModel->where('deleted_at IS NULL')->countAllResults();
         $permissionCount        = $permissionModel->where('deleted_at IS NULL')->countAllResults();
 
-        if (! is_admin()) {
+        if (!is_admin()) {
             $accountCount->whereNotIn('UPPER(access_level)', [strtoupper(AAL_ADMIN)]);
             $employeeCount->where('employee_id !=', DEVELOPER_ACCOUNT);
         }

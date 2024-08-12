@@ -11,15 +11,15 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/fontawesome-free/css/all.min.css">
 
-    <?php if (isset($toastr) && $toastr): ?>
-    <!-- Toastr -->
-    <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/toastr/toastr.min.css">
-    <?php endif;?>
+    <?php if (isset($toastr) && $toastr) : ?>
+        <!-- Toastr -->
+        <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/toastr/toastr.min.css">
+    <?php endif; ?>
 
-    <?php if (isset($sweetalert2) && $sweetalert2): ?>
-    <!-- Sweetalert2 -->
-    <link rel="stylesheet" href="<?=base_url('assets')?>/plugins/sweetalert2/sweetalert2.min.css">
-    <?php endif;?>
+    <?php if (isset($sweetalert2) && $sweetalert2) : ?>
+        <!-- Sweetalert2 -->
+        <link rel="stylesheet" href="<?= base_url('assets') ?>/plugins/sweetalert2/sweetalert2.min.css">
+    <?php endif; ?>
 
     <!-- Theme style -->
     <link rel="stylesheet" href="<?= base_url('assets') ?>/dist/css/adminlte.min.css">
@@ -76,20 +76,20 @@
     <!-- Bootstrap 4 -->
     <script src="<?= base_url('assets') ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <?php if (isset($toastr) && $toastr): ?>
-    <!-- Toastr -->
-    <script src="<?=base_url('assets')?>/plugins/toastr/toastr.min.js"></script>
-    <?php endif;?>
+    <?php if (isset($toastr) && $toastr) : ?>
+        <!-- Toastr -->
+        <script src="<?= base_url('assets') ?>/plugins/toastr/toastr.min.js"></script>
+    <?php endif; ?>
 
-    <?php if (isset($sweetalert2) && $sweetalert2): ?>
-    <!-- Sweetalert2 -->
-    <script src="<?=base_url('assets')?>/plugins/sweetalert2/sweetalert2.min.js"></script>
-    <?php endif;?>
+    <?php if (isset($sweetalert2) && $sweetalert2) : ?>
+        <!-- Sweetalert2 -->
+        <script src="<?= base_url('assets') ?>/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <?php endif; ?>
 
     <!-- AdminLTE App -->
     <script src="<?= base_url('assets') ?>/dist/js/adminlte.min.js"></script>
     <!-- General custom js -->
-    <script src="<?=base_url('assets')?>/custom/js/initialize.js"></script>
+    <script src="<?= base_url('assets') ?>/custom/js/initialize.js"></script>
     <script src="<?= base_url('assets') ?>/custom/js/functions.js"></script>
     <!-- Login js -->
     <script src="<?= base_url('assets') ?>/custom/js/login.js"></script>
