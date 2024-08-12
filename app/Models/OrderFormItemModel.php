@@ -79,7 +79,7 @@ class OrderFormItemModel extends Model
     /**
      * Get order form items
      */
-    public function getItems($order_form_id, $joinInv = false, $columns = '') 
+    public function getItems($order_form_id, $joinInv = false, $columns = '')
     {
         $itemModel  = new InventoryModel();
 
@@ -98,13 +98,14 @@ class OrderFormItemModel extends Model
                 {$itemModel->table}.item_sdp AS item_price,
                 {$itemModel->table}.stocks,
                 {$itemModel->view}.category_name,
+                {$itemModel->view}.subcategory_name,
                 {$itemModel->view}.brand,
                 {$itemModel->view}.unit,
                 {$itemModel->view}.size,
                 {$itemModel->view}.supplier_name
             " : $columns;
         }
-        
+
         $builder    = $this->select($columns);
 
         $builder->where('order_form_id', $order_form_id);
@@ -119,7 +120,7 @@ class OrderFormItemModel extends Model
     /**
      * Save the order form items
      */
-    public function saveItems($request, $order_form_id) 
+    public function saveItems($request, $order_form_id)
     {
         $inventory_ids  = $request['inventory_id'];
         $item_prices    = $request['item_price'] ?? '';
@@ -128,13 +129,13 @@ class OrderFormItemModel extends Model
         $discounts      = $request['discount'] ?? '';
         $total_prices   = $request['total_price'] ?? '';
 
-        if (! empty($request) && count($inventory_ids)) {
+        if (!empty($request) && count($inventory_ids)) {
             $arr = [];
-            
+
             // Delete items first
             $this->deleteItems($order_form_id);
 
-            for ($i=0; $i < count($inventory_ids); $i++) { 
+            for ($i = 0; $i < count($inventory_ids); $i++) {
                 $arr[] = [
                     'order_form_id' => (int)$order_form_id,
                     'inventory_id'  => $inventory_ids[$i],
@@ -145,14 +146,14 @@ class OrderFormItemModel extends Model
                 ];
             }
 
-            if (! empty($arr)) $this->db->table($this->table)->insertBatch($arr);
+            if (!empty($arr)) $this->db->table($this->table)->insertBatch($arr);
         }
     }
 
     /**
      * Update the order form items
      */
-    public function updateItems($request, $order_form_id) 
+    public function updateItems($request, $order_form_id)
     {
         $inventory_id   = $request['inventory_id'];
         $item_price     = $request['item_prices'] ?? '';
@@ -161,9 +162,9 @@ class OrderFormItemModel extends Model
         $discount       = $request['discount'] ?? '';
         $total_price    = $request['total_price'] ?? '';
 
-        if (! empty($request) && count($inventory_id)) {
+        if (!empty($request) && count($inventory_id)) {
             $arr        = [];
-            for ($i=0; $i < count($inventory_id); $i++) { 
+            for ($i = 0; $i < count($inventory_id); $i++) {
                 $arr[] = [
                     'order_form_id' => (int)$order_form_id,
                     'inventory_id'  => $inventory_id,
@@ -174,9 +175,9 @@ class OrderFormItemModel extends Model
                 ];
             }
 
-            if (! empty($arr)) {
+            if (!empty($arr)) {
                 $constraint = ['order_form_id', 'inventory_id'];
-                
+
                 return $this->db->table($this->table)->updateBatch($arr, $constraint);
             }
         }
@@ -187,7 +188,7 @@ class OrderFormItemModel extends Model
     /**
      * Delete the order form items
      */
-    public function deleteItems($order_form_id) 
+    public function deleteItems($order_form_id)
     {
         $this->where('order_form_id', $order_form_id)->delete();
     }
