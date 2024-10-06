@@ -27,7 +27,7 @@ class Dispatch extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
     /**
      * Use to get current permissions
      * @var array
@@ -61,7 +61,7 @@ class Dispatch extends BaseController
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_VIEW);
-        
+
         $data['title']          = 'Dispatch List';
         $data['page_title']     = 'Dispatch List';
         $data['can_add']        = $this->_can_add;
@@ -96,7 +96,6 @@ class Dispatch extends BaseController
             ],
         ]);
         $data['php_to_js_options'] = json_encode([
-            'employees'     => get_employees(),
             'schedule_type' => get_schedule_type(),
         ]);
 
@@ -149,9 +148,9 @@ class Dispatch extends BaseController
             ->setOrder(array_merge([null, null], $fields, [null], $fields1))
             ->setOutput(
                 array_merge(
-                    [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
+                    [dt_empty_col(), $this->_model->buttons($this->_permissions)],
                     $fields,
-                    [$this->_model->serviceTypeFormat()], 
+                    [$this->_model->serviceTypeFormat()],
                     $fields1
                 )
             );
@@ -164,7 +163,7 @@ class Dispatch extends BaseController
      *
      * @return json
      */
-    public function save() 
+    public function save()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -172,7 +171,7 @@ class Dispatch extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $action = ACTION_ADD;
                 $id     = $this->request->getVar('id');
                 $inputs = [
@@ -198,10 +197,10 @@ class Dispatch extends BaseController
                     $data['message']    = res_lang('success.updated', 'Dispatch');
 
                     unset($inputs['created_by']);
-                } 
+                }
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
-                
+
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
@@ -221,13 +220,13 @@ class Dispatch extends BaseController
 
         return $response;
     }
-    
+
     /**
      * For getting the record using the id
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -235,13 +234,13 @@ class Dispatch extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id         = $this->request->getVar('id');
                 $dTModel    = new DispatchedTechniciansModel();
 
                 $data['data']                   = $this->_model->getDispatch($id, false, true);
                 $data['data']['technicians']    = $dTModel->getDispatchedTechnicians($id);
-                
+
                 return $data;
             }
         );
@@ -254,7 +253,7 @@ class Dispatch extends BaseController
      *
      * @return json
      */
-    public function delete() 
+    public function delete()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -262,9 +261,9 @@ class Dispatch extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-                
+
                 $id = $this->request->getVar('id');
 
                 if (! $this->_model->delete($id)) {
@@ -273,7 +272,7 @@ class Dispatch extends BaseController
                     $data['message']    = res_lang('error.validation');
                 } else {
                     log_msg(
-                        $data['message']. " Dispatch #: {$id} \nDeleted by: {username}",
+                        $data['message'] . " Dispatch #: {$id} \nDeleted by: {username}",
                         ['username' => session('username')]
                     );
                 }
@@ -290,7 +289,7 @@ class Dispatch extends BaseController
      *
      * @return view
      */
-    public function print($id) 
+    public function print($id)
     {
         // Check role if has permission, otherwise redirect to denied page
         $this->checkRolePermissions($this->_module_code, ACTION_PRINT);
@@ -305,7 +304,7 @@ class Dispatch extends BaseController
         // Get client details
         $joModel    = new JobOrderModel();
         $client     = $joModel->getClientInfo($dispatch['job_order_id'], '', true);
-        
+
         $data['dispatch']       = $dispatch;
         $data['client']         = $client;
         $data['title']          = 'Print Dispatch';

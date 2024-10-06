@@ -1,4 +1,4 @@
-var table, modal, form, elems, $technicians;
+var table, modal, form, elems;
 
 $(document).ready(function () {
 	table = "dispatch_table";
@@ -18,11 +18,6 @@ $(document).ready(function () {
 		"with_permit",
 		"technicians",
 	];
-	$technicians = formatOptionsForSelect2(
-		$pjOptions.employees,
-		"employee_id",
-		"employee_name"
-	);
 
 	select2Init("#filter_service_type");
 
@@ -57,7 +52,12 @@ $(document).ready(function () {
 	);
 
 	/* Initialize select2 employees/technicians */
-	select2Init("#technicians", "Select technicians", $technicians);
+	select2AjaxInit(
+		"#technicians",
+		"Select technicians",
+		router.employee.common.search,
+		"text"
+	);
 
 	/* Initialize select2 employees/check by */
 	select2AjaxInit(
@@ -150,7 +150,10 @@ function edit(id) {
 				setSelect2Technicians(res.data.technicians);
 
 				if (!isEmpty(res.data.customer_type)) {
-					$("#" + strLower(res.data.customer_type)).prop("checked", true);
+					$("#" + strLower(res.data.customer_type)).prop(
+						"checked",
+						true
+					);
 				}
 
 				// Set selected employee/checked by in select2
@@ -161,12 +164,15 @@ function edit(id) {
 				);
 
 				$.each(res.data, (key, value) => {
-					if (key !== "customer_type") $(`input[name="${key}"]`).val(value);
+					if (key !== "customer_type")
+						$(`input[name="${key}"]`).val(value);
 				});
 
 				$("#orig_schedule")
 					.removeClass()
-					.html(`Original schedule: <strong>${res.data.schedule}</strong>`);
+					.html(
+						`Original schedule: <strong>${res.data.schedule}</strong>`
+					);
 				$("#remarks").val(res.data.remarks);
 				$("#comments").val(res.data.comments);
 

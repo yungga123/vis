@@ -95,7 +95,7 @@ $(document).ready(function () {
 	$("#employment_status_modal #_employment_status").on("change", function () {
 		$("#label_date_resigned").removeClass("required");
 
-		if ($(this).val() === "Resigned")
+		if ($(this).val() === "Resigned" || $(this).val() === "Terminated")
 			$("#label_date_resigned").addClass("required");
 	});
 });
@@ -155,7 +155,10 @@ function edit(id) {
 					setOptionValue("#gender", res.data.gender);
 					setOptionValue("#civil_status", res.data.civil_status);
 					setOptionValue("#date_of_birth", res.data.date_of_birth);
-					setOptionValue("#employment_status", res.data.employment_status);
+					setOptionValue(
+						"#employment_status",
+						res.data.employment_status
+					);
 					setOptionValue("#date_hired", res.data.date_hired);
 					setOptionValue("#date_resigned", res.data.date_resigned);
 					$(`#${modal}`).modal("show");
@@ -177,7 +180,8 @@ function remove(id) {
 				.then((res) => {
 					const message = res.errors ?? res.message;
 
-					if (res.status === STATUS.SUCCESS) refreshDataTable($("#" + table));
+					if (res.status === STATUS.SUCCESS)
+						refreshDataTable($("#" + table));
 					notifMsgSwal(res.status, message, res.status);
 				})
 				.catch((err) => catchErrMsg(err));

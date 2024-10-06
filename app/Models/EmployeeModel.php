@@ -102,117 +102,117 @@ class EmployeeModel extends Model
             'required' => 'Employee ID is required.',
             'alpha_numeric' => 'Employee ID must be in alpha numeric characters.',
             'is_unique' => 'Employee ID has already been taken! Please try a different one.'
-        ],        
-        'firstname' => [ 
+        ],
+        'firstname' => [
             'label' => 'First Name',
             'required' => 'First Name is required.',
             'alpha_numeric_space' => 'First Name must only contain alpha numeric spaces.',
         ],
-        'lastname' => [ 
+        'lastname' => [
             'label' => 'Last Name',
             'required' => 'Last Name is required.',
             'alpha_numeric_space' => 'Last Name must only contain alpha numeric spaces.',
         ],
-        'gender' => [ 
+        'gender' => [
             'required' => 'Gender is required.'
         ],
-        'civil_status' => [ 
+        'civil_status' => [
             'label' => 'Civil Status',
             'required' => 'Civil Status is required.',
         ],
-        'date_of_birth' => [ 
+        'date_of_birth' => [
             'label' => 'Date of Birth',
             'required' => 'Date of Birth is required.'
         ],
-        'place_of_birth' => [ 
+        'place_of_birth' => [
             'label' => 'Place of Birth',
             'required' => 'Place of Birth is required.',
         ],
-        'postal_code' => [ 
+        'postal_code' => [
             'label' => 'Postal Code',
             'required' => 'Postal Code is required.',
         ],
-        'address_province' => [ 
+        'address_province' => [
             'label' => 'Province',
             'required' => 'Province is required.',
         ],
-        'address_city' => [ 
+        'address_city' => [
             'label' => 'City/Municipality',
             'required' => 'City/Municipality is required.',
         ],
-        'address_brgy' => [ 
+        'address_brgy' => [
             'label' => 'Barangay',
             'required' => 'Barangay is required.',
         ],
-        'address_sub' => [ 
+        'address_sub' => [
             'label' => 'Additional Address',
             'required' => 'Additional Address is required.',
         ],
-        'contact_number' => [ 
+        'contact_number' => [
             'label' => 'Contact Number',
             'required' => 'Contact Number is required.',
         ],
-        'email_address' => [ 
+        'email_address' => [
             'label' => 'Email Address',
             'required' => 'Email Address is required.'
         ],
-        'sss_no' => [ 
+        'sss_no' => [
             'label' => 'SSS Number',
             'required' => 'SSS Number is required.',
         ],
-        'tin_no' => [ 
+        'tin_no' => [
             'label' => 'TIN Number',
             'required' => 'TIN Number is required.',
         ],
-        'philhealth_no' => [ 
+        'philhealth_no' => [
             'label' => 'PHILHEALTH Number',
             'required' => 'PHILHEALTH Number is required.',
         ],
-        'pag_ibig_no' => [ 
+        'pag_ibig_no' => [
             'label' => 'PAGIBIG Number',
             'required' => 'PAGIBIG Number is required.',
         ],
-        'educational_attainment' => [ 
+        'educational_attainment' => [
             'label' => 'Educational Attainment',
             'required' => 'Educational Attainment is required.',
         ],
-        'emergency_name' => [ 
+        'emergency_name' => [
             'label' => 'Emergency Name',
             'required' => 'Emergency Name is required.',
         ],
-        'emergency_contact_no' => [ 
+        'emergency_contact_no' => [
             'label' => 'Emergency Contact Number',
             'required' => 'Emergency Contact Number is required.',
         ],
-        'emergency_address' => [ 
+        'emergency_address' => [
             'label' => 'Emergency Address',
             'required' => 'Emergency Address is required.',
         ],
-        'name_of_spouse' => [ 
+        'name_of_spouse' => [
             'label' => 'Name of Spouse',
             'required' => 'Name of Spouse is required.',
         ],
-        'spouse_contact_no' => [ 
+        'spouse_contact_no' => [
             'label' => 'Spouse Contact Number',
             'required' => 'Spouse Contact Number is required.',
         ],
-        'no_of_children' => [ 
+        'no_of_children' => [
             'label' => 'Number of Children',
             'required' => 'Number of children is required.',
         ],
-        'spouse_address' => [ 
+        'spouse_address' => [
             'label' => 'Spouse Address',
             'required' => 'Spouse Address is required.',
         ],
-        'position' => [ 
+        'position' => [
             'label' => 'Position',
             'required' => 'Position is required.',
         ],
-        'employment_status' => [ 
+        'employment_status' => [
             'label' => 'Employment Status',
             'required' => 'Employment Status is required.',
         ],
-        'date_hired'  => [ 
+        'date_hired'  => [
             'label' => 'Date Hired',
             'required' => 'Date Hired is required.'
         ]
@@ -232,35 +232,35 @@ class EmployeeModel extends Model
     protected $afterDelete    = [];
 
     /* Custom variables */
-    protected $resigned       = 'Resigned';
+    protected $resigned       = ['Resigned', 'Terminated'];
 
     // For DataTable columns
     protected $dtColumns      = [
         'employee_id',
-        'employee_name', 
-        'address', 
-        'gender', 
-        'civil_status', 
-        'date_of_birth', 
-        'place_of_birth', 
-        'position', 
-        'employment_status', 
-        'date_hired', 
-        'date_resigned', 
-        'contact_number', 
-        'email_address', 
-        'sss_no', 
-        'tin_no', 
-        'philhealth_no', 
-        'pag_ibig_no', 
-        'educational_attainment', 
-        'course', 
-        'emergency_name', 
-        'emergency_contact_no', 
-        'emergency_address', 
-        'name_of_spouse', 
-        'spouse_contact_no', 
-        'no_of_children', 
+        'employee_name',
+        'address',
+        'gender',
+        'civil_status',
+        'date_of_birth',
+        'place_of_birth',
+        'position',
+        'employment_status',
+        'date_hired',
+        'date_resigned',
+        'contact_number',
+        'email_address',
+        'sss_no',
+        'tin_no',
+        'philhealth_no',
+        'pag_ibig_no',
+        'educational_attainment',
+        'course',
+        'emergency_name',
+        'emergency_contact_no',
+        'emergency_address',
+        'name_of_spouse',
+        'spouse_contact_no',
+        'no_of_children',
         'spouse_address',
         'created_by',
         'created_at'
@@ -270,6 +270,7 @@ class EmployeeModel extends Model
     protected function setCreatedBy(array $data)
     {
         $data['data']['created_by'] = session('username');
+
         return $data;
     }
 
@@ -300,17 +301,17 @@ class EmployeeModel extends Model
             // Send mail notification
             Events::trigger('send_mail_notif_employee', $employee);
         }
-        
+
         return $data;
     }
 
     // Check user trying to delete own record
-    public function checkRecordIfOneself(array $data) 
+    public function checkRecordIfOneself(array $data)
     {
         $id     = $data['id'];
         $result = $this->getEmployees($id, null, 'employee_id');
 
-        if ($result[0]['employee_id'] === session('employee_id'))  {
+        if ($result[0]['employee_id'] === session('employee_id')) {
             throw new \Exception("You can't delete your own record!", 2);
         }
     }
@@ -318,28 +319,28 @@ class EmployeeModel extends Model
     // Filter for not including resigned employees
     public function withOutResigned($builder = null, $alias = '')
     {
-        $alias = ($builder && empty($alias) && ! empty($builder->getTable())) 
+        $alias = ($builder && empty($alias) && ! empty($builder->getTable()))
             ? $builder->getTable() : $alias;
-        $alias = empty($alias) ? '' : $alias .'.';
-        
+        $alias = empty($alias) ? '' : $alias . '.';
+
         ($builder ?? $this)
-            ->where("(({$alias}date_resigned = '' OR {$alias}date_resigned IS NULL)")
-            ->where("{$alias}employment_status != '{$this->resigned}')");
-            
+            ->where("({$alias}date_resigned = '' OR {$alias}date_resigned IS NULL)")
+            ->whereNotIn("{$alias}employment_status", $this->resigned);
+
         return $this;
     }
 
     // Get employees
-    public function getEmployees($id = null, $employee_id = null, $columns = null, $without_resign = false) 
+    public function getEmployees($id = null, $employee_id = null, $columns = null, $without_resign = false)
     {
         $builder = $this->select($columns ?? $this->allowedFields);
         $builder->where('deleted_at IS NULL');
 
-		// Whether to not include resigned employees
-		// Default - resigned are included
-		if ($without_resign) $this->withOutResigned($builder);
+        // Whether to not include resigned employees
+        // Default - resigned are included
+        if ($without_resign) $this->withOutResigned($builder);
 
-        if ($id) {            
+        if ($id) {
             return (! is_array($id))
                 ? $builder->where('id', $id)->first()
                 : $builder->find($id);
@@ -365,7 +366,7 @@ class EmployeeModel extends Model
     }
 
     // For dataTables
-    public function noticeTable($request) 
+    public function noticeTable($request)
     {
         $builder = $this->db->table($this->view);
 
@@ -375,13 +376,15 @@ class EmployeeModel extends Model
 
         $status = $request['params']['employment_status'] ?? [];
 
-        if (! isset($request['params']) || ! in_array($this->resigned, $status)) {
+        $intersect = array_intersect($this->resigned, $status);
+
+        if (! isset($request['params']) || empty($intersect)) {
             $this->withOutResigned($builder);
         }
 
         $this->filterParam($request, $builder, "{$this->view}.employment_status", 'employment_status');
         $this->filterParam($request, $builder, "{$this->view}.gender", 'gender');
-        
+
         $start_date = $request['params']['start_date'] ?? '';
         $end_date   = $request['params']['end_date'] ?? '';
 
@@ -395,7 +398,10 @@ class EmployeeModel extends Model
 
             $builder->where(new \CodeIgniter\Database\RawSql($between));
         }
-        
+
+        $builder->where('deleted_at IS NULL');
+        $builder->orderBy("{$this->view}.employee_name", 'ASC');
+
         return $builder;
     }
 
@@ -403,11 +409,12 @@ class EmployeeModel extends Model
     public function buttons($permissions)
     {
         $id         = $this->primaryKey;
-        $closureFun = function($row) use($id, $permissions) {
+        $closureFun = function ($row) use ($id, $permissions) {
             $buttons    = dt_button_actions($row, $id, $permissions);
             $status     = $row['employment_status'];
+            $isResigned = in_array($status, $this->resigned);
 
-            if (check_permissions($permissions, 'CHANGE') && $status !== $this->resigned) {
+            if (check_permissions($permissions, 'CHANGE') && empty($isResigned)) {
                 // Change Employment Status
                 $onclick    = <<<EOF
                     onclick="change({$row[$id]}, '{$row['employee_id']}', '{$status}')" title="Change employment status"
@@ -422,7 +429,7 @@ class EmployeeModel extends Model
 
             return $buttons;
         };
-        
+
         return $closureFun;
     }
 }

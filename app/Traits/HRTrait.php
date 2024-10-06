@@ -47,7 +47,7 @@ trait HRTrait
         $table  = empty($alias) ? $model->view : "{$model->view} AS $alias";
         $column = empty($alias) ? "{$model->view}.username" : "{$alias}.username";
         $_table = $builder->getTable();
-        $_field = strpos($fieldName, '.') === false ? $_table .'.'. $fieldName : $fieldName;
+        $_field = strpos($fieldName, '.') === false ? $_table . '.' . $fieldName : $fieldName;
 
         $builder->join($table, "{$column} = {$_field}", $type);
         return $builder;
@@ -66,20 +66,19 @@ trait HRTrait
      * @return $builder
      */
     public function traitJoinEmployees(
-        $builder, 
-        $columnName, 
-        $fieldName = '', 
-        $alias = '', 
-        $type = 'left', 
+        $builder,
+        $columnName,
+        $fieldName = '',
+        $alias = '',
+        $type = 'left',
         $is_view = false
-    )
-    {
+    ) {
         $model  = $this->initEmployeeModel();
         $table  = $is_view ? $model->view : $model->table;
         $table  = empty($alias) ? $table : "{$table} AS $alias";
         $column = empty($alias) ? "{$table}.{$columnName}" : "{$alias}.{$columnName}";
         $_table = $builder->getTable();
-        $_field = empty($fieldName) ? $_table .'.'. $columnName : $fieldName;
+        $_field = empty($fieldName) ? $_table . '.' . $columnName : $fieldName;
 
         $builder->join($table, "{$column} = {$_field}", $type);
         return $builder;
@@ -113,17 +112,16 @@ trait HRTrait
                 {$srModel->table}.salary_rate,
                 {$srModel->table}.payout
             ";
-            
+
             $modelV->join($srModel->table, "{$srModel->table}.employee_id = {$modelV->table}.employee_id", 'left');
         }
 
         $modelV->select($fields);
-        $model->withOutResigned($modelV);
 
         if (! empty($q)) {
             if (empty($options)) {
                 $modelV->where("{$modelV->table}.employee_id", $q);
-                
+
                 return $modelV->first();
             }
 
@@ -135,10 +133,11 @@ trait HRTrait
             $modelV->where("({$srModel->table}.salary_rate IS NULL OR {$srModel->table}.rate_type IS NULL)");
         }
 
+        $model->withOutResigned($modelV);
         $modelV->orderBy("{$modelV->table}.employee_name", 'ASC');
 
         $result = $modelV->paginate($options['perPage'], 'default', $options['page']);
-        
+
         $total  = $modelV->countAllResults();
 
         return [

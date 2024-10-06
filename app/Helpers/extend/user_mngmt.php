@@ -1,24 +1,22 @@
 <?php
-if (! function_exists('get_permissions'))
-{
+if (! function_exists('get_permissions')) {
 	/**
 	 * Get the permissions of the current logged user
 	 */
-	function get_permissions(): array 
+	function get_permissions(): array
 	{
 		$model = new \App\Models\PermissionModel();
-        return $model->getCurrUserPermissions();
+		return $model->getCurrUserPermissions();
 	}
 }
 
-if (! function_exists('is_developer'))
-{
+if (! function_exists('is_developer')) {
 	/**
 	 * Check if current logged user is the developer
 	 */
 	function is_developer(): bool
 	{
-        return (
+		return (
 			strtoupper(session('access_level')) === strtoupper(AAL_ADMIN) &&
 			session('username') == DEVELOPER_USERNAME &&
 			session('employee_id') == DEVELOPER_ACCOUNT
@@ -26,8 +24,7 @@ if (! function_exists('is_developer'))
 	}
 }
 
-if (! function_exists('is_admin'))
-{
+if (! function_exists('is_admin')) {
 	/**
 	 * Check if current logged user is administration
 	 */
@@ -35,67 +32,63 @@ if (! function_exists('is_admin'))
 	{
 		$access_level = session('access_level') ?? '';
 
-        return strtoupper($access_level) === strtoupper(AAL_ADMIN);
+		return strtoupper($access_level) === strtoupper(AAL_ADMIN);
 	}
 }
 
-if (! function_exists('is_executive'))
-{
+if (! function_exists('is_executive')) {
 	/**
 	 * Check if current logged user is executive
 	 */
 	function is_executive(): bool
 	{
-        return strtoupper(session('access_level')) === strtoupper(AAL_EXECUTIVE);
+		return strtoupper(session('access_level')) === strtoupper(AAL_EXECUTIVE);
 	}
 }
 
-if (! function_exists('is_manager'))
-{
+if (! function_exists('is_manager')) {
 	/**
 	 * Check if current logged user is manager
 	 */
 	function is_manager(): bool
 	{
-        return strtoupper(session('access_level')) === strtoupper(AAL_MANAGER);
+		return strtoupper(session('access_level')) === strtoupper(AAL_MANAGER);
 	}
 }
 
-if (! function_exists('get_roles'))
-{
+if (! function_exists('get_roles')) {
 	/**
 	 * Get role / access level list
 	 */
 	function get_roles(string $param = null, $is_option = false): string|array
 	{
 		$model = new \App\Models\RolesModel();
-        $roles = $model->getRoles();
-        
-        if (! empty($roles)) {
-            if(! is_admin() && $is_option) unset($roles['ADMIN']);
+		$roles = $model->getRoles();
 
-		    return $param ? $roles[strtoupper($param)] : $roles;
-        }
-        
-        return [];
+		if (! empty($roles)) {
+			if (! is_admin() && $is_option) unset($roles['ADMIN']);
+
+			return $param ? $roles[strtoupper($param)] : $roles;
+		}
+
+		return [];
 	}
 }
 
-if (! function_exists('get_roles_options'))
-{
+if (! function_exists('get_roles_options')) {
 	/**
 	 * Get roles for options selection
 	 */
 	function get_roles_options(): string
 	{
 		$html 	= '';
-        $roles 	= get_roles();
-        
-        if (! empty($roles)) {
+		$roles 	= get_roles();
+
+		if (! empty($roles)) {
 			$options = [];
 
-            foreach ($roles as $key => $role) {
-				$level = str_contains($key,'MANAGER') ? 'MANAGER' : (str_contains($key,'SUPERVISOR') ? 'SUPERVISOR' : 'OTHERS');
+			foreach ($roles as $key => $role) {
+				$level = str_contains($key, 'MANAGER') ? 'MANAGER' : (str_contains($key, 'SUPERVISOR') ? 'SUPERVISOR' : 'OTHERS');
 
 				$options[$level][] = <<<EOF
 					<option value="{$key}">{$role}</option>
@@ -117,14 +110,13 @@ if (! function_exists('get_roles_options'))
 					{$others}
 				</optgroup>
 			EOF;
-        }
-        
-        return $html;
+		}
+
+		return $html;
 	}
 }
 
-if (! function_exists('get_modules'))
-{
+if (! function_exists('get_modules')) {
 	/**
 	 * Get the modules list
 	 */
@@ -133,27 +125,26 @@ if (! function_exists('get_modules'))
 		$modules 	= MODULES;
 		$param		= $param ? strtoupper($param) : $param;
 
-        asort($modules);
+		asort($modules);
 
-        // if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
+		// if(! is_admin()) unset($modules['SETTINGS_MAILCONFIG']);
 
-		return $param 
+		return $param
 			? (isset($modules[$param]) ? $modules[$param] : '')
-		 	: $modules;
+			: $modules;
 	}
 }
 
-if (! function_exists('get_modules_options'))
-{
+if (! function_exists('get_modules_options')) {
 	/**
 	 * Get modules for options selection
 	 */
 	function get_modules_options(): string
 	{
 		$html 	= '';
-        $modules 	= get_modules();
-        
-        if (! empty($modules)) {
+		$modules 	= get_modules();
+
+		if (! empty($modules)) {
 			$options 	= [];
 			$setups		= setup_modules();
 			$menus		= get_nav_menus();
@@ -161,7 +152,7 @@ if (! function_exists('get_modules_options'))
 			// Exclude dashboard
 			unset($modules['DASHBOARD']);
 
-            foreach ($modules as $key => $module) {
+			foreach ($modules as $key => $module) {
 				$setup 		= $setups[$key];
 				$menu_code 	= $setup['menu'];
 				$menu_name 	= isset($menus[$menu_code]) ? $menus[$menu_code]['name'] : $module;
@@ -186,14 +177,13 @@ if (! function_exists('get_modules_options'))
 					$html .= "</optgroup>";
 				}
 			}
-        }
-        
-        return $html;
+		}
+
+		return $html;
 	}
 }
 
-if (! function_exists('get_module_codes'))
-{
+if (! function_exists('get_module_codes')) {
 	/**
 	 * Get the module codes list
 	 */
@@ -202,14 +192,13 @@ if (! function_exists('get_module_codes'))
 		$module_codes 	= MODULE_CODES;
 		$param			= $param ? strtolower($param) : $param;
 
-		return $param 
+		return $param
 			? (isset($module_codes[$param]) ? $module_codes[$param] : '')
-		 	: $module_codes;
+			: $module_codes;
 	}
 }
 
-if (! function_exists('get_actions'))
-{
+if (! function_exists('get_actions')) {
 	/**
 	 * Get the action list
 	 */
@@ -219,7 +208,7 @@ if (! function_exists('get_actions'))
 
 		if ($param && !array_key_exists($param, $actions)) {
 			$others 	= $actions['OTHERS'];
-			
+
 			// Check if param is a module code
 			if (isset($others[$param])) {
 				$param 	= $others[$param];
@@ -237,14 +226,14 @@ if (! function_exists('get_actions'))
 
 			$others_val = array_values($actions['OTHERS']);
 
-			for ($i=0; $i <= count($others_val); $i++) { 
+			for ($i = 0; $i <= count($others_val); $i++) {
 				if (isset($others_val[$i][$param])) {
 					return $others_val[$i][$param];
 				}
 			}
 		}
 
-        if (! $with_others) unset($actions['OTHERS']);
+		if (! $with_others) unset($actions['OTHERS']);
 
 		if ($param && isset($actions[strtoupper($param)])) {
 			return $actions[strtoupper($param)];
@@ -254,8 +243,7 @@ if (! function_exists('get_actions'))
 	}
 }
 
-if (! function_exists('get_generic_modules_actions'))
-{
+if (! function_exists('get_generic_modules_actions')) {
 	/**
 	 * Get the actions of modules with generic acess
 	 */
@@ -266,11 +254,11 @@ if (! function_exists('get_generic_modules_actions'))
 		if (in_array($param, $modules) || isset($modules[$param])) {
 			$module 	= $modules[$param] ?? $param;
 			$generic 	= array_keys(get_actions());
-			
+
 			if (is_array($module)) {
 				$generic = array_diff($generic, $module['EXCEPT']);
 			}
-			
+
 			return $generic;
 		}
 
@@ -288,8 +276,7 @@ if (! function_exists('get_generic_modules_actions'))
 	}
 }
 
-if (! function_exists('check_permissions'))
-{
+if (! function_exists('check_permissions')) {
 	/**
 	 * Check the permissions if user can add/edit/delete
 	 */
@@ -300,14 +287,13 @@ if (! function_exists('check_permissions'))
 }
 
 /* Deprecated - use get_roles() */
-if (! function_exists('account_access_level'))
-{
+if (! function_exists('account_access_level')) {
 	/**
 	 * Access level
 	 */
 	function account_access_level($old = false, $params = null): mixed
 	{
-		$access_levels = $old 
+		$access_levels = $old
 			? [
 				'admin' 		=> 'Administrator',
 				'manager' 		=> 'Manager',
@@ -315,7 +301,7 @@ if (! function_exists('account_access_level'))
 				'ofcadmin' 		=> 'Office Admin',
 				'hr' 			=> 'HR',
 				'user'  		=> 'User',
-			] 
+			]
 			: [
 				// 'super_admin' 	=> 'Super Admin',
 				'admin' 		=> 'Administrator',
@@ -324,24 +310,24 @@ if (! function_exists('account_access_level'))
 				'operation' 	=> 'Admin/Operation',
 				'supervisor'	=> 'Supervisory',
 				'user'  		=> 'General User',
-                'supervisor_sales'     => 'Sales Supervisor',
-                'supervisor_inventory'     => 'Inventory',
-                'supervisor_project'     => 'Project Engineer',
-                'supervisor_purchasing'     => 'Purchasing',
-                'supervisor_hr'     => 'HR Staff',
-                'supervisor_it'     => 'IT Head',
-                'manager_technical'     => 'Technical Manager',
-                'manager_admin'     => 'Admin Manager',
-                'manager_sales'     => 'Sales Manager',
-                'manager_hr'     => 'HR Manager',
-                'manager_accounting'     => 'Accounting Manager',
-                'manager_finance'     => 'Finance Manager',
+				'supervisor_sales'     => 'Sales Supervisor',
+				'supervisor_inventory'     => 'Inventory',
+				'supervisor_project'     => 'Project Engineer',
+				'supervisor_purchasing'     => 'Purchasing',
+				'supervisor_hr'     => 'HR Staff',
+				'supervisor_it'     => 'IT Head',
+				'manager_technical'     => 'Technical Manager',
+				'manager_admin'     => 'Admin Manager',
+				'manager_sales'     => 'Sales Manager',
+				'manager_hr'     => 'HR Manager',
+				'manager_accounting'     => 'Accounting Manager',
+				'manager_finance'     => 'Finance Manager',
 			];
 
 		if (! empty($params)) {
 			if (is_string($params)) {
 				return $access_levels[$params];
-			} 
+			}
 
 			if (is_array($params)) {
 				$arr = [];
@@ -359,8 +345,7 @@ if (! function_exists('account_access_level'))
 	}
 }
 
-if (! function_exists('get_avatar'))
-{
+if (! function_exists('get_avatar')) {
 	/**
 	 * Get the avatar of the current user
 	 */
@@ -375,20 +360,18 @@ if (! function_exists('get_avatar'))
 	}
 }
 
-if (! function_exists('get_current_user_avatar'))
-{
+if (! function_exists('get_current_user_avatar')) {
 	/**
 	 * Get the avatar of the current logged user
 	 */
 	function get_current_user_avatar(): string
 	{
-        $profile = new \App\Controllers\HR\AccountProfile();
-        return $profile->getProfileImg(session('gender'));
+		$profile = new \App\Controllers\HR\AccountProfile();
+		return $profile->getProfileImg(session('gender'));
 	}
 }
 
-if (! function_exists('get_employees'))
-{
+if (! function_exists('get_employees')) {
 	/**
 	 * Get employees - default columns (id, name) only
 	 * 
@@ -398,24 +381,24 @@ if (! function_exists('get_employees'))
 	 * 
 	 * @return array
 	 */
-	function get_employees(int $id = null, string|array $columns = [], $without_resign = false): array 
+	function get_employees(int $id = null, string|array $columns = [], $without_resign = true): array
 	{
 		$columns 	= !empty($columns) ? $columns : "employee_id, CONCAT(firstname,' ',lastname) AS employee_name";
 		$model 		= new \App\Models\EmployeeModel();
-        $builder 	= $model->select($columns);
+		$builder 	= $model->select($columns);
 
 		if (! is_developer()) $builder->where('employee_id !=', DEVELOPER_ACCOUNT);
 
 		// Whether to not include resigned employees
 		// Default - resigned are included
 		if ($without_resign) $model->withOutResigned($builder);
-		
+
 		$builder->orderBy('employee_name ASC');
 
 		if ($id) {
 			if (is_string($id) && strpos($id, ',') === false) {
 				$builder->where('employee_id', $id);
-				
+
 				return $builder->first();
 			}
 
@@ -431,7 +414,7 @@ if (! function_exists('get_employees'))
 				return $builder->findAll();
 			}
 		}
-		
+
 		return $id ? $builder->find($id) : $builder->findAll();
 	}
 }

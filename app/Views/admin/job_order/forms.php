@@ -6,13 +6,13 @@
                 <?= csrf_field(); ?>
                 <div class="modal-header">
                     <h5 class="modal-title">Add Job Order</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">                    
+                <div class="modal-body">
                     <div class="callout callout-info">
-                        <strong>Note:</strong> 
+                        <strong>Note:</strong>
                         If <strong>Quotation Number</strong> is not empty, initial dropdowns are by 10. Type the number to search if not in the options and then, click to select. Same for the <strong>Client</strong>.
                     </div>
                     <div class="form-group">
@@ -45,7 +45,7 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label class="required" for="customer_id">Client</label>
-                                <div class="mb-2">                                    
+                                <div class="mb-2">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="customer_type" id="commercial" value="commercial" checked>
                                         <label class="form-check-label" for="commercial">Commercial</label>
@@ -81,7 +81,7 @@
                                 <label class="required" for="date_reported">Date Reported</label>
                                 <input type="date" name="date_reported" id="date_reported" class="form-control" value="<?= current_date() ?>">
                                 <small id="alert_date_reported" class="text-danger"></small>
-                            </div>                          
+                            </div>
                             <div class="form-group">
                                 <label class="required" for="work_type">Work Type</label>
                                 <select class="form-control" name="work_type" id="work_type" style="width: 100%;" required>
@@ -92,7 +92,7 @@
                                 <small id="alert_work_type" class="text-danger"></small>
                             </div>
                         </div>
-                        <div class="col-6">  
+                        <div class="col-6">
                             <div class="form-group">
                                 <label class="required" for="comments">Comments</label>
                                 <textarea name="comments" id="comments" class="form-control" cols="3" rows="3" placeholder="Enter comments"></textarea>
@@ -130,7 +130,7 @@
                 <?= csrf_field(); ?>
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -141,7 +141,7 @@
                         <input type="hidden" name="status" id="status" class="form-control" readonly>
                         <input type="hidden" name="is_form" value="true" class="form-control" readonly>
                     </div>
-                    <div class="d-none" id="fields_accept">                        
+                    <div class="d-none" id="fields_accept">
                         <div class="form-group">
                             <label class="required" for="date_committed_status">Date Committed</label>
                             <input type="date" name="date_committed" id="date_committed_status" class="form-control" required>
@@ -150,11 +150,6 @@
                         <div class="form-group">
                             <label class="required" for="employee_id_status">Manager / Incharge</label>
                             <select class="custom-select select2" name="employee_id" id="employee_id_status" placeholder="Please a manager" style="width: 100%;">
-                                <?php if (! empty(get_employees())): ?>
-                                <?php foreach (get_employees() as $val): ?>
-                                    <option value="<?= $val['employee_id'] ?>"><?= $val['employee_name'] ?></option>
-                                <?php endforeach; ?>
-                                <?php endif; ?>
                             </select>
                         </div>
                         <div class="form-group">

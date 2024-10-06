@@ -1,12 +1,11 @@
 <?php
-if (! function_exists('inventory_categories_options'))
-{
+if (! function_exists('inventory_categories_options')) {
     /**
      * Get inventory dropdowns
      */
-	function inventory_categories_options(object $model, bool $all = false): string
-	{
-		$option     = '';
+    function inventory_categories_options(object $model, bool $all = false): string
+    {
+        $option     = '';
         $others     = '';
         $columns    = 'dropdown_id, dropdown, other_category_type';
         $categories = $model->getDropdowns('CATEGORY', $columns, $all);
@@ -15,33 +14,32 @@ if (! function_exists('inventory_categories_options'))
             foreach ($categories as $category) {
                 if (empty($category['other_category_type'])) {
                     $option     .= '
-                        <option value="'. $category['dropdown_id'] .'">
-                            '. $category['dropdown'] .'
+                        <option value="' . $category['dropdown_id'] . '">
+                            ' . $category['dropdown'] . '
                         </option>
                     ';
                 } else {
                     $others     .= '
-                        <option value="other__'. $category['dropdown_id'] .'">
-                            '. $category['dropdown'] .'
+                        <option value="other__' . $category['dropdown_id'] . '">
+                            ' . $category['dropdown'] . '
                         </option>
                     ';
                 }
             }
 
-            $option .= $others ? '<optgroup label="Other Categories">'. $others .'</optgroup>' : '';
+            $option .= $others ? '<optgroup label="Other Categories">' . $others . '</optgroup>' : '';
         }
 
         return $option;
     }
 }
 
-if (! function_exists('get_work_type'))
-{
+if (! function_exists('get_work_type')) {
     /**
      * Get work type of Job Order module
      */
-	function get_work_type(string $param = ''): string|array
-	{
+    function get_work_type(string $param = ''): string|array
+    {
         $options = [
             'Phone Support' => 'Phone Support',
             'Service'       => 'Service',
@@ -49,16 +47,15 @@ if (! function_exists('get_work_type'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_jo_status'))
-{
+if (! function_exists('get_jo_status')) {
     /**
      * Get status of Job Order module
      */
-	function get_jo_status(string $param = '', bool $pass_tense = false): string|array
-	{
+    function get_jo_status(string $param = '', bool $pass_tense = false): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'accept'    => 'accept',
@@ -76,16 +73,15 @@ if (! function_exists('get_jo_status'))
         $arr = $pass_tense ? $options_pt : $options;
 
         return $param ? $arr[strtolower($param)] : $arr;
-	}
+    }
 }
 
-if (! function_exists('set_jo_status'))
-{
+if (! function_exists('set_jo_status')) {
     /**
      * Setting status of Job Order module to its past tense
      */
-	function set_jo_status(string|array $param): string|array
-	{
+    function set_jo_status(string|array $param): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'accept'    => 'accepted',
@@ -106,16 +102,15 @@ if (! function_exists('set_jo_status'))
         }
 
         return $options[strtolower($param)] ?? strtolower($param);
-	}
+    }
 }
 
-if (! function_exists('get_tasklead_type'))
-{
+if (! function_exists('get_tasklead_type')) {
     /**
      * Get tasklead type of Tasklead module
      */
-	function get_tasklead_type(string $param = ''): string|array
-	{
+    function get_tasklead_type(string $param = ''): string|array
+    {
         $options = [
             'Project'   => 'Project',
             'Service'   => 'Service',
@@ -123,16 +118,15 @@ if (! function_exists('get_tasklead_type'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_tasklead_status'))
-{
+if (! function_exists('get_tasklead_status')) {
     /**
      * Get tasklead type of Tasklead module
      */
-	function get_tasklead_status(string $param = '', bool $booked = false): string|array
-	{
+    function get_tasklead_status(string $param = '', bool $booked = false): string|array
+    {
         $options = [
             '10.00%' => 'Identified (10%)',
             '30.00%' => 'Qualified (30%)',
@@ -145,16 +139,15 @@ if (! function_exists('get_tasklead_status'))
         if (! $booked) unset($options['100.00%']);
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_quotation_type'))
-{
+if (! function_exists('get_quotation_type')) {
     /**
      * Get tasklead quotation type of Tasklead module
      */
-	function get_quotation_type(string $param = ''): string|array
-	{
+    function get_quotation_type(string $param = ''): string|array
+    {
         $options = [
             'Q1' => 'Supplies',
             'Q2' => 'Service',
@@ -162,16 +155,15 @@ if (! function_exists('get_quotation_type'))
         ];
 
         return $param ? $options[strtoupper($param)] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_quotation_color'))
-{
+if (! function_exists('get_quotation_color')) {
     /**
      * Get tasklead quotation type of Tasklead module
      */
-	function get_quotation_color(string $param = ''): string|array
-	{
+    function get_quotation_color(string $param = ''): string|array
+    {
         $options = [
             'B' => 'Blue',
             'G' => 'Green',
@@ -181,16 +173,15 @@ if (! function_exists('get_quotation_color'))
         ];
 
         return $param ? $options[strtoupper($param)] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_schedule_type'))
-{
+if (! function_exists('get_schedule_type')) {
     /**
      * Get schedule type of Schedule module
      */
-	function get_schedule_type(string $param = '', $with_out_color = false): string|array
-	{
+    function get_schedule_type(string $param = '', $with_out_color = false): string|array
+    {
         $options = [
             'installation'  => [
                 'text'      => 'Installation',
@@ -240,16 +231,15 @@ if (! function_exists('get_schedule_type'))
         }
 
         return $param ? $options[strtolower($param)] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_dispatch_services'))
-{
+if (! function_exists('get_dispatch_services')) {
     /**
      * Get dispatch services of Dispatch module
      */
-	function get_dispatch_services(string $param = ''): string|array
-	{
+    function get_dispatch_services(string $param = ''): string|array
+    {
         $options = [
             'installation'  => 'Installation',
             'service'       => 'Service',
@@ -258,16 +248,15 @@ if (! function_exists('get_dispatch_services'))
         ];
 
         return $param ? $options[strtolower($param)] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_prf_status'))
-{
+if (! function_exists('get_prf_status')) {
     /**
      * Get status of Project Request Form module
      */
-	function get_prf_status(string $param = '', bool $pass_tense = false): string|array
-	{
+    function get_prf_status(string $param = '', bool $pass_tense = false): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'accept'    => 'accept',
@@ -291,16 +280,15 @@ if (! function_exists('get_prf_status'))
         $arr = $pass_tense ? $options_pt : $options;
 
         return $param ? $arr[strtolower($param)] : $arr;
-	}
+    }
 }
 
-if (! function_exists('set_prf_status'))
-{
+if (! function_exists('set_prf_status')) {
     /**
      * Setting status of Project Request Form module to its past tense
      */
-	function set_prf_status(string|array $param = null): string|array
-	{
+    function set_prf_status(string|array $param = null): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'accept'    => 'accepted',
@@ -330,16 +318,15 @@ if (! function_exists('set_prf_status'))
         }
 
         return $options[strtolower($param)] ?? strtolower($param);
-	}
+    }
 }
 
-if (! function_exists('get_rpf_status'))
-{
+if (! function_exists('get_rpf_status')) {
     /**
      * Get status of Request to Purchase Forms (RPF)
      */
-	function get_rpf_status(string $param = '', bool $pass_tense = false): string|array
-	{
+    function get_rpf_status(string $param = '', bool $pass_tense = false): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'accept'    => 'accept',
@@ -357,16 +344,15 @@ if (! function_exists('get_rpf_status'))
         $arr = $pass_tense ? $options_pt : $options;
 
         return $param ? $arr[strtolower($param)] : $arr;
-	}
+    }
 }
 
-if (! function_exists('set_rpf_status'))
-{
+if (! function_exists('set_rpf_status')) {
     /**
      * Setting status of Request to Purchase Forms (RPF) to its past tense
      */
-	function set_rpf_status(string|array $param = null): string|array
-	{
+    function set_rpf_status(string|array $param = null): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'accept'    => 'accepted',
@@ -391,32 +377,30 @@ if (! function_exists('set_rpf_status'))
         }
 
         return $options[strtolower($param)] ?? strtolower($param);
-	}
+    }
 }
 
-if (! function_exists('get_client_types'))
-{
+if (! function_exists('get_client_types')) {
     /**
      * Get the types for client module
      */
-	function get_client_types(string $param = ''): string|array
-	{
+    function get_client_types(string $param = ''): string|array
+    {
         $options = [
             'COMMERCIAL'    => 'Commercial',
             'RESIDENTIAL'   => 'Residential'
         ];
 
         return $param ? $options[strtoupper($param)] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_client_sources'))
-{
+if (! function_exists('get_client_sources')) {
     /**
      * Get the sources for client module
      */
-	function get_client_sources(string $param = ''): string|array
-	{
+    function get_client_sources(string $param = ''): string|array
+    {
         $options = [
             'BNI REFERRAL'          => 'BNI REFERRAL',
             'SOCIAL MEDIA'          => 'SOCIAL MEDIA',
@@ -426,16 +410,15 @@ if (! function_exists('get_client_sources'))
         ];
 
         return $param ? $options[strtoupper($param)] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_po_status'))
-{
+if (! function_exists('get_po_status')) {
     /**
      * Get status of Purchase Order (PO)
      */
-	function get_po_status(string $param = '', bool $pass_tense = false): string|array
-	{
+    function get_po_status(string $param = '', bool $pass_tense = false): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'approve'   => 'approve',
@@ -451,16 +434,15 @@ if (! function_exists('get_po_status'))
         $arr = $pass_tense ? $options_pt : $options;
 
         return $param ? $arr[strtolower($param)] : $arr;
-	}
+    }
 }
 
-if (! function_exists('set_po_status'))
-{
+if (! function_exists('set_po_status')) {
     /**
      * Setting status of Purchase Order (PO) to its past tense
      */
-	function set_po_status(string|array $param = null): string|array
-	{
+    function set_po_status(string|array $param = null): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'approve'   => 'approved',
@@ -483,16 +465,15 @@ if (! function_exists('set_po_status'))
         }
 
         return $options[strtolower($param)] ?? strtolower($param);
-	}
+    }
 }
 
-if (! function_exists('get_supplier_type'))
-{
+if (! function_exists('get_supplier_type')) {
     /**
      * Get supplier type of Supplier module
      */
-	function get_supplier_type(string $param = ''): string|array
-	{
+    function get_supplier_type(string $param = ''): string|array
+    {
         $options = [
             'Direct'            => 'Direct',
             'Indirect'          => 'Indirect',
@@ -502,29 +483,28 @@ if (! function_exists('get_supplier_type'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_payment_terms'))
-{
+if (! function_exists('get_payment_terms')) {
     /**
      * Payment terms.
      * Used in module(s): Supplier
      */
-	function get_payment_terms(string $param = '', bool $is_filter = false): string|array
-	{
+    function get_payment_terms(string $param = '', bool $is_filter = false): string|array
+    {
         $word   = ' DAYS';
         $arr    = $is_filter ? ['zero' => 'N/A'] : ['0' => 'N/A'];
         $terms  = $arr + [
-            '7'   => '7'. $word,
-            '15'  => '15'. $word,
-            '21'  => '21'. $word,
-            '30'  => '30'. $word,
-            '45'  => '45'. $word,
-            '50'  => '50'. $word,
-            '60'  => '60'. $word,
-            '90'  => '90'. $word,
-            '120'  => '120'. $word,
+            '7'   => '7' . $word,
+            '15'  => '15' . $word,
+            '21'  => '21' . $word,
+            '30'  => '30' . $word,
+            '45'  => '45' . $word,
+            '50'  => '50' . $word,
+            '60'  => '60' . $word,
+            '90'  => '90' . $word,
+            '120'  => '120' . $word,
         ];
 
         if (is_array($param)) {
@@ -537,16 +517,15 @@ if (! function_exists('get_payment_terms'))
         }
 
         return $param ? $terms[$param] : $terms;
-	}
+    }
 }
 
-if (! function_exists('get_supplier_mop'))
-{
+if (! function_exists('get_supplier_mop')) {
     /**
      * Get supplier mode of payment of Supplier module
      */
-	function get_supplier_mop(string $param = ''): string|array
-	{
+    function get_supplier_mop(string $param = ''): string|array
+    {
         $options = [
             'Cash'              => 'Cash',
             'Check'             => 'Check',
@@ -556,16 +535,15 @@ if (! function_exists('get_supplier_mop'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_employment_status'))
-{
+if (! function_exists('get_employment_status')) {
     /**
      * Get employment status of Employee module
      */
-	function get_employment_status(string $param = ''): string|array
-	{
+    function get_employment_status(string $param = ''): string|array
+    {
         $options = [
             'Probation'     => 'Probation',
             'Regular'       => 'Regular',
@@ -573,19 +551,19 @@ if (! function_exists('get_employment_status'))
             'Temporary'     => 'Temporary',
             'Project-based' => 'Project-Based',
             'Resigned'      => 'Resigned',
+            'Terminated'    => 'Terminated',
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_quarters'))
-{
+if (! function_exists('get_quarters')) {
     /**
      * Get quarters of Tasklead module
      */
-	function get_quarters(string $param = ''): string|array
-	{
+    function get_quarters(string $param = ''): string|array
+    {
         $options = [
             1 => '1st Quarter',
             2 => '2nd Quarter',
@@ -594,16 +572,15 @@ if (! function_exists('get_quarters'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_salary_rate_type'))
-{
+if (! function_exists('get_salary_rate_type')) {
     /**
      * Get salary rate type of Payroll/Salary Rate module
      */
-	function get_salary_rate_type(string $param = ''): string|array
-	{
+    function get_salary_rate_type(string $param = ''): string|array
+    {
         $options = [
             'Hourly'    => 'Hourly Rate',
             'Daily'     => 'Daily Rate',
@@ -611,32 +588,30 @@ if (! function_exists('get_salary_rate_type'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_leave_type'))
-{
+if (! function_exists('get_leave_type')) {
     /**
      * Get leave type of Payroll/Manage Leave module
      */
-	function get_leave_type(string $param = ''): string|array
-	{
+    function get_leave_type(string $param = ''): string|array
+    {
         $options = [
             'Leave of Absence'  => 'Leave of Absence',
             'SIL'               => 'Service Incentive Leave (SIL)',
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('set_leave_status'))
-{
+if (! function_exists('set_leave_status')) {
     /**
      * Setting status of Leave to its past tense
      */
-	function set_leave_status(string|array $param): string|array
-	{
+    function set_leave_status(string|array $param): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'discard'   => 'discarded',
@@ -654,16 +629,15 @@ if (! function_exists('set_leave_status'))
         }
 
         return $options[strtolower($param)] ?? strtolower($param);
-	}
+    }
 }
 
-if (! function_exists('get_leave_status'))
-{
+if (! function_exists('get_leave_status')) {
     /**
      * Getting leave statuses
      */
-	function get_leave_status(string $param = '', bool $pass_tense = false): string|array
-	{
+    function get_leave_status(string $param = '', bool $pass_tense = false): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'discard'   => 'discard',
@@ -681,16 +655,15 @@ if (! function_exists('get_leave_status'))
         $arr = $pass_tense ? $options_pt : $options;
 
         return $param ? $arr[strtolower($param)] : $arr;
-	}
+    }
 }
 
-if (! function_exists('get_days'))
-{
+if (! function_exists('get_days')) {
     /**
      * Get days for Payroll/Settings module
      */
-	function get_days(string $param = ''): string|array
-	{
+    function get_days(string $param = ''): string|array
+    {
         $options = [
             'Monday'    => 'Monday',
             'Tuesday'   => 'Tuesday',
@@ -702,16 +675,15 @@ if (! function_exists('get_days'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_prf_item_remarks'))
-{
+if (! function_exists('get_prf_item_remarks')) {
     /**
      * Get remarks for PRF Item module
      */
-	function get_prf_item_remarks(string $param = ''): string|array
-	{
+    function get_prf_item_remarks(string $param = ''): string|array
+    {
         $options = [
             'Testing'       => 'Testing',
             'Transmittal'   => 'Transmittal',
@@ -720,16 +692,15 @@ if (! function_exists('get_prf_item_remarks'))
         ];
 
         return $param ? $options[$param] : $options;
-	}
+    }
 }
 
-if (! function_exists('get_bill_types'))
-{
+if (! function_exists('get_bill_types')) {
     /**
      * Get bill types for Finance/Billing Invoice module
      */
-	function get_bill_types(string $param = ''): string|array
-	{
+    function get_bill_types(string $param = ''): string|array
+    {
         $options = [
             'Down Payment'      => 'Down Payment',
             'Progress Billing'  => 'Progress Billing',
@@ -737,16 +708,15 @@ if (! function_exists('get_bill_types'))
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_billing_status'))
-{
+if (! function_exists('get_billing_status')) {
     /**
      * Get billing status for Finance/Billing Invoice module
      */
-	function get_billing_status(string $param = ''): string|array
-	{
+    function get_billing_status(string $param = ''): string|array
+    {
         $options = [
             'pending'   => 'Pending',
             'overdue'   => 'Overdue',
@@ -754,16 +724,15 @@ if (! function_exists('get_billing_status'))
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_expenses'))
-{
+if (! function_exists('get_expenses')) {
     /**
      * Get expenses type for Finance/Funds module
      */
-	function get_expenses(string $param = ''): string|array
-	{
+    function get_expenses(string $param = ''): string|array
+    {
         $list = [
             'Allowances & Salaries - In-House',
             'Sub Contractor Payment',
@@ -799,37 +768,35 @@ if (! function_exists('get_expenses'))
             'Toll fee',
             'Parking Fee',
         ];
-        
+
         // Create the associative array where keys are the same as values
         $options = array_combine($list, $list);
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_salary_rates_payout'))
-{
+if (! function_exists('get_salary_rates_payout')) {
     /**
      * Get payout set for Payroll/Salary Rates module
      */
-	function get_salary_rates_payout(string $param = ''): string|array
-	{
+    function get_salary_rates_payout(string $param = ''): string|array
+    {
         $options = [
             'Set A' => 'Set A - 10 & 20 Payout',
             'Set B' => 'Set B - 15 & 30 Payout',
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_priorities'))
-{
+if (! function_exists('get_priorities')) {
     /**
      * Priority list 1 - 5 > Very low to high
      */
-	function get_priorities(string $param = ''): string|array
-	{
+    function get_priorities(string $param = ''): string|array
+    {
         $options = [
             1 => 1,
             2 => 2,
@@ -839,16 +806,15 @@ if (! function_exists('get_priorities'))
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_security_ict_systems'))
-{
+if (! function_exists('get_security_ict_systems')) {
     /**
      * Get the Type of Security and ICT System
      */
-	function get_security_ict_systems(string $param = ''): string|array
-	{
+    function get_security_ict_systems(string $param = ''): string|array
+    {
         $options = [
             'CCTV'                          => 'CCTV',
             'ALARM SYSTEM'                  => 'ALARM SYSTEM',
@@ -860,16 +826,15 @@ if (! function_exists('get_security_ict_systems'))
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_customer_support_status'))
-{
+if (! function_exists('get_customer_support_status')) {
     /**
      * Final remarks/status for Sales/Customer Supports module
      */
-	function get_customer_support_status(string $param = ''): string|array
-	{
+    function get_customer_support_status(string $param = ''): string|array
+    {
         $options = [
             'pending'   => 'Pending',
             'done'      => 'Done',
@@ -878,16 +843,15 @@ if (! function_exists('get_customer_support_status'))
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_unit_condition_items'))
-{
+if (! function_exists('get_unit_condition_items')) {
     /**
      * Unit condition items for Admin/Service Reports module
      */
-	function get_unit_condition_items(string $param = ''): string|array
-	{
+    function get_unit_condition_items(string $param = ''): string|array
+    {
         $options = [
             'CCTV'                  => 'CCTV',
             'BIOMETRICS'            => 'BIOMETRICS',
@@ -902,16 +866,15 @@ if (! function_exists('get_unit_condition_items'))
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_service_types'))
-{
+if (! function_exists('get_service_types')) {
     /**
      * Service types for Admin/Service Reports module
      */
-	function get_service_types(string $param = ''): string|array
-	{
+    function get_service_types(string $param = ''): string|array
+    {
         $options = [
             'Warranty'          => 'Warranty',
             'Installation'      => 'Installation',
@@ -921,16 +884,15 @@ if (! function_exists('get_service_types'))
         ];
 
         return $options[$param] ?? $options;
-	}
+    }
 }
 
-if (! function_exists('get_service_report_status'))
-{
+if (! function_exists('get_service_report_status')) {
     /**
      * Get status of Service Reports module
      */
-	function get_service_report_status(string $param = '', bool $pass_tense = false): string|array
-	{
+    function get_service_report_status(string $param = '', bool $pass_tense = false): string|array
+    {
         $options = [
             'pending'   => 'pending',
             'accept'    => 'accept',
@@ -946,5 +908,5 @@ if (! function_exists('get_service_report_status'))
         $arr = $pass_tense ? $options_pt : $options;
 
         return $param ? $arr[strtolower($param)] : $arr;
-	}
+    }
 }

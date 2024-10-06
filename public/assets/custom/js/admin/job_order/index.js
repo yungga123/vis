@@ -69,7 +69,15 @@ $(document).ready(function () {
 	initSelect2CustomerBranches(router.clients.common.customer_branches);
 
 	/* Initialize employee_id select2 */
-	select2Init("#employee_id_status", "Select person incharge");
+	// select2Init("#employee_id_status", "Select person incharge");
+
+	/* Initialize select2 employees/check by */
+	select2AjaxInit(
+		"#employee_id_status",
+		"Select person incharge",
+		router.employee.common.search,
+		"text"
+	);
 
 	/* Form for saving job order */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -213,11 +221,18 @@ function edit(id) {
 
 				if (isNotManual) {
 					// Set selected quotation in select2
-					setSelect2AjaxSelection("#select2Quotation", res.data.quotation, id);
+					setSelect2AjaxSelection(
+						"#select2Quotation",
+						res.data.quotation,
+						id
+					);
 					clearSelect2Selection("#customer_id");
 				} else {
 					$("#is_manual").prop("checked", true);
-					$("#" + strLower(res.data.customer_type)).prop("checked", true);
+					$("#" + strLower(res.data.customer_type)).prop(
+						"checked",
+						true
+					);
 					$("#client_branch_wrapper").addClass("d-none");
 
 					setSelect2AjaxSelection(
@@ -225,7 +240,10 @@ function edit(id) {
 						res.data.client,
 						res.data.customer_id
 					);
-					initSelect2Customers(clientRoute, strLower(res.data.customer_type));
+					initSelect2Customers(
+						clientRoute,
+						strLower(res.data.customer_type)
+					);
 					clearSelect2Selection("#select2Quotation");
 
 					if (strLower(res.data.customer_type) === "commercial") {
@@ -243,11 +261,14 @@ function edit(id) {
 				toggleQuotationFields(!isNotManual);
 
 				$.each(res.data, (key, value) => {
-					if (key !== "customer_type") $(`input[name="${key}"]`).val(value);
+					if (key !== "customer_type")
+						$(`input[name="${key}"]`).val(value);
 				});
 				$("#orig_qn")
 					.removeClass()
-					.html(`Original Quotation #: <strong>${res.data.quotation}</strong>`);
+					.html(
+						`Original Quotation #: <strong>${res.data.quotation}</strong>`
+					);
 				$("#comments").val(res.data.comments);
 				$("#created_by").val(res.data.requested_by);
 
@@ -339,7 +360,10 @@ function status(id, changeTo, status) {
 		$.post(router.job_order.fetch, { id: id, status: true })
 			.then((res) => {
 				$("#date_committed_status").val(res.data.date_committed);
-				setSelect2Selection("#employee_id_status", res.data.employee_id);
+				setSelect2Selection(
+					"#employee_id_status",
+					res.data.employee_id
+				);
 				$("#remarks").val(res.data.remarks);
 				$("#is_manual_status").val(res.data.is_manual);
 				$("#quotation_type").val(res.data.type || "Project"); // Default Project

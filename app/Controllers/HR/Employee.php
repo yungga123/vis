@@ -25,7 +25,7 @@ class Employee extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
     /**
      * Use to get current permissions
      * @var array
@@ -94,26 +94,25 @@ class Employee extends BaseController
 
         $table->setTable($builder)
             ->setSearch([
-                'employee_id', 
-                'employee_name', 
-                'gender', 
-                'civil_status', 
-                'place_of_birth', 
-                'position', 
-                'employment_status', 
-                'contact_number', 
-                'email_address', 
-                'sss_no', 
-                'tin_no', 
-                'philhealth_no', 
-                'pag_ibig_no', 
-                'educational_attainment', 
+                'employee_id',
+                'employee_name',
+                'gender',
+                'civil_status',
+                'place_of_birth',
+                'position',
+                'employment_status',
+                'contact_number',
+                'email_address',
+                'sss_no',
+                'tin_no',
+                'philhealth_no',
+                'pag_ibig_no',
+                'educational_attainment',
                 'course',
             ])
-            ->setDefaultOrder('employee_name', 'asc')
             ->setOrder(array_merge([null, null], $this->_model->dtColumns))
             ->setOutput(array_merge(
-                [dt_empty_col(), $this->_model->buttons($this->_permissions)], 
+                [dt_empty_col(), $this->_model->buttons($this->_permissions)],
                 $this->_model->dtColumns
             ));
 
@@ -125,7 +124,7 @@ class Employee extends BaseController
      *
      * @return json
      */
-    public function save() 
+    public function save()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -133,14 +132,14 @@ class Employee extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $action = ACTION_ADD;
                 $inputs = $this->request->getVar();
                 $id     = $this->request->getVar('id');
                 $prev   = $this->request->getVar('prev_employee_id');
                 $curr   = $this->request->getVar('employee_id');
                 $rules  = $this->_model->getValidationRules();
-    
+
                 if (! empty($id)) {
                     $action = ACTION_EDIT;
 
@@ -149,13 +148,13 @@ class Employee extends BaseController
                 }
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
-    
+
                 $this->_model->setValidationRules($rules);
 
                 // Remove the csrf
                 unset($inputs['csrf_test_name']);
                 unset($inputs['prev_employee_id']);
-    
+
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
@@ -163,7 +162,7 @@ class Employee extends BaseController
                 } else {
                     if (! empty($id)) {
                         $data['message']    = res_lang('success.updated', 'Employee');
-        
+
                         if ($prev !== $curr) {
                             $accountModel = new AccountModel();
                             $accountModel->where('employee_id', $prev)
@@ -184,7 +183,7 @@ class Employee extends BaseController
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -192,9 +191,9 @@ class Employee extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id             = $this->request->getVar('id');
-                $fields         = $this->_model->allowedFields;    
+                $fields         = $this->_model->allowedFields;
                 $record         = $this->_model->select($fields)->find($id);
                 $data['data']   = $record;
 
@@ -211,7 +210,7 @@ class Employee extends BaseController
      *
      * @return json
      */
-    public function delete() 
+    public function delete()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -219,9 +218,9 @@ class Employee extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-                
+
                 // Before delete get the employee_id
                 // using the primary key id
                 $id     = $this->request->getVar('id');
@@ -249,7 +248,7 @@ class Employee extends BaseController
      *
      * @return json
      */
-    public function change() 
+    public function change()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -257,12 +256,12 @@ class Employee extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_CHANGE, true);
 
                 $id         = $this->request->getVar('id');
                 $status     = $this->request->getVar('employment_status');
-                $resigned   = ($status === $this->_model->resigned);
+                $resigned   = in_array($status, $this->_model->resigned);
                 $inputs     = [
                     'employment_status' => $status,
                     'date_resigned'     => $resigned ? $this->request->getVar('date_resigned') : '',

@@ -24,7 +24,7 @@ class JobOrder extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
     /**
      * Use to get current permissions
      * @var array
@@ -85,6 +85,11 @@ class JobOrder extends BaseController
                 'common' => [
                     'customers'         => url_to('clients.common.customers'),
                     'customer_branches' => url_to('clients.common.customer.branches'),
+                ]
+            ],
+            'employee' => [
+                'common' => [
+                    'search'    => url_to('employee.common.search'),
                 ]
             ],
         ]);
@@ -148,7 +153,7 @@ class JobOrder extends BaseController
                         dt_empty_col(),
                         $this->_model->buttons($this->_permissions),
                         $this->_model->dtJOStatusFormat(),
-                    ], 
+                    ],
                     $fields
                 )
             );
@@ -161,7 +166,7 @@ class JobOrder extends BaseController
      *
      * @return json
      */
-    public function save() 
+    public function save()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -170,7 +175,7 @@ class JobOrder extends BaseController
 
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $action         = ACTION_ADD;
                 $id             = $this->request->getVar('id');
                 $is_manual      = $this->request->getVar('is_manual');
@@ -192,19 +197,19 @@ class JobOrder extends BaseController
                     'customer_branch_id' => isset($is_manual) ? $this->request->getVar('customer_branch_id') : null,
                     'created_by'        => session('username'),
                 ];
-    
+
                 if (! empty($id)) {
                     $action                 = ACTION_EDIT;
                     $inputs['id']           = $id;
                     $inputs['employee_id']  = $employee_id;
                     $data['message']        = res_lang('success.updated', 'Job Order');
-    
+
                     unset($inputs['status']);
                     unset($inputs['created_by']);
-                } 
+                }
 
                 $this->checkRoleActionPermissions($this->_module_code, $action, true);
-    
+
                 if (! $this->_model->save($inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
@@ -217,13 +222,13 @@ class JobOrder extends BaseController
 
         return $response;
     }
-    
+
     /**
      * For getting the job order data using the id
      *
      * @return json
      */
-    public function fetch() 
+    public function fetch()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -231,7 +236,7 @@ class JobOrder extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id = $this->request->getVar('id');
 
                 if ($this->request->getVar('status')) {
@@ -245,11 +250,11 @@ class JobOrder extends BaseController
                     ";
 
                     $this->_model->joinTaskleadBooked($this->_model, $tlViewModel);
-                    
+
                     $record     = $this->_model->getJobOrders($id, $columns);
                 } else {
                     $record     = $this->_model->getJobOrders($id);
-                }   
+                }
 
                 $data['data']   = $record;
 
@@ -266,7 +271,7 @@ class JobOrder extends BaseController
      *
      * @return json
      */
-    public function delete() 
+    public function delete()
     {
         $data       = [
             'status'    => res_lang('status.success'),
@@ -274,9 +279,9 @@ class JobOrder extends BaseController
         ];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
-                
+
                 $id = $this->request->getVar('id');
 
                 if (! $this->_model->delete($id)) {
@@ -285,7 +290,7 @@ class JobOrder extends BaseController
                     $data['message']    = res_lang('error.validation');
                 } else {
                     log_msg(
-                        $data['message']. " Job Order #: {$id} \nDeleted by: {username}",
+                        $data['message'] . " Job Order #: {$id} \nDeleted by: {username}",
                         ['username' => session('username')]
                     );
                 }
@@ -302,26 +307,26 @@ class JobOrder extends BaseController
      *
      * @return json
      */
-    public function change() 
+    public function change()
     {
         $data       = [];
         $response   = $this->customTryCatch(
             $data,
-            function($data) {
+            function ($data) {
                 $id         = $this->request->getVar('id');
                 $_status    = $this->request->getVar('status');
                 $status     = set_jo_status($_status);
                 $inputs     = ['status' => $status];
 
                 $this->checkRoleActionPermissions($this->_module_code, $_status, true);
-    
-                if ($this->request->getVar('is_form')) { 
+
+                if ($this->request->getVar('is_form')) {
                     $inputs['employee_id']      = $this->request->getVar('employee_id');
                     $inputs['date_committed']   = $this->request->getVar('date_committed');
                     $inputs['remarks']          = $this->request->getVar('remarks');
                     $inputs['manual_quotation_type'] = $this->request->getVar('manual_quotation_type') ?? null;
                 }
-    
+
                 if (! $this->_model->update($id, $inputs)) {
                     $data['errors']     = $this->_model->errors();
                     $data['status']     = res_lang('status.error');
