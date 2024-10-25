@@ -309,8 +309,13 @@ function passwordShowHideInit(passId, showPassId) {
 				$(this).children("i").removeClass().addClass("fas fa-eye");
 				$("#" + passId).attr("type", "password");
 			} else {
-				$(this).addClass("show").attr("title", "Click here to hide password!");
-				$(this).children("i").removeClass().addClass("fas fa-eye-slash");
+				$(this)
+					.addClass("show")
+					.attr("title", "Click here to hide password!");
+				$(this)
+					.children("i")
+					.removeClass()
+					.addClass("fas fa-eye-slash");
 				$("#" + passId).attr("type", "text");
 			}
 		}
@@ -360,30 +365,7 @@ function select2AjaxInit(
 	selector = selector || ".select2";
 	placeholder = placeholder || "Select an option";
 
-	function dataHandler(params) {
-		let newOptions = {
-			page: params.page || 1,
-			perPage: perPage || 10,
-		};
-
-		if (isObject(options) && !isEmpty(options))
-			$.each(options, (key, value) => (newOptions[key] = value));
-
-		return {
-			q: params.term || "",
-			options: newOptions,
-		};
-	}
-
-	function returnText(data) {
-		if (!isArray(text) || isEmpty(data.id) || data.selected) {
-			return data[text] || data.text;
-		}
-
-		return $.map(text, (val, i) => data[val] || data.val || "N/A").join(" | ");
-	}
-
-	$(selector).select2({
+	let _options = {
 		placeholder: placeholder,
 		allowClear: true,
 		ajax: {
@@ -408,7 +390,42 @@ function select2AjaxInit(
 			if (isFunction(callback)) callback(data);
 			return returnText(data);
 		},
-	});
+	};
+
+	if (inObject(options, "dropdownParent")) {
+		_options.dropdownParent = $(options.dropdownParent);
+	}
+
+	function dataHandler(params) {
+		let newOptions = {
+			page: params.page || 1,
+			perPage: perPage || 10,
+		};
+
+		if (isObject(options) && !isEmpty(options))
+			$.each(options, (key, value) => {
+				if (key != "dropdownParent") {
+					newOptions[key] = value;
+				}
+			});
+
+		return {
+			q: params.term || "",
+			options: newOptions,
+		};
+	}
+
+	function returnText(data) {
+		if (!isArray(text) || isEmpty(data.id) || data.selected) {
+			return data[text] || data.text;
+		}
+
+		return $.map(text, (val, i) => data[val] || data.val || "N/A").join(
+			" | "
+		);
+	}
+
+	$(selector).select2(_options);
 }
 
 /**
