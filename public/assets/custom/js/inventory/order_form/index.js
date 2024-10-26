@@ -549,7 +549,10 @@ function calculateGrandTotals() {
 
 /* Masterlist select2 via ajax data source */
 function _initInventorySelect2() {
-	const options = { category: "DIRECT" };
+	const options = {
+		category: "DIRECT",
+		dropdownParent: `#${modal} .modal-content`,
+	};
 
 	select2AjaxInit(
 		invSelector,

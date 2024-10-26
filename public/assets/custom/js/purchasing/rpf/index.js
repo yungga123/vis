@@ -167,9 +167,7 @@ function view(id, changeTo, status) {
 							val.received_q * val.item_sdp
 						);
 
-						totalCostAmt += parseFloat(
-							val.item_sdp
-						);
+						totalCostAmt += parseFloat(val.item_sdp);
 						grandTotalCost = parseFloat(grandTotalCost + totalCost);
 						grandTotalVat = parseFloat(grandTotalVat + vatAmount);
 						grandTotalCostReceived = parseFloat(
@@ -311,8 +309,8 @@ function change(id, changeTo, status, proceed) {
 	const swalMsg = `
 		<div>RPF #: <strong>${id}</strong></div>
 		<div>Are you sure you want to <strong>${strUpper(
-		changeTo
-	)}</strong> this RPF?</div>
+			changeTo
+		)}</strong> this RPF?</div>
 	`;
 	const data = { id: id, status: changeTo };
 
@@ -393,7 +391,8 @@ function _initInventorySelect2() {
 		"Search & select an item",
 		router.inventory.common.masterlist,
 		"text",
-		_loadItemDetails
+		_loadItemDetails,
+		{ dropdownParent: `#${modal} .modal-content` }
 	);
 }
 
