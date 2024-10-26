@@ -6,7 +6,9 @@ var table,
 	supplierSelector,
 	subCategory = {},
 	otherCategoryType = null,
-	otherCategoryTypeSelector = null;
+	otherCategoryTypeSelector = null,
+	select2ModalDropdownParent = null,
+	select2ModalDropdownParentObj = {};
 
 $(document).ready(function () {
 	table = "inventory_table";
@@ -28,14 +30,28 @@ $(document).ready(function () {
 		"location",
 	];
 	supplierSelector = "#supplier_id";
+	select2ModalDropdownParent = `#${modal} .modal-content`;
+	select2ModalDropdownParentObj = {
+		dropdownParent: select2ModalDropdownParent,
+	};
+
+	/* Init filter select2 */
+	select2Init("#filter_category");
+	select2Init("#filter_sub_category");
+
+	/* Init modal select2 */
+	select2Init("#category", null, null, select2ModalDropdownParentObj);
+	select2Init("#sub_category", null, null, select2ModalDropdownParentObj);
 
 	$("#filter_category").on("select2:select", function (e) {
 		let selector = "#filter_sub_category";
+
 		dropdownInit(selector, $(this).val());
 	});
 
 	$("#category").on("select2:select", function (e) {
 		selectedCategory = $(this).val();
+
 		let isNotEmptyNotTheSameType =
 			!isEmpty(subCategory) && subCategory.type != selectedCategory;
 
@@ -124,7 +140,11 @@ function filterData(reset = false) {
 	} else {
 		closeLoading();
 		if (reset) return;
-		notifMsgSwal(TITLE.WARNING, "Please select a category first!", STATUS.INFO);
+		notifMsgSwal(
+			TITLE.WARNING,
+			"Please select a category first!",
+			STATUS.INFO
+		);
 	}
 	closeLoading();
 }
@@ -139,15 +159,20 @@ function dropdownInit(select, type, val = "") {
 				subCategory.data = res.data;
 				subCategory.type = res.type;
 
-				const options = formatOptionsForSelect2(
+				const params = formatOptionsForSelect2(
 					res.data,
 					"dropdown_id",
 					"dropdown"
 				);
-				select2Reinit(select, "", options);
+				const options =
+					select === "#filter_sub_category"
+						? null
+						: select2ModalDropdownParentObj;
+
+				select2Reinit(select, "", params, options);
 				setSelect2Selection(select, val);
 			} else {
-				console.log(res.message);
+				// console.log(res.message);
 			}
 		})
 		.catch((err) => catchErrMsg(err));
@@ -168,13 +193,19 @@ function edit(id) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				$.each(res.data, (key, value) => $(`input[name="${key}"]`).val(value));
+				$.each(res.data, (key, value) =>
+					$(`input[name="${key}"]`).val(value)
+				);
 				$("#item_sdp").val(parseNumber(res.data.item_sdp));
 				$("#item_srp").val(parseNumber(res.data.item_srp));
 				$("#project_price").val(parseNumber(res.data.project_price));
 
 				setSelect2Selection("#category", res.data.category);
-				dropdownInit("#sub_category", res.data.category, res.data.sub_category);
+				dropdownInit(
+					"#sub_category",
+					res.data.category,
+					res.data.sub_category
+				);
 				dropdownInit("#item_brand", "BRAND", res.data.item_brand);
 				dropdownInit("#item_size", "SIZE", res.data.item_size);
 				dropdownInit("#stock_unit", "UNIT", res.data.stock_unit);
@@ -217,11 +248,15 @@ function remove(id) {
 
 /* Suppliers select2 via ajax data source */
 function _initSuppliers() {
+	const options = { dropdownParent: `#${modal} .modal-content` };
+
 	select2AjaxInit(
 		supplierSelector,
 		"Search & select a supplier",
 		router.purchasing.common.suppliers,
-		"text"
+		"text",
+		null,
+		options
 	);
 }
 
@@ -229,6 +264,7 @@ function openDropdownModal(title, val, selector) {
 	$("#modal_dropdown").modal("show");
 	$("#modal_dropdown .modal-title").text("Add " + title);
 	$("#other_category_type").val(val);
+
 	otherCategoryType = val;
 	otherCategoryTypeSelector = selector;
 }
