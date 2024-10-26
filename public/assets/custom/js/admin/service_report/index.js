@@ -6,7 +6,8 @@ var table,
 	clientRoute,
 	clientBranchRoute,
 	unitCondItems,
-	$items = {};
+	$items = {},
+	_select2ModalDropdownParent;
 
 $(document).ready(function () {
 	table = "service_report_table";
@@ -31,6 +32,7 @@ $(document).ready(function () {
 	clientRoute = router.clients.common.customers;
 	clientBranchRoute = router.clients.common.customer_branches;
 	unitCondItems = $pjOptions.unitc_items;
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
 
 	/* Filters */
 	select2Init("#filter_status");
@@ -49,14 +51,14 @@ $(document).ready(function () {
 	});
 
 	/* Initial init of customers (commerical) via ajax data source */
-	initSelect2Customers(clientRoute);
+	initSelect2Customers(clientRoute, null, null, null, modal);
 	onChangeCustomerType();
 	onSelectCustomer();
 	onClearCustomer();
 	initSelect2CustomerBranches(clientBranchRoute);
 
 	/* Job Orders select2 via ajax data source */
-	initSelect2JobOrders(router.admin.common.job_orders);
+	_initSelect2JobOrders();
 
 	/* Form for saving job order */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -127,7 +129,7 @@ function edit(id) {
 	_clearForm();
 	fetchRecord(router.service_report.fetch, { id: id }, modal, (res) => {
 		if (res.status === STATUS.SUCCESS) {
-			initSelect2JobOrders(router.admin.common.job_orders);
+			_initSelect2JobOrders();
 			setSelect2AjaxSelection(
 				joSelector,
 				res.data.job_order_id + " | " + res.data.client_name,
@@ -264,6 +266,17 @@ function calculateGrandTotals() {
 	$(`${tfoot} td.total_qty`).text(numberFormat(totalQty));
 	$(`${tfoot} td.total_price`).text(numberFormat(totalPrice));
 	$(`${tfoot} td.grand_total`).text(numberFormat(grandTotal));
+}
+
+/* Init select2 JO */
+function _initSelect2JobOrders() {
+	initSelect2JobOrders(
+		router.admin.common.job_orders,
+		null,
+		null,
+		null,
+		modal
+	);
 }
 
 /* Clear form */
