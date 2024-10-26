@@ -57,7 +57,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        <tr id="row_0">
                                             <td class="text-center items-center td-item-category td-item-category-0 text-bold">
                                                 <select class="custom-select item_category" name="item_category[]" id="item_category_0" style="width: 100%;">
                                                     <option value="">Select a category</option>
@@ -65,7 +65,7 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;">
+                                                <select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;" data-row="0">
                                                     <option value="" selected>Select a category first</option>
                                                 </select>
                                                 <div class="original-item"></div>
