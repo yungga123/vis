@@ -468,7 +468,10 @@ function compute(quantity_out, evt) {
 
 /* Item Masterlist select2 via ajax data source */
 function _initInventorySelect2(category) {
-	const options = { category: category };
+	const options = {
+		category: category,
+		dropdownParent: `#${modal} .modal-content`,
+	};
 
 	select2AjaxInit(
 		invSelector,
@@ -603,7 +606,7 @@ function _itemCategoriesOpts(row, val) {
 function _itemCategoriesOnChangeEvt(selector) {
 	selector ||= "#item_category_0";
 
-	$(selector).on("change", function (e) {
+	$(selector).on("change click", function (e) {
 		const category = $(this).val();
 
 		if (!isEmpty(category)) {
