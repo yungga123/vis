@@ -22,18 +22,21 @@ function toggleJobOrderLabel(isRequired = true) {
  * @param {callable} callback 	Callable function
  * @returns {void}
  */
-function initSelect2JobOrders(route, elem, text, callback) {
+function initSelect2JobOrders(route, elem, text, callback, modal) {
 	const placeholder = "Search and select a job order";
+	const options = {
+		dropdownParent: `#${modal} .modal-content`,
+	};
 
 	// Set default value
 	elem = elem || "#job_order_id";
 	text = text || "text";
 
 	if (callback) {
-		select2AjaxInit(elem, placeholder, route, text, callback);
+		select2AjaxInit(elem, placeholder, route, text, callback, options);
 
 		return;
 	}
 
-	select2AjaxInit(elem, placeholder, route, text);
+	select2AjaxInit(elem, placeholder, route, text, null, options);
 }
