@@ -9,7 +9,10 @@ var table,
 	_status,
 	_remarks,
 	_categories,
-	_categoriesOpts;
+	_categoriesOpts,
+	_select2ModalDropdownParent,
+	_select2ModalDropdownParentObj,
+	_itemFieldTable;
 
 $(document).ready(function () {
 	table = "prf_table";
@@ -24,6 +27,11 @@ $(document).ready(function () {
 	_remarks = $pjOptions.prf_remarks;
 	_categories = $pjOptions.item_categories;
 	_categoriesOpts = "";
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
+	_select2ModalDropdownParentObj = {
+		dropdownParent: `#${modal} .modal-content`,
+	};
+	_itemFieldTable = `#${modal} #item_field_table`;
 
 	/* Load dataTable */
 	loadDataTable(table, router.prf.list, METHOD.POST);
@@ -46,7 +54,8 @@ $(document).ready(function () {
 		"Search & select a job order",
 		router.admin.common.joborders,
 		"option_text",
-		_loadJobOrderDetails
+		_loadJobOrderDetails,
+		{ dropdownParent: _select2ModalDropdownParent }
 	);
 
 	/* Format item categories options */
@@ -54,22 +63,6 @@ $(document).ready(function () {
 
 	/* On change event */
 	_itemCategoriesOnChangeEvt();
-
-	/* If select2 clear, set the item_available input next to it to empty */
-	$(invSelector).on("select2:clear", function (e) {
-		const parentSiblingElem = e.target.parentElement.nextElementSibling;
-
-		$(parentSiblingElem).text("");
-		_populateAvailableItemStocks($(parentSiblingElem).next(), "");
-	});
-
-	/* If select2 clear, set the item_available input next to it to empty */
-	$(invSelector).on("select2:clear", function (e) {
-		const parentSiblingElem = e.target.parentElement.nextElementSibling;
-
-		$(parentSiblingElem).text("");
-		_populateAvailableItemStocks($(parentSiblingElem).next(), "");
-	});
 
 	/* Form for saving record */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -428,7 +421,7 @@ function toggleItemField(row) {
 				${_itemCategoriesOpts(itemFieldCount)}
 			</td>
 			<td>
-				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;">
+				<select class="custom-select inventory_id" name="inventory_id[]" style="width: 100%;" data-row="${itemFieldCount}">
 					<option value="" selected>Select a category first</option>
 				</select>
 				<div class="original-item"></div>
@@ -470,7 +463,7 @@ function compute(quantity_out, evt) {
 function _initInventorySelect2(category) {
 	const options = {
 		category: category,
-		dropdownParent: `#${modal} .modal-content`,
+		dropdownParent: _select2ModalDropdownParent,
 	};
 
 	select2AjaxInit(
@@ -518,26 +511,28 @@ function _loadJobOrderDetails(data) {
 
 /* Load selected item details */
 function _loadItemDetails(data) {
+	let rowNum = 0;
+	let stocks = 0;
+	let unit = "";
+
 	if (data.id) {
-		const parentSiblingElem =
-			data.element.parentElement.parentElement.nextElementSibling;
-		let stocks = data.stocks;
-		let unit = data.unit;
+		stocks = data.stocks;
+		unit = data.unit;
 
 		if (_fetchItems[data.id]) {
 			stocks = _fetchItems[data.id].stocks;
 			unit = _fetchItems[data.id].unit;
 		}
 
-		if (!isEmpty(stocks)) {
-			_populateAvailableItemStocks(
-				$(parentSiblingElem),
-				stocks,
-				false,
-				unit
-			);
+		if (data.element.parentElement.tagName === "SELECT") {
+			rowNum = data.element.parentElement.dataset.row;
 		}
 	}
+
+	const rowElem = `${_itemFieldTable} tr#row_${rowNum}`;
+
+	$(`${rowElem} .td-item-unit input[name="item_available[]"]`).val(stocks);
+	$(`${rowElem} .td-item-unit div.item-unit`).text(unit || "N/A");
 }
 
 /* Populate the item available stocks */

@@ -6,8 +6,11 @@ var table,
 	invSelector,
 	itemFieldTable,
 	_currentFetchItems,
+	_grandTotals,
 	_vat_percent,
-	_status;
+	_status,
+	_select2ModalDropdownParent,
+	_select2ModalDropdownParentObj;
 
 $(document).ready(function () {
 	table = "order_form_table";
@@ -21,6 +24,10 @@ $(document).ready(function () {
 	_grandTotals = {};
 	_vat_percent = $pjOptions.vat_percent;
 	_status = $pjOptions.status;
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
+	_select2ModalDropdownParentObj = {
+		dropdownParent: `#${modal} .modal-content`,
+	};
 
 	/* Load dataTable */
 	loadDataTable(table, router.order_form.list, METHOD.POST);
@@ -39,7 +46,13 @@ $(document).ready(function () {
 	});
 
 	/* Initial init of customers (commerical) via ajax data source */
-	initSelect2Customers(router.clients.common.customers);
+	initSelect2Customers(
+		router.clients.common.customers,
+		null,
+		null,
+		null,
+		modal
+	);
 	onChangeCustomerType();
 	onSelectCustomer(clientSelector);
 	onClearCustomer(clientSelector);
@@ -551,7 +564,7 @@ function calculateGrandTotals() {
 function _initInventorySelect2() {
 	const options = {
 		category: "DIRECT",
-		dropdownParent: `#${modal} .modal-content`,
+		dropdownParent: _select2ModalDropdownParent,
 	};
 
 	select2AjaxInit(

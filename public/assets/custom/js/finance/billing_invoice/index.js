@@ -1,4 +1,10 @@
-var table, modal, form, elems, _interest, _vat_percent;
+var table,
+	modal,
+	form,
+	elems,
+	_interest,
+	_vat_percent,
+	_select2ModalDropdownParent;
 
 $(document).ready(function () {
 	table = "billing_invoice_table";
@@ -17,7 +23,9 @@ $(document).ready(function () {
 	];
 	_interest = $pjOptions.overdue_interests;
 	_vat_percent = $pjOptions.vat_percent;
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
 
+	/* Init filter select2 */
 	select2Init("#filter_billing_status");
 	select2Init("#filter_bill_type");
 	select2Init("#filter_payment_method");
@@ -301,13 +309,18 @@ function change(id, changeTo, status) {
 
 /* Quotation via ajax data source */
 function _initTasklead() {
+	const options = {
+		search_in: ["quotation", "client"],
+		dropdownParent: _select2ModalDropdownParent,
+	};
+
 	select2AjaxInit(
 		"#tasklead_id",
 		"Search & select a tasklead",
 		router.admin.common.quotations,
 		["id", "quotation", "client"],
 		_loadTaskleadDetails,
-		{ search_in: ["quotation", "client"] }
+		options
 	);
 }
 

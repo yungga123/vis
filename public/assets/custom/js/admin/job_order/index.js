@@ -1,4 +1,10 @@
-var table, modal, form, elems, is_manual, clientRoute;
+var table,
+	modal,
+	form,
+	elems,
+	is_manual,
+	clientRoute,
+	_select2ModalDropdownParent;
 
 $(document).ready(function () {
 	table = "job_order_table";
@@ -15,6 +21,7 @@ $(document).ready(function () {
 		"manual_quotation",
 	];
 	clientRoute = router.clients.common.customers;
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
 
 	/* Filters */
 	select2Init("#filter_status");
@@ -29,7 +36,10 @@ $(document).ready(function () {
 		router.admin.common.quotations,
 		["id", "quotation", "client"],
 		loadQDetails,
-		{ search_in: ["quotation", "client"] }
+		{
+			search_in: ["quotation", "client"],
+			dropdownParent: _select2ModalDropdownParent,
+		}
 	);
 
 	/* Load dataTable */
@@ -55,21 +65,25 @@ $(document).ready(function () {
 		if (e.target.checked) {
 			is_manual = true;
 			toggleQuotationFields(is_manual);
-			initSelect2Customers(clientRoute);
+			_initSelect2Customers();
 			return;
 		}
 
 		toggleQuotationFields();
 	});
 
-	/* Initial init of customers (commerical) via ajax data source */
-	onChangeCustomerType();
-	onSelectCustomer();
-	onClearCustomer();
-	initSelect2CustomerBranches(router.clients.common.customer_branches);
-
 	/* Initialize employee_id select2 */
-	select2Init("#employee_id_status", "Select person incharge");
+	select2Init(
+		"#employee_id_status",
+		"Select person incharge",
+		{},
+		{
+			dropdownParent: _select2ModalDropdownParent,
+		}
+	);
+
+	/* Initial init of customers (commerical) via ajax data source */
+	_initSelect2Customers();
 
 	/* Form for saving job order */
 	formSubmit($("#" + form), "continue", function (res, self) {
@@ -213,11 +227,18 @@ function edit(id) {
 
 				if (isNotManual) {
 					// Set selected quotation in select2
-					setSelect2AjaxSelection("#select2Quotation", res.data.quotation, id);
+					setSelect2AjaxSelection(
+						"#select2Quotation",
+						res.data.quotation,
+						id
+					);
 					clearSelect2Selection("#customer_id");
 				} else {
 					$("#is_manual").prop("checked", true);
-					$("#" + strLower(res.data.customer_type)).prop("checked", true);
+					$("#" + strLower(res.data.customer_type)).prop(
+						"checked",
+						true
+					);
 					$("#client_branch_wrapper").addClass("d-none");
 
 					setSelect2AjaxSelection(
@@ -225,7 +246,13 @@ function edit(id) {
 						res.data.client,
 						res.data.customer_id
 					);
-					initSelect2Customers(clientRoute, strLower(res.data.customer_type));
+					initSelect2Customers(
+						clientRoute,
+						strLower(res.data.customer_type),
+						null,
+						null,
+						modal
+					);
 					clearSelect2Selection("#select2Quotation");
 
 					if (strLower(res.data.customer_type) === "commercial") {
@@ -243,11 +270,14 @@ function edit(id) {
 				toggleQuotationFields(!isNotManual);
 
 				$.each(res.data, (key, value) => {
-					if (key !== "customer_type") $(`input[name="${key}"]`).val(value);
+					if (key !== "customer_type")
+						$(`input[name="${key}"]`).val(value);
 				});
 				$("#orig_qn")
 					.removeClass()
-					.html(`Original Quotation #: <strong>${res.data.quotation}</strong>`);
+					.html(
+						`Original Quotation #: <strong>${res.data.quotation}</strong>`
+					);
 				$("#comments").val(res.data.comments);
 				$("#created_by").val(res.data.requested_by);
 
@@ -339,7 +369,10 @@ function status(id, changeTo, status) {
 		$.post(router.job_order.fetch, { id: id, status: true })
 			.then((res) => {
 				$("#date_committed_status").val(res.data.date_committed);
-				setSelect2Selection("#employee_id_status", res.data.employee_id);
+				setSelect2Selection(
+					"#employee_id_status",
+					res.data.employee_id
+				);
 				$("#remarks").val(res.data.remarks);
 				$("#is_manual_status").val(res.data.is_manual);
 				$("#quotation_type").val(res.data.type || "Project"); // Default Project
@@ -376,4 +409,13 @@ function toggleQuotationFields(isManual = false) {
 		$("#quotation_wrapper").removeClass("d-none");
 		$("#manual_quotation_wrapper").addClass("d-none");
 	}
+}
+
+/* Toggle addtional fields for status modal */
+function _initSelect2Customers(customer_type = null) {
+	initSelect2Customers(clientRoute, customer_type, null, null, modal);
+	onChangeCustomerType();
+	onSelectCustomer();
+	onClearCustomer();
+	initSelect2CustomerBranches(router.clients.common.customer_branches);
 }

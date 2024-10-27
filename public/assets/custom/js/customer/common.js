@@ -1,14 +1,27 @@
 var clientRoute = "",
 	branchRoute = "";
+dropdownParent = "";
 
 /* Customers select2 via ajax data source */
-function initSelect2Customers(route, customer_type, withBranches, selector) {
+function initSelect2Customers(
+	route,
+	customer_type,
+	withBranches,
+	selector,
+	modal
+) {
+	selector = selector || "#customer_id";
+	clientRoute = route;
+	dropdownParent = modal ? `#${modal} .modal-content` : dropdownParent;
+
 	const options = {
 		customer_type: customer_type || "commercial",
 	};
 	const callback = withBranches ? withBranches : null;
-	selector = selector || "#customer_id";
-	clientRoute = route;
+
+	if (!isEmpty(dropdownParent)) {
+		options.dropdownParent = dropdownParent;
+	}
 
 	select2AjaxInit(
 		selector,
@@ -36,7 +49,18 @@ function initSelect2CustomerBranches(route, customer_id, branch_id, selector) {
 	/* Get customer branches via ajax post */
 	$.post(route, options)
 		.then((res) => {
-			select2Reinit(selector, "Please select a branch", res.data);
+			const _options = {};
+
+			if (!isEmpty(dropdownParent)) {
+				_options.dropdownParent = dropdownParent;
+			}
+
+			select2Reinit(
+				selector,
+				"Please select a branch",
+				res.data,
+				_options
+			);
 
 			if (branch_id) {
 				setTimeout(() => {

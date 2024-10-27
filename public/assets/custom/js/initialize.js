@@ -328,17 +328,23 @@ function passwordShowHideInit(passId, showPassId) {
  * @param {string} selector    	- id or class name of the select
  * @param {string} placeholder 	- placeholder
  * @param {object} data  		- data or the options to dispaly
- * @param {object} container  	- the container to attach to (e.g for modal)
+ * @param {object} options  	- the options to attach to (e.g for modal)
  * @return void
  */
-function select2Init(selector, placeholder, data, container) {
+function select2Init(selector, placeholder, data, options) {
 	selector = selector || ".select2";
-	$(selector).select2({
+
+	let params = {
 		placeholder: placeholder || "Select an option",
 		allowClear: true,
 		data: data || {},
-		attachContainer: container || "",
-	});
+	};
+
+	if (isObject(options) && !isEmpty(options)) {
+		$.each(options, (key, value) => (params[key] = value));
+	}
+
+	$(selector).select2(params);
 }
 
 /**
@@ -402,12 +408,13 @@ function select2AjaxInit(
 			perPage: perPage || 10,
 		};
 
-		if (isObject(options) && !isEmpty(options))
+		if (isObject(options) && !isEmpty(options)) {
 			$.each(options, (key, value) => {
 				if (key != "dropdownParent") {
 					newOptions[key] = value;
 				}
 			});
+		}
 
 		return {
 			q: params.term || "",
@@ -436,11 +443,12 @@ function select2AjaxInit(
  * @param {object} newData  	- new data or the new options to dispaly
  * @return void
  */
-function select2Reinit(select, placeholder, newData) {
+function select2Reinit(select, placeholder, newData, options) {
 	$(select).html("");
+
 	if (isSelect2Initialized(select)) $(select).select2("destroy");
 
-	select2Init(select, placeholder, newData);
+	select2Init(select, placeholder, newData, options);
 
 	$(select).val("").trigger("change");
 }
