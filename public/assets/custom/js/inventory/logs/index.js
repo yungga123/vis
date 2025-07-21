@@ -17,15 +17,21 @@ $(document).ready(function () {
 		"location_logs",
 	];
 
-	select2Init();
+	/* Init filter select2 */
+	select2Init("#filter_action");
+	select2Init("#filter_category_logs");
+	select2Init("#filter_sub_category_logs");
+
 	$("#filter_category_logs").on("select2:select", function (e) {
 		let selector = "#filter_sub_category_logs";
+
 		dropdownInitLogs2(selector, $(this).val());
 	});
 
 	/* Load dataTable */
-	if ($("#" + tableLogs).length)
+	if ($("#" + tableLogs).length) {
 		loadDataTable(tableLogs, router.logs.list, METHOD.POST);
+	}
 
 	/* Form for saving item in */
 	formSubmit($(formLogs), "continue", function (res, self) {
@@ -116,6 +122,7 @@ function dropdownInitLogs2(select, type) {
 					"dropdown_id",
 					"dropdown"
 				);
+
 				select2Reinit(select, "", options);
 			} else {
 				console.log(res.message);
@@ -153,13 +160,21 @@ function fetchItemDetails(id, stock, action) {
 			closeLoading();
 
 			if (res.status === STATUS.SUCCESS) {
-				const itemDetails = itemDetailsHtml(id, stock, res.data, action);
+				const itemDetails = itemDetailsHtml(
+					id,
+					stock,
+					res.data,
+					action
+				);
 				$(modalLogs + " .modal-title").text(
-					`Item ${strCapitalize(action)} - ` + res.data.item_description
+					`Item ${strCapitalize(action)} - ` +
+						res.data.item_description
 				);
 				$(modalLogs + " .modal-dialog").removeClass("modal-lg");
 				$(modalLogs + " .modal-body .row").addClass("d-none");
-				$(modalLogs + " .modal-body .item-details-wrapper").html(itemDetails);
+				$(modalLogs + " .modal-body .item-details-wrapper").html(
+					itemDetails
+				);
 				$("#inventory_parent_id").val(id);
 				$("#parent_stocks_logs").val(stock);
 				$("#action_logs").val("ITEM_" + strUpper(action));

@@ -1,4 +1,4 @@
-var table, modal, form, elems, $technicians;
+var table, modal, form, elems, $technicians, _select2ModalDropdownParent;
 
 $(document).ready(function () {
 	table = "dispatch_table";
@@ -23,6 +23,7 @@ $(document).ready(function () {
 		"employee_id",
 		"employee_name"
 	);
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
 
 	select2Init("#filter_service_type");
 
@@ -47,24 +48,34 @@ $(document).ready(function () {
 	});
 
 	/* Schedules select2 via ajax data source */
+	const _options = {
+		from_jo_only: true,
+		dropdownParent: _select2ModalDropdownParent,
+	};
+
 	select2AjaxInit(
 		"#schedules",
 		"Search a schedule",
 		router.admin.common.schedules,
 		"title",
 		loadScheduleDetails,
-		{ from_jo_only: true }
+		_options
 	);
+	/* Schedules select2 via ajax data source */
 
 	/* Initialize select2 employees/technicians */
-	select2Init("#technicians", "Select technicians", $technicians);
+	select2Init("#technicians", "Select technicians", $technicians, {
+		dropdownParent: _select2ModalDropdownParent,
+	});
 
 	/* Initialize select2 employees/check by */
 	select2AjaxInit(
 		"#checked_by",
 		"Select an employee",
 		router.employee.common.search,
-		"text"
+		"text",
+		null,
+		{ dropdownParent: _select2ModalDropdownParent }
 	);
 
 	/* Form for saving record */
@@ -150,7 +161,10 @@ function edit(id) {
 				setSelect2Technicians(res.data.technicians);
 
 				if (!isEmpty(res.data.customer_type)) {
-					$("#" + strLower(res.data.customer_type)).prop("checked", true);
+					$("#" + strLower(res.data.customer_type)).prop(
+						"checked",
+						true
+					);
 				}
 
 				// Set selected employee/checked by in select2
@@ -161,12 +175,15 @@ function edit(id) {
 				);
 
 				$.each(res.data, (key, value) => {
-					if (key !== "customer_type") $(`input[name="${key}"]`).val(value);
+					if (key !== "customer_type")
+						$(`input[name="${key}"]`).val(value);
 				});
 
 				$("#orig_schedule")
 					.removeClass()
-					.html(`Original schedule: <strong>${res.data.schedule}</strong>`);
+					.html(
+						`Original schedule: <strong>${res.data.schedule}</strong>`
+					);
 				$("#remarks").val(res.data.remarks);
 				$("#comments").val(res.data.comments);
 
@@ -248,6 +265,7 @@ function loadScheduleDetails(data) {
 function setSelect2Technicians(technicians) {
 	if (!isEmpty(technicians)) {
 		const data = $.map(technicians, (val, index) => val.employee_id);
+
 		setSelect2Selection("#technicians", data);
 	}
 }

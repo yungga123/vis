@@ -1,4 +1,11 @@
-var table, modal, form, elems, _interest, _vat_percent, _items;
+var table,
+	modal,
+	form,
+	elems,
+	_interest,
+	_vat_percent,
+	_items,
+	_select2ModalDropdownParent;
 
 $(document).ready(function () {
 	table = "billing_invoice_order_forms_table";
@@ -18,6 +25,7 @@ $(document).ready(function () {
 	_interest = $pjOptions.overdue_interests;
 	_vat_percent = $pjOptions.vat_percent;
 	_items = [];
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
 
 	select2Init("#filter_billing_status");
 	select2Init("#filter_bill_type");
@@ -267,12 +275,17 @@ function change(id, changeTo, status) {
 
 /* Quotation via ajax data source */
 function _initOrderForms() {
+	const options = {
+		dropdownParent: _select2ModalDropdownParent,
+	};
+
 	select2AjaxInit(
 		"#order_form_id",
 		"Search & select an order form",
 		router.inventory.common.order_forms,
 		"text",
-		_loadOrderFormDetails
+		_loadOrderFormDetails,
+		options
 	);
 }
 

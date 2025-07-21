@@ -306,6 +306,8 @@ function toggleRpfDetails(dateNeed, requestedAt) {
 function populateRpfItems(items, itemId, changeTo) {
 	let html = "";
 
+	itemId = itemId || "rpf_item_details";
+
 	if (!isEmpty(items)) {
 		const received_date = `
 			<input type="date" name="received_date[]" class="form-control" placeholder="Quantity" value="${currentDate()}" max="${currentDate()}">
@@ -359,7 +361,7 @@ function populateRpfItems(items, itemId, changeTo) {
 
 			let discount = `
 				<input type="number" name="discount[]" id="discount_${index}" class="form-control" 
-				placeholder="0.00" value="${val.discount || ""}" max="${val.item_sdp}" 
+				placeholder="0.00" value="${val.discount || ""}" max="${totalCost}" 
 				onkeyup="validate(event, '${val.quantity_in}', '${val.item_sdp}', true)">
 			`;
 			discount = val.rpf_id ? val.discount || "N/A" : discount;
@@ -399,19 +401,19 @@ function populateRpfItems(items, itemId, changeTo) {
 			`;
 		});
 
-		$(`#po_items_table .total_cost`)
+		$(`#${itemId} .total_cost`)
 			.text(numberFormat(totalCostAvg))
 			.attr("data-value", totalCostAvg);
-		$(`#po_items_table .total_discount`)
+		$(`#${itemId} .total_discount`)
 			.text(numberFormat(totalDiscountAvg))
 			.attr("data-value", totalDiscountAvg);
-		$(`#po_items_table .total_amount`)
+		$(`#${itemId} .total_amount`)
 			.text(numberFormat(totalAmount - totalDiscountAvg))
 			.attr("data-value", totalAmount);
-		$(`#po_items_table .total_amount_with_vat`).text(
+		$(`#${itemId} .total_amount_with_vat`).text(
 			numberFormat(totalAmount + totalVatAvg - totalDiscountAvg)
 		);
-		$(`#po_items_table #total_amount_received`).text(
+		$(`#${itemId} #total_amount_received`).text(
 			totalAmountReceived
 				? numberFormat(totalAmountReceived - totalDiscountAvg || 0)
 				: ""
@@ -421,7 +423,6 @@ function populateRpfItems(items, itemId, changeTo) {
 			'<tr><td colspan="15" class="center">No PO items found...</td></tr>';
 	}
 
-	itemId = itemId || "rpf_item_details";
 	$(`#${itemId} tbody`).html(html);
 }
 

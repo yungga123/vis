@@ -1,3 +1,5 @@
+var dropdownParent = "";
+
 /**
  * Toggle job order label to either required or optional
  *
@@ -20,20 +22,24 @@ function toggleJobOrderLabel(isRequired = true) {
  * @param {string} elem 		Element name with id/class
  * @param {string} text 		Text or key
  * @param {callable} callback 	Callable function
+ * @param {string} modal 		Modal name
  * @returns {void}
  */
-function initSelect2JobOrders(route, elem, text, callback) {
+function initSelect2JobOrders(route, elem, text, callback, modal) {
 	const placeholder = "Search and select a job order";
+	const options = {
+		dropdownParent: modal ? `#${modal} .modal-content` : dropdownParent,
+	};
 
 	// Set default value
 	elem = elem || "#job_order_id";
 	text = text || "text";
 
 	if (callback) {
-		select2AjaxInit(elem, placeholder, route, text, callback);
+		select2AjaxInit(elem, placeholder, route, text, callback, options);
 
 		return;
 	}
 
-	select2AjaxInit(elem, placeholder, route, text);
+	select2AjaxInit(elem, placeholder, route, text, null, options);
 }

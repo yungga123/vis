@@ -7,7 +7,7 @@
                 <input type="hidden" id="inventory_id" name="id" readonly>
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Item</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -33,7 +33,7 @@
                                 </select>
                                 <small id="alert_sub_category" class="text-danger"></small>
                             </div>
-                            <div class="form-group">        
+                            <div class="form-group">
                                 <label class="required" for="item_brand">Item Brand</label>
                                 <select name="item_brand" id="item_brand" class="custom-select select2 mt-2" data-placeholder="Select Item Brand" style="width: 100%;">
                                     <option value="">Select Item Brand</option>
@@ -123,14 +123,14 @@
 <!-- Modal for Dropdowns -->
 <div class="modal fade" id="modal_dropdown" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">            
+        <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Create Dropdown</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body"> 
+            <div class="modal-body">
                 <form id="form_dropdown" action="<?= url_to('inventory.dropdown.save'); ?>" method="post" autocomplete="off" class="with-label-indicator">
                     <?= csrf_field(); ?>
                     <input type="hidden" name="other_category_type" id="other_category_type" readonly>
@@ -140,7 +140,7 @@
                         <small id="alert_dropdown" class="text-danger"></small>
                         <p class="text-muted"><strong>Comma (,)</strong> separated for multiple insert. Ex. "Generic, Parasonic, Hikvision"</p>
                     </div>
-                    <div class="d-flex justify-content-end mt-2">                        
+                    <div class="d-flex justify-content-end mt-2">
                         <button type="submit" class="btn btn-success">Save</button>
                     </div>
                 </form>

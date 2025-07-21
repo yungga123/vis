@@ -1,4 +1,11 @@
-var table, modal, form, elems, $calendar, dateRangeformat, startEndDateFormat;
+var table,
+	modal,
+	form,
+	elems,
+	$calendar,
+	dateRangeformat,
+	startEndDateFormat,
+	_select2ModalDropdownParent;
 
 $(document).ready(function () {
 	table = "schedule_table";
@@ -7,6 +14,7 @@ $(document).ready(function () {
 	elems = ["job_order_id", "title", "description", "type", "date_range"];
 	dateRangeformat = "MMM DD, YYYY hh:mm A";
 	startEndDateFormat = "YYYY-MM-DD HH:mm:ss";
+	_select2ModalDropdownParent = `#${modal} .modal-content`;
 
 	/* Set job order label to optional */
 	toggleJobOrderLabel(false);
@@ -94,7 +102,8 @@ $(document).ready(function () {
 			if (data.client) {
 				$("#title").val(data.client);
 			}
-		}
+		},
+		modal
 	);
 
 	/* Form for saving record */
