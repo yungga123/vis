@@ -34,13 +34,14 @@ trait AdminTrait
             project_duration,
             project_amount
         ';
-        
+
         $model->select($fields);
+        $model->where('deleted_at IS NULL');
 
         if (! empty($q)) {
-            if (empty($options)) {                
+            if (empty($options)) {
                 $model->where('quotation_num', $q);
-                
+
                 return $model->find();
             }
 
@@ -59,25 +60,25 @@ trait AdminTrait
 
                     foreach ($search_in as $key => $val) {
                         $like = $key === 0 ? 'like' : 'orLike';
-                        
+
                         $model->{$like}($arr[$val] ?? $val, $q);
                     }
                 } else {
                     $model->like('quotation_num', $q);
                 }
             }
-            
         }
 
         $model->orderBy('id', 'DESC');
 
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
+
         $total  = $model->countAllResults();
 
         return [
             'data'  => $result,
             'total' => $total
-        ];     
+        ];
     }
 
     /**
@@ -301,7 +302,7 @@ trait AdminTrait
 
             $model->like('LOWER(branch_name)', strtolower($q));
         }
-        
+
         $model->orderBy('branch_name', 'ASC');
         $result = $model->paginate($options['perPage'], 'default', $options['page']);
         $total  = $model->countAllResults();

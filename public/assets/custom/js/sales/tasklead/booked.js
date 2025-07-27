@@ -177,6 +177,29 @@ function getBookedDetails(id) {
 	);
 }
 
+/* Remove record/data */
+function remove(id) {
+	const data = { id: id };
+
+	swalNotifConfirm(
+		() => {
+			$.post(router.tasklead.booked_delete, data)
+				.then((res) => {
+					const message = res.errors ?? res.message;
+					notifMsgSwal(res.status, message, res.status);
+
+					if (res.status === STATUS.SUCCESS) {
+						refreshDataTable($("#" + table));
+					}
+				})
+				.catch((err) => catchErrMsg(err));
+		},
+		TITLE.WARNING,
+		"Are you sure you want to remove this record? You will not be able to recover this data!",
+		STATUS.WARNING
+	);
+}
+
 /* Get files */
 function fetchFiles(id) {
 	$.get(router.tasklead.booked.files + "/" + id)

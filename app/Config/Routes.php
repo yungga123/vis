@@ -35,7 +35,7 @@ $routes->set404Override();
  * --------------------------------------------------------------------
  */
 
- //LOG IN
+//LOG IN
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/login', 'LoginPage::index', ['filter' => 'notlogged']);
@@ -49,13 +49,13 @@ $routes->post('/authenticate', 'LoginPage::login', [
 ]);
 
 //LOG OUT
-$routes->get('/logout',"LoginPage::logout");
+$routes->get('/logout', "LoginPage::logout");
 
 //TEST
-$routes->get('/test',"Test::index");
+$routes->get('/test', "Test::index");
 
 //DASHBOARD
-$routes->get('/dashboard','Dashboard::index', ['filter' => 'checkauth']);
+$routes->get('/dashboard', 'Dashboard::index', ['filter' => 'checkauth']);
 $routes->get('/', 'Dashboard::index', ['filter' => 'checkauth']);
 
 /***************** PHASE 1 *****************/
@@ -68,13 +68,13 @@ $routes->group('hr', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('save', 'HR\Account::save', ['as' => 'account.save']);
         $routes->post('fetch', 'HR\Account::fetch', ['as' => 'account.fetch']);
         $routes->post('delete', 'HR\Account::delete', ['as' => 'account.delete']);
-    
+
         // Account Profile
-        $routes->get('profile','HR\AccountProfile::index', ['as' => 'account.profile']);
-        $routes->post('change-password','HR\AccountProfile::changePassword', ['as' => 'account.change_pass']);
-        $routes->post('change-profile-image','HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
+        $routes->get('profile', 'HR\AccountProfile::index', ['as' => 'account.profile']);
+        $routes->post('change-password', 'HR\AccountProfile::changePassword', ['as' => 'account.change_pass']);
+        $routes->post('change-profile-image', 'HR\AccountProfile::changeProfileImage', ['as' => 'account.profile.image']);
     });
-    
+
     // EMPLOYEES
     $routes->group('employees', static function ($routes) {
         $routes->get('/', 'HR\Employee::index', ['as' => 'employee.home']);
@@ -83,7 +83,7 @@ $routes->group('hr', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('fetch', 'HR\Employee::fetch', ['as' => 'employee.fetch']);
         $routes->post('delete', 'HR\Employee::delete', ['as' => 'employee.delete']);
         $routes->post('change', 'HR\Employee::change', ['as' => 'employee.change']);
-        
+
         // COMMON
         $routes->group('common', static function ($routes) {
             $routes->post('search-employees', 'HR\Common::searchEmployees', ['as' => 'employee.common.search']);
@@ -94,29 +94,29 @@ $routes->group('hr', ['filter' => 'checkauth'], static function ($routes) {
 
 /* SALES */
 // CUSTOMERS / CLIENTS
-$routes->group('clients', ['filter' => 'checkauth'], static function($routes) {
-    $routes->get('/','Clients\Customer::index', ['as' => 'customer.home']);
-    $routes->post('list','Clients\Customer::list', ['as' => 'customer.list']);
-    $routes->post('save','Clients\Customer::save', ['as' => 'customer.save']);
-    $routes->post('fetch','Clients\Customer::fetch', ['as' => 'customer.fetch']);
-    $routes->post('delete','Clients\Customer::delete', ['as' => 'customer.delete']);
+$routes->group('clients', ['filter' => 'checkauth'], static function ($routes) {
+    $routes->get('/', 'Clients\Customer::index', ['as' => 'customer.home']);
+    $routes->post('list', 'Clients\Customer::list', ['as' => 'customer.list']);
+    $routes->post('save', 'Clients\Customer::save', ['as' => 'customer.save']);
+    $routes->post('fetch', 'Clients\Customer::fetch', ['as' => 'customer.fetch']);
+    $routes->post('delete', 'Clients\Customer::delete', ['as' => 'customer.delete']);
 
     // FILES
-    $routes->match(['post', 'get'], 'files/(:num)','Clients\CustomerFile::fetchFiles/$1', ['as' => 'customer.files.fetch']);
+    $routes->match(['post', 'get'], 'files/(:num)', 'Clients\CustomerFile::fetchFiles/$1', ['as' => 'customer.files.fetch']);
     $routes->group('files', static function ($routes) {
-        $routes->match(['post', 'put'], 'upload','Clients\CustomerFile::upload', ['as' => 'customer.files.upload']);
-        $routes->match(['post', 'get'], 'download/(:any)','Clients\CustomerFile::download/$1', ['as' => 'customer.files.download']);
-        $routes->match(['post', 'put'], 'remove','Clients\CustomerFile::remove', ['as' => 'customer.files.remove']);
+        $routes->match(['post', 'put'], 'upload', 'Clients\CustomerFile::upload', ['as' => 'customer.files.upload']);
+        $routes->match(['post', 'get'], 'download/(:any)', 'Clients\CustomerFile::download/$1', ['as' => 'customer.files.download']);
+        $routes->match(['post', 'put'], 'remove', 'Clients\CustomerFile::remove', ['as' => 'customer.files.remove']);
     });
-    
+
     // BRANCH
     $routes->group('branches', static function ($routes) {
-        $routes->post('','Clients\CustomerBranch::list', ['as' => 'customer.branch.list']);
-        $routes->post('save','Clients\CustomerBranch::save', ['as' => 'customer.branch.save']);
-        $routes->post('fetch','Clients\CustomerBranch::fetch', ['as' => 'customer.branch.fetch']);
-        $routes->post('delete','Clients\CustomerBranch::delete', ['as' => 'customer.branch.delete']);
+        $routes->post('', 'Clients\CustomerBranch::list', ['as' => 'customer.branch.list']);
+        $routes->post('save', 'Clients\CustomerBranch::save', ['as' => 'customer.branch.save']);
+        $routes->post('fetch', 'Clients\CustomerBranch::fetch', ['as' => 'customer.branch.fetch']);
+        $routes->post('delete', 'Clients\CustomerBranch::delete', ['as' => 'customer.branch.delete']);
     });
-    
+
     // COMMON
     $routes->group('common', static function ($routes) {
         $routes->post('search-clients', 'Clients\Common::searchCustomers', ['as' => 'clients.common.customers']);
@@ -124,9 +124,9 @@ $routes->group('clients', ['filter' => 'checkauth'], static function($routes) {
     });
 });
 
-$routes->group('sales', ['filter' => 'checkauth'], static function($routes) {
+$routes->group('sales', ['filter' => 'checkauth'], static function ($routes) {
     //TASK LEAD
-    $routes->group('tasklead', static function($routes){
+    $routes->group('tasklead', static function ($routes) {
         $routes->get('/', 'Sales\TaskLead::index', ['as' => 'tasklead.home']);
         $routes->post('list', 'Sales\TaskLead::list', ['as' => 'tasklead.list']);
         $routes->post('save', 'Sales\TaskLead::save', ['as' => 'tasklead.save']);
@@ -137,47 +137,48 @@ $routes->group('sales', ['filter' => 'checkauth'], static function($routes) {
         $routes->get('fetchcustomervtbranch', 'Sales\TaskLead::getCustomerVtBranch', ['as' => 'tasklead.getcustomervtbranch']);
         $routes->get('booked', 'Sales\TaskLeadBooked::index', ['as' => 'tasklead.booked.home']);
         $routes->post('booked/list', 'Sales\TaskLeadBooked::list', ['as' => 'tasklead.booked.list']);
+        $routes->post('booked/delete', 'Sales\TaskLeadBooked::delete', ['as' => 'tasklead.booked.delete']);
         $routes->post('booked/project_details', 'Sales\TaskLeadBooked::get_booked_details', ['as' => 'tasklead.booked.details']);
         $routes->post('booked/history_details', 'Sales\TaskLeadBooked::get_tasklead_history', ['as' => 'tasklead.booked.history']);
         $routes->post('booked/upload', 'Sales\TaskLeadBooked::upload', ['as' => 'tasklead.booked.upload']);
         $routes->post('booked/tasklead_files', 'Sales\TaskLeadBooked::getTaskleadFiles', ['as' => 'tasklead.booked.files']);
         $routes->get('booked/download', 'Sales\TaskLeadBooked::downloadFile', ['as' => 'tasklead.booked.download']);
         $routes->get('booked/show/(:num)', 'Sales\TaskLeadBooked::show/$1', ['as' => 'tasklead.booked.show']);
-    
+
         // FILES
-        $routes->match(['post', 'get'], 'booked/files/(:num)','Sales\TaskLeadBookedFile::fetchFiles/$1', ['as' => 'tasklead.booked.files.fetch']);
+        $routes->match(['post', 'get'], 'booked/files/(:num)', 'Sales\TaskLeadBookedFile::fetchFiles/$1', ['as' => 'tasklead.booked.files.fetch']);
         $routes->group('booked/files', static function ($routes) {
-            $routes->match(['post', 'put'], 'upload','Sales\TaskLeadBookedFile::upload', ['as' => 'tasklead.booked.files.upload']);
-            $routes->match(['post', 'get'], 'download/(:any)','Sales\TaskLeadBookedFile::download/$1', ['as' => 'tasklead.booked.files.download']);
-            $routes->match(['post', 'put'], 'remove','Sales\TaskLeadBookedFile::remove', ['as' => 'tasklead.booked.files.remove']);
+            $routes->match(['post', 'put'], 'upload', 'Sales\TaskLeadBookedFile::upload', ['as' => 'tasklead.booked.files.upload']);
+            $routes->match(['post', 'get'], 'download/(:any)', 'Sales\TaskLeadBookedFile::download/$1', ['as' => 'tasklead.booked.files.download']);
+            $routes->match(['post', 'put'], 'remove', 'Sales\TaskLeadBookedFile::remove', ['as' => 'tasklead.booked.files.remove']);
         });
     });
 
     // MANAGER
-    $routes->group('manager', static function($routes){
-        $routes->get('/','Sales\SalesManager::index', ['as' => 'sales_manager.home']);
-        $routes->post('taskleads','Sales\SalesManager::taskleads', ['as' => 'sales_manager.taskleads']);
-        $routes->post('tasklead_stats_url','Sales\SalesManager::taskleads_stats', ['as' => 'sales_manager.taskleads_stats']);
-        $routes->post('tasklead_quarterly_url','Sales\SalesManager::taskleads_quarterly', ['as' => 'sales_manager.taskleads_quarterly']);
+    $routes->group('manager', static function ($routes) {
+        $routes->get('/', 'Sales\SalesManager::index', ['as' => 'sales_manager.home']);
+        $routes->post('taskleads', 'Sales\SalesManager::taskleads', ['as' => 'sales_manager.taskleads']);
+        $routes->post('tasklead_stats_url', 'Sales\SalesManager::taskleads_stats', ['as' => 'sales_manager.taskleads_stats']);
+        $routes->post('tasklead_quarterly_url', 'Sales\SalesManager::taskleads_quarterly', ['as' => 'sales_manager.taskleads_quarterly']);
     });
-    
+
     // MANAGER/INDIVIDUAL
-    $routes->group('manager/indvidual', static function($routes){
-        $routes->get('/','Sales\SalesManagerIndividual::index', ['as' => 'sales_manager_indv.home']);
-        $routes->post('taskleads','Sales\SalesManagerIndividual::taskleads', ['as' => 'sales_manager_indv.taskleads']);
-        $routes->post('tasklead_stats_url','Sales\SalesManagerIndividual::taskleads_stats', ['as' => 'sales_manager_indv.taskleads_stats']);
-        $routes->post('tasklead_quarterly_url','Sales\SalesManagerIndividual::taskleads_quarterly', ['as' => 'sales_manager_indv.taskleads_quarterly']);
+    $routes->group('manager/indvidual', static function ($routes) {
+        $routes->get('/', 'Sales\SalesManagerIndividual::index', ['as' => 'sales_manager_indv.home']);
+        $routes->post('taskleads', 'Sales\SalesManagerIndividual::taskleads', ['as' => 'sales_manager_indv.taskleads']);
+        $routes->post('tasklead_stats_url', 'Sales\SalesManagerIndividual::taskleads_stats', ['as' => 'sales_manager_indv.taskleads_stats']);
+        $routes->post('tasklead_quarterly_url', 'Sales\SalesManagerIndividual::taskleads_quarterly', ['as' => 'sales_manager_indv.taskleads_quarterly']);
     });
-    
+
     // TARGET
-    $routes->group('target', static function($routes){
-        $routes->post('save','Sales\SalesTarget::save', ['as' => 'sales_target.save']);
-        $routes->post('employees','Sales\SalesTarget::employees', ['as' => 'sales_target.employees']);
-        $routes->post('employee','Sales\SalesTarget::employee', ['as' => 'sales_target.employee']);
-        $routes->post('list','Sales\SalesTarget::list', ['as' => 'sales_target.list']);
-        $routes->post('target_sales','Sales\SalesTarget::totalSalesTarget', ['as' => 'sales_target.target_sales']);
-        $routes->post('indv_sales_target','Sales\SalesTarget::indvSalesTarget', ['as' => 'sales_target.indv_sales_target']);
-        $routes->post('delete','Sales\SalesTarget::delete', ['as' => 'sales_target.delete']);
+    $routes->group('target', static function ($routes) {
+        $routes->post('save', 'Sales\SalesTarget::save', ['as' => 'sales_target.save']);
+        $routes->post('employees', 'Sales\SalesTarget::employees', ['as' => 'sales_target.employees']);
+        $routes->post('employee', 'Sales\SalesTarget::employee', ['as' => 'sales_target.employee']);
+        $routes->post('list', 'Sales\SalesTarget::list', ['as' => 'sales_target.list']);
+        $routes->post('target_sales', 'Sales\SalesTarget::totalSalesTarget', ['as' => 'sales_target.target_sales']);
+        $routes->post('indv_sales_target', 'Sales\SalesTarget::indvSalesTarget', ['as' => 'sales_target.indv_sales_target']);
+        $routes->post('delete', 'Sales\SalesTarget::delete', ['as' => 'sales_target.delete']);
     });
 
     // CUSTOMER SUPPORTS
@@ -203,10 +204,10 @@ $routes->group('sales', ['filter' => 'checkauth'], static function($routes) {
 $routes->group('settings', ['filter' => 'checkauth'], static function ($routes) {
     // MAIL CONFIG
     $routes->group('mail', static function ($routes) {
-        $routes->get('/','Settings\MailConfig::index', ['as' => 'mail_config.home']);
-        $routes->post('save','Settings\MailConfig::save', ['as' => 'mail_config.save']);
-        $routes->get('oauth2/configure','Settings\MailConfig::config', ['as' => 'mail_config.config']);
-        $routes->get('oauth2/reset-token','Settings\MailConfig::reset', ['as' => 'mail_config.reset']);
+        $routes->get('/', 'Settings\MailConfig::index', ['as' => 'mail_config.home']);
+        $routes->post('save', 'Settings\MailConfig::save', ['as' => 'mail_config.save']);
+        $routes->get('oauth2/configure', 'Settings\MailConfig::config', ['as' => 'mail_config.config']);
+        $routes->get('oauth2/reset-token', 'Settings\MailConfig::reset', ['as' => 'mail_config.reset']);
     });
 
     // PERMISSIONS
@@ -226,7 +227,7 @@ $routes->group('settings', ['filter' => 'checkauth'], static function ($routes) 
         $routes->post('edit', 'Settings\Roles::edit', ['as' => 'roles.edit']);
         $routes->post('delete', 'Settings\Roles::delete', ['as' => 'roles.delete']);
     });
-    
+
     // GENERAL INFO
     $routes->group('general-info', static function ($routes) {
         $routes->get('/', 'Settings\GeneralInfo::index', ['as' => 'general_info.home']);
@@ -237,7 +238,7 @@ $routes->group('settings', ['filter' => 'checkauth'], static function ($routes) 
 });
 
 /* Access denied */
-$routes->get('access-denied','Settings\Permission::denied', ['as' => 'access.denied']);
+$routes->get('access-denied', 'Settings\Permission::denied', ['as' => 'access.denied']);
 /* SETTINGS */
 /***************** PHASE 1 *****************/
 
@@ -303,7 +304,7 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
     $routes->post('search-quotations', 'Admin\Common::searchQuotation', ['as' => 'admin.common.quotations']);
     $routes->post('search-schedules', 'Admin\Common::searchSchedules', ['as' => 'admin.common.schedules']);
     $routes->post('search-job-orders', 'Admin\Common::searchJobOrders', ['as' => 'admin.common.job_orders']);
-    
+
     // JOB ORDERS
     $routes->group('job-orders', static function ($routes) {
         $routes->get('/', 'Admin\JobOrder::index', ['as' => 'admin.job_order.home']);
@@ -313,7 +314,7 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('delete', 'Admin\JobOrder::delete', ['as' => 'admin.job_order.delete']);
         $routes->post('status', 'Admin\JobOrder::change', ['as' => 'admin.job_order.status']);
     });
-    
+
     // SCHEDULES
     $routes->group('schedules', static function ($routes) {
         $routes->get('/', 'Admin\Schedule::index', ['as' => 'admin.schedule.home']);
@@ -321,7 +322,7 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('save', 'Admin\Schedule::save', ['as' => 'admin.schedule.save']);
         $routes->post('delete', 'Admin\Schedule::delete', ['as' => 'admin.schedule.delete']);
     });
-    
+
     // DISPATCH
     $routes->group('dispatch', static function ($routes) {
         $routes->get('/', 'Admin\Dispatch::index', ['as' => 'admin.dispatch.home']);
@@ -331,7 +332,7 @@ $routes->group('admin', ['filter' => 'checkauth'], static function ($routes) {
         $routes->post('delete', 'Admin\Dispatch::delete', ['as' => 'admin.dispatch.delete']);
         $routes->get('print/(:num)', 'Admin\Dispatch::print/$1', ['as' => 'admin.dispatch.print']);
     });
-    
+
     // SERVICE REPORTS
     $routes->group('service-reports', static function ($routes) {
         $routes->get('/', 'Admin\ServiceReport::index', ['as' => 'admin.service_report.home']);
@@ -360,15 +361,15 @@ $routes->group('purchasing', ['filter' => 'checkauth'], static function ($routes
         $routes->post('save', 'Purchasing\Suppliers::save', ['as' => 'purchasing.suppliers.save']);
         $routes->post('edit', 'Purchasing\Suppliers::edit', ['as' => 'purchasing.suppliers.edit']);
         $routes->post('delete', 'Purchasing\Suppliers::delete', ['as' => 'purchasing.suppliers.delete']);
-    
+
         $routes->group('brands', static function ($routes) {
-            $routes->get('list','Purchasing\SupplierBrands::list', ['as' => 'purchasing.suppliers.brand.list']);
-            $routes->post('save','Purchasing\SupplierBrands::save', ['as' => 'purchasing.suppliers.brand.save']);
-            $routes->post('edit','Purchasing\SupplierBrands::edit', ['as' => 'purchasing.suppliers.brand.edit']);
-            $routes->post('delete','Purchasing\SupplierBrands::delete', ['as' => 'purchasing.suppliers.brand.delete']);
-        });    
+            $routes->get('list', 'Purchasing\SupplierBrands::list', ['as' => 'purchasing.suppliers.brand.list']);
+            $routes->post('save', 'Purchasing\SupplierBrands::save', ['as' => 'purchasing.suppliers.brand.save']);
+            $routes->post('edit', 'Purchasing\SupplierBrands::edit', ['as' => 'purchasing.suppliers.brand.edit']);
+            $routes->post('delete', 'Purchasing\SupplierBrands::delete', ['as' => 'purchasing.suppliers.brand.delete']);
+        });
     });
- 
+
     // REQUEST TO PURCHASE FORMS
     $routes->group('request-purchase-forms', static function ($routes) {
         $routes->get('/', 'Purchasing\RequestPurchaseForm::index', ['as' => 'purchasing.rpf.home']);

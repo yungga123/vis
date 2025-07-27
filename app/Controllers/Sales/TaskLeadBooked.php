@@ -4,6 +4,7 @@ namespace App\Controllers\Sales;
 
 use App\Controllers\BaseController;
 use App\Models\TaskleadHistorViewModel;
+use App\Models\TaskLeadModel;
 use App\Models\TaskLeadView;
 use monken\TablesIgniter;
 
@@ -20,7 +21,7 @@ class TaskLeadBooked extends BaseController
      * @var string
      */
     private $_module_code;
-    
+
     /**
      * Use to get current permissions
      * @var array
@@ -37,7 +38,7 @@ class TaskLeadBooked extends BaseController
      * File path
      * @var string
      */
-     private $_path_file;
+    private $_path_file;
 
     /**
      * Class constructor
@@ -72,6 +73,7 @@ class TaskLeadBooked extends BaseController
         $data['routes']         = json_encode([
             'tasklead' => [
                 'booked_list'       => url_to('tasklead.booked.list'),
+                'booked_delete'       => url_to('tasklead.booked.delete'),
                 'booked_details'    => url_to('tasklead.booked.details'),
                 'booked_history'    => url_to('tasklead.booked.history'),
                 'booked_files'      => url_to('tasklead.booked.files'),
@@ -119,32 +121,74 @@ class TaskLeadBooked extends BaseController
                 $this->_model->customerDetails(),
                 'status_percent',
                 $this->_model->dtDetails(),
-                $this->_model->buttons(),
+                $this->_model->buttons($this->_permissions),
             ]);
 
         return $table->getDatatable();
     }
 
-    public function get_booked_details() 
+    /**
+     * Deleting record
+     *
+     * @return json
+     */
+    public function delete()
+    {
+        $data       = [
+            'status'    => res_lang('status.success'),
+            'message'   => res_lang('success.deleted', 'Record')
+        ];
+        $response   = $this->customTryCatch(
+            $data,
+            function ($data) {
+                $this->checkRoleActionPermissions($this->_module_code, ACTION_DELETE, true);
+
+                $id = $this->request->getVar('id');
+
+                if (! $this->_model->delete($id)) {
+                    $data['errors']     = $this->_model->errors();
+                    $data['status']     = res_lang('status.error');
+                    $data['message']    = res_lang('error.validation');
+                } else {
+                    log_msg(
+                        $data['message'] . "\n Tasklead Booked #: {$id} \nDeleted by: {username} \nUser: {user}",
+                        ['username' => session('username'), 'user' => session('name')]
+                    );
+
+                    // Update main tasklead record
+                    $taskkead = new TaskLeadModel();
+
+                    // Soft delete
+                    $taskkead->delete($id);
+                }
+
+                return $data;
+            }
+        );
+
+        return $response;
+    }
+
+    public function get_booked_details()
     {
         $id = $this->request->getVar('tasklead_id');
-        $data = $this->_model->noticeTable()->where('id',$id)->get()->getResult();
+        $data = $this->_model->noticeTable()->where('id', $id)->get()->getResult();
 
         return $this->response->setJSON($data);
     }
 
-    public function get_tasklead_history() 
+    public function get_tasklead_history()
     {
 
         $historyModel = new TaskleadHistorViewModel();
 
         $id = $this->request->getVar('tasklead_id');
-        $data = $historyModel->where('tasklead_id',$id)->find();
+        $data = $historyModel->where('tasklead_id', $id)->find();
 
         return $this->response->setJSON($data);
     }
 
-    public function upload() 
+    public function upload()
     {
 
         $data['success'] = false;
@@ -172,7 +216,7 @@ class TaskLeadBooked extends BaseController
         if (!$img->hasMoved()) {
             $filename = $img->getClientName();
             $filepath = $this->_path_file . $id;
-            $img->move($filepath,$filename);
+            $img->move($filepath, $filename);
 
             $data['message'] = 'File has been uploaded.';
         }
@@ -181,7 +225,7 @@ class TaskLeadBooked extends BaseController
         return $this->response->setJSON($data);
     }
 
-    public function getTaskleadFiles() 
+    public function getTaskleadFiles()
     {
         helper('filesystem');
         $id = $this->request->getVar('id');
@@ -198,6 +242,6 @@ class TaskLeadBooked extends BaseController
         $id = $this->request->getVar('id');
         $file = $this->request->getVar('file');
         $path = $this->_path_file . $id . '/' . $file;
-        return $this->response->download($path,null);
+        return $this->response->download($path, null);
     }
 }

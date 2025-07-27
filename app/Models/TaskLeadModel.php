@@ -22,19 +22,19 @@ class TaskLeadModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         "employee_id",
-        "quarter", 
+        "quarter",
         "status",
         "customer_type",
         "existing_customer",
         "customer_id",
         "branch_id",
-        "project", 
-        "project_amount", 
-        "quotation_num", 
+        "project",
+        "project_amount",
+        "quotation_num",
         "forecast_close_date",
-        "remark_next_step", 
-        "close_deal_date", 
-        "project_start_date", 
+        "remark_next_step",
+        "close_deal_date",
+        "project_start_date",
         "project_finish_date",
         "tasklead_type",
     ];
@@ -169,7 +169,7 @@ class TaskLeadModel extends Model
                 Events::trigger('send_mail_notif_tasklead', $record);
             }
         }
-        
+
         return $data;
     }
 
@@ -185,13 +185,17 @@ class TaskLeadModel extends Model
     {
         $builder    = $this->db->table($this->view);
         $columns    = $this->dtColumns;
-        $columns    = $booked 
+        $columns    = $booked
             ? array_merge($columns, [dt_sql_datetime_format('updated_at') . ' AS updated_at'])
             : $columns;
 
         $builder->select($columns);
 
-        if ($booked) $builder->where('status', $this->booked);
+        if ($booked) {
+            $builder->where('deleted_at IS NULL');
+            $builder->where('status', $this->booked);
+        }
+
         return $builder;
     }
 
@@ -236,7 +240,6 @@ class TaskLeadModel extends Model
     public function noticeTableBooked()
     {
         $builder = $this->db->table('task_lead_booked');
-        $builder;
         return $builder;
     }
     public function noticeTableBookedWhere($employee_id)
@@ -249,7 +252,7 @@ class TaskLeadModel extends Model
     public function buttons($permissions)
     {
         $id = 'id';
-        $closureFun = function($row) use($id, $permissions) {
+        $closureFun = function ($row) use ($id, $permissions) {
             if (is_admin()) {
                 return <<<EOF
                     <button class="btn btn-sm btn-success" onclick="edit({$row["id"]})"  data-toggle="modal" data-target="#modal_tasklead" title="Update Tasklead"><i class="fas fa-arrow-up"></i> </button> 
@@ -275,7 +278,6 @@ class TaskLeadModel extends Model
             }
 
             return $edit . $delete;
-                        
         };
 
         return $closureFun;

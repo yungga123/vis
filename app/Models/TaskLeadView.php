@@ -42,11 +42,11 @@ class TaskLeadView extends Model
 
     // Join with customers
     public function joinCustomers($builder, $model = null, $type = 'left', $alias = '')
-    {      
+    {
         $model ?? $model = new CustomerModel();
-        $_alias = empty($alias) ? $alias : ' AS '. $alias;
+        $_alias = empty($alias) ? $alias : ' AS ' . $alias;
         $alias1 = empty($alias) ? $model->table : $alias;
-        
+
         $builder->join($model->table . $_alias, "{$this->table}.customer_id = {$alias1}.id", $type);
 
         return $this;
@@ -68,20 +68,20 @@ class TaskLeadView extends Model
 
     public function dtDetails()
     {
-        $custom = function($row) {
+        $custom = function ($row) {
             return <<<EOF
                 <p><strong>Closed Deal:</strong> {$row['close_deal_date']}</p>
                 <p><strong>Project Start:</strong> {$row['project_start_date']}</p>
                 <p><strong>Project Finish:</strong> {$row['project_finish_date']}</p>
             EOF;
         };
-        
+
         return $custom;
     }
 
     public function customerDetails()
     {
-        $custom = function($row) {
+        $custom = function ($row) {
 
             $branch = $row['branch_name'] ? $row['branch_name'] : "<span class='text-danger'><i>Not Set</i></span>";
 
@@ -94,16 +94,24 @@ class TaskLeadView extends Model
                 <p><small class="text-muted">Project: {$row['project']}</small></p>
             EOF;
         };
-        
+
         return $custom;
     }
-    
-    public function buttons()
+
+    public function buttons($permissions)
     {
-        $closureFun = function($row) {
-            return <<<EOF
+        $closureFun = function ($row) use ($permissions) {
+            $buttons = <<<EOF
                 <a href="#" class="btn btn-info" title="View more details" data-toggle="modal" data-target="#modal-booked-details" onclick="getBookedDetails({$row['id']})"><i class="fas fa-eye"></i> View</a> 
             EOF;
+
+            if (check_permissions($permissions, ACTION_DELETE)) {
+                $buttons .= <<<EOF
+                    <button class="btn btn-danger" onclick="remove({$row['id']})" title="Delete"><i class="fas fa-trash"></i> Delete</button>  
+                EOF;
+            }
+
+            return $buttons;
         };
 
         return $closureFun;
